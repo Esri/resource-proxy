@@ -568,7 +568,8 @@ public static class ProxyConfig
         }
         if (this.mustMatch)
             throw new IllegalStateException();
-        return null;
+        else    
+            return new ServerUrl(uri); //if mustMatch is false send the server url back that is the same the uri to pass thru
     }
 
     public static boolean isUrlPrefixMatch(String prefix,String uri){
@@ -604,6 +605,10 @@ public static class ServerUrl {
         this.rateLimitPeriod = rateLimitPeriod;
         this.tokenServiceUri = tokenServiceUri;
 
+    }
+    
+    public ServerUrl(String url){
+        this.url = url;
     }
 
     private static ConcurrentHashMap<String,String> tokenServiceMap = new ConcurrentHashMap<String,String>();
