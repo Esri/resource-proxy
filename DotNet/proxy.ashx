@@ -77,7 +77,7 @@ public class proxy : IHttpHandler {
 
             string errorMsg = ex.InnerException.Message + " " + uri;
             log(TraceLevel.Error, errorMsg);
-            sendErrorResponse(context.Response, null, errorMsg, System.Net.HttpStatusCode.BadRequest);
+            sendErrorResponse(context.Response, null, errorMsg, System.Net.HttpStatusCode.InternalServerError);
             return;
         }  
         //if mustMatch was set to true and url wasn't in the list
