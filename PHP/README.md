@@ -110,7 +110,7 @@ XML example
           matchAll="true"/>
 
       <serverUrl
-          url="http://route.arcgis.com"
+          url="https://route.arcgis.com"
           matchAll="true"
           oauth2Endpoint="https://www.arcgis.com/sharing/oauth2"
           clientId="6Xo1x5L1tz7k9Kn2dc"
