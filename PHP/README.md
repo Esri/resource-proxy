@@ -113,8 +113,8 @@ XML example
           url="https://route.arcgis.com"
           matchAll="true"
           oauth2Endpoint="https://www.arcgis.com/sharing/oauth2"
-          clientId="6Xo1x5L1tz7k9Kn2dc"
-          clientSecret="5dca5d50d0e6fe422c867b6efcf969b6ca2"
+          clientId="6Xo1d-example-9Kn2"
+          clientSecret="5a5d50-example-c867b6efcf969bdcc6a2"
           rateLimit="120"
           rateLimitPeriod="60">
       </serverUrl>

@@ -50,8 +50,8 @@ Note: Refresh the proxy application after updates to the proxy.config have been 
 Example of proxy using application credentials and limiting requests to 10/minute
 ```
 <serverUrl url="http://route.arcgis.com"
-    clientId="IALqUOFE1VnQ1XHi"
-    clientSecret="bbbf9aec5fc09d78d0e217be22ea4221"
+    clientId="6Xo1d-example-9Kn2"
+    clientSecret="5a5d50-example-c867b6efcf969bdcc6a2"
     rateLimit=600
     rateLimitPeriod=60
     matchAll="true">
