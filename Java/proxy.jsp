@@ -233,7 +233,7 @@ private String getNewTokenIfCredentialsAreSpecified(ServerUrl su, String url) th
             }
         } else {
             //standalone ArcGIS Server token-based authentication
-            int infoIndex = url.toLowerCase().indexOf("/rest");
+            int infoIndex = url.toLowerCase().indexOf("/rest/");
             if (infoIndex != -1) {
 
                 String infoUrl = url.substring(0, infoIndex);
