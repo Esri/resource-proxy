@@ -60,7 +60,7 @@ public class proxy : IHttpHandler {
         {
             string errorMsg = "No url specified";
             log(TraceLevel.Error, errorMsg);
-            sendErrorResponse(context.Response, null, errorMsg, System.Net.HttpStatusCode.Forbidden);
+            sendErrorResponse(context.Response, null, errorMsg, System.Net.HttpStatusCode.BadRequest);
             return;
         }
 
@@ -71,7 +71,17 @@ public class proxy : IHttpHandler {
         try {
             serverUrl = getConfig().GetConfigServerUrl(uri);
             passThrough = serverUrl == null;
-        } catch (InvalidOperationException ex) {
+        } 
+        //if XML couldn't be parsed
+        catch (InvalidOperationException ex) {
+
+            string errorMsg = ex.InnerException.Message + " " + uri;
+            log(TraceLevel.Error, errorMsg);
+            sendErrorResponse(context.Response, null, errorMsg, System.Net.HttpStatusCode.InternalServerError);
+            return;
+        }  
+        //if mustMatch was set to true and url wasn't in the list
+        catch (ArgumentException ex) {
             string errorMsg = ex.Message + " " + uri;
             log(TraceLevel.Error, errorMsg);
             sendErrorResponse(context.Response, null, errorMsg, System.Net.HttpStatusCode.Forbidden);
@@ -593,7 +603,7 @@ public class ProxyConfig
                 return su;
         }
         if (mustMatch)
-            throw new InvalidOperationException("Proxy is being used for an unsupported service (proxy.config has mustMatch=\"true\"):");
+            throw new ArgumentException(" Proxy is being used for an unsupported service (proxy.config has mustMatch=\"true\"):");
         return null;
     }
 
