@@ -26,7 +26,12 @@ java.util.logging.Level,
 java.text.SimpleDateFormat" %>
 
 <!-- ----------------------------------------------------------
-See https://github.com/Esri/resource-proxy for more information
+ *
+ * JSP proxy client
+ *
+ * Version 1.0 beta
+ * See https://github.com/Esri/resource-proxy for more information.
+ *
 ----------------------------------------------------------- -->
 
 <%!

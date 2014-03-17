@@ -3,7 +3,8 @@
 /**
  * PHP Proxy Client
  *
- * See https://github.com/Esri/resource-proxy for more information
+ * Version 1.0 beta
+ * See https://github.com/Esri/resource-proxy for more information.
  *
  */
 
