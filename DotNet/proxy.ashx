@@ -317,7 +317,6 @@ public class proxy : IHttpHandler {
     private System.Net.WebResponse doHTTPRequest(string uri, byte[] bytes, string method, string referer, string contentType) {
         System.Net.HttpWebRequest req = (System.Net.HttpWebRequest)System.Net.HttpWebRequest.Create(uri);
         req.ServicePoint.Expect100Continue = false;
-        //is this just localhost?
         req.Referer = referer;
         req.Method = method;
         if (bytes != null && bytes.Length > 0 || method == "POST") {
@@ -364,21 +363,19 @@ public class proxy : IHttpHandler {
             } else {
                 //standalone ArcGIS Server/ArcGIS Online token-based authentication
 
-                //if a request already includes 'generateToken', we're ready to get a token
+                //if a request is already being made to generate a token, just let it go
                 if (reqUrl.ToLower().Contains("/generatetoken"))
-                {
-                    string strippedReqUrl = reqUrl.Substring(0, reqUrl.IndexOf("?"));
-                    string uri = strippedReqUrl + "?f=json&request=getToken&referer=" + PROXY_REFERER + "&expiration=60&username=" + su.Username + "&password=" + su.Password;
-                    string tokenResponse = webResponseToString(doHTTPRequest(uri, "POST"));
+                {                    
+                    string tokenResponse = webResponseToString(doHTTPRequest(reqUrl, "POST"));
                     token = extractToken(tokenResponse, "token");
                     return token;
                 }
                 //if the url in the proxy.config contains 'rest', we can determine the url of the token generator dynamically
                 if (su.Url.ToLower().Contains("/rest"))
                     infoUrl = su.Url.Substring(0, su.Url.IndexOf("/rest", StringComparison.OrdinalIgnoreCase));
-                //if it doesn't lets look for 'rest' in the request url itself
+                //if it doesn't lets look for 'rest/services' in the request url itself
                 else
-                    infoUrl = reqUrl.Substring(0, reqUrl.IndexOf("/rest", StringComparison.OrdinalIgnoreCase));
+                    infoUrl = reqUrl.Substring(0, reqUrl.IndexOf("/rest/services", StringComparison.OrdinalIgnoreCase));
 
                 if (infoUrl != "") {
                     log(TraceLevel.Info," Querying security endpoint...");
@@ -591,14 +588,19 @@ public class ProxyConfig
     }
 
     public ServerUrl GetConfigServerUrl(string uri) {
-
-        foreach (ServerUrl su in serverUrls) {
-            //lets add a slash to the proxy.config url if not present before comparing to the request itself to fend off subdomain attacks (ie: gooddomain.org.baddomain.com)
+        //if either uri or proxy.config don't end in a slash, lets add them (just for comparing)
+        string slashedConfigUrl = null;       
+        string slashedUri = uri;        
+        
+        if (!uri.Substring(uri.Length - 1, 1).Equals("/"))
+            slashedUri = uri.IndexOf("?") == -1 ? uri + "/" : uri.Insert(uri.IndexOf("?"), "/");        
+                
+        foreach (ServerUrl su in serverUrls) {            
             if (!su.Url.Substring(su.Url.Length - 1, 1).Equals("/"))
-                su.Url = su.Url + "/";
+                slashedConfigUrl = su.Url + "/";
             if (
-                su.MatchAll && uri.StartsWith(su.Url, StringComparison.InvariantCultureIgnoreCase)
-                || String.Compare(uri, su.Url, StringComparison.InvariantCultureIgnoreCase) == 0
+                su.MatchAll && (uri.StartsWith(su.Url, StringComparison.InvariantCultureIgnoreCase)
+                && slashedUri.StartsWith(slashedConfigUrl, StringComparison.InvariantCultureIgnoreCase))
              )
                 return su;
         }
