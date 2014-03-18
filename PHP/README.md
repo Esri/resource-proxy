@@ -221,6 +221,17 @@ Example .htaccess file:
 </Files>
 ```
 
+Note if system permissions allow write access to Apache's main ```httpd.conf``` server config file, avoid doing file request filtering inside the ```.htaccess``` altogether.
+File filtering directives added to Apache's main ```httpd.conf``` can lead to faster performance.  Find the ```Directory``` or existing ```Files``` tags in the main 
+```httpd.conf``` and add these lines after to prevent users from downloading the .sqlite, .log and .config files from the server.
+
+```
+<Files ~ "\.(log|config|sqlite)$">
+    Order allow,deny
+    Deny from all
+</Files>
+```
+
 ### When I ran the verification test my browser displays raw PHP code
 
 Raw PHP code in the browser indicates that the PHP server is not configured correctly.
