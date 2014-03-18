@@ -66,6 +66,7 @@ public class proxy : IHttpHandler {
 
         string uri = context.Request.Url.Query.Substring(1);
 
+        //if url is encoded, decode it.
         if (uri.StartsWith("http%3a%2f%2f") || uri.StartsWith("https%3a%2f%2f"))
             uri = HttpUtility.UrlDecode(uri);
         
@@ -592,7 +593,7 @@ public class ProxyConfig
     }
 
     public ServerUrl GetConfigServerUrl(string uri) {                       
-        
+        //split both request and proxy.config urls and compare them
         string[] uriParts = uri.Split(new char[] {'/'}, StringSplitOptions.RemoveEmptyEntries);
         string[] configUriParts = new string[] {};
                 
@@ -600,12 +601,14 @@ public class ProxyConfig
             configUriParts = su.Url.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
 
             int i = 1;
+            //skip comparing the protocol, so that either http or https is considered valid
             for (i = 1; i < configUriParts.Length; i++)                
             {
                 if (!configUriParts[i].Equals(uriParts[i]) ) break;                    
             }
             if (i == configUriParts.Length)
             {
+                //if the urls don't match exactly, and the individual matchAll tag is 'false', don't allow
                 if (configUriParts.Length == uriParts.Length || su.MatchAll)
                     return su;                    
             }        
@@ -635,7 +638,7 @@ public class ServerUrl {
     
     [XmlAttribute("url")]
     public string Url {
-        get { return url; }        
+        get { return url; }
         set { url = value; }
     }
     [XmlAttribute("matchAll")]
