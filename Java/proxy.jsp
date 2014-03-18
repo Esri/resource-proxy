@@ -555,7 +555,7 @@ public static class ProxyConfig
         String slashedUri = uri;        
     	
     	if (!uri.substring(uri.length()-1).equalsIgnoreCase("/"))
-    		slashedUri = uri.indexOf("/") == -1 ? uri + "/" : uri.substring(0, uri.indexOf("?")) + "/" + uri.substring(uri.indexOf("?"), uri.length());
+    		slashedUri = uri.indexOf("?") == -1 ? uri + "/" : uri.substring(0, uri.indexOf("?")) + "/" + uri.substring(uri.indexOf("?"), uri.length());
     	
         for (ServerUrl su : serverUrls) {
         	if(!(su.getUrl().substring(su.getUrl().length()-1).equals("/"))) 
