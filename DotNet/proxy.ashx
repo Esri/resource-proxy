@@ -65,6 +65,10 @@ public class proxy : IHttpHandler {
         }
 
         string uri = context.Request.Url.Query.Substring(1);
+
+        if (uri.StartsWith("http%3a%2f%2f") || uri.StartsWith("https%3a%2f%2f"))
+            uri = HttpUtility.UrlDecode(uri);
+        
         log(TraceLevel.Info, uri);
         ServerUrl serverUrl;
         bool passThrough = false;
@@ -587,25 +591,29 @@ public class ProxyConfig
         }
     }
 
-    public ServerUrl GetConfigServerUrl(string uri) {
-        //if either uri or proxy.config don't end in a slash, lets add them (just for comparing)
-        string slashedConfigUrl = null;       
-        string slashedUri = uri;        
+    public ServerUrl GetConfigServerUrl(string uri) {                       
         
-        if (!uri.Substring(uri.Length - 1, 1).Equals("/"))
-            slashedUri = uri.IndexOf("?") == -1 ? uri + "/" : uri.Insert(uri.IndexOf("?"), "/");        
+        string[] uriParts = uri.Split(new char[] {'/'}, StringSplitOptions.RemoveEmptyEntries);
+        string[] configUriParts = new string[] {};
                 
-        foreach (ServerUrl su in serverUrls) {            
-            if (!su.Url.Substring(su.Url.Length - 1, 1).Equals("/"))
-                slashedConfigUrl = su.Url + "/";
-            if (
-                su.MatchAll && (uri.StartsWith(su.Url, StringComparison.InvariantCultureIgnoreCase)
-                && slashedUri.StartsWith(slashedConfigUrl, StringComparison.InvariantCultureIgnoreCase))
-             )
-                return su;
-        }
+        foreach (ServerUrl su in serverUrls) {
+            configUriParts = su.Url.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+
+            int i = 1;
+            for (i = 1; i < configUriParts.Length; i++)                
+            {
+                if (!configUriParts[i].Equals(uriParts[i]) ) break;                    
+            }
+            if (i == configUriParts.Length)
+            {
+                if (configUriParts.Length == uriParts.Length || su.MatchAll)
+                    return su;                    
+            }        
+        }       
+        
         if (mustMatch)
             throw new ArgumentException(" Proxy is being used for an unsupported service (proxy.config has mustMatch=\"true\"):");
+        
         return null;
     }
 
@@ -624,10 +632,10 @@ public class ServerUrl {
     string tokenParamName;
     string rateLimit;
     string rateLimitPeriod;
-
+    
     [XmlAttribute("url")]
     public string Url {
-        get { return url; }
+        get { return url; }        
         set { url = value; }
     }
     [XmlAttribute("matchAll")]
