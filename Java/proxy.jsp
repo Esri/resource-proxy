@@ -3,6 +3,7 @@
 "java.net.HttpURLConnection,
 java.net.URL,
 java.net.URLEncoder,
+java.net.URLDecoder,
 java.io.BufferedReader,
 java.io.ByteArrayOutputStream,
 java.io.DataInputStream,
@@ -25,9 +26,14 @@ java.util.logging.SimpleFormatter,
 java.util.logging.Level,
 java.text.SimpleDateFormat" %>
 
-<!-- ----------------------------------------------------------
-See https://github.com/Esri/resource-proxy for more information
------------------------------------------------------------ -->
+ <!-- ----------------------------------------------------------
+ - *
+ - * JSP proxy client
+ - *
+ - * Version 1.0 beta
+ - * See https://github.com/Esri/resource-proxy for more information.
+ - *
+  ----------------------------------------------------------- -->
 
 <%!
 public static class RateMeter {
@@ -551,23 +557,25 @@ public static class ProxyConfig
 
     public ServerUrl getConfigServerUrl(String uri) {
     	//if either uri or proxy.config don't end in a slash, lets add them (just for comparing)
-        String slashedConfigUrl = null;       
+        String slashedConfigUrl = null;    
         String slashedUri = uri;        
     	
     	if (!uri.substring(uri.length()-1).equalsIgnoreCase("/"))
     		slashedUri = uri.indexOf("?") == -1 ? uri + "/" : uri.substring(0, uri.indexOf("?")) + "/" + uri.substring(uri.indexOf("?"), uri.length());
-    	
+
         for (ServerUrl su : serverUrls) {
         	if(!(su.getUrl().substring(su.getUrl().length()-1).equals("/"))) 
         		slashedConfigUrl = su.getUrl() + "/";
+        		
             if (
                 su.getMatchAll() && 
                 (isUrlPrefixMatch(su.getUrl(), uri) && (isUrlPrefixMatch(slashedConfigUrl, slashedUri)))
 				)
+				
                 return su;
         }
         if (this.mustMatch)
-            throw new IllegalStateException();
+        	return null; //return null then send 403 forbidden
         else
         	return new ServerUrl(uri); //if mustMatch is false send the server url back that is the same the uri to pass thru     
     }
@@ -723,12 +731,17 @@ try {
 
         out.clear();
         out = pageContext.pushBody();
+        
+        //check if the uri is encoded then decode it
+        if (ProxyConfig.isUrlPrefixMatch("http%3a%2f%2f", uri) || ProxyConfig.isUrlPrefixMatch("https%3a%2f%2f", uri) )   	
+        	uri= URLDecoder.decode(uri, "UTF-8");
+
 
         if (uri == null || uri.isEmpty()){
             response.sendError(500,"This operation does not support empty parameters.");
             return;
         }
-
+        
         String[] allowedReferers = getConfig().getAllowedReferers();
         if (allowedReferers != null && allowedReferers.length > 0 && request.getHeader("referer") != null){
             setReferer(request.getHeader("referer")); //replace PROXY_REFERER with real proxy
@@ -749,6 +762,7 @@ try {
             }
         }
 
+		if (getConfig().getConfigServerUrl(uri)==null) _sendURLMismatchError(response);
         serverUrl = getConfig().getConfigServerUrl(uri);
         passThrough = serverUrl == null;
     } catch (IllegalStateException e) {
