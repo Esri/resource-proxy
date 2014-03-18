@@ -556,24 +556,27 @@ public static class ProxyConfig
     }
 
     public ServerUrl getConfigServerUrl(String uri) {
-    	//if either uri or proxy.config don't end in a slash, lets add them (just for comparing)
-        String slashedConfigUrl = null;    
-        String slashedUri = uri;        
-    	
-    	if (!uri.substring(uri.length()-1).equalsIgnoreCase("/"))
-    		slashedUri = uri.indexOf("?") == -1 ? uri + "/" : uri.substring(0, uri.indexOf("?")) + "/" + uri.substring(uri.indexOf("?"), uri.length());
-
+    	//split both request and proxy.config urls and compare them
+    	String[] uriParts = uri.split("/?");
+        String[] configUriParts = new String[] {};
+                
         for (ServerUrl su : serverUrls) {
-        	if(!(su.getUrl().substring(su.getUrl().length()-1).equals("/"))) 
-        		slashedConfigUrl = su.getUrl() + "/";
-        		
-            if (
-                su.getMatchAll() && 
-                (isUrlPrefixMatch(su.getUrl(), uri) && (isUrlPrefixMatch(slashedConfigUrl, slashedUri)))
-				)
-				
-                return su;
-        }
+            configUriParts = su.getUrl().split("/");
+
+            int i = 1;
+            //skip comparing the protocol, so that either http or https is considered valid
+            for (i = 1; i < configUriParts.length; i++)                
+            {
+                if (!configUriParts[i].equals(uriParts[i]) ) break;                    
+            }
+            if (i == configUriParts.length)
+            {
+            	//if the urls don't match exactly, and the individual matchAll tag is 'false', don't allow
+                if (configUriParts.length == uriParts.length || su.getMatchAll())
+                    return su;                    
+            }        
+        }       
+    	
         if (this.mustMatch)
         	return null; //return null then send 403 forbidden
         else
