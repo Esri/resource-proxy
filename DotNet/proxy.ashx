@@ -594,7 +594,7 @@ public class ProxyConfig
 
     public ServerUrl GetConfigServerUrl(string uri) {                       
         //split both request and proxy.config urls and compare them
-        string[] uriParts = uri.Split(new char[] {'/'}, StringSplitOptions.RemoveEmptyEntries);
+        string[] uriParts = uri.Split(new char[] {'/','?'}, StringSplitOptions.RemoveEmptyEntries); 
         string[] configUriParts = new string[] {};
                 
         foreach (ServerUrl su in serverUrls) {
