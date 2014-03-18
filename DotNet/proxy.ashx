@@ -69,6 +69,11 @@ public class proxy : IHttpHandler {
         }
 
         string uri = context.Request.Url.Query.Substring(1);
+
+        //if url is encoded, decode it.
+        if (uri.StartsWith("http%3a%2f%2f") || uri.StartsWith("https%3a%2f%2f"))
+            uri = HttpUtility.UrlDecode(uri);
+        
         log(TraceLevel.Info, uri);
         ServerUrl serverUrl;
         bool passThrough = false;
@@ -321,7 +326,6 @@ public class proxy : IHttpHandler {
     private System.Net.WebResponse doHTTPRequest(string uri, byte[] bytes, string method, string referer, string contentType) {
         System.Net.HttpWebRequest req = (System.Net.HttpWebRequest)System.Net.HttpWebRequest.Create(uri);
         req.ServicePoint.Expect100Continue = false;
-        //is this just localhost?
         req.Referer = referer;
         req.Method = method;
         if (bytes != null && bytes.Length > 0 || method == "POST") {
@@ -368,21 +372,19 @@ public class proxy : IHttpHandler {
             } else {
                 //standalone ArcGIS Server/ArcGIS Online token-based authentication
 
-                //if a request already includes 'generateToken', we're ready to get a token
+                //if a request is already being made to generate a token, just let it go
                 if (reqUrl.ToLower().Contains("/generatetoken"))
-                {
-                    string strippedReqUrl = reqUrl.Substring(0, reqUrl.IndexOf("?"));
-                    string uri = strippedReqUrl + "?f=json&request=getToken&referer=" + PROXY_REFERER + "&expiration=60&username=" + su.Username + "&password=" + su.Password;
-                    string tokenResponse = webResponseToString(doHTTPRequest(uri, "POST"));
+                {                    
+                    string tokenResponse = webResponseToString(doHTTPRequest(reqUrl, "POST"));
                     token = extractToken(tokenResponse, "token");
                     return token;
                 }
                 //if the url in the proxy.config contains 'rest', we can determine the url of the token generator dynamically
                 if (su.Url.ToLower().Contains("/rest"))
                     infoUrl = su.Url.Substring(0, su.Url.IndexOf("/rest", StringComparison.OrdinalIgnoreCase));
-                //if it doesn't lets look for 'rest' in the request url itself
+                //if it doesn't lets look for 'rest/services' in the request url itself
                 else
-                    infoUrl = reqUrl.Substring(0, reqUrl.IndexOf("/rest", StringComparison.OrdinalIgnoreCase));
+                    infoUrl = reqUrl.Substring(0, reqUrl.IndexOf("/rest/services", StringComparison.OrdinalIgnoreCase));
 
                 if (infoUrl != "") {
                     log(TraceLevel.Info," Querying security endpoint...");
@@ -594,20 +596,31 @@ public class ProxyConfig
         }
     }
 
-    public ServerUrl GetConfigServerUrl(string uri) {
-
+    public ServerUrl GetConfigServerUrl(string uri) {                       
+        //split both request and proxy.config urls and compare them
+        string[] uriParts = uri.Split(new char[] {'/','?'}, StringSplitOptions.RemoveEmptyEntries); 
+        string[] configUriParts = new string[] {};
+                
         foreach (ServerUrl su in serverUrls) {
-            //lets add a slash to the proxy.config url if not present before comparing to the request itself to fend off subdomain attacks (ie: gooddomain.org.baddomain.com)
-            if (!su.Url.Substring(su.Url.Length - 1, 1).Equals("/"))
-                su.Url = su.Url + "/";
-            if (
-                su.MatchAll && uri.StartsWith(su.Url, StringComparison.InvariantCultureIgnoreCase)
-                || String.Compare(uri, su.Url, StringComparison.InvariantCultureIgnoreCase) == 0
-             )
-                return su;
-        }
+            configUriParts = su.Url.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+
+            int i = 1;
+            //skip comparing the protocol, so that either http or https is considered valid
+            for (i = 1; i < configUriParts.Length; i++)                
+            {
+                if (!configUriParts[i].Equals(uriParts[i]) ) break;                    
+            }
+            if (i == configUriParts.Length)
+            {
+                //if the urls don't match exactly, and the individual matchAll tag is 'false', don't allow
+                if (configUriParts.Length == uriParts.Length || su.MatchAll)
+                    return su;                    
+            }        
+        }       
+        
         if (mustMatch)
             throw new ArgumentException(" Proxy is being used for an unsupported service (proxy.config has mustMatch=\"true\"):");
+        
         return null;
     }
 
@@ -626,7 +639,7 @@ public class ServerUrl {
     string tokenParamName;
     string rateLimit;
     string rateLimitPeriod;
-
+    
     [XmlAttribute("url")]
     public string Url {
         get { return url; }
