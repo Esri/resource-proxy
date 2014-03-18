@@ -555,26 +555,26 @@ public static class ProxyConfig
     }
 
     public ServerUrl getConfigServerUrl(String uri) {
-
+    	//if either uri or proxy.config don't end in a slash, lets add them (just for comparing)
+        String slashedConfigUrl = null;       
+        String slashedUri = uri;        
+    	
+    	if (!uri.substring(uri.length()-1).equalsIgnoreCase("/"))
+    		slashedUri = uri.indexOf("?") == -1 ? uri + "/" : uri.substring(0, uri.indexOf("?")) + "/" + uri.substring(uri.indexOf("?"), uri.length());
+    	
         for (ServerUrl su : serverUrls) {
-            //add "/" if the serverURL doesn't with one, to prevent subdomain malicious attack
-            if(!su.getUrl().substring(su.getUrl().length()-1).equals("/")) su.setUrl(su.getUrl() + "/");
-
-            // "//" will accept any protocol
-            // "http://" will accept http or https
-            // "https://" will only accept https
+        	if(!(su.getUrl().substring(su.getUrl().length()-1).equals("/"))) 
+        		slashedConfigUrl = su.getUrl() + "/";
             if (
-                su.getMatchAll() &&
-                (isUrlPrefixMatch(su.getUrl(),uri)) ||
-                uri.equalsIgnoreCase(su.getUrl())
-                )
-
+                su.getMatchAll() && 
+                (isUrlPrefixMatch(su.getUrl(), uri) && (isUrlPrefixMatch(slashedConfigUrl, slashedUri)))
+				)
                 return su;
         }
         if (this.mustMatch)
             throw new IllegalStateException();
-        else    
-            return new ServerUrl(uri); //if mustMatch is false send the server url back that is the same the uri to pass thru
+        else
+        	return new ServerUrl(uri); //if mustMatch is false send the server url back that is the same the uri to pass thru     
     }
 
     public static boolean isUrlPrefixMatch(String prefix,String uri){
