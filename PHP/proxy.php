@@ -3,7 +3,8 @@
 /**
  * PHP Proxy Client
  *
- * See https://github.com/Esri/resource-proxy for more information
+ * Version 1.0 beta
+ * See https://github.com/Esri/resource-proxy for more information.
  *
  */
 
@@ -282,7 +283,7 @@ class Proxy {
 
         $this->proxyLog->log("Malformed 'mustMatch' property in config");
 
-        header('Status: 200', true, 200);
+        header('Status: 412', true, 412);
 
         header('Content-Type: application/json');
 
@@ -302,7 +303,7 @@ class Proxy {
 
         $this->proxyLog->log("Rate meter exceeded by " . $_SERVER['REMOTE_ADDR']);
 
-        header('Status: 200', true, 200);
+        header('Status: 402', true, 402);
 
         header('Content-Type: application/json');
 
@@ -322,7 +323,7 @@ class Proxy {
 
         $this->proxyLog->log("Proxy could not resolve requested url - " . $this->proxyUrl . ".  Possible solution would be to update 'mustMatch', 'matchAll' or 'url' property in config.");
 
-        header('Status: 200', true, 200);
+        header('Status: 403', true, 403);
 
         header('Content-Type: application/json');
 
@@ -340,7 +341,7 @@ class Proxy {
     public function allowedApplicationError()
     {
 
-        header('Status: 200', true, 200);
+        header('Status: 402', true, 402);
 
         header('Content-Type: application/json');
 
