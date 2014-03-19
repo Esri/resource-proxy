@@ -578,7 +578,8 @@ public static class ProxyConfig
         }       
     	
         if (this.mustMatch)
-        	return null; //return null then send 403 forbidden
+        	throw new IllegalStateException("The proxy tried to resolve a prohibited or malformed 'url'. The server does not meet one of the preconditions that the requester put on the request.",
+                "403 - Forbidden: Access is denied.");
         else
         	return new ServerUrl(uri); //if mustMatch is false send the server url back that is the same the uri to pass thru     
     }
@@ -765,7 +766,7 @@ try {
             }
         }
 
-		if (getConfig().getConfigServerUrl(uri)==null) _sendURLMismatchError(response);
+
         serverUrl = getConfig().getConfigServerUrl(uri);
         passThrough = serverUrl == null;
     } catch (IllegalStateException e) {
