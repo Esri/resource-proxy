@@ -1,7 +1,11 @@
 <%@ WebHandler Language="C#" Class="proxy" %>
 
 /*
- * See https://github.com/Esri/resource-proxy for more information
+ * DotNet proxy client.
+ *
+ * Version 1.0 beta
+ * See https://github.com/Esri/resource-proxy for more information.
+ *
  */
 
 #define TRACE

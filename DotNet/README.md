@@ -38,7 +38,7 @@ http://[yourmachine]/DotNet/proxy.ashx?http://services.arcgisonline.com/ArcGIS/r
     * **matchAll="true"**: When true all requests that begin with the specified URL are forwarded. Otherwise, the URL requested must match exactly.
     * **username**: Username to use when requesting a token - if needed for ArcGIS Server token based authentication.
     * **password**: Password to use when requesting a token - if needed for ArcGIS Server token based authentication.
-    * **clientId**.  Used with clientSecret for OAuth authentication to obtain a token - if needed for OAuth 2.0 authentication.
+    * **clientId**.  Used with clientSecret for OAuth authentication to obtain a token - if needed for OAuth 2.0 authentication. **NOTE**: If used to access hosted services, the service(s) must be owned by the user accessing it, (with the exception of credit-based esri services, e.g. routing, geoenrichment, etc.)
     * **clientSecret**: Used with clientId for OAuth authentication to obtain a token - if needed for OAuth 2.0 authentication.
     * **oauth2Endpoint**: When using OAuth 2.0 authentication specify the portal specific OAuth 2.0 authentication endpoint. The default value is https://www.arcgis.com/sharing/oauth2/.
     * **accessToken**: OAuth2 access token to use instead of on-demand access-token generation using clientId & clientSecret.
@@ -50,8 +50,8 @@ Note: Refresh the proxy application after updates to the proxy.config have been 
 Example of proxy using application credentials and limiting requests to 10/minute
 ```
 <serverUrl url="http://route.arcgis.com"
-    clientId="IALqUOFE1VnQ1XHi"
-    clientSecret="bbbf9aec5fc09d78d0e217be22ea4221"
+    clientId="6Xo1d-example-9Kn2"
+    clientSecret="5a5d50-example-c867b6efcf969bdcc6a2"
     rateLimit=600
     rateLimitPeriod=60
     matchAll="true">

@@ -41,7 +41,7 @@ http://[yourmachine]/PHP/proxy.php?http://services.arcgisonline.com/ArcGIS/rest/
     * **matchAll="true"**: When true all requests that begin with the specified URL are forwarded. Otherwise, the URL requested must match exactly.
     * **username**: Username to use when requesting a token - if needed for ArcGIS Server token based authentication.
     * **password**: Password to use when requesting a token - if needed for ArcGIS Server token based authentication.
-    * **clientId**:  Used with clientSecret for OAuth authentication to obtain a token - if needed for OAuth 2.0 authentication.
+    * **clientId**:  Used with clientSecret for OAuth authentication to obtain a token - if needed for OAuth 2.0 authentication. **NOTE**: If used to access hosted services, the service(s) must be owned by the user accessing it, (with the exception of credit-based esri services, e.g. routing, geoenrichment, etc.)
     * **clientSecret**: Used with clientId for OAuth authentication to obtain a token - if needed for OAuth 2.0 authentication.
     * **oauth2Endpoint**: When using OAuth 2.0 authentication specify the portal specific OAuth 2.0 authentication endpoint. The default value is https://www.arcgis.com/sharing/oauth2/.
     * **rateLimit**: The maximum number of requests with a particular referer over the specified **rateLimitPeriod**.
@@ -110,11 +110,11 @@ XML example
           matchAll="true"/>
 
       <serverUrl
-          url="http://route.arcgis.com"
+          url="https://route.arcgis.com"
           matchAll="true"
           oauth2Endpoint="https://www.arcgis.com/sharing/oauth2"
-          clientId="6Xo1x5L1tz7k9Kn2dc"
-          clientSecret="5dca5d50d0e6fe422c867b6efcf969b6ca2"
+          clientId="6Xo1d-example-9Kn2"
+          clientSecret="5a5d50-example-c867b6efcf969bdcc6a2"
           rateLimit="120"
           rateLimitPeriod="60">
       </serverUrl>
@@ -171,8 +171,8 @@ JSON example
                 {
                     "url": "http://route.arcgis.com",
                     "oauth2Endpoint": "https://www.arcgis.com/sharing/oauth2",
-                    "clientId": "6Xo1dcx5L1tz7k9Kn2",
-                    "clientSecret": "5a5d50d0e6fe422c867b6efcf969bdcc6a2",
+                    "clientId": "6Xo1d-example-9Kn2",
+                    "clientSecret": "5a5d50-example-c867b6efcf969bdcc6a2",
                     "rateLimit": "120",
                     "rateLimitPeriod": "60",
                     "matchAll": true
@@ -216,6 +216,17 @@ Example .htaccess file:
 </Files>
 
 <Files ~ "\.log$">
+    Order allow,deny
+    Deny from all
+</Files>
+```
+
+Note if system permissions allow write access to Apache's main ```httpd.conf``` server config file, avoid doing file request filtering inside the ```.htaccess``` altogether.
+File filtering directives added to Apache's main ```httpd.conf``` can lead to faster performance.  Find the ```Directory``` or existing ```Files``` tags in the main 
+```httpd.conf``` and add these lines after to prevent users from downloading the .sqlite, .log and .config files from the server.
+
+```
+<Files ~ "\.(log|config|sqlite)$">
     Order allow,deny
     Deny from all
 </Files>
