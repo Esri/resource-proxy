@@ -11,7 +11,7 @@ A .NET proxy that handles support for
 
 ##Instructions
 
-* Download and unzip the .zip file, or clone the repository.
+* Download and unzip the .zip file or clone the repository. You can download [a released version](https://github.com/Esri/resource-proxy/releases) (recommended) or the [most recent daily build](https://github.com/Esri/resource-proxy/archive/master.zip).
 * Install the contents of the DotNet folder as a .NET Web Application, specifying a .NET 4.0 application pool or later
 * Test that the proxy is able to forward requests directly in the browser using:
 ```

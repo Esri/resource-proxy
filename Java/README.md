@@ -11,7 +11,7 @@ A Java proxy that handles support for
 
 ##Instructions
 
-* Download and unzip the .zip file, or clone the repository.
+* Download and unzip the .zip file or clone the repository. You can download [a released version](https://github.com/Esri/resource-proxy/releases) (recommended) or the [most recent daily build](https://github.com/Esri/resource-proxy/archive/master.zip).
 * Install the contents of the Java folder as a Web Application in an web container such as Apache Tomcat.
 * Test that the proxy is able to forward requests directly in the browser using:
 ```
@@ -36,7 +36,7 @@ http://[yourmachine]/Java/proxy.jsp?http://services.arcgisonline.com/ArcGIS/rest
     * **logLevel="SEVERE"** : Sets the level of logging to be used.  Defaults to SEVERE. Possible values are SEVERE, WARNING, INFO, CONFIG, FINE, FINER and FINEST.
     * **allowedReferers ="http://server.com/application1,https://server.com/application2"**: A comma-separated list of referer URLs. Only requests coming from referers in the list will be proxied.
 * Add new \<serverUrl\> entry for each service that will use the proxy. The proxy.config allows you to use the serverUrl tag to specify one or more ArcGIS Server services that the proxy will forward requests to. The serverUrl tags has the following attributes:
-    * **url**: Location of the ArcGIS Server service (or other URL) to proxy. Specify either the specific URL or the root (in which case you shoould set matchAll="false"). If the location starts with "//", any protocol will be accepted, if the location starts with "http://", both http or https will be accepted, and if the location starts with "https://", only https will be accepted. 
+    * **url**: Location of the ArcGIS Server service (or other URL) to proxy. Specify either the specific URL or the root (in which case you shoould set matchAll="false"). If the location starts with "//", any protocol will be accepted, if the location starts with "http://", both http or https will be accepted, and if the location starts with "https://", only https will be accepted.
     * **matchAll="true"**: When true all requests that begin with the specified URL are forwarded. Otherwise, the URL requested must match exactly.
     * **username**: Username to use when requesting a token - if needed for ArcGIS Server token based authentication.
     * **password**: Password to use when requesting a token - if needed for ArcGIS Server token based authentication.
