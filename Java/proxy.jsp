@@ -756,7 +756,7 @@ try {
             setReferer(request.getHeader("referer")); //replace PROXY_REFERER with real proxy
             boolean allowed = false;
             for (String allowedReferer : allowedReferers){
-                if (ProxyConfig.isUrlPrefixMatch(allowedReferer, request.getHeader("referer"))){
+                if (ProxyConfig.isUrlPrefixMatch(allowedReferer, request.getHeader("referer")) || allowedReferer.equals("*")){
                     allowed = true;
                     break;
                 }
