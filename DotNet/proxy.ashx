@@ -602,20 +602,25 @@ public class ProxyConfig
         string[] configUriParts = new string[] {};
                 
         foreach (ServerUrl su in serverUrls) {
-            configUriParts = su.Url.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            //if a relative path is specified in the proxy.config, append what's in the request itself
+            if (!su.Url.StartsWith("http"))
+                su.Url = su.Url.Insert(0, uriParts[0]);
 
-            int i = 1;
-            //skip comparing the protocol, so that either http or https is considered valid
-            for (i = 1; i < configUriParts.Length; i++)                
-            {
-                if (!configUriParts[i].Equals(uriParts[i]) ) break;                    
+            configUriParts = su.Url.Split(new char[] { '/','?' }, StringSplitOptions.RemoveEmptyEntries);
+            
+            //if the request has less parts than the config, don't allow
+            if (configUriParts.Length > uriParts.Length) continue;
+            
+            int i = 0;
+            for (i = 0; i < configUriParts.Length; i++) {
+                
+                if (!configUriParts[i].Equals(uriParts[i])) break;
             }
-            if (i == configUriParts.Length)
-            {
+            if (i == configUriParts.Length) {
                 //if the urls don't match exactly, and the individual matchAll tag is 'false', don't allow
                 if (configUriParts.Length == uriParts.Length || su.MatchAll)
-                    return su;                    
-            }        
+                    return su;
+            }                  
         }       
         
         if (mustMatch)
