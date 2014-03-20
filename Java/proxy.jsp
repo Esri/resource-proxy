@@ -239,13 +239,13 @@ private String getNewTokenIfCredentialsAreSpecified(ServerUrl su, String url) th
             }
         } else {
             //standalone ArcGIS Server token-based authentication
-            int infoIndex = url.toLowerCase().indexOf("/rest/");
+            //look for 'rest/services' in the request for the index of info url then add /rest/info?f=json
+            int infoIndex = url.toLowerCase().indexOf("/rest/services");
             if (infoIndex != -1) {
 
-                String infoUrl = url.substring(0, infoIndex);
+                String infoUrl = url.substring(0, infoIndex) + "/rest/info?f=json";
 
                 _log(Level.INFO,"[Info]: Querying security endpoint...");
-                infoUrl += "/rest/info?f=json";
 
                 String tokenServiceUri = su.getTokenServiceUri();
 
