@@ -557,30 +557,37 @@ public static class ProxyConfig
 
     public ServerUrl getConfigServerUrl(String uri) {
     	//split both request and proxy.config urls and compare them
-    	String[] uriParts = uri.split("/?");
+    	String[] uriParts = uri.split("(/)|(\\?)");
         String[] configUriParts = new String[] {};
-
+                
         for (ServerUrl su : serverUrls) {
+        	//if a relative path is specified in the proxy.config, append what's in the request itself
+            if (!su.getUrl().startsWith("http"))
+                su.setUrl(new StringBuilder(su.getUrl()).insert(0, uriParts[0]).toString());
+        	
             configUriParts = su.getUrl().split("/");
-
+            
+            //if the request has less parts than the config, don't allow
+            if (configUriParts.length > uriParts.length) continue;
+            
             int i = 1;
             //skip comparing the protocol, so that either http or https is considered valid
-            for (i = 1; i < configUriParts.length; i++)
+            for (i = 1; i < configUriParts.length; i++)                
             {
-                if (!configUriParts[i].equals(uriParts[i]) ) break;
+                if (!configUriParts[i].equals(uriParts[i]) ) break;                    
             }
             if (i == configUriParts.length)
             {
             	//if the urls don't match exactly, and the individual matchAll tag is 'false', don't allow
                 if (configUriParts.length == uriParts.length || su.getMatchAll())
-                    return su;
-            }
-        }
-
+                    return su;                    
+            }        
+        }       
+    	
         if (this.mustMatch)
-        	throw new IllegalArgumentException("The proxy tried to resolve a prohibited or malformed 'url'. The server does not meet one of the preconditions that the requester put on the request.403 - Forbidden: Access is denied.");
-        else
-        	return new ServerUrl(uri); //if mustMatch is false send the server url back that is the same the uri to pass thru
+        	return null;//if nothing match and mustMatch is true, return null
+ 	  else
+        	return new ServerUrl(uri); //if mustMatch is false send the server url back that is the same the uri to pass thru     
     }
 
     public static boolean isUrlPrefixMatch(String prefix,String uri){
@@ -749,7 +756,7 @@ try {
             setReferer(request.getHeader("referer")); //replace PROXY_REFERER with real proxy
             boolean allowed = false;
             for (String allowedReferer : allowedReferers){
-                if (ProxyConfig.isUrlPrefixMatch(allowedReferer, request.getHeader("referer"))){
+                if (ProxyConfig.isUrlPrefixMatch(allowedReferer, request.getHeader("referer")) || allowedReferer.equals("*")){
                     allowed = true;
                     break;
                 }
@@ -765,6 +772,7 @@ try {
         }
 
         serverUrl = getConfig().getConfigServerUrl(uri);
+		if (serverUrl == null) _sendURLMismatchError(response); 
         passThrough = serverUrl == null;
     } catch (IllegalStateException e) {
         _log(Level.WARNING,"Proxy is being used for an unsupported service (proxy.config has mustMatch=\"true\"): " + uri);
