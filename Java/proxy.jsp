@@ -772,7 +772,11 @@ try {
         }
 
         serverUrl = getConfig().getConfigServerUrl(uri);
-		if (serverUrl == null) _sendURLMismatchError(response); 
+		if (serverUrl == null) {
+        	//if no serverUrl found, send error message and get out.
+        	_sendURLMismatchError(response);
+        	return;
+        } 
         passThrough = serverUrl == null;
     } catch (IllegalStateException e) {
         _log(Level.WARNING,"Proxy is being used for an unsupported service (proxy.config has mustMatch=\"true\"): " + uri);
