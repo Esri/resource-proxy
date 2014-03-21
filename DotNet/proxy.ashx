@@ -534,7 +534,7 @@ public class ProxyConfig
     public static ProxyConfig GetCurrentConfig() {
         ProxyConfig config = HttpRuntime.Cache["proxyConfig"] as ProxyConfig;
         if (config == null) {
-            string fileName = HttpContext.Current.Server.MapPath("~/proxy.config");
+            string fileName = HttpContext.Current.Server.MapPath("proxy.config");
             config = LoadProxyConfig(fileName);
             if (config != null) {
                 CacheDependency dep = new CacheDependency(fileName);
