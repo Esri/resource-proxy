@@ -741,15 +741,15 @@ try {
 
         out.clear();
         out = pageContext.pushBody();
+		
+		if (uri == null || uri.isEmpty()){
+            response.sendError(500,"This operation does not support empty parameters.");
+            return;
+        }
 
         //check if the uri is encoded then decode it
         if (ProxyConfig.isUrlPrefixMatch("http%3a%2f%2f", uri) || ProxyConfig.isUrlPrefixMatch("https%3a%2f%2f", uri) )
         	uri= URLDecoder.decode(uri, "UTF-8");
-
-        if (uri == null || uri.isEmpty()){
-            response.sendError(500,"This operation does not support empty parameters.");
-            return;
-        }
 
         String[] allowedReferers = getConfig().getAllowedReferers();
         if (allowedReferers != null && allowedReferers.length > 0 && request.getHeader("referer") != null){
