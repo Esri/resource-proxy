@@ -239,13 +239,13 @@ private String getNewTokenIfCredentialsAreSpecified(ServerUrl su, String url) th
             }
         } else {
             //standalone ArcGIS Server token-based authentication
-            int infoIndex = url.toLowerCase().indexOf("/rest/");
+            //look for 'rest/services' in the request for the index of info url then add /rest/info?f=json
+            int infoIndex = url.toLowerCase().indexOf("/rest/services");
             if (infoIndex != -1) {
 
-                String infoUrl = url.substring(0, infoIndex);
+                String infoUrl = url.substring(0, infoIndex) + "/rest/info?f=json";
 
                 _log(Level.INFO,"[Info]: Querying security endpoint...");
-                infoUrl += "/rest/info?f=json";
 
                 String tokenServiceUri = su.getTokenServiceUri();
 
@@ -741,15 +741,15 @@ try {
 
         out.clear();
         out = pageContext.pushBody();
+		
+		if (uri == null || uri.isEmpty()){
+            response.sendError(500,"This operation does not support empty parameters.");
+            return;
+        }
 
         //check if the uri is encoded then decode it
         if (ProxyConfig.isUrlPrefixMatch("http%3a%2f%2f", uri) || ProxyConfig.isUrlPrefixMatch("https%3a%2f%2f", uri) )
         	uri= URLDecoder.decode(uri, "UTF-8");
-
-        if (uri == null || uri.isEmpty()){
-            response.sendError(500,"This operation does not support empty parameters.");
-            return;
-        }
 
         String[] allowedReferers = getConfig().getAllowedReferers();
         if (allowedReferers != null && allowedReferers.length > 0 && request.getHeader("referer") != null){
@@ -772,7 +772,11 @@ try {
         }
 
         serverUrl = getConfig().getConfigServerUrl(uri);
-		if (serverUrl == null) _sendURLMismatchError(response); 
+		if (serverUrl == null) {
+        	//if no serverUrl found, send error message and get out.
+        	_sendURLMismatchError(response);
+        	return;
+        } 
         passThrough = serverUrl == null;
     } catch (IllegalStateException e) {
         _log(Level.WARNING,"Proxy is being used for an unsupported service (proxy.config has mustMatch=\"true\"): " + uri);
