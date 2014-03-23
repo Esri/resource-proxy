@@ -356,6 +356,29 @@ class Proxy {
         exit();
     }
 
+    public function curlError()
+    {   
+        // see full of cURL error codes at http://curl.haxx.se/libcurl/c/libcurl-errors.html
+        
+        $message = "cURL error (" . curl_errno($this->ch) . "): "
+            . curl_error($this->ch) . ".";
+        $this->proxyLog->log("$message");
+  
+        header('Status: 502', true, 502);  // 502 Bad Gateway -  The server, while acting as a gateway or proxy, received an invalid response from the upstream server it accessed in attempting to fulfill the request.
+
+        header('Content-Type: application/json');
+
+        $configError = array(
+                "error" => array("code" => 502,
+                    "details" => array("$message"),
+                    "message" => "Proxy failed due to curl error."
+                ));
+
+        echo json_encode($configError);
+
+        exit();
+    }
+    
     public function setProxyHeaders()
     {
         $header_size = curl_getinfo($this->ch, CURLINFO_HEADER_SIZE);
@@ -773,12 +796,15 @@ class Proxy {
 
             $this->response = curl_exec($this->ch);
 
-            if(curl_errno($this->ch) > 0 || empty($this->response))
+            if(curl_errno($this->ch) > 0)
             {
-                $this->proxyLog->log("Curl error or no response: " . curl_error($this->ch));
-
-            }else{
-
+                $this->curlError();
+            } elseif(empty($this->response))
+            {
+                // TODO: report back to user
+                $this->proxyLog->log("--- proxyGet --- Empty response... ");
+            } else
+            {
                 $this->setProxyHeaders();
 
                 $this->setResponseBody();
