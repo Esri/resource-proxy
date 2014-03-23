@@ -328,7 +328,7 @@ class Proxy {
         header('Content-Type: application/json');
 
         $configError = array(
-                "error" => array("code" => 412,
+                "error" => array("code" => 403,
                         "details" => array("The proxy tried to resolve a url that was not found in the configuration file.  Possible solution would be to add another serverUrl into the configuration file or look for typos in the configuration file."),
                         "message" => "Proxy failed due to configuration error."
                 ));
