@@ -400,6 +400,8 @@ class Proxy {
                 || stripos($value,'Expires:') !== false) {
 
                     header($value); //Sets the header
+                } elseif (stripos($value,'HTTP/1.') !== false) {
+                    header($value); //Sets the http status code
                 }
             }
 
