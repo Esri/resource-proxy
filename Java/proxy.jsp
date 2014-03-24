@@ -882,9 +882,13 @@ try {
         }
     }
 } catch (FileNotFoundException e){
-    _log("404 Not Found .",e);
-	response.sendError(404,e.getLocalizedMessage()+" is NOT Found.");
-    return;
+	try {
+		_log("404 Not Found .",e);
+		response.sendError(404,e.getLocalizedMessage()+" is NOT Found.");
+		return;
+	catch (IOException finalErr){
+        _log("There was an error sending a response to the client.  Will not try again.", finalErr);
+    }
 } catch (IOException e){
     try {
         _log("A fatal proxy error occurred.",e);
