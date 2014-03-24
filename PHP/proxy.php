@@ -400,7 +400,7 @@ class Proxy {
                 || stripos($value,'Expires:') !== false) {
 
                     header($value); //Sets the header
-                } elseif (stripos($value,'HTTP/1.') !== false) {
+                } else if (stripos($value,'HTTP/1.') !== false) {
                     header($value); //Sets the http status code
                 }
             }
@@ -798,15 +798,12 @@ class Proxy {
 
             $this->response = curl_exec($this->ch);
 
-            if(curl_errno($this->ch) > 0)
-            {
+            if (curl_errno($this->ch) > 0) {
                 $this->curlError();
-            } elseif(empty($this->response))
-            {
+            } else if(empty($this->response)) {
                 // TODO: report back to user
-                $this->proxyLog->log("--- proxyGet --- Empty response... ");
-            } else
-            {
+                $this->proxyLog->log("Empty response from proxyGet.");
+            } else {
                 $this->setProxyHeaders();
 
                 $this->setResponseBody();
