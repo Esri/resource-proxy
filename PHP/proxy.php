@@ -205,13 +205,10 @@ class Proxy {
         $this->setupSession();
 
         $this->setupClassProperties();
-      
-        if (strlen($this->proxyUrl) < 4) {
-            
-            // nothing to proxy
-            $this->emptyParameters();   
 
-        } else if ($this->proxyConfig['mustmatch'] != null && $this->proxyConfig['mustmatch'] == true || $this->proxyConfig['mustmatch'] == "true") {
+        $this->checkEmptyParameters();
+
+        if ($this->proxyConfig['mustmatch'] != null && $this->proxyConfig['mustmatch'] == true || $this->proxyConfig['mustmatch'] == "true") {
 
             if($this->isAllowedApplication() == false){
 
@@ -361,11 +358,19 @@ class Proxy {
         exit();
     }
 
-    public function emptyParameters()
-    {   
+
+    public function checkEmptyParameters()
+    {
+        if(empty($this->proxyUrl)) {  // nothing to proxy
+            $this->emptyParametersError();
+        }
+    }
+
+    public function emptyParametersError()
+    {
         $message = "This proxy does not support empty parameters.";
         $this->proxyLog->log("$message");
-  
+
         header('Status: 403', true, 403);  // 403 Forbidden - The server understood the request, but is refusing to fulfill it.
 
         header('Content-Type: application/json');
@@ -380,7 +385,7 @@ class Proxy {
 
         exit();
     }
-    
+
     public function setProxyHeaders()
     {
         $header_size = curl_getinfo($this->ch, CURLINFO_HEADER_SIZE);
