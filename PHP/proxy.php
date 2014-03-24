@@ -866,11 +866,12 @@ class Proxy {
             $this->proxyLog->log($e->getMessage());
         }
 
-        if(curl_errno($this->ch) > 0 || empty($this->response))
-        {
-            $this->proxyLog->log("Curl error or no response: " . curl_error($this->ch));
-
-        }else{
+        if (curl_errno($this->ch) > 0) {
+            $this->curlError();
+        } else if(empty($this->response)) {
+            // TODO: report back to user
+            $this->proxyLog->log("Empty response from proxyPost.");
+        } else {
 
             $this->setProxyHeaders();
 
@@ -926,10 +927,12 @@ class Proxy {
 
             $this->response = curl_exec($this->ch);
 
-            if(curl_errno($this->ch) > 0 || empty($this->response))
-            {
-                $this->proxyLog->log("Curl error or no response: " . curl_error($this->ch));
-            }else{
+            if (curl_errno($this->ch) > 0) {
+                $this->curlError();
+            } else if(empty($this->response)) {
+                // TODO: report back to user
+                $this->proxyLog->log("Empty response from proxyFiles.");
+            } else {
 
                 $this->setProxyHeaders();
 
