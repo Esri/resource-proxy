@@ -886,7 +886,7 @@ try {
 		_log("404 Not Found .",e);
 		response.sendError(404,e.getLocalizedMessage()+" is NOT Found.");
 		return;
-	catch (IOException finalErr){
+	}catch (IOException finalErr){
         _log("There was an error sending a response to the client.  Will not try again.", finalErr);
     }
 } catch (IOException e){
