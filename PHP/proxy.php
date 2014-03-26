@@ -444,6 +444,7 @@ class Proxy {
 
     public function setupClassProperties()
     {
+    	$this->decodeCharacterEncoding(); // Sanitize url being proxied and removing encodings if present
 
         try {
 
@@ -486,6 +487,25 @@ class Proxy {
             $this->proxyLog->log("Proxy could not detect request method action type (POST, GET, FILES).");
         }
 
+    }
+    
+    public function decodeCharacterEncoding()
+    {
+    	$hasHttpEncoding = $this->startsWith($_SERVER['QUERY_STRING'], 'http%3a%2f%2f');
+    	
+    	$hasHttpsEncoding = $this->startsWith($_SERVER['QUERY_STRING'], 'https%3a%2f%2f');
+    	
+    	if($hasHttpEncoding || $hasHttpsEncoding){
+    		
+    		$_SERVER['QUERY_STRING'] = urldecode($_SERVER['QUERY_STRING']); //Remove encoding from GET requests
+    		
+    		foreach($_POST as $k => $v) {
+    			
+    			$_POST[$k] = urldecode($v);  //Remove encoding for each POST value
+    			
+    		}
+    		
+    	}
     }
 
     public function formatWithPrefix($url)
