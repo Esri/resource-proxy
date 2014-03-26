@@ -752,6 +752,8 @@ class Proxy {
         curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST , false);
 
         curl_setopt($this->ch, CURLOPT_HEADER, true);
+        
+        curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, true);
 
     }
 
