@@ -743,7 +743,7 @@ try {
         out = pageContext.pushBody();
 		
 		if (uri == null || uri.isEmpty()){
-            response.sendError(500,"This operation does not support empty parameters.");
+            response.sendError(403,"This proxy does not support empty parameters.");
             return;
         }
 
