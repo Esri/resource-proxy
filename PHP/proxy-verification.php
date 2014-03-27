@@ -119,7 +119,7 @@ function getShmopMessage($shmop)
     if($shmop == true)
     {
         $message = "Pass";
-    }else if($shmop == false){
+    }elseif($shmop == false){
         $message = "Warning";
     }else{
         $message = "Fail";
@@ -133,7 +133,7 @@ function getMbstringMessage($mbstring)
     if($mbstring == true)
     {
         $message = "Pass";
-    }else if($mbstring == false){
+    }elseif($mbstring == false){
         $message = "Warning";
     }else{
         $message = "Fail";
@@ -145,7 +145,9 @@ function versionPhpCheck()
 {
     if (version_compare(PHP_VERSION, '5.4.2') >= 0) {
         return "Pass";
-    }else{
+    }elseif(version_compare(PHP_VERSION, '5.3.0', '>=') && version_compare(PHP_VERSION, '5.4.1', '<=')){
+        return "Warning";
+	}else{
         return "Fail";
     }
 }

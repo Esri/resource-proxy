@@ -206,6 +206,8 @@ class Proxy {
 
         $this->setupClassProperties();
 
+        $this->checkEmptyParameters();
+
         if ($this->proxyConfig['mustmatch'] != null && $this->proxyConfig['mustmatch'] == true || $this->proxyConfig['mustmatch'] == "true") {
 
             if($this->isAllowedApplication() == false){
@@ -356,6 +358,34 @@ class Proxy {
         exit();
     }
 
+
+    public function checkEmptyParameters()
+    {
+        if(empty($this->proxyUrl)) {  // nothing to proxy
+            $this->emptyParametersError();
+        }
+    }
+
+    public function emptyParametersError()
+    {
+        $message = "This proxy does not support empty parameters.";
+        $this->proxyLog->log("$message");
+
+        header('Status: 403', true, 403);  // 403 Forbidden - The server understood the request, but is refusing to fulfill it.
+
+        header('Content-Type: application/json');
+
+        $configError = array(
+                "error" => array("code" => 403,
+                    "details" => array("$message"),
+                    "message" => "$message"
+                ));
+
+        echo json_encode($configError);
+
+        exit();
+    }
+
     public function setProxyHeaders()
     {
         $header_size = curl_getinfo($this->ch, CURLINFO_HEADER_SIZE);
@@ -414,6 +444,7 @@ class Proxy {
 
     public function setupClassProperties()
     {
+    	$this->decodeCharacterEncoding(); // Sanitize url being proxied and removing encodings if present
 
         try {
 
@@ -456,6 +487,25 @@ class Proxy {
             $this->proxyLog->log("Proxy could not detect request method action type (POST, GET, FILES).");
         }
 
+    }
+    
+    public function decodeCharacterEncoding()
+    {
+    	$hasHttpEncoding = $this->startsWith($_SERVER['QUERY_STRING'], 'http%3a%2f%2f');
+    	
+    	$hasHttpsEncoding = $this->startsWith($_SERVER['QUERY_STRING'], 'https%3a%2f%2f');
+    	
+    	if($hasHttpEncoding || $hasHttpsEncoding){
+    		
+    		$_SERVER['QUERY_STRING'] = urldecode($_SERVER['QUERY_STRING']); //Remove encoding from GET requests
+    		
+    		foreach($_POST as $k => $v) {
+    			
+    			$_POST[$k] = urldecode($v);  //Remove encoding for each POST value
+    			
+    		}
+    		
+    	}
     }
 
     public function formatWithPrefix($url)
@@ -752,6 +802,8 @@ class Proxy {
         curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST , false);
 
         curl_setopt($this->ch, CURLOPT_HEADER, true);
+        
+        curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, true);
 
     }
 
