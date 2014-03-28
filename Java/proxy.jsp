@@ -106,7 +106,14 @@ private boolean fetchAndPassBackToClient(HttpURLConnection con, HttpServletRespo
     if (con != null) {
         clientResponse.setContentType(con.getContentType());
 
-        InputStream byteStream = con.getInputStream();
+        InputStream byteStream;
+		
+		if (con.getResponseCode() >= 400)
+			//get real error message stream from server
+			byteStream = con.getErrorStream();
+		else
+			byteStream = con.getInputStream();
+			
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         final int length = 5000;
 
@@ -880,14 +887,6 @@ try {
 
             fetchAndPassBackToClient(con, response, true);
         }
-    }
-} catch (FileNotFoundException e){
-	try {
-		_log("404 Not Found .",e);
-		response.sendError(404,e.getLocalizedMessage()+" is NOT Found.");
-		return;
-	}catch (IOException finalErr){
-        _log("There was an error sending a response to the client.  Will not try again.", finalErr);
     }
 } catch (IOException e){
     try {
