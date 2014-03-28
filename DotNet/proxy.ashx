@@ -426,7 +426,6 @@ public class proxy : IHttpHandler {
             message += string.Format(",details:[message:\"{0}\"]", errorDetails);
         message += "}}";
         response.StatusCode = (int)errorCode;
-        response.StatusDescription = message;
         //this displays our customized error messages instead of IIS's custom errors
         response.TrySkipIisCustomErrors = true;
         response.Write(message);
