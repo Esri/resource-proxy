@@ -1,10 +1,2 @@
-# Set default behavior, in case users don't have core.autocrlf set.
-* text eol=crlf
-
-# Explicitly declare text files we want to always be normalized and converted to native line endings on checkout.
-*.ashx text
-*.config text
-*.jsp text
-*.md text
-*.php text
-*.txt text
+-// normalize as CRLF to support Notepad
+ -* eol=crlf
