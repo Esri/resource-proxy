@@ -205,14 +205,20 @@ public class proxy : IHttpHandler {
         System.Net.WebResponse serverResponse = null;
         try {
             serverResponse = forwardToServer(context, addTokenToUri(uri, token, tokenParamName), postBody);
-        } catch (System.Net.WebException webExc) {
-            response.StatusCode = 500;
-            response.StatusDescription = webExc.Status.ToString();
-            response.Write(webExc.Response);
-            response.End();
+        }
+        catch (System.Net.WebException webExc) {
+            
+            string errorMsg = webExc.Message + " " + uri;
+            log(TraceLevel.Error, errorMsg);
+
+            //if there is a response then set the response's statusCode else set HttpStatusCode.InternalServerError
+            var statusCode = webExc.Response != null ? (webExc.Response as System.Net.HttpWebResponse).StatusCode
+                                                     : System.Net.HttpStatusCode.InternalServerError;
+            
+            sendErrorResponse(context.Response, null, errorMsg, statusCode);
             return;
         }
-
+        
         if (passThrough || string.IsNullOrEmpty(token) || hasClientToken)
             //if token is not required or provided by the client, just fetch the response as is:
             fetchAndPassBackToClient(serverResponse, response, true);
@@ -422,6 +428,10 @@ public class proxy : IHttpHandler {
             message += string.Format(",details:[message:\"{0}\"]", errorDetails);
         message += "}}";
         response.StatusCode = (int)errorCode;
+        response.StatusDescription = message;
+        //this displays our customized error messages instead of IIS's custom errors
+        response.TrySkipIisCustomErrors = true;
+        
         response.Write(message);
         response.Flush();
     }
