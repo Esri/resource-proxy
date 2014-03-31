@@ -727,8 +727,8 @@ private static Object _rateMapLock = new Object();
 
 private static void sendGzipHtmlErrorResponse(HttpServletResponse response, GZIPInputStream errorStream, int errorCode) throws IOException{
     BufferedReader br = new BufferedReader(new InputStreamReader(errorStream));
-	String responseStr = "", nachricht = "";
-    while ((nachricht = br.readLine()) != null)   responseStr += nachricht;
+	String responseStr = "", message = "";
+    while ((message = br.readLine()) != null)   responseStr += message;
     response.setStatus(errorCode);
     OutputStream output = response.getOutputStream();
     output.write(responseStr.getBytes());
