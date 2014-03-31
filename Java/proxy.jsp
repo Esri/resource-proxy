@@ -113,10 +113,10 @@ private boolean fetchAndPassBackToClient(HttpURLConnection con, HttpServletRespo
 			if ("gzip".equals(con.getContentEncoding())){
 				GZIPInputStream errorStream = new GZIPInputStream(con.getErrorStream());
 				sendGzipHtmlErrorResponse(clientResponse,errorStream,con.getResponseCode());
-			}else{
-				byteStream = con.getErrorStream();
-			}			
-			return false;
+				return false;
+			}
+			byteStream = con.getErrorStream();
+			clientResponse.setStatus(con.getResponseCode());	
 		}else{
 			System.out.println("content-encodign="+con.getContentEncoding());
 			byteStream = con.getInputStream();
