@@ -108,7 +108,7 @@ private boolean fetchAndPassBackToClient(HttpURLConnection con, HttpServletRespo
         clientResponse.setContentType(con.getContentType());
 
         InputStream byteStream;
-		if (con.getResponseCode() >= 400){
+		if (con.getResponseCode() >= 400 && con.getErrorStream() != null){
 			//get real error message stream from server
 			if ("gzip".equals(con.getContentEncoding())){
 				GZIPInputStream errorStream = new GZIPInputStream(con.getErrorStream());
@@ -118,7 +118,6 @@ private boolean fetchAndPassBackToClient(HttpURLConnection con, HttpServletRespo
 			byteStream = con.getErrorStream();
 			clientResponse.setStatus(con.getResponseCode());	
 		}else{
-			System.out.println("content-encodign="+con.getContentEncoding());
 			byteStream = con.getInputStream();
 		}
         
