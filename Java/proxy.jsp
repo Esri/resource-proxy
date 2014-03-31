@@ -24,6 +24,7 @@ java.util.logging.Logger,
 java.util.logging.FileHandler,
 java.util.logging.SimpleFormatter,
 java.util.logging.Level,
+java.util.zip.GZIPInputStream,
 java.text.SimpleDateFormat" %>
 
 <!-- ----------------------------------------------------------
@@ -107,11 +108,19 @@ private boolean fetchAndPassBackToClient(HttpURLConnection con, HttpServletRespo
         clientResponse.setContentType(con.getContentType());
 
         InputStream byteStream;
-		if (con.getResponseCode() >= 400)
+		if (con.getResponseCode() >= 400){
 			//get real error message stream from server
-			byteStream = con.getErrorStream();
-		else
-        	byteStream = con.getInputStream();
+			if ("gzip".equals(con.getContentEncoding())){
+				GZIPInputStream errorStream = new GZIPInputStream(con.getErrorStream());
+				sendGzipHtmlErrorResponse(clientResponse,errorStream,con.getResponseCode());
+			}else{
+				byteStream = con.getErrorStream();
+			}			
+			return false;
+		}else{
+			System.out.println("content-encodign="+con.getContentEncoding());
+			byteStream = con.getInputStream();
+		}
         
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         final int length = 5000;
@@ -716,6 +725,16 @@ public static class ServerUrl {
 }
 
 private static Object _rateMapLock = new Object();
+
+private static void sendGzipHtmlErrorResponse(HttpServletResponse response, GZIPInputStream errorStream, int errorCode) throws IOException{
+    BufferedReader br = new BufferedReader(new InputStreamReader(errorStream));
+	String responseStr = "", nachricht = "";
+    while ((nachricht = br.readLine()) != null)   responseStr += nachricht;
+    response.setStatus(errorCode);
+    OutputStream output = response.getOutputStream();
+    output.write(responseStr.getBytes());
+    output.flush();
+}
 
 private static void sendErrorResponse(HttpServletResponse response, String errorDetails, String errorMessage, int errorCode) throws IOException{
     String message = "{" +
