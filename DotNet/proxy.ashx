@@ -73,14 +73,14 @@ public class proxy : IHttpHandler {
         //if url is encoded, decode it.
         if (uri.StartsWith("http%3a%2f%2f") || uri.StartsWith("https%3a%2f%2f"))
             uri = HttpUtility.UrlDecode(uri);
-        
+
         log(TraceLevel.Info, uri);
         ServerUrl serverUrl;
         bool passThrough = false;
         try {
             serverUrl = getConfig().GetConfigServerUrl(uri);
             passThrough = serverUrl == null;
-        } 
+        }
         //if XML couldn't be parsed
         catch (InvalidOperationException ex) {
 
@@ -88,7 +88,7 @@ public class proxy : IHttpHandler {
             log(TraceLevel.Error, errorMsg);
             sendErrorResponse(context.Response, null, errorMsg, System.Net.HttpStatusCode.InternalServerError);
             return;
-        }  
+        }
         //if mustMatch was set to true and url wasn't in the list
         catch (ArgumentException ex) {
             string errorMsg = ex.Message + " " + uri;
@@ -212,7 +212,7 @@ public class proxy : IHttpHandler {
             //if there is a response then set the response's statusCode else set HttpStatusCode.InternalServerError
             var statusCode = webExc.Response != null ? (webExc.Response as System.Net.HttpWebResponse).StatusCode
                                                      : System.Net.HttpStatusCode.InternalServerError;
-            
+
             sendErrorResponse(context.Response, null, errorMsg, statusCode);
             return;
         }
@@ -378,7 +378,7 @@ public class proxy : IHttpHandler {
 
                 //if a request is already being made to generate a token, just let it go
                 if (reqUrl.ToLower().Contains("/generatetoken"))
-                {                    
+                {
                     string tokenResponse = webResponseToString(doHTTPRequest(reqUrl, "POST"));
                     token = extractToken(tokenResponse, "token");
                     return token;
@@ -493,7 +493,7 @@ public class proxy : IHttpHandler {
         if (config != null)
             return config;
         else
-            throw new ApplicationException("The proxy.config file does not exist at application root, or is not readable.");
+            throw new ApplicationException("The proxy.config file does not exist with the proxy program or at the application root, or is not readable.");
     }
 
     //writing Log file
@@ -540,8 +540,16 @@ public class ProxyConfig
     public static ProxyConfig GetCurrentConfig() {
         ProxyConfig config = HttpRuntime.Cache["proxyConfig"] as ProxyConfig;
         if (config == null) {
-            string fileName = HttpContext.Current.Server.MapPath("proxy.config");
+            // Load config from app's root; if not found, fall back to same folder as proxy program
+            string fileName = HttpContext.Current.Server.MapPath("~/proxy.config");
             config = LoadProxyConfig(fileName);
+
+            if (config == null) {
+                fileName = HttpContext.Current.Server.MapPath("proxy.config");
+                config = LoadProxyConfig(fileName);
+            }
+
+            // Cache the config
             if (config != null) {
                 CacheDependency dep = new CacheDependency(fileName);
                 HttpRuntime.Cache.Insert("proxyConfig", config, dep);
@@ -602,36 +610,36 @@ public class ProxyConfig
         }
     }
 
-    public ServerUrl GetConfigServerUrl(string uri) {                       
+    public ServerUrl GetConfigServerUrl(string uri) {
         //split both request and proxy.config urls and compare them
-        string[] uriParts = uri.Split(new char[] {'/','?'}, StringSplitOptions.RemoveEmptyEntries); 
+        string[] uriParts = uri.Split(new char[] {'/','?'}, StringSplitOptions.RemoveEmptyEntries);
         string[] configUriParts = new string[] {};
-                
+
         foreach (ServerUrl su in serverUrls) {
             //if a relative path is specified in the proxy.config, append what's in the request itself
             if (!su.Url.StartsWith("http"))
                 su.Url = su.Url.Insert(0, uriParts[0]);
 
             configUriParts = su.Url.Split(new char[] { '/','?' }, StringSplitOptions.RemoveEmptyEntries);
-            
+
             //if the request has less parts than the config, don't allow
             if (configUriParts.Length > uriParts.Length) continue;
-            
+
             int i = 0;
             for (i = 0; i < configUriParts.Length; i++) {
-                
+
                 if (!configUriParts[i].Equals(uriParts[i])) break;
             }
             if (i == configUriParts.Length) {
                 //if the urls don't match exactly, and the individual matchAll tag is 'false', don't allow
                 if (configUriParts.Length == uriParts.Length || su.MatchAll)
                     return su;
-            }                  
-        }       
-        
+            }
+        }
+
         if (mustMatch)
             throw new ArgumentException(" Proxy is being used for an unsupported service (proxy.config has mustMatch=\"true\"):");
-        
+
         return null;
     }
 
@@ -650,7 +658,7 @@ public class ServerUrl {
     string tokenParamName;
     string rateLimit;
     string rateLimitPeriod;
-    
+
     [XmlAttribute("url")]
     public string Url {
         get { return url; }
