@@ -402,12 +402,7 @@ class Proxy {
 
             foreach($this->headers as $key => $value) {
 
-                if (stripos($value,'ETag:') !== false || stripos($value,'Content-Type:') !== false
-                || stripos($value,'Connection:') !== false || stripos($value,'Pragma:') !== false
-                || stripos($value,'Expires:') !== false) {
-
-                    header($value); //Sets the header
-                }
+            	header($value);
             }
 
         }else{
