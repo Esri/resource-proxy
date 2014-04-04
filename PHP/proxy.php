@@ -206,6 +206,8 @@ class Proxy {
 
         $this->setupClassProperties();
 
+        $this->checkEmptyParameters();
+
         if ($this->proxyConfig['mustmatch'] != null && $this->proxyConfig['mustmatch'] == true || $this->proxyConfig['mustmatch'] == "true") {
 
             if($this->isAllowedApplication() == false){
@@ -328,7 +330,7 @@ class Proxy {
         header('Content-Type: application/json');
 
         $configError = array(
-                "error" => array("code" => 412,
+                "error" => array("code" => 403,
                         "details" => array("The proxy tried to resolve a url that was not found in the configuration file.  Possible solution would be to add another serverUrl into the configuration file or look for typos in the configuration file."),
                         "message" => "Proxy failed due to configuration error."
                 ));
@@ -356,6 +358,34 @@ class Proxy {
         exit();
     }
 
+
+    public function checkEmptyParameters()
+    {
+        if(empty($this->proxyUrl)) {  // nothing to proxy
+            $this->emptyParametersError();
+        }
+    }
+
+    public function emptyParametersError()
+    {
+        $message = "This proxy does not support empty parameters.";
+        $this->proxyLog->log("$message");
+
+        header('Status: 403', true, 403);  // 403 Forbidden - The server understood the request, but is refusing to fulfill it.
+
+        header('Content-Type: application/json');
+
+        $configError = array(
+                "error" => array("code" => 403,
+                    "details" => array("$message"),
+                    "message" => "$message"
+                ));
+
+        echo json_encode($configError);
+
+        exit();
+    }
+
     public function setProxyHeaders()
     {
         $header_size = curl_getinfo($this->ch, CURLINFO_HEADER_SIZE);
@@ -372,12 +402,7 @@ class Proxy {
 
             foreach($this->headers as $key => $value) {
 
-                if (stripos($value,'ETag:') !== false || stripos($value,'Content-Type:') !== false
-                || stripos($value,'Connection:') !== false || stripos($value,'Pragma:') !== false
-                || stripos($value,'Expires:') !== false) {
-
-                    header($value); //Sets the header
-                }
+            	header($value);
             }
 
         }else{
