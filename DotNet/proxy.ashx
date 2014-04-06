@@ -62,7 +62,7 @@ public class proxy : IHttpHandler {
         HttpResponse response = context.Response;
         if (context.Request.Url.Query.Length < 1)
         {
-            string errorMsg = "No url specified";
+            string errorMsg = "No URL specified";
             log(TraceLevel.Error, errorMsg);
             sendErrorResponse(context.Response, null, errorMsg, System.Net.HttpStatusCode.BadRequest);
             return;
@@ -89,7 +89,7 @@ public class proxy : IHttpHandler {
             sendErrorResponse(context.Response, null, errorMsg, System.Net.HttpStatusCode.InternalServerError);
             return;
         }  
-        //if mustMatch was set to true and url wasn't in the list
+        //if mustMatch was set to true and URL wasn't in the list
         catch (ArgumentException ex) {
             string errorMsg = ex.Message + " " + uri;
             log(TraceLevel.Error, errorMsg);
@@ -360,7 +360,7 @@ public class proxy : IHttpHandler {
         bool isUserLogin = !String.IsNullOrEmpty(su.Username) && !String.IsNullOrEmpty(su.Password);
         bool isAppLogin = !String.IsNullOrEmpty(su.ClientId) && !String.IsNullOrEmpty(su.ClientSecret);
         if (isUserLogin || isAppLogin) {
-            log(TraceLevel.Info, "Matching credentials found in config file. OAuth 2.0 mode: " + isAppLogin);
+            log(TraceLevel.Info, "Matching credentials found in configuration file. OAuth 2.0 mode: " + isAppLogin);
             if (isAppLogin) {
                 //OAuth 2.0 mode authentication
                 //"App Login" - authenticating using client_id and client_secret stored in config
@@ -383,7 +383,7 @@ public class proxy : IHttpHandler {
                     return token;
                 }           
                 
-                //lets look for '/rest/' in the request url (could be 'rest/services', 'rest/community'...)
+                //lets look for '/rest/' in the requested URL (could be 'rest/services', 'rest/community'...)
                 if (reqUrl.ToLower().Contains("/rest/"))
                     infoUrl = reqUrl.Substring(0, reqUrl.IndexOf("/rest/", StringComparison.OrdinalIgnoreCase));
                 
@@ -393,12 +393,12 @@ public class proxy : IHttpHandler {
                     infoUrl = infoUrl + "/sharing";
                 }
                 else
-                    throw new ApplicationException("Unable to determine the correct url to request a token to access private resources");
+                    throw new ApplicationException("Unable to determine the correct URL to request a token to access private resources");
                     
                 if (infoUrl != "") {
                     log(TraceLevel.Info," Querying security endpoint...");
                     infoUrl += "/rest/info?f=json";
-                    //lets send a request to try and determine the url of a token generator
+                    //lets send a request to try and determine the URL of a token generator
                     string infoResponse = webResponseToString(doHTTPRequest(infoUrl, "GET"));
                     String tokenServiceUri = getJsonValue(infoResponse, "tokenServicesUrl");
                     if (string.IsNullOrEmpty(tokenServiceUri))
@@ -500,7 +500,7 @@ public class proxy : IHttpHandler {
         if (config != null)
             return config;
         else
-            throw new ApplicationException("proxy configuration file does not exist at application root, or is not readable.");
+            throw new ApplicationException("The proxy configuration file cannot be found, or is not readable.");
     }
 
     //writing Log file
@@ -568,7 +568,7 @@ public class ProxyConfig
     }
 
     //referer
-    //check if url starts with prefix...
+    //check if URL starts with prefix...
     public static bool isUrlPrefixMatch(String prefix, String uri)
     {
 
@@ -637,7 +637,7 @@ public class ProxyConfig
         }       
         
         if (mustMatch)
-            throw new ArgumentException(" Proxy is being used for an unsupported service (the configuration file specifies that mustMatch=\"true\"):");
+            throw new ArgumentException("Proxy is being used for an unsupported service:");
         
         return null;
     }

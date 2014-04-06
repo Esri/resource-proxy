@@ -220,7 +220,7 @@ private String getNewTokenIfCredentialsAreSpecified(ServerUrl su, String url) th
     boolean isUserLogin = (su.getUsername() != null && !su.getUsername().isEmpty()) && (su.getPassword() != null && !su.getPassword().isEmpty());
     boolean isAppLogin = (su.getClientId() != null && !su.getClientId().isEmpty()) && (su.getClientSecret() != null && !su.getClientSecret().isEmpty());
     if (isUserLogin || isAppLogin) {
-        _log(Level.INFO,"Matching credentials found in config file. OAuth 2.0 mode: " + isAppLogin);
+        _log(Level.INFO,"Matching credentials found in configuration file. OAuth 2.0 mode: " + isAppLogin);
         if (isAppLogin) {
             //OAuth 2.0 mode authentication
             //"App Login" - authenticating using client_id and client_secret stored in config
@@ -556,12 +556,12 @@ public static class ProxyConfig
     }
 
     public ServerUrl getConfigServerUrl(String uri) {
-    	//split both request and proxy.config urls and compare them
+        //split request URL to compare with allowed server URLs
     	String[] uriParts = uri.split("(/)|(\\?)");
         String[] configUriParts = new String[] {};
                 
         for (ServerUrl su : serverUrls) {
-        	//if a relative path is specified in the proxy.config, append what's in the request itself
+        	//if a relative path is specified in the proxy configuration file, append what's in the request itself
             if (!su.getUrl().startsWith("http"))
                 su.setUrl(new StringBuilder(su.getUrl()).insert(0, uriParts[0]).toString());
         	
@@ -587,7 +587,7 @@ public static class ProxyConfig
         if (this.mustMatch)
         	return null;//if nothing match and mustMatch is true, return null
  	  else
-        	return new ServerUrl(uri); //if mustMatch is false send the server url back that is the same the uri to pass thru     
+        	return new ServerUrl(uri); //if mustMatch is false send the server URL back that is the same the uri to pass thru     
     }
 
     public static boolean isUrlPrefixMatch(String prefix,String uri){
@@ -728,7 +728,7 @@ private static void sendErrorResponse(HttpServletResponse response, String error
 }
 
 private static void _sendURLMismatchError(HttpServletResponse response) throws IOException{
-     sendErrorResponse(response,"The proxy tried to resolve a prohibited or malformed 'url'. The server does not meet one of the preconditions that the requester put on the request.",
+     sendErrorResponse(response,"The proxy tried to resolve a prohibited or malformed URL. The server does not meet one of the preconditions that the requester put on the request.",
                 "403 - Forbidden: Access is denied.",HttpServletResponse.SC_FORBIDDEN);
 }
 %><%
@@ -779,7 +779,7 @@ try {
         } 
         passThrough = serverUrl == null;
     } catch (IllegalStateException e) {
-        _log(Level.WARNING,"Proxy is being used for an unsupported service (proxy.config has mustMatch=\"true\"): " + uri);
+        _log(Level.WARNING,"Proxy is being used for an unsupported service: " + uri);
 
         _sendURLMismatchError(response);
 
