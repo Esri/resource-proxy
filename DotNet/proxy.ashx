@@ -377,22 +377,28 @@ public class proxy : IHttpHandler {
                 //standalone ArcGIS Server/ArcGIS Online token-based authentication
 
                 //if a request is already being made to generate a token, just let it go
-                if (reqUrl.ToLower().Contains("/generatetoken"))
-                {                    
+                if (reqUrl.ToLower().Contains("/generatetoken")) {
                     string tokenResponse = webResponseToString(doHTTPRequest(reqUrl, "POST"));
                     token = extractToken(tokenResponse, "token");
                     return token;
+                }           
+                
+                //lets look for '/rest/' in the request url (could be 'rest/services', 'rest/community'...)
+                if (reqUrl.ToLower().Contains("/rest/"))
+                    infoUrl = reqUrl.Substring(0, reqUrl.IndexOf("/rest/", StringComparison.OrdinalIgnoreCase));
+                
+                //if we don't find 'rest', lets look for the portal specific 'sharing' instead
+                else if (reqUrl.ToLower().Contains("/sharing/")) {
+                    infoUrl = reqUrl.Substring(0, reqUrl.IndexOf("/sharing/", StringComparison.OrdinalIgnoreCase));
+                    infoUrl = infoUrl + "/sharing";
                 }
-                //if the url in the proxy.config contains 'rest', we can determine the url of the token generator dynamically
-                if (su.Url.ToLower().Contains("/rest"))
-                    infoUrl = su.Url.Substring(0, su.Url.IndexOf("/rest", StringComparison.OrdinalIgnoreCase));
-                //if it doesn't lets look for 'rest/services' in the request url itself
                 else
-                    infoUrl = reqUrl.Substring(0, reqUrl.IndexOf("/rest/services", StringComparison.OrdinalIgnoreCase));
-
+                    throw new ApplicationException("Unable to determine the correct url to request a token to access private resources");
+                    
                 if (infoUrl != "") {
                     log(TraceLevel.Info," Querying security endpoint...");
                     infoUrl += "/rest/info?f=json";
+                    //lets send a request to try and determine the url of a token generator
                     string infoResponse = webResponseToString(doHTTPRequest(infoUrl, "GET"));
                     String tokenServiceUri = getJsonValue(infoResponse, "tokenServicesUrl");
                     if (string.IsNullOrEmpty(tokenServiceUri))
@@ -412,6 +418,7 @@ public class proxy : IHttpHandler {
     }
 
     private string exchangePortalTokenForServerToken(string portalToken, ServerUrl su) {
+        //ideally, we should POST the token request
         log(TraceLevel.Info," Exchanging Portal token for Server-specific token for " + su.Url + "...");
         string uri = su.OAuth2Endpoint.Substring(0, su.OAuth2Endpoint.IndexOf("/oauth2/", StringComparison.OrdinalIgnoreCase)) +
              "/generateToken?token=" + portalToken + "&serverURL=" + su.Url + "&f=json";
@@ -493,7 +500,7 @@ public class proxy : IHttpHandler {
         if (config != null)
             return config;
         else
-            throw new ApplicationException("The proxy.config file does not exist at application root, or is not readable.");
+            throw new ApplicationException("proxy configuration file does not exist at application root, or is not readable.");
     }
 
     //writing Log file
@@ -630,7 +637,7 @@ public class ProxyConfig
         }       
         
         if (mustMatch)
-            throw new ArgumentException(" Proxy is being used for an unsupported service (proxy.config has mustMatch=\"true\"):");
+            throw new ArgumentException(" Proxy is being used for an unsupported service (the configuration file specifies that mustMatch=\"true\"):");
         
         return null;
     }
