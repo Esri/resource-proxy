@@ -574,7 +574,7 @@ public static class ProxyConfig
             //skip comparing the protocol, so that either http or https is considered valid
             for (i = 1; i < configUriParts.length; i++)                
             {
-                if (!configUriParts[i].equals(uriParts[i]) ) break;                    
+                if (!configUriParts[i].toLowerCase().equals(uriParts[i].toLowerCase()) ) break;                      
             }
             if (i == configUriParts.length)
             {
