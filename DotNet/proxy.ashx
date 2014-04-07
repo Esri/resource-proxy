@@ -627,7 +627,7 @@ public class ProxyConfig
             int i = 0;
             for (i = 0; i < configUriParts.Length; i++) {
                 
-                if (!configUriParts[i].Equals(uriParts[i])) break;
+                if (!configUriParts[i].ToLower().Equals(uriParts[i].ToLower())) break;
             }
             if (i == configUriParts.Length) {
                 //if the urls don't match exactly, and the individual matchAll tag is 'false', don't allow
