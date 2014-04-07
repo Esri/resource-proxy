@@ -102,12 +102,21 @@ private HttpURLConnection forwardToServer(HttpServletRequest request,String uri,
 }
 
 private boolean fetchAndPassBackToClient(HttpURLConnection con, HttpServletResponse clientResponse, boolean ignoreAuthenticationErrors) throws IOException{
-
-    if (con != null) {
-        clientResponse.setContentType(con.getContentType());
-
-        InputStream byteStream = con.getInputStream();
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+	if (con!=null){
+		if (con.getContentType() != null) clientResponse.setContentType(con.getContentType());
+		if (con.getContentEncoding() != null)  clientResponse.addHeader("Content-Encoding", con.getContentEncoding());
+		
+		InputStream byteStream;
+		if (con.getResponseCode() >= 400 && con.getErrorStream() != null){
+			if (ignoreAuthenticationErrors && (con.getResponseCode() == 498 || con.getResponseCode() == 499)) return true;
+			byteStream = con.getErrorStream();
+		}else{
+			byteStream = con.getInputStream();
+		}
+		
+		clientResponse.setStatus(con.getResponseCode());
+		
+		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         final int length = 5000;
 
         byte[] bytes = new byte[length];
@@ -119,33 +128,12 @@ private boolean fetchAndPassBackToClient(HttpURLConnection con, HttpServletRespo
         buffer.flush();
 
         byte[] byteResponse = buffer.toByteArray();
-
-
-        if (con.getContentType().contains("text") ||
-            con.getContentType().contains("json") ||
-            con.getContentType().contains("xml")) {
-
-
-            String strResponse = new String(byteResponse);
-
-            if (!ignoreAuthenticationErrors &&
-                    strResponse.indexOf("{\"error\":{") > -1 &&
-                    (strResponse.indexOf("\"code\":498") > -1 || strResponse.indexOf("\"code\":499") > -1)) {
-
-                return true;
-            }
-        } else {
-            clientResponse.setHeader("Cache-Control","no-cache");
-        }
-
         OutputStream ostream = clientResponse.getOutputStream();
-
         ostream.write(byteResponse);
-
         ostream.close();
         byteStream.close();
-    }
-    return false;
+	}
+	return false;
 }
 
 private HttpURLConnection doHTTPRequest(String uri, String method) throws IOException{
