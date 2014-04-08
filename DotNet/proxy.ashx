@@ -206,14 +206,33 @@ public class proxy : IHttpHandler {
         try {
             serverResponse = forwardToServer(context, addTokenToUri(uri, token, tokenParamName), postBody);
         } catch (System.Net.WebException webExc) {
+            
             string errorMsg = webExc.Message + " " + uri;
             log(TraceLevel.Error, errorMsg);
 
-            //if there is a response then set the response's statusCode else set HttpStatusCode.InternalServerError
-            var statusCode = webExc.Response != null ? (webExc.Response as System.Net.HttpWebResponse).StatusCode
-                                                     : System.Net.HttpStatusCode.InternalServerError;
-            
-            sendErrorResponse(context.Response, null, errorMsg, statusCode);
+            if (webExc.Response != null)
+            {
+                string contentEncoding = (webExc.Response as System.Net.HttpWebResponse).ContentEncoding;
+                context.Response.AddHeader("Content-Encoding", contentEncoding);
+                
+                using (Stream responseStream = webExc.Response.GetResponseStream())
+                {
+                    byte[] bytes = new byte[32768];
+                    int bytesRead = 0;
+
+                    while ((bytesRead = responseStream.Read(bytes, 0, bytes.Length)) > 0)
+                    {
+                        responseStream.Write(bytes, 0, bytesRead);
+                    }
+
+                    context.Response.OutputStream.Write(bytes, 0, bytes.Length);
+                }
+            }
+            else
+            {
+                System.Net.HttpStatusCode statusCode = System.Net.HttpStatusCode.InternalServerError;
+                sendErrorResponse(context.Response, null, errorMsg, statusCode);
+            }
             return;
         }
 
