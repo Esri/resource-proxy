@@ -767,7 +767,7 @@ try {
 
             if (!allowed){
                 _log(Level.WARNING,"Proxy is being used from an unsupported referer: " + request.getHeader("referer"));
-                sendErrorResponse(response, "Proxy is being used from an unsupported referer: " + request.getHeader("referer"), "403 - Forbidden: Access is denied.",HttpServletResponse.SC_FORBIDDEN);
+                sendErrorResponse(response, "Proxy is being used from an unsupported referer. ", "403 - Forbidden: Access is denied.",HttpServletResponse.SC_FORBIDDEN);
                 return;
             }
         }
