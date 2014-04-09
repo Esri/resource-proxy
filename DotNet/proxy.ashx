@@ -225,6 +225,7 @@ public class proxy : IHttpHandler {
                         responseStream.Write(bytes, 0, bytesRead);
                     }
 
+                    context.Response.StatusCode = (int)(webExc.Response as System.Net.HttpWebResponse).StatusCode;
                     context.Response.OutputStream.Write(bytes, 0, bytes.Length);
                 }
             }
