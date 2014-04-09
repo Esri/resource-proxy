@@ -239,11 +239,27 @@ private String getNewTokenIfCredentialsAreSpecified(ServerUrl su, String url) th
             }
         } else {
             //standalone ArcGIS Server token-based authentication
-            //look for 'rest/services' in the request for the index of info url then add /rest/info?f=json
-            int infoIndex = url.toLowerCase().indexOf("/rest/services");
-            if (infoIndex != -1) {
-
-                String infoUrl = url.substring(0, infoIndex) + "/rest/info?f=json";
+            
+            //if a request is already being made to generate a token, just let it go
+            if (url.toLowerCase().contains("/generatetoken")){
+            	String tokenResponse = webResponseToString(doHTTPRequest(url, "POST"));
+                token = extractToken(tokenResponse, "token");
+                return token;
+            }
+            
+            String infoUrl = "";
+            //lets look for '/rest/' in the request url (could be 'rest/services', 'rest/community'...)
+            if (url.toLowerCase().contains("/rest/")){
+            	infoUrl = url.substring(0, url.indexOf("/rest/"));
+            	infoUrl += "/rest/info?f=json";
+            //if we don't find 'rest', lets look for the portal specific 'sharing' instead
+            }else if (url.toLowerCase().contains("/sharing/")){
+            	infoUrl = url.substring(0, url.indexOf("sharing"));
+            	infoUrl += "/sharing/rest/info?f=json";
+            }else
+            	return "-1"; //return -1, signaling that infourl can not be found
+            	
+            if (infoUrl != "") {
 
                 _log(Level.INFO,"[Info]: Querying security endpoint...");
 
