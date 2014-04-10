@@ -59,7 +59,7 @@ Other useful files in the repo:
 
 Files created by the proxy:
 * proxy.sqlite: This file is created dynamically after proxy.php runs.  This file supports rate metering.
-* proxy_log.log: This file is created when the proxy.php runs (and logging is enabled).
+* proxy_log.log: This file is created when the proxy.php runs (and logging is enabled). Note: If you do not have write permissions to this directory this file will not be created for you. To check for write permissions run the proxy-verification.php. 
 
 ##Requirements
 
