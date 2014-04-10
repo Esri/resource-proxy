@@ -405,7 +405,7 @@ class Proxy {
                 if (stripos($value,'ETag:') !== false || stripos($value,'Content-Type:') !== false
                 || stripos($value,'Connection:') !== false || stripos($value,'Pragma:') !== false
                 || stripos($value,'Expires:') !== false || stripos($value, 'Encoding') !== false 
-                || stripos($value, '4') !== false || stripos($value, '5') !== false ) {//Don't know what header name for status code 
+                || stripos($value, 'HTTP/1.') !== false) { 
 
                     header($value); //Sets the header
                     
