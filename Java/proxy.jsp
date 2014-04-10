@@ -333,7 +333,7 @@ private void cleanUpRatemap(ConcurrentHashMap<String, RateMeter> ratemap) {
         if (config != null)
             return config;
         else
-            throw new FileNotFoundException("The proxy configuration file does not exist at application root, or is not readable.");
+            throw new FileNotFoundException("The proxy configuration file");
     }
 
     //writing Log file
