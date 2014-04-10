@@ -1,4 +1,4 @@
-<?php
+d<?php
 
 /**
  * PHP Proxy Client
@@ -407,6 +407,9 @@ class Proxy {
                 || stripos($value,'Expires:') !== false) {
 
                     header($value); //Sets the header
+                    //echo($value);
+                }else if(stripo($value,'gzip') !== false){
+                    header($value);
                 }
             }
 
