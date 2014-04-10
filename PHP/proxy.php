@@ -404,9 +404,11 @@ class Proxy {
 
                 if (stripos($value,'ETag:') !== false || stripos($value,'Content-Type:') !== false
                 || stripos($value,'Connection:') !== false || stripos($value,'Pragma:') !== false
-                || stripos($value,'Expires:') !== false) {
+                || stripos($value,'Expires:') !== false || stripos($value, 'Encoding') !== false 
+                || stripos($value, 'HTTP/1.') !== false) { 
 
                     header($value); //Sets the header
+                    
                 }
             }
 
