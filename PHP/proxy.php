@@ -2372,6 +2372,24 @@ class XmlParser
     {
         $data = file($f);
 
+        // Check that configuration file can be read, and that it's not empty
+        if (!$data) {
+            $message = "Proxy error: problem reading proxy configuration file.";
+            // This is before we have the log location, so we cannot log to logfile
+
+            header('Status: 403', true, 403);  // 403 Forbidden - The server understood the request, but is refusing to fulfill it. For example, if a directory or file is unreadable due to file permissions.
+
+            header('Content-Type: application/json');
+
+            $configError = array(
+                    "error" => array("code" => 403,
+                        "details" => array("$message"),
+                        "message" => "$message"
+                    ));
+
+            die(json_encode($configError));     
+        }
+        
         $xml = implode("\n", $data);
 
         return $this->parse($xml);
