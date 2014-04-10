@@ -78,7 +78,7 @@ class Proxy {
     public $proxyMethod;
 
     /**
-     * Holds the url being requested
+     * Holds the URL being requested
      *
      * @var string
      */
@@ -142,7 +142,7 @@ class Proxy {
     public $sessionAttempt = false;
 
     /**
-     * Holds url which is used in creating the session key
+     * Holds URL which is used in creating the session key
      *
      * @var string
      */
@@ -283,7 +283,7 @@ class Proxy {
     public function configurationParameterError()
     {
 
-        $this->proxyLog->log("Malformed 'mustMatch' property in config");
+        $this->proxyLog->log("Malformed 'mustMatch' property in configuration file");
 
         header('Status: 412', true, 412);
 
@@ -291,7 +291,7 @@ class Proxy {
 
         $configError = array(
                 "error" => array("code" => 412,
-                        "details" => array("Detected malformed 'mustMatch' property in configuration. The server does not meet one of the preconditions that the requester put on the request."),
+                        "details" => array("Detected malformed 'mustMatch' property in the configuration file. The server does not meet one of the preconditions that the requester put on the request."),
                         "message" => "Proxy failed due to configuration error."
                 ));
 
@@ -323,7 +323,7 @@ class Proxy {
     public function canProcessRequestError()
     {
 
-        $this->proxyLog->log("Proxy could not resolve requested url - " . $this->proxyUrl . ".  Possible solution would be to update 'mustMatch', 'matchAll' or 'url' property in config.");
+        $this->proxyLog->log("Proxy could not resolve requested url - " . $this->proxyUrl . ".  Possible solution would be to update 'mustMatch', 'matchAll' or 'url' property in the configuration file.");
 
         header('Status: 403', true, 403);
 
@@ -331,7 +331,7 @@ class Proxy {
 
         $configError = array(
                 "error" => array("code" => 403,
-                        "details" => array("The proxy tried to resolve a url that was not found in the configuration file.  Possible solution would be to add another serverUrl into the configuration file or look for typos in the configuration file."),
+                        "details" => array("The proxy tried to resolve a URL that was not found in the configuration file.  Possible solution would be to add another serverUrl into the configuration file or look for typos in the configuration file."),
                         "message" => "Proxy failed due to configuration error."
                 ));
 
@@ -356,34 +356,6 @@ class Proxy {
         echo json_encode($allowedApplicationError);
 
         exit();
-    }
-    
-    public function curlError()
-    {
-    	// see full of cURL error codes at http://curl.haxx.se/libcurl/c/libcurl-errors.html
-    
-    	$message = "cURL error (" . curl_errno($this->ch) . "): "
-    			. curl_error($this->ch) . ".";
-    	
-    	$this->proxyLog->log($message);
-    
-    	header('Status: 502', true, 502);  // 502 Bad Gateway -  The server, while acting as a gateway or proxy, received an invalid response from the upstream server it accessed in attempting to fulfill the request.
-    
-    	header('Content-Type: application/json');
-    
-    	$configError = array(
-    			"error" => array("code" => 502,
-    					"details" => array($message),
-    					"message" => "Proxy failed due to curl error."
-    			));
-    
-    	echo json_encode($configError);
-    	
-    	curl_close($this->ch);
-    	
-    	$this->ch = null;
-    
-    	exit();
     }
 
 
@@ -420,15 +392,16 @@ class Proxy {
 
         $header_content = trim(substr($this->response,0, $header_size));
 
-        $headers = preg_split( '/\r\n|\r|\n/', $header_content);
+        $this->headers = preg_split( '/\r\n|\r|\n/', $header_content);
 
-        $this->headers = $headers;
-
-        $hasHeaders = (boolean)$headers;
-
-        if($hasHeaders){
+        if((boolean)$this->headers){
 
             foreach($this->headers as $key => $value) {
+            	
+            	if ($this->contains($value, "Transfer-Encoding: chunked")) { //See issue #75
+            	
+            		continue;
+            	}
 
             	header($value);
             }
@@ -597,7 +570,7 @@ class Proxy {
 
                 $s = $value['serverurl'][0];
 
-                $s['url'] = $this->sanitizeUrl($s['url']); //Do all the url cleanups and checks at once
+                $s['url'] = $this->sanitizeUrl($s['url']); //Do all the URL cleanups and checks at once
 
                 if(is_string($s['matchall'])){
 
@@ -829,6 +802,34 @@ class Proxy {
         curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, true);
 
     }
+    
+    public function curlError()
+    {
+    	// see full of cURL error codes at http://curl.haxx.se/libcurl/c/libcurl-errors.html
+    
+    	$message = "cURL error (" . curl_errno($this->ch) . "): "
+    			. curl_error($this->ch) . ".";
+    	 
+    	$this->proxyLog->log($message);
+    
+    	header('Status: 502', true, 502);  // 502 Bad Gateway -  The server, while acting as a gateway or proxy, received an invalid response from the upstream server it accessed in attempting to fulfill the request.
+    
+    	header('Content-Type: application/json');
+    
+    	$configError = array(
+    			"error" => array("code" => 502,
+    					"details" => array($message),
+    					"message" => "Proxy failed due to curl error."
+    			));
+    
+    	echo json_encode($configError);
+    	 
+    	curl_close($this->ch);
+    	 
+    	$this->ch = null;
+    
+    	exit();
+    }
 
 
 
@@ -850,7 +851,7 @@ class Proxy {
 
             if(curl_errno($this->ch) > 0 || empty($this->response))
             {
-            	$this->curlError();
+                $this->curlError();
 
             }else{
 
@@ -910,12 +911,12 @@ class Proxy {
 
         } catch (Exception $e) {
 
-            $this->curlError();
+            $this->proxyLog->log($e->getMessage());
         }
 
         if(curl_errno($this->ch) > 0 || empty($this->response))
         {
-            $this->proxyLog->log("Curl error or no response: " . curl_error($this->ch));
+            $this->curlError();
 
         }else{
 
@@ -1089,7 +1090,7 @@ class Proxy {
 
     function getNewTokenIfCredentialsAreSpecified() {
 
-        $this->sessionUrl = $this->resource['url']; //Store url in local variable b/ later we may tweak url
+        $this->sessionUrl = $this->resource['url']; //Store url in local variable because later we may tweak url
 
         $token = null;
 
@@ -1354,7 +1355,7 @@ class ProxyLog {
 
                     $configError = array(
                             "error" => array("code" => 412,
-                                    "details" => array("Detected malformed 'logFile' in configuration.  Make sure this app has write permissions to specified log file in configuration.  The server does not meet one of the preconditions that the requester put on the request."),
+                                    "details" => array("Detected malformed 'logFile' in the configuration file.  Make sure this app has write permissions to log file specified in the configuration file.  The server does not meet one of the preconditions that the requester put on the request."),
                                     "message" => "Proxy failed due to configuration error."
                             ));
 
@@ -1379,7 +1380,7 @@ class ProxyLog {
 
             $configError = array(
                     "error" => array("code" => 412,
-                            "details" => array("Detected malformed 'logFile' in configuration.  Make sure this app has write permissions to specified log file in configuration.  The server does not meet one of the preconditions that the requester put on the request."),
+                            "details" => array("Detected malformed 'logFile' in the configuration file.  Make sure this app has write permissions to log file specified in the configuration file.  The server does not meet one of the preconditions that the requester put on the request."),
                             "message" => "Proxy failed due to configuration error."
                     ));
 
@@ -1417,7 +1418,7 @@ class ProxyLog {
 
                         $configError = array(
                                 "error" => array("code" => 412,
-                                        "details" => array("Detected malformed 'logFile' in configuration.  Make sure this app has write permissions to specified log file in configuration.  The server does not meet one of the preconditions that the requester put on the request."),
+                                        "details" => array("Detected malformed 'logFile' in the configuration file.  Make sure this app has write permissions to log file specified in the configuration file.  The server does not meet one of the preconditions that the requester put on the request."),
                                         "message" => "Proxy failed due to configuration error."
                                 ));
 
@@ -1437,7 +1438,7 @@ class ProxyLog {
 
                     $configError = array(
                             "error" => array("code" => 412,
-                                    "details" => array("Could not write to log.  Make sure this app has write permissions to specified log file in configuration.  The server does not meet one of the preconditions that the requester put on the request."),
+                                    "details" => array("Could not write to log file.  Make sure this app has write permissions to log file specified in the configuration file.  The server does not meet one of the preconditions that the requester put on the request."),
                                     "message" => "Proxy failed due to configuration error."
                             ));
 
@@ -1454,7 +1455,7 @@ class ProxyLog {
 
                 $configError = array(
                         "error" => array("code" => 412,
-                                "details" => array("Detected malformed 'logFile' in configuration.  Make sure this app has write permissions to specified log file in configuration.  The server does not meet one of the preconditions that the requester put on the request."),
+                                "details" => array("Detected malformed 'logFile' in the configuration file.  Make sure this app has write permissions to log file specified in the configuration file.  The server does not meet one of the preconditions that the requester put on the request."),
                                 "message" => "Proxy failed due to configuration error."
                         ));
 
@@ -2303,7 +2304,7 @@ class ProxyConfig {
         if (!method_exists($this, $method))
         {
 
-            throw new Exception('Error in proxy config.');
+            throw new Exception('Error in proxy configuration file.');
         }
 
         $this->$method($value);
@@ -2315,7 +2316,7 @@ class ProxyConfig {
 
         if (!method_exists($this, $method))
         {
-            throw new Exception('Error in proxy config.');
+            throw new Exception('Error in proxy configuration file.');
         }
 
         return $this->$method();
@@ -2395,6 +2396,24 @@ class XmlParser
     {
         $data = file($f);
 
+        // Check that configuration file can be read, and that it's not empty
+        if (!$data) {
+            $message = "Proxy error: problem reading proxy configuration file.";
+            // This is before we have the log location, so we cannot log to logfile
+
+            header('Status: 403', true, 403);  // 403 Forbidden - The server understood the request, but is refusing to fulfill it. For example, if a directory or file is unreadable due to file permissions.
+
+            header('Content-Type: application/json');
+
+            $configError = array(
+                    "error" => array("code" => 403,
+                        "details" => array("$message"),
+                        "message" => "$message"
+                    ));
+
+            die(json_encode($configError));     
+        }
+        
         $xml = implode("\n", $data);
 
         return $this->parse($xml);

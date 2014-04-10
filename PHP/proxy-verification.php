@@ -201,9 +201,7 @@ $curl = in_array('curl', $extensions);
 
 </table>
 
-<div>
-<p><small><?php $inipath = php_ini_loaded_file(); echo "Loaded php.ini path:  <i>" . $inipath . "</i>"; ?></small></p>
-</div>
+
 
 </div>
 </body>
