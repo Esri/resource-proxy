@@ -392,22 +392,20 @@ class Proxy {
 
         $header_content = trim(substr($this->response,0, $header_size));
 
-        $headers = preg_split( '/\r\n|\r|\n/', $header_content);
+        $this->headers = preg_split( '/\r\n|\r|\n/', $header_content);
 
-        $this->headers = $headers;
-
-        $hasHeaders = (boolean)$headers;
-
-        if($hasHeaders){
+        if((boolean)$this->headers){
 
             foreach($this->headers as $key => $value) {
-
-                if (stripos($value,'ETag:') !== false || stripos($value,'Content-Type:') !== false
-                || stripos($value,'Connection:') !== false || stripos($value,'Pragma:') !== false
-                || stripos($value,'Expires:') !== false) {
-
-                    header($value); //Sets the header
+                
+                if ($this->contains($value, "Transfer-Encoding: chunked")) { //See issue #75
+               
+                    continue;
+                
                 }
+                
+                header($value); //Sets the header
+            
             }
 
         }else{
