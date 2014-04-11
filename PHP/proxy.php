@@ -360,6 +360,7 @@ class Proxy {
 
 
     public function checkEmptyParameters()
+<<<<<<< HEAD
     {
         if(empty($this->proxyUrl)) {  // nothing to proxy
             $this->emptyParametersError();
@@ -387,11 +388,20 @@ class Proxy {
     }
 
     public function setProxyHeaders()
+=======
+>>>>>>> f494df3c03c4e446f562756287ca552ff679c076
     {
-        $header_size = curl_getinfo($this->ch, CURLINFO_HEADER_SIZE);
+        if(empty($this->proxyUrl)) {  // nothing to proxy
+            $this->emptyParametersError();
+        }
+    }
 
-        $header_content = trim(substr($this->response,0, $header_size));
+    public function emptyParametersError()
+    {
+        $message = "This proxy does not support empty parameters.";
+        $this->proxyLog->log("$message");
 
+<<<<<<< HEAD
         $this->headers = preg_split( '/\r\n|\r|\n/', $header_content);
 
         if((boolean)$this->headers){
@@ -404,6 +414,43 @@ class Proxy {
             	}
 
             	header($value);
+=======
+        header('Status: 403', true, 403);  // 403 Forbidden - The server understood the request, but is refusing to fulfill it.
+
+        header('Content-Type: application/json');
+
+        $configError = array(
+                "error" => array("code" => 403,
+                    "details" => array("$message"),
+                    "message" => "$message"
+                ));
+
+        echo json_encode($configError);
+
+        exit();
+    }
+
+    public function setProxyHeaders()
+    {
+        $header_size = curl_getinfo($this->ch, CURLINFO_HEADER_SIZE);
+
+        $header_content = trim(substr($this->response,0, $header_size));
+
+        $this->headers = preg_split( '/\r\n|\r|\n/', $header_content);
+
+        if((boolean)$this->headers){
+
+            foreach($this->headers as $key => $value) {
+                
+                if ($this->contains($value, "Transfer-Encoding: chunked")) { //See issue #75
+               
+                    continue;
+                
+                }
+                
+                header($value); //Sets the header
+            
+>>>>>>> f494df3c03c4e446f562756287ca552ff679c076
             }
 
         }else{
@@ -1162,11 +1209,17 @@ class Proxy {
 
     public function getTokenEndpoint()
     {
-        $position = strripos($this->resource['url'], "/rest");
-
-        if($position){
-
+        if (stripos($this->resource['url'], "/rest/") !== false){
+            
+            $position = stripos($this->resource['url'], "/rest/");
+            
             $infoUrl = substr($this->resource['url'],0,$position) . "/rest/info";
+        
+        } else if (stripos($this->resource['url'], "/sharing/") !== false){
+
+            $position = stripos($this->resource['url'], "/sharing/");
+            
+            $infoUrl = substr($this->resource['url'],0,$position) . "/sharing/rest/info";    
 
         }else{
 

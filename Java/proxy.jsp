@@ -3,6 +3,7 @@
 "java.net.HttpURLConnection,
 java.net.URL,
 java.net.URLEncoder,
+java.net.URLDecoder,
 java.io.BufferedReader,
 java.io.ByteArrayOutputStream,
 java.io.DataInputStream,
@@ -101,12 +102,21 @@ private HttpURLConnection forwardToServer(HttpServletRequest request,String uri,
 }
 
 private boolean fetchAndPassBackToClient(HttpURLConnection con, HttpServletResponse clientResponse, boolean ignoreAuthenticationErrors) throws IOException{
-
-    if (con != null) {
-        clientResponse.setContentType(con.getContentType());
-
-        InputStream byteStream = con.getInputStream();
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+	if (con!=null){
+		if (con.getContentType() != null) clientResponse.setContentType(con.getContentType());
+		if (con.getContentEncoding() != null)  clientResponse.addHeader("Content-Encoding", con.getContentEncoding());
+		
+		InputStream byteStream;
+		if (con.getResponseCode() >= 400 && con.getErrorStream() != null){
+			if (ignoreAuthenticationErrors && (con.getResponseCode() == 498 || con.getResponseCode() == 499)) return true;
+			byteStream = con.getErrorStream();
+		}else{
+			byteStream = con.getInputStream();
+		}
+		
+		clientResponse.setStatus(con.getResponseCode());
+		
+		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         final int length = 5000;
 
         byte[] bytes = new byte[length];
@@ -118,33 +128,12 @@ private boolean fetchAndPassBackToClient(HttpURLConnection con, HttpServletRespo
         buffer.flush();
 
         byte[] byteResponse = buffer.toByteArray();
-
-
-        if (con.getContentType().contains("text") ||
-            con.getContentType().contains("json") ||
-            con.getContentType().contains("xml")) {
-
-
-            String strResponse = new String(byteResponse);
-
-            if (!ignoreAuthenticationErrors &&
-                    strResponse.indexOf("{\"error\":{") > -1 &&
-                    (strResponse.indexOf("\"code\":498") > -1 || strResponse.indexOf("\"code\":499") > -1)) {
-
-                return true;
-            }
-        } else {
-            clientResponse.setHeader("Cache-Control","no-cache");
-        }
-
         OutputStream ostream = clientResponse.getOutputStream();
-
         ostream.write(byteResponse);
-
         ostream.close();
         byteStream.close();
-    }
-    return false;
+	}
+	return false;
 }
 
 private HttpURLConnection doHTTPRequest(String uri, String method) throws IOException{
@@ -219,7 +208,7 @@ private String getNewTokenIfCredentialsAreSpecified(ServerUrl su, String url) th
     boolean isUserLogin = (su.getUsername() != null && !su.getUsername().isEmpty()) && (su.getPassword() != null && !su.getPassword().isEmpty());
     boolean isAppLogin = (su.getClientId() != null && !su.getClientId().isEmpty()) && (su.getClientSecret() != null && !su.getClientSecret().isEmpty());
     if (isUserLogin || isAppLogin) {
-        _log(Level.INFO,"Matching credentials found in config file. OAuth 2.0 mode: " + isAppLogin);
+        _log(Level.INFO,"Matching credentials found in configuration file. OAuth 2.0 mode: " + isAppLogin);
         if (isAppLogin) {
             //OAuth 2.0 mode authentication
             //"App Login" - authenticating using client_id and client_secret stored in config
@@ -238,13 +227,29 @@ private String getNewTokenIfCredentialsAreSpecified(ServerUrl su, String url) th
             }
         } else {
             //standalone ArcGIS Server token-based authentication
-            int infoIndex = url.toLowerCase().indexOf("/rest/");
-            if (infoIndex != -1) {
-
-                String infoUrl = url.substring(0, infoIndex);
+            
+            //if a request is already being made to generate a token, just let it go
+            if (url.toLowerCase().contains("/generatetoken")){
+            	String tokenResponse = webResponseToString(doHTTPRequest(url, "POST"));
+                token = extractToken(tokenResponse, "token");
+                return token;
+            }
+            
+            String infoUrl = "";
+            //lets look for '/rest/' in the request url (could be 'rest/services', 'rest/community'...)
+            if (url.toLowerCase().contains("/rest/")){
+            	infoUrl = url.substring(0, url.indexOf("/rest/"));
+            	infoUrl += "/rest/info?f=json";
+            //if we don't find 'rest', lets look for the portal specific 'sharing' instead
+            }else if (url.toLowerCase().contains("/sharing/")){
+            	infoUrl = url.substring(0, url.indexOf("sharing"));
+            	infoUrl += "/sharing/rest/info?f=json";
+            }else
+            	return "-1"; //return -1, signaling that infourl can not be found
+            	
+            if (infoUrl != "") {
 
                 _log(Level.INFO,"[Info]: Querying security endpoint...");
-                infoUrl += "/rest/info?f=json";
 
                 String tokenServiceUri = su.getTokenServiceUri();
 
@@ -328,7 +333,7 @@ private void cleanUpRatemap(ConcurrentHashMap<String, RateMeter> ratemap) {
         if (config != null)
             return config;
         else
-            throw new FileNotFoundException("The proxy.config file does not exist at application root, or is not readable.");
+            throw new FileNotFoundException("The proxy configuration file");
     }
 
     //writing Log file
@@ -555,26 +560,38 @@ public static class ProxyConfig
     }
 
     public ServerUrl getConfigServerUrl(String uri) {
-
+        //split request URL to compare with allowed server URLs
+    	String[] uriParts = uri.split("(/)|(\\?)");
+        String[] configUriParts = new String[] {};
+                
         for (ServerUrl su : serverUrls) {
-            //add "/" if the serverURL doesn't with one, to prevent subdomain malicious attack
-            if(!su.getUrl().substring(su.getUrl().length()-1).equals("/")) su.setUrl(su.getUrl() + "/");
-
-            // "//" will accept any protocol
-            // "http://" will accept http or https
-            // "https://" will only accept https
-            if (
-                su.getMatchAll() &&
-                (isUrlPrefixMatch(su.getUrl(),uri)) ||
-                uri.equalsIgnoreCase(su.getUrl())
-                )
-
-                return su;
-        }
+        	//if a relative path is specified in the proxy configuration file, append what's in the request itself
+            if (!su.getUrl().startsWith("http"))
+                su.setUrl(new StringBuilder(su.getUrl()).insert(0, uriParts[0]).toString());
+        	
+            configUriParts = su.getUrl().split("/");
+            
+            //if the request has less parts than the config, don't allow
+            if (configUriParts.length > uriParts.length) continue;
+            
+            int i = 1;
+            //skip comparing the protocol, so that either http or https is considered valid
+            for (i = 1; i < configUriParts.length; i++)                
+            {
+                if (!configUriParts[i].toLowerCase().equals(uriParts[i].toLowerCase()) ) break;                      
+            }
+            if (i == configUriParts.length)
+            {
+            	//if the urls don't match exactly, and the individual matchAll tag is 'false', don't allow
+                if (configUriParts.length == uriParts.length || su.getMatchAll())
+                    return su;                    
+            }        
+        }       
+    	
         if (this.mustMatch)
-            throw new IllegalStateException();
-        else    
-            return new ServerUrl(uri); //if mustMatch is false send the server url back that is the same the uri to pass thru
+        	return null;//if nothing match and mustMatch is true, return null
+ 	  else
+        	return new ServerUrl(uri); //if mustMatch is false send the server URL back that is the same the uri to pass thru     
     }
 
     public static boolean isUrlPrefixMatch(String prefix,String uri){
@@ -611,7 +628,7 @@ public static class ServerUrl {
         this.tokenServiceUri = tokenServiceUri;
 
     }
-    
+
     public ServerUrl(String url){
         this.url = url;
     }
@@ -715,7 +732,7 @@ private static void sendErrorResponse(HttpServletResponse response, String error
 }
 
 private static void _sendURLMismatchError(HttpServletResponse response) throws IOException{
-     sendErrorResponse(response,"The proxy tried to resolve a prohibited or malformed 'url'. The server does not meet one of the preconditions that the requester put on the request.",
+     sendErrorResponse(response,"The proxy tried to resolve a prohibited or malformed URL. The server does not meet one of the preconditions that the requester put on the request.",
                 "403 - Forbidden: Access is denied.",HttpServletResponse.SC_FORBIDDEN);
 }
 %><%
@@ -728,18 +745,21 @@ try {
 
         out.clear();
         out = pageContext.pushBody();
-
-        if (uri == null || uri.isEmpty()){
-            response.sendError(500,"This operation does not support empty parameters.");
+		
+		if (uri == null || uri.isEmpty()){
+            response.sendError(403,"This proxy does not support empty parameters.");
             return;
         }
+
+        //check if the uri is encoded then decode it
+         if (uri.startsWith("http%3a%2f%2f") || uri.startsWith("https%3a%2f%2f")) uri= URLDecoder.decode(uri, "UTF-8");
 
         String[] allowedReferers = getConfig().getAllowedReferers();
         if (allowedReferers != null && allowedReferers.length > 0 && request.getHeader("referer") != null){
             setReferer(request.getHeader("referer")); //replace PROXY_REFERER with real proxy
             boolean allowed = false;
             for (String allowedReferer : allowedReferers){
-                if (ProxyConfig.isUrlPrefixMatch(allowedReferer, request.getHeader("referer"))){
+                if (ProxyConfig.isUrlPrefixMatch(allowedReferer, request.getHeader("referer")) || allowedReferer.equals("*")){
                     allowed = true;
                     break;
                 }
@@ -747,17 +767,20 @@ try {
 
             if (!allowed){
                 _log(Level.WARNING,"Proxy is being used from an unsupported referer: " + request.getHeader("referer"));
-
-                _sendURLMismatchError(response);
-
+                sendErrorResponse(response, "Proxy is being used from an unsupported referer. ", "403 - Forbidden: Access is denied.",HttpServletResponse.SC_FORBIDDEN);
                 return;
             }
         }
 
         serverUrl = getConfig().getConfigServerUrl(uri);
+		if (serverUrl == null) {
+        	//if no serverUrl found, send error message and get out.
+        	_sendURLMismatchError(response);
+        	return;
+        } 
         passThrough = serverUrl == null;
     } catch (IllegalStateException e) {
-        _log(Level.WARNING,"Proxy is being used for an unsupported service (proxy.config has mustMatch=\"true\"): " + uri);
+        _log(Level.WARNING,"Proxy is being used for an unsupported service: " + uri);
 
         _sendURLMismatchError(response);
 
@@ -858,6 +881,14 @@ try {
 
             fetchAndPassBackToClient(con, response, true);
         }
+    }
+} catch (FileNotFoundException e){
+	try {
+		_log("404 Not Found .",e);
+		response.sendError(404,e.getLocalizedMessage()+" is NOT Found.");
+		return;
+	}catch (IOException finalErr){
+        _log("There was an error sending a response to the client.  Will not try again.", finalErr);
     }
 } catch (IOException e){
     try {

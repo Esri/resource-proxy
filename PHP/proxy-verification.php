@@ -201,8 +201,11 @@ $curl = in_array('curl', $extensions);
 
 </table>
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> f494df3c03c4e446f562756287ca552ff679c076
 </div>
 </body>
 </html>
