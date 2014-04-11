@@ -43,7 +43,7 @@ Esri welcomes [contributions](CONTRIBUTING.md) from anyone and everyone. Please 
 
 ##Licensing
 
-Copyright 2013 Esri
+Copyright 2014 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.
