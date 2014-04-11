@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="ProxyConfig">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="serverUrls">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element maxOccurs="unbounded" name="serverUrl">
+                                <xs:complexType>
+                                    <xs:attribute name="url" type="xs:string" use="required" />
+                                    <xs:attribute name="matchAll" type="xs:boolean" use="required" />
+                                    <xs:attribute name="username" type="xs:string" use="optional" />
+                                    <xs:attribute name="password" type="xs:string" use="optional" />
+                                    <xs:attribute name="clientId" type="xs:string" use="optional" />
+                                    <xs:attribute name="clientSecret" type="xs:string" use="optional" />
+                                    <xs:attribute name="oauthEndpoint" type="xs:anyURI" use="optional" />
+                                    <xs:attribute name="accessToken" type="xs:string" use="optional" />
+                                    <xs:attribute name="rateLimit" type="xs:integer" use="optional" />
+                                    <xs:attribute name="rateLimitPeriod" type="xs:integer" use="optional" />
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="mustMatch" type="xs:boolean" use="required" />
+            <xs:attribute name="allowedReferers" type="xs:string" use="required" />
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

@@ -11,7 +11,7 @@ A PHP proxy that handles support for
 
 ##Instructions
 
-* Download and unzip the .zip file, or clone the repository.
+* Download and unzip the .zip file or clone the repository. You can download [a released version](https://github.com/Esri/resource-proxy/releases) (recommended) or the [most recent daily build](https://github.com/Esri/resource-proxy/archive/master.zip).
 * Install the contents of the PHP folder by adding all files into a web directory.
 * Test that the proxy is able to forward requests directly in the browser using:
 ```
@@ -37,11 +37,11 @@ http://[yourmachine]/PHP/proxy.php?http://services.arcgisonline.com/ArcGIS/rest/
     * **logFile="<file with local path>"** : When a path to a local file is specified event messages will be logged.
     * **allowedReferers="http://server.com/application1,https://server.com/application2"**: A list of referer URLs. Only requests coming from referers in the list will be proxied.
 * Add a new \<serverUrl\> entry for each service that will use the proxy page. The proxy.config allows you to use the serverUrl tag to specify one or more ArcGIS Server services that the proxy will forward requests to. The serverUrl tag has the following attributes:
-    * **url**: Location of the ArcGIS Server service (or other URL) to proxy. Specify either the specific URL or the root (in which case you should set matchAll="true"). **NOTE**: Hosted services must be owned by the user accessing them, (with the exception of credit-based esri services, e.g. routing, geoenrichment, etc.)
+    * **url**: Location of the ArcGIS Server service (or other URL) to proxy. Specify either the specific URL or the root (in which case you should set matchAll="true").
     * **matchAll="true"**: When true all requests that begin with the specified URL are forwarded. Otherwise, the URL requested must match exactly.
     * **username**: Username to use when requesting a token - if needed for ArcGIS Server token based authentication.
     * **password**: Password to use when requesting a token - if needed for ArcGIS Server token based authentication.
-    * **clientId**:  Used with clientSecret for OAuth authentication to obtain a token - if needed for OAuth 2.0 authentication.
+    * **clientId**:  Used with clientSecret for OAuth authentication to obtain a token - if needed for OAuth 2.0 authentication. **NOTE**: If used to access hosted services, the service(s) must be owned by the user accessing it, (with the exception of credit-based esri services, e.g. routing, geoenrichment, etc.)
     * **clientSecret**: Used with clientId for OAuth authentication to obtain a token - if needed for OAuth 2.0 authentication.
     * **oauth2Endpoint**: When using OAuth 2.0 authentication specify the portal specific OAuth 2.0 authentication endpoint. The default value is https://www.arcgis.com/sharing/oauth2/.
     * **rateLimit**: The maximum number of requests with a particular referer over the specified **rateLimitPeriod**.
@@ -59,7 +59,7 @@ Other useful files in the repo:
 
 Files created by the proxy:
 * proxy.sqlite: This file is created dynamically after proxy.php runs.  This file supports rate metering.
-* proxy_log.log: This file is created when the proxy.php runs (and logging is enabled).
+* proxy_log.log: This file is created when the proxy.php runs (and logging is enabled). Note: If you do not have write permissions to this directory this file will not be created for you. To check for write permissions run the proxy-verification.php. 
 
 ##Requirements
 
