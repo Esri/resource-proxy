@@ -331,7 +331,11 @@ class Proxy {
 
         $configError = array(
                 "error" => array("code" => 403,
+<<<<<<< HEAD
                         "details" => array("The proxy tried to resolve a URL that was not found in the configuration file.  Possible solution would be to add another serverUrl into the configuration file or look for typos in the configuration file."),
+=======
+                        "details" => array("The proxy tried to resolve a url that was not found in the configuration file.  Possible solution would be to add another serverUrl into the configuration file or look for typos in the configuration file."),
+>>>>>>> Better headers, no more gzip issues Fixes 65
                         "message" => "Proxy failed due to configuration error."
                 ));
 
