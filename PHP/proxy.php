@@ -1138,11 +1138,17 @@ class Proxy {
 
     public function getTokenEndpoint()
     {
-        $position = strripos($this->resource['url'], "/rest");
-
-        if($position){
-
+        if (stripos($this->resource['url'], "/rest/") !== false){
+            
+            $position = stripos($this->resource['url'], "/rest/");
+            
             $infoUrl = substr($this->resource['url'],0,$position) . "/rest/info";
+        
+        } else if (stripos($this->resource['url'], "/sharing/") !== false){
+
+            $position = stripos($this->resource['url'], "/sharing/");
+            
+            $infoUrl = substr($this->resource['url'],0,$position) . "/sharing/rest/info";    
 
         }else{
 
