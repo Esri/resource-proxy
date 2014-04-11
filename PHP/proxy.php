@@ -392,22 +392,18 @@ class Proxy {
 
         $header_content = trim(substr($this->response,0, $header_size));
 
-        $headers = preg_split( '/\r\n|\r|\n/', $header_content);
+        $this->headers = preg_split( '/\r\n|\r|\n/', $header_content);
 
-        $this->headers = $headers;
-
-        $hasHeaders = (boolean)$headers;
-
-        if($hasHeaders){
+        if((boolean)$this->headers){
 
             foreach($this->headers as $key => $value) {
+            	
+            	if ($this->contains($value, "Transfer-Encoding: chunked")) { //See issue #75
+            	
+            		continue;
+            	}
 
-                if (stripos($value,'ETag:') !== false || stripos($value,'Content-Type:') !== false
-                || stripos($value,'Connection:') !== false || stripos($value,'Pragma:') !== false
-                || stripos($value,'Expires:') !== false) {
-
-                    header($value); //Sets the header
-                }
+            	header($value);
             }
 
         }else{
@@ -806,6 +802,34 @@ class Proxy {
         curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, true);
 
     }
+    
+    public function curlError()
+    {
+    	// see full of cURL error codes at http://curl.haxx.se/libcurl/c/libcurl-errors.html
+    
+    	$message = "cURL error (" . curl_errno($this->ch) . "): "
+    			. curl_error($this->ch) . ".";
+    	 
+    	$this->proxyLog->log($message);
+    
+    	header('Status: 502', true, 502);  // 502 Bad Gateway -  The server, while acting as a gateway or proxy, received an invalid response from the upstream server it accessed in attempting to fulfill the request.
+    
+    	header('Content-Type: application/json');
+    
+    	$configError = array(
+    			"error" => array("code" => 502,
+    					"details" => array($message),
+    					"message" => "Proxy failed due to curl error."
+    			));
+    
+    	echo json_encode($configError);
+    	 
+    	curl_close($this->ch);
+    	 
+    	$this->ch = null;
+    
+    	exit();
+    }
 
 
 
@@ -827,7 +851,7 @@ class Proxy {
 
             if(curl_errno($this->ch) > 0 || empty($this->response))
             {
-                $this->proxyLog->log("Curl error or no response: " . curl_error($this->ch));
+                $this->curlError();
 
             }else{
 
@@ -892,7 +916,7 @@ class Proxy {
 
         if(curl_errno($this->ch) > 0 || empty($this->response))
         {
-            $this->proxyLog->log("Curl error or no response: " . curl_error($this->ch));
+            $this->curlError();
 
         }else{
 
@@ -952,7 +976,7 @@ class Proxy {
 
             if(curl_errno($this->ch) > 0 || empty($this->response))
             {
-                $this->proxyLog->log("Curl error or no response: " . curl_error($this->ch));
+                $this->curlError();
             }else{
 
                 $this->setProxyHeaders();
