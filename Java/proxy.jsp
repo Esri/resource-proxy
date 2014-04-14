@@ -30,7 +30,7 @@ java.text.SimpleDateFormat" %>
  *
  * JSP proxy client
  *
- * Version 1.0 beta
+ * Version 1.0
  * See https://github.com/Esri/resource-proxy for more information.
  *
 ----------------------------------------------------------- -->
