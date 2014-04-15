@@ -3,7 +3,7 @@
 /**
  * PHP Proxy Client
  *
- * Version 1.0 beta
+ * Version 1.0
  * See https://github.com/Esri/resource-proxy for more information.
  *
  */
@@ -17,10 +17,11 @@ class Proxy {
      *
      * @var ProxyConfig
      */
+
     public $proxyConfig;
 
     /**
-     * Holds the referer assocated with client request
+     * Holds the referer associated with client request
      *
      * @var string
      */
@@ -28,7 +29,7 @@ class Proxy {
     public $referer;
 
     /**
-     * Holds a collection of server urls listed in configution (keys same as keys in config, but lowercase).
+     * Holds a collection of server urls listed in configuration (keys same as keys in config, but lowercase).
      *
      * @var array
      */
@@ -59,7 +60,6 @@ class Proxy {
 
     public $headers;
 
-
     /**
      * cURL resource used to send HTTP requests
      *
@@ -68,9 +68,8 @@ class Proxy {
 
     public $ch;
 
-
     /**
-     * Holds the action assocated with the request (post, get)
+     * Holds the action associated with the request (post, get)
      *
      * @var string
      */
@@ -86,7 +85,7 @@ class Proxy {
     public $proxyUrl;
 
     /**
-     * Holds the query string assocated with the request
+     * Holds the query string associated with the request
      *
      * @var string
      */
@@ -149,7 +148,6 @@ class Proxy {
 
     public $sessionUrl;
 
-
     /**
      * Allowed application urls array is just an array of urls
      *
@@ -173,7 +171,6 @@ class Proxy {
      */
 
     public $proxyBody;
-
 
     /**
      * Holds a field to help debug booleans
@@ -455,7 +452,7 @@ class Proxy {
 
         }else{
 
-            header("Content-Type: text/plain;charset=utf-8"); //If preg_split does not evaulate use text/plain
+            header("Content-Type: text/plain;charset=utf-8"); //If preg_split does not evaluate use text/plain
         }
     }
 
@@ -929,7 +926,7 @@ class Proxy {
 
         $this->proxyBody = null;
 
-        if(empty($url) || $url == null || empty($params) || $url == $params){ //If no $url or $params passed, defaut to class property values
+        if(empty($url) || $url == null || empty($params) || $url == $params){ //If no $url or $params passed, default to class property values
 
             $url = $this->proxyUrl;
 
@@ -2232,7 +2229,7 @@ class RateMeter
 
         $dbError = array(
                 "error" => array("code" => 500,
-                        "details" => array("A database error occured.  Consider backing up and then deleting sqlite database."),
+                        "details" => array("A database error occurred.  Consider backing up and then deleting sqlite database."),
                         "message" => "Proxy failed due to database error."
                 ));
 
