@@ -105,6 +105,7 @@ private boolean fetchAndPassBackToClient(HttpURLConnection con, HttpServletRespo
 	if (con!=null){
 		if (con.getContentType() != null) clientResponse.setContentType(con.getContentType());
 		if (con.getContentEncoding() != null)  clientResponse.addHeader("Content-Encoding", con.getContentEncoding());
+        if (con.getHeaderField("Content-Disposition") != null) clientResponse.addHeader("Content-Disposition", con.getHeaderField("Content-Disposition"));
 		
 		InputStream byteStream;
 		if (con.getResponseCode() >= 400 && con.getErrorStream() != null){
