@@ -773,9 +773,9 @@ try {
         }
         
         //Check to see if allowed referer list is specified and reject if referer is null
-        if (allowedReferers != "*" && allowedReferers != null && request.getHeader("referer") == null){
+        if (allowedReferers != null && !allowedReferers.equals("*") &&  request.getHeader("referer") == null){
 		_log(Level.WARNING,"Proxy is being called by a null referer.  Access denied.");
-                sendErrorResponse(response, "Null referers are not allowed. ", "403 - Forbidden: Access is denied.",HttpServletResponse.SC_FORBIDDEN);
+                sendErrorResponse(response, "Current proxy configuration settings do not allow requests which do not include a referer header.", "403 - Forbidden: Access is denied.",HttpServletResponse.SC_FORBIDDEN);
                 return;
 	}
 
