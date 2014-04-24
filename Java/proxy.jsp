@@ -771,6 +771,13 @@ try {
                 return;
             }
         }
+        
+        //Check to see if allowed referer list is specified and reject if referer is null
+        if (request.getHeader("referer") == null && allowedReferers != null && !allowedReferers[0].equals("*")){
+		_log(Level.WARNING,"Proxy is being called by a null referer.  Access denied.");
+                sendErrorResponse(response, "Current proxy configuration settings do not allow requests which do not include a referer header.", "403 - Forbidden: Access is denied.",HttpServletResponse.SC_FORBIDDEN);
+                return;
+	}
 
         serverUrl = getConfig().getConfigServerUrl(uri);
 		if (serverUrl == null) {
