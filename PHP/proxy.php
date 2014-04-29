@@ -732,9 +732,15 @@ class Proxy {
 
         }
 
+    	if (strpos($this->proxyBody,'"code":403') !== false) {
+        
+        	$isUnauthorized = true;
+        
+        }
+
         $errorCode = $jsonData->{'error'}->{'code'};
 
-        if($errorCode == 499 || $errorCode == 498)
+        if($errorCode == 499 || $errorCode == 498 || $errorCode == 403)
         {
             $isUnauthorized = true;
 
@@ -801,8 +807,34 @@ class Proxy {
         curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, true);
 
     }
-
-
+    
+    public function curlError()
+    {
+    	// see full of cURL error codes at http://curl.haxx.se/libcurl/c/libcurl-errors.html
+    
+    	$message = "cURL error (" . curl_errno($this->ch) . "): "
+    			. curl_error($this->ch) . ".";
+    
+    	$this->proxyLog->log($message);
+    
+    	header('Status: 502', true, 502);  // 502 Bad Gateway -  The server, while acting as a gateway or proxy, received an invalid response from the upstream server it accessed in attempting to fulfill the request.
+    
+    	header('Content-Type: application/json');
+    
+    	$configError = array(
+    			"error" => array("code" => 502,
+    					"details" => array($message),
+    					"message" => "Proxy failed due to curl error."
+    			));
+    
+    	echo json_encode($configError);
+    
+    	curl_close($this->ch);
+    
+    	$this->ch = null;
+    
+    	exit();
+    }
 
     public function proxyGet() {
 
@@ -822,7 +854,7 @@ class Proxy {
 
             if(curl_errno($this->ch) > 0 || empty($this->response))
             {
-                $this->proxyLog->log("Curl error or no response: " . curl_error($this->ch));
+            	$this->curlError();
 
             }else{
 
@@ -887,7 +919,7 @@ class Proxy {
 
         if(curl_errno($this->ch) > 0 || empty($this->response))
         {
-            $this->proxyLog->log("Curl error or no response: " . curl_error($this->ch));
+            $this->curlError();
 
         }else{
 
@@ -947,7 +979,7 @@ class Proxy {
 
             if(curl_errno($this->ch) > 0 || empty($this->response))
             {
-                $this->proxyLog->log("Curl error or no response: " . curl_error($this->ch));
+                $this->curlError();
             }else{
 
                 $this->setProxyHeaders();
