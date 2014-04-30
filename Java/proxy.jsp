@@ -24,6 +24,8 @@ java.util.logging.Logger,
 java.util.logging.FileHandler,
 java.util.logging.SimpleFormatter,
 java.util.logging.Level,
+java.util.List,
+java.util.Iterator,
 java.text.SimpleDateFormat" %>
 
 <!-- ----------------------------------------------------------
@@ -103,8 +105,21 @@ private HttpURLConnection forwardToServer(HttpServletRequest request,String uri,
 
 private boolean fetchAndPassBackToClient(HttpURLConnection con, HttpServletResponse clientResponse, boolean ignoreAuthenticationErrors) throws IOException{
 	if (con!=null){
-		if (con.getContentType() != null) clientResponse.setContentType(con.getContentType());
-		if (con.getContentEncoding() != null)  clientResponse.addHeader("Content-Encoding", con.getContentEncoding());
+		Map<String, List<String>> headerFields = con.getHeaderFields();
+        
+        Set<String> headerFieldsSet = headerFields.keySet();
+        Iterator<String> hearerFieldsIter = headerFieldsSet.iterator();
+
+        while (hearerFieldsIter.hasNext()){
+            String headerFieldKey = hearerFieldsIter.next();
+            List<String> headerFieldValue = headerFields.get(headerFieldKey);
+            StringBuilder sb = new StringBuilder();
+            for (String value : headerFieldValue) {
+                sb.append(value);
+                sb.append("");
+            }
+            if (headerFieldKey != null) clientResponse.addHeader(headerFieldKey, sb.toString());            
+        }
 		
 		InputStream byteStream;
 		if (con.getResponseCode() >= 400 && con.getErrorStream() != null){
