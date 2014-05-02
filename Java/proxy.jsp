@@ -287,6 +287,34 @@ private String getNewTokenIfCredentialsAreSpecified(ServerUrl su, String url) th
     return token;
 }
 
+private boolean checkReferer(String[] allowedReferers, String referer){
+    if (allowedReferers != null && allowedReferers.length > 0){
+
+        if (allowedReferers.length == 1 && allowedReferers[0].equals("*")) return true; //speed-up
+        for (String allowedReferer : allowedReferers){
+            
+            if (referer.toLowerCase().startsWith(allowedReferer.toLowerCase())) return true; //return true if match
+            else if (allowedReferer.contains("*")){ //try if the allowed referer contains wildcard for subdomain
+
+                 if (checkWildcardSubdomain(allowedReferer, referer)) return true;//return true if match wildcard subdomain
+            }
+        }
+        return false;//no-match
+    }
+    return true;//when allowedReferer is null, then allow everything
+}
+
+private boolean checkWildcardSubdomain(String allowedReferer, String referer){
+    String[] allowedRefererParts = allowedReferer.split("(\\.)|(/)|(:)"); 
+    String[] refererParts = referer.split("(\\.)|(/)|(:)");
+    if (refererParts.length < allowedRefererParts.length)  return false; //speed-up 
+    
+    for (int i = 0; i < allowedRefererParts.length; i++) {
+        if (!allowedRefererParts[i].equals("*") && !allowedRefererParts[i].toLowerCase().equals(refererParts[i].toLowerCase())) return false;
+    }
+    return true;
+}
+
 private String getFullUrl(String url){
     return url.startsWith("//") ? url.replace("//","https://") : url;
 }
@@ -772,15 +800,7 @@ try {
         String[] allowedReferers = getConfig().getAllowedReferers();
         if (allowedReferers != null && allowedReferers.length > 0 && request.getHeader("referer") != null){
             setReferer(request.getHeader("referer")); //replace PROXY_REFERER with real proxy
-            boolean allowed = false;
-            for (String allowedReferer : allowedReferers){
-                if (ProxyConfig.isUrlPrefixMatch(allowedReferer, request.getHeader("referer")) || allowedReferer.equals("*")){
-                    allowed = true;
-                    break;
-                }
-            }
-
-            if (!allowed){
+            if (!checkReferer(allowedReferers, request.getHeader("referer"))){
                 _log(Level.WARNING,"Proxy is being used from an unsupported referer: " + request.getHeader("referer"));
                 sendErrorResponse(response, "Proxy is being used from an unsupported referer. ", "403 - Forbidden: Access is denied.",HttpServletResponse.SC_FORBIDDEN);
                 return;
