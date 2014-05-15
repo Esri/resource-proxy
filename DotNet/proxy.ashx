@@ -71,7 +71,7 @@ public class proxy : IHttpHandler {
         string uri = context.Request.Url.Query.Substring(1);
 
         //if url is encoded, decode it.
-        if (uri.StartsWith("http%3a%2f%2f") || uri.StartsWith("https%3a%2f%2f"))
+        if (uri.StartsWith("http%3a%2f%2f", StringComparison.InvariantCultureIgnoreCase) || uri.StartsWith("https%3a%2f%2f", StringComparison.InvariantCultureIgnoreCase))
             uri = HttpUtility.UrlDecode(uri);
         
         log(TraceLevel.Info, uri);
