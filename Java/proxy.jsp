@@ -766,6 +766,15 @@ try {
             return;
         }
 
+        if (uri.equalsIgnoreCase("ping")){
+            response.setStatus(200);
+            String msg="Reply from proxy";
+            OutputStream output = response.getOutputStream();
+            output.write(msg.getBytes());
+            output.flush();
+            return;
+        }
+
         //check if the uri is encoded then decode it
          if (uri.startsWith("http%3a%2f%2f") || uri.startsWith("https%3a%2f%2f")) uri= URLDecoder.decode(uri, "UTF-8");
 
