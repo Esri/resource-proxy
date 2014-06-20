@@ -792,7 +792,7 @@ class Proxy {
 
     public function initCurl()
     {
-        $headers = array('Expect:', 'Referer: ' . $this->referer);
+        $headers = array('Accept-Encoding: compress, gzip','Expect:', 'Referer: ' . $this->referer);
 
         $this->ch = curl_init();
 
