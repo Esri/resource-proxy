@@ -110,16 +110,21 @@ private boolean fetchAndPassBackToClient(HttpURLConnection con, HttpServletRespo
         Set<String> headerFieldsSet = headerFields.keySet();
         Iterator<String> hearerFieldsIter = headerFieldsSet.iterator();
 
+        boolean encoding = false;
+
         while (hearerFieldsIter.hasNext()){
             String headerFieldKey = hearerFieldsIter.next();
             List<String> headerFieldValue = headerFields.get(headerFieldKey);
             StringBuilder sb = new StringBuilder();
+            if (headerFieldKey != null && headerFieldKey.contains("Encoding")) encoding = true;
             for (String value : headerFieldValue) {
                 sb.append(value);
                 sb.append("");
             }
             if (headerFieldKey != null) clientResponse.addHeader(headerFieldKey, sb.toString());            
         }
+
+        if (!encoding) clientResponse.addHeader("Accept-Encoding", "gzip");
 		
 		InputStream byteStream;
 		if (con.getResponseCode() >= 400 && con.getErrorStream() != null){
