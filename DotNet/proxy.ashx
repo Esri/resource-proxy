@@ -212,8 +212,7 @@ public class proxy : IHttpHandler {
 
             if (webExc.Response != null)
             {
-                string contentEncoding = (webExc.Response as System.Net.HttpWebResponse).ContentEncoding;
-                context.Response.AddHeader("Content-Encoding", contentEncoding);
+                copyHeaders(webExc.Response as System.Net.HttpWebResponse, context.Response);
                 
                 using (Stream responseStream = webExc.Response.GetResponseStream())
                 {
@@ -290,9 +289,31 @@ public class proxy : IHttpHandler {
             doHTTPRequest(uri, context.Request.HttpMethod);
     }
 
+    /// <summary>
+    /// Attempts to copy all headers from the fromResponse to the the toResponse.
+    /// </summary>
+    /// <param name="fromResponse">The response that we are copying the headers from</param>
+    /// <param name="toResponse">The response that we are copying the headers to</param>
+    private void copyHeaders(System.Net.WebResponse fromResponse, HttpResponse toResponse)
+    {
+        foreach (var headerKey in fromResponse.Headers.AllKeys)
+        {
+            switch (headerKey.ToLower())
+            {
+                case "content-type":
+                case "transfer-encoding":
+                    continue;
+                default:
+                    toResponse.AddHeader(headerKey, fromResponse.Headers[headerKey]);
+                    break;
+            }
+        }
+        toResponse.ContentType = fromResponse.ContentType;
+    }
+    
     private bool fetchAndPassBackToClient(System.Net.WebResponse serverResponse, HttpResponse clientResponse, bool ignoreAuthenticationErrors) {
         if (serverResponse != null) {
-            clientResponse.ContentType = serverResponse.ContentType;
+            copyHeaders(serverResponse, clientResponse);
             using (Stream byteStream = serverResponse.GetResponseStream()) {
                 // Text response
                 if (serverResponse.ContentType.Contains("text") ||
