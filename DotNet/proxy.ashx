@@ -474,7 +474,7 @@ public class proxy : IHttpHandler {
 
     private static void sendErrorResponse(HttpResponse response, String errorDetails, String errorMessage, System.Net.HttpStatusCode errorCode)
     {
-        String message = string.Format("{{error: {{code: {0},message:\"{1}\"", errorCode, errorMessage);
+        String message = string.Format("{{error: {{code: {0},message:\"{1}\"", (int)errorCode, errorMessage);
         if (!string.IsNullOrEmpty(errorDetails))
             message += string.Format(",details:[message:\"{0}\"]", errorDetails);
         message += "}}";
