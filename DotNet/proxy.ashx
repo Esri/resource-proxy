@@ -170,41 +170,60 @@ public class proxy : IHttpHandler {
         byte[] postBody = readRequestPostBody(context);
         string post = System.Text.Encoding.UTF8.GetString(postBody);
 
-        //if token comes with client request, it takes precedence over token or credentials stored in configuration
-        bool hasClientToken = uri.Contains("?token=") || uri.Contains("&token=") || post.Contains("?token=") || post.Contains("&token=");
+        System.Net.NetworkCredential credentials = null;
+        string requestUri = uri;
+        bool hasClientToken = false;
         string token = string.Empty;
-        if (!passThrough && !hasClientToken) {
-            // Get new token and append to the request.
-            // But first, look up in the application scope, maybe it's already there:
-            token = (String)context.Application["token_for_" + serverUrl.Url];
-            bool tokenIsInApplicationScope = !String.IsNullOrEmpty(token);
+        string tokenParamName = null;
 
-            //if still no token, let's see if there is an access token or if are credentials stored in configuration which we can use to obtain new token
-            if (!tokenIsInApplicationScope) {
-                token = serverUrl.AccessToken;
-                if (String.IsNullOrEmpty(token))
-                    token = getNewTokenIfCredentialsAreSpecified(serverUrl, uri);
-            }
-
-            if (!String.IsNullOrEmpty(token) && !tokenIsInApplicationScope) {
-                //storing the token in Application scope, to do not waste time on requesting new one untill it expires or the app is restarted.
-                context.Application.Lock();
-                context.Application["token_for_" + serverUrl.Url] = token;
-                context.Application.UnLock();
-            }
+        if (!passThrough && serverUrl.Domain != null)
+        {
+            credentials = new System.Net.NetworkCredential(serverUrl.Username, serverUrl.Password, serverUrl.Domain);
         }
+        else
+        {
+            //if token comes with client request, it takes precedence over token or credentials stored in configuration
+            hasClientToken = uri.Contains("?token=") || uri.Contains("&token=") || post.Contains("?token=") || post.Contains("&token=");
 
-        //name by which token parameter is passed (if url actually came from the list)
-        string tokenParamName = serverUrl != null ? serverUrl.TokenParamName : null;
+            if (!passThrough && !hasClientToken)
+            {
+                // Get new token and append to the request.
+                // But first, look up in the application scope, maybe it's already there:
+                token = (String)context.Application["token_for_" + serverUrl.Url];
+                bool tokenIsInApplicationScope = !String.IsNullOrEmpty(token);
 
+                //if still no token, let's see if there is an access token or if are credentials stored in configuration which we can use to obtain new token
+                if (!tokenIsInApplicationScope)
+                {
+                    token = serverUrl.AccessToken;
+                    if (String.IsNullOrEmpty(token))
+                        token = getNewTokenIfCredentialsAreSpecified(serverUrl, uri);
+                }
 
-        if (String.IsNullOrEmpty(tokenParamName))
-            tokenParamName = "token";
+                if (!String.IsNullOrEmpty(token) && !tokenIsInApplicationScope)
+                {
+                    //storing the token in Application scope, to do not waste time on requesting new one untill it expires or the app is restarted.
+                    context.Application.Lock();
+                    context.Application["token_for_" + serverUrl.Url] = token;
+                    context.Application.UnLock();
+                }
+            }
 
+            //name by which token parameter is passed (if url actually came from the list)
+            tokenParamName = serverUrl != null ? serverUrl.TokenParamName : null;
+
+            if (String.IsNullOrEmpty(tokenParamName))
+                tokenParamName = "token";
+
+            requestUri = addTokenToUri(uri, token, tokenParamName);
+        }
+        
+
+        
         //forwarding original request
         System.Net.WebResponse serverResponse = null;
         try {
-            serverResponse = forwardToServer(context, addTokenToUri(uri, token, tokenParamName), postBody);
+            serverResponse = forwardToServer(context, requestUri, postBody, credentials);
         } catch (System.Net.WebException webExc) {
             
             string errorMsg = webExc.Message + " " + uri;
@@ -283,11 +302,12 @@ public class proxy : IHttpHandler {
         return new byte[0];
     }
 
-    private System.Net.WebResponse forwardToServer(HttpContext context, string uri, byte[] postBody) {
+    private System.Net.WebResponse forwardToServer(HttpContext context, string uri, byte[] postBody, System.Net.NetworkCredential credentials = null)
+    {
         return
             postBody.Length > 0?
-            doHTTPRequest(uri, postBody, "POST", context.Request.Headers["referer"], context.Request.ContentType):
-            doHTTPRequest(uri, context.Request.HttpMethod);
+            doHTTPRequest(uri, postBody, "POST", context.Request.Headers["referer"], context.Request.ContentType, credentials):
+            doHTTPRequest(uri, context.Request.HttpMethod, credentials);
     }
 
     private bool fetchAndPassBackToClient(System.Net.WebResponse serverResponse, HttpResponse clientResponse, bool ignoreAuthenticationErrors) {
@@ -327,7 +347,8 @@ public class proxy : IHttpHandler {
         return false;
     }
 
-    private System.Net.WebResponse doHTTPRequest(string uri, string method) {
+    private System.Net.WebResponse doHTTPRequest(string uri, string method, System.Net.NetworkCredential credentials = null)
+    {
         byte[] bytes = null;
         String contentType = null;
 
@@ -344,14 +365,19 @@ public class proxy : IHttpHandler {
             }
         }
 
-        return doHTTPRequest(uri, bytes, method, PROXY_REFERER, contentType);
+        return doHTTPRequest(uri, bytes, method, PROXY_REFERER, contentType, credentials);
     }
 
-    private System.Net.WebResponse doHTTPRequest(string uri, byte[] bytes, string method, string referer, string contentType) {
+    private System.Net.WebResponse doHTTPRequest(string uri, byte[] bytes, string method, string referer, string contentType, System.Net.NetworkCredential credentials = null)
+    {
         System.Net.HttpWebRequest req = (System.Net.HttpWebRequest)System.Net.HttpWebRequest.Create(uri);
         req.ServicePoint.Expect100Continue = false;
         req.Referer = referer;
         req.Method = method;
+
+        if (credentials != null)
+            req.Credentials = credentials;
+        
         if (bytes != null && bytes.Length > 0 || method == "POST") {
             req.Method = "POST";
             req.ContentType = string.IsNullOrEmpty(contentType) ? "application/x-www-form-urlencoded" : contentType;
@@ -669,6 +695,7 @@ public class ServerUrl {
     string url;
     bool matchAll;
     string oauth2Endpoint;
+    string domain;
     string username;
     string password;
     string clientId;
@@ -692,6 +719,12 @@ public class ServerUrl {
     public string OAuth2Endpoint {
         get { return oauth2Endpoint; }
         set { oauth2Endpoint = value; }
+    }
+    [XmlAttribute("domain")]
+    public string Domain
+    {
+        get { return domain; }
+        set { domain = value; }
     }
     [XmlAttribute("username")]
     public string Username {
