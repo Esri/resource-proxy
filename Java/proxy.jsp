@@ -287,6 +287,43 @@ private String getNewTokenIfCredentialsAreSpecified(ServerUrl su, String url) th
     return token;
 }
 
+private boolean checkReferer(String[] allowedReferers, String referer){
+    if (allowedReferers != null && allowedReferers.length > 0){
+        if (allowedReferers.length == 1 && allowedReferers[0].equals("*")) return true; //speed-up
+        for (String allowedReferer : allowedReferers){
+            if (referer.toLowerCase().equals(allowedReferer.toLowerCase())) return true; //return true if match
+            else if (allowedReferer.contains("*")){ //try if the allowed referer contains wildcard for subdomain
+                 if (checkWildcardSubdomain(allowedReferer, referer)) return true;//return true if match wildcard subdomain
+            }
+        }
+        return false;//no-match
+    }
+    return true;//when allowedReferer is null, then allow everything
+}
+
+
+private boolean checkWildcardSubdomain(String allowedReferer, String referer){
+    String[] allowedRefererParts = allowedReferer.split("(\\.)"); 
+    String[] refererParts = referer.split("(\\.)");
+    
+    int allowedIndex = allowedRefererParts.length-1;
+    int refererIndex = refererParts.length-1; 
+    while(allowedIndex >= 0 && refererIndex >= 0){
+        if (allowedRefererParts[allowedIndex].equalsIgnoreCase(refererParts[refererIndex])){
+            allowedIndex = allowedIndex - 1;
+            refererIndex = refererIndex - 1;
+        }else{
+            if(allowedRefererParts[allowedIndex].equals("*")){
+                allowedIndex = allowedIndex - 1;
+                refererIndex = refererIndex - 1;
+                continue; //next
+            }
+            return false;
+        }
+    }
+    return true;
+}
+
 private String getFullUrl(String url){
     return url.startsWith("//") ? url.replace("//","https://") : url;
 }
@@ -772,17 +809,18 @@ try {
         String[] allowedReferers = getConfig().getAllowedReferers();
         if (allowedReferers != null && allowedReferers.length > 0 && request.getHeader("referer") != null){
             setReferer(request.getHeader("referer")); //replace PROXY_REFERER with real proxy
-            boolean allowed = false;
-            for (String allowedReferer : allowedReferers){
-                if (ProxyConfig.isUrlPrefixMatch(allowedReferer, request.getHeader("referer")) || allowedReferer.equals("*")){
-                    allowed = true;
-                    break;
-                }
+            String hostReferer = request.getHeader("referer");
+            try{
+                //only use the hostname of the referer url
+                hostReferer = new URL(request.getHeader("referer")).getHost();
+            }catch(Exception e){
+                _log(Level.WARNING,"Proxy is being used from an invalid referer: " + request.getHeader("referer"));
+                sendErrorResponse(response, "Error verifying referer. ", "403 - Forbidden: Access is denied.",HttpServletResponse.SC_FORBIDDEN);
+                return;
             }
-
-            if (!allowed){
-                _log(Level.WARNING,"Proxy is being used from an unsupported referer: " + request.getHeader("referer"));
-                sendErrorResponse(response, "Proxy is being used from an unsupported referer. ", "403 - Forbidden: Access is denied.",HttpServletResponse.SC_FORBIDDEN);
+            if (!checkReferer(allowedReferers, hostReferer)){
+                _log(Level.WARNING,"Proxy is being used from an unknown referer: " + request.getHeader("referer"));
+                sendErrorResponse(response, "Unsupported referer. ", "403 - Forbidden: Access is denied.",HttpServletResponse.SC_FORBIDDEN);
                 return;
             }
         }
