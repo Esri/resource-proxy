@@ -871,7 +871,7 @@ try {
                 _log(Level.WARNING,"Pair " + key + " is throttled to " + serverUrl.getRateLimit() + " requests per " + serverUrl.getRateLimitPeriod() + " minute(s). Come back later.");
 
                 sendErrorResponse(response,"This is a metered resource, number of requests have exceeded the rate limit interval.",
-                        "Unable to proxy request for requested resource.",HttpServletResponse.SC_PAYMENT_REQUIRED);
+                        "Error 429 - Too Many Requests",429);
 
                 return;
             }
