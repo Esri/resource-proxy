@@ -37,6 +37,8 @@ java.text.SimpleDateFormat" %>
  *
 ----------------------------------------------------------- -->
 
+<%! final String version = "1.1 Beta";   %>
+
 <%!
 public static class RateMeter {
     double _rate; //internal rate is stored in requests per second
@@ -391,6 +393,18 @@ private void cleanUpRatemap(ConcurrentHashMap<String, RateMeter> ratemap) {
     //writing Log file
     private static Object _lockobject = new Object();
     private static Logger logger = Logger.getLogger("ESRI_PROXY_LOGGER");
+
+    private boolean okToLog(){
+        try{
+            ProxyConfig proxyConfig = getConfig();
+            String filename = proxyConfig.getLogFile();
+            return filename != null && filename != "" && !filename.isEmpty() && logger != null;
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     private static void _log(Level level,String s,Throwable thrown) {
         try {
 
@@ -451,6 +465,13 @@ private void cleanUpRatemap(ConcurrentHashMap<String, RateMeter> ratemap) {
 
 public static class ProxyConfig
 {
+    public boolean canReadProxyConfig(){
+        InputStream configFile = ProxyConfig.class.getClassLoader().getResourceAsStream("proxy.config");
+        if (configFile != null) 
+            return true;
+        else
+            return false;
+    }
 
     public synchronized static ProxyConfig loadProxyConfig()  throws IOException{
         ProxyConfig config = null;
@@ -787,6 +808,21 @@ private static void _sendURLMismatchError(HttpServletResponse response) throws I
      sendErrorResponse(response,"The proxy tried to resolve a prohibited or malformed URL. The server does not meet one of the preconditions that the requester put on the request.",
                 "403 - Forbidden: Access is denied.",HttpServletResponse.SC_FORBIDDEN);
 }
+
+private static void _sendPingMessage(HttpServletResponse response, String version, String config, String log) throws IOException{
+    response.setStatus(HttpServletResponse.SC_OK);
+    response.setHeader("Content-Type", "application/json");
+    response.setHeader("Accept-Encoding", "gzip");
+    String message = "{ " +
+        "\"Proxy Version\": \""+ version + "\"" +
+        //", \"Java Version\": \"" + System.getProperty("java.version") + "\"" + 
+        ", \"Configuration File\": \"" + config + "\""  +
+        ", \"Log File\": \""+ log + "\"" +
+        "}";
+    OutputStream output = response.getOutputStream();
+    output.write(message.getBytes());
+    output.flush();
+}
 %><%
 String uri = request.getQueryString();
 _log(Level.INFO,"Creating request for: " + uri);
@@ -800,6 +836,13 @@ try {
 		
 		if (uri == null || uri.isEmpty()){
             response.sendError(403,"This proxy does not support empty parameters.");
+            return;
+        }
+
+        if (uri.equalsIgnoreCase("ping")){
+            String checkConfig = (getConfig().canReadProxyConfig() == true) ? "OK": "Not Exist/Readable";
+            String checkLog = (okToLog() == true) ? "OK": "Not Exist/Readable";
+            _sendPingMessage(response, version, checkConfig, checkLog);
             return;
         }
 
