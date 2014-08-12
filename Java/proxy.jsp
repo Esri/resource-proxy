@@ -37,6 +37,8 @@ java.text.SimpleDateFormat" %>
  *
 ----------------------------------------------------------- -->
 
+<%! final String version = "1.1 Beta";   %>
+
 <%!
 public static class RateMeter {
     double _rate; //internal rate is stored in requests per second
@@ -785,7 +787,6 @@ private static void _sendPingMessage(HttpServletResponse response, String versio
     output.flush();
 }
 %><%
-String version = "1.1 Beta";
 String uri = request.getQueryString();
 _log(Level.INFO,"Creating request for: " + uri);
 ServerUrl serverUrl;
