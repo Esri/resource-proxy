@@ -372,6 +372,7 @@ public class proxy : IHttpHandler {
     {
         byte[] bytes = null;
         String contentType = null;
+        log(TraceLevel.Info, "Sending request!");
 
         if (method.Equals("POST"))
         {
@@ -576,14 +577,33 @@ public class proxy : IHttpHandler {
         if (TraceLevel.Error == logLevel)
         {
             Trace.TraceError(logMessage);
+            logMessageToFile(logMessage);
         }
         else if (TraceLevel.Warning == logLevel)
         {
             Trace.TraceWarning(logMessage);
+            logMessageToFile(logMessage);
         }
         else
         {
             Trace.TraceInformation(logMessage);
+            logMessageToFile(logMessage);
+        }
+    }
+
+    private static object _lockobject = new object();
+
+    private static void logMessageToFile(String message)
+    {
+        //Only log messages to disk if logFile has value in configuration, otherwise log nothing.   
+        ProxyConfig config = ProxyConfig.GetCurrentConfig();
+        if (config.LogFile != null){
+            lock(_lockobject) {
+                using (StreamWriter sw = File.AppendText(config.LogFile))
+                {
+                    sw.WriteLine(message);
+                }
+            }
         }
     }
 }
@@ -645,6 +665,7 @@ public class ProxyConfig
     }
 
     ServerUrl[] serverUrls;
+    public String logFile;
     bool mustMatch;
     //referer
     static String allowedReferers;
@@ -664,6 +685,16 @@ public class ProxyConfig
         set
         { mustMatch = value; }
     }
+    
+    //logFile
+    [XmlAttribute("logFile")]
+    public String LogFile
+    {
+        get { return logFile; }
+        set
+        { logFile = value; }
+    }
+
 
     //referer
     [XmlAttribute("allowedReferers")]
