@@ -775,10 +775,10 @@ private static void _sendPingMessage(HttpServletResponse response, String versio
     response.setHeader("Content-Type", "application/json");
     response.setHeader("Accept-Encoding", "gzip");
     String message = "{ " +
-        "\"Proxy Version\": \""+ version + "\""
-        //", \"Java Version\": \"" + System.getProperty("java.version") + "\""
-        ", \"Configuration File\": \"" + config + "\""  
-        ", \"Log File\": \""+ log + "\"" 
+        "\"Proxy Version\": \""+ version + "\"" +
+        //", \"Java Version\": \"" + System.getProperty("java.version") + "\"" + 
+        ", \"Configuration File\": \"" + config + "\""  +
+        ", \"Log File\": \""+ log + "\"" +
         "}";
     OutputStream output = response.getOutputStream();
     output.write(message.getBytes());
