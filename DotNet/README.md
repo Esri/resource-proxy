@@ -52,8 +52,8 @@ Example of proxy using application credentials and limiting requests to 10/minut
 <serverUrl url="http://route.arcgis.com"
     clientId="6Xo1d-example-9Kn2"
     clientSecret="5a5d50-example-c867b6efcf969bdcc6a2"
-    rateLimit=600
-    rateLimitPeriod=60
+    rateLimit="600"
+    rateLimitPeriod="60"
     matchAll="true">
 </serverUrl>
 ```
