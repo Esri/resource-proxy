@@ -840,7 +840,7 @@ try {
         }
 
         if (uri.equalsIgnoreCase("ping")){
-            String checkConfig = (getConfig().canReadProxyConfig() == true) ? "OK": "Not Exist/Readable";
+            String checkConfig = (getConfig().canReadProxyConfig() == true) ? "OK": "Not Readable";
             String checkLog = (okToLog() == true) ? "OK": "Not Exist/Readable";
             _sendPingMessage(response, version, checkConfig, checkLog);
             return;
