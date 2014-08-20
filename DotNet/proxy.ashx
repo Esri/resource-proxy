@@ -598,10 +598,14 @@ public class proxy : IHttpHandler {
         //Only log messages to disk if logFile has value in configuration, otherwise log nothing.   
         ProxyConfig config = ProxyConfig.GetCurrentConfig();
         string log = config.LogFile;
-        if (!log.Contains("\\"))
+        if (!log.Contains("\\") || log.Contains(".\\"))
         {
+            if (log.Contains(".\\")) //If this type of relative pathing .\log.txt
+            {
+                log = log.Replace(".\\", "");  
+            }
             string apPath = System.Web.Hosting.HostingEnvironment.ApplicationPhysicalPath;
-            log = apPath + log;
+            log = apPath + log;  
         }
         if (config.LogFile != null){
             lock(_lockobject) {
