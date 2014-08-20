@@ -597,15 +597,9 @@ public class proxy : IHttpHandler {
     {
         //Only log messages to disk if logFile has value in configuration, otherwise log nothing.   
         ProxyConfig config = ProxyConfig.GetCurrentConfig();
-        string log = config.LogFile;
-        if (!log.Contains("\\"))
-        {
-            string apPath = System.Web.Hosting.HostingEnvironment.ApplicationPhysicalPath;
-            log = apPath + log;
-        }
         if (config.LogFile != null){
             lock(_lockobject) {
-                using (StreamWriter sw = File.AppendText(log))
+                using (StreamWriter sw = File.AppendText(config.LogFile))
                 {
                     sw.WriteLine(message);
                 }
