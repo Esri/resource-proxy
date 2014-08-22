@@ -792,7 +792,7 @@ class Proxy {
 
     public function initCurl()
     {
-        $headers = array('Accept-Encoding: compress, gzip','Expect:', 'Referer: ' . $this->referer);
+        $headers = array('Expect:', 'Referer: ' . $this->referer);
 
         $this->ch = curl_init();
 
@@ -1252,11 +1252,7 @@ class Proxy {
 
         $isAllowedApplication = false;
 
-        $domain = substr($_SERVER['HTTP_REFERER'], strpos($this->referer, '://') + 3);
-
-        $domain = substr($domain, 0, strpos($domain, '/'));
-
-        if (in_array($domain, $this->proxyConfig['allowedreferers'])) {
+        if (in_array($this->referer, $this->proxyConfig['allowedreferers'])) {
 
             $isAllowedApplication = true;
 
