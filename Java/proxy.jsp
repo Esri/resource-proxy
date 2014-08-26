@@ -105,49 +105,73 @@ private HttpURLConnection forwardToServer(HttpServletRequest request,String uri,
                         doHTTPRequest(uri, request.getMethod());
 }
 
+private void copyHeaders(HttpURLConnection fromResponse, HttpServletResponse toResponse) {
+    Map<String, List<String>> headerFields = fromResponse.getHeaderFields();
+    Set<String> headerFieldsSet = headerFields.keySet();
+    Iterator<String> hearerFieldsIter = headerFieldsSet.iterator();
+
+    while (hearerFieldsIter.hasNext()) {
+        String headerFieldKey = hearerFieldsIter.next();
+        List<String> headerFieldValue = headerFields.get(headerFieldKey);
+        StringBuilder sb = new StringBuilder();
+        for (String value : headerFieldValue) {
+            sb.append(value);
+            sb.append("");
+        }
+        if (headerFieldKey != null)
+            toResponse.addHeader(headerFieldKey, sb.toString());
+    }
+    
+    toResponse.setContentType(fromResponse.getContentType());
+}
+
 private boolean fetchAndPassBackToClient(HttpURLConnection con, HttpServletResponse clientResponse, boolean ignoreAuthenticationErrors) throws IOException{
 	if (con!=null){
-		Map<String, List<String>> headerFields = con.getHeaderFields();
-        
-        Set<String> headerFieldsSet = headerFields.keySet();
-        Iterator<String> hearerFieldsIter = headerFieldsSet.iterator();
+		if (con.getResponseCode() >= 400 && con.getErrorStream() != null) {
+            if (!ignoreAuthenticationErrors && (con.getResponseCode() == 498 || con.getResponseCode() == 499))
+                return true;
+            byteStream = con.getErrorStream();
+        } else {
+            byteStream = con.getInputStream();
+        }
 
-        while (hearerFieldsIter.hasNext()){
-            String headerFieldKey = hearerFieldsIter.next();
-            List<String> headerFieldValue = headerFields.get(headerFieldKey);
-            StringBuilder sb = new StringBuilder();
-            for (String value : headerFieldValue) {
-                sb.append(value);
-                sb.append("");
+        clientResponse.setStatus(con.getResponseCode());
+
+        if (con.getContentType().contains("text")
+                || con.getContentType().contains("json")
+                || con.getContentType().contains("xml")) {
+            // Text response
+            String strResponse = webResponseToString(con);
+
+            // since ESRI returns a 200 status code even for errors we need to check the actual error message
+            if (!ignoreAuthenticationErrors && strResponse.indexOf("{\"error\":{") > -1
+                    && (strResponse.indexOf("\"code\":498") > -1 || strResponse.indexOf("\"code\":499") > -1)) {
+                return true;
             }
-            if (headerFieldKey != null) clientResponse.addHeader(headerFieldKey, sb.toString());            
+            copyHeaders(con, clientResponse);
+            clientResponse.getWriter().write(strResponse);
+        } else {
+            // Binary response (image, lyr file, other binary file)
+
+            // Tell client not to cache the image since it's dynamic
+            copyHeaders(con, clientResponse);
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            final int length = 5000;
+
+            byte[] bytes = new byte[length];
+            int bytesRead = 0;
+
+            while ((bytesRead = byteStream.read(bytes, 0, length)) > 0) {
+                buffer.write(bytes, 0, bytesRead);
+            }
+            buffer.flush();
+
+            byte[] byteResponse = buffer.toByteArray();
+
+            OutputStream ostream = clientResponse.getOutputStream();
+            ostream.write(byteResponse);
+            ostream.close();
         }
-		
-		InputStream byteStream;
-		if (con.getResponseCode() >= 400 && con.getErrorStream() != null){
-			if (ignoreAuthenticationErrors && (con.getResponseCode() == 498 || con.getResponseCode() == 499)) return true;
-			byteStream = con.getErrorStream();
-		}else{
-			byteStream = con.getInputStream();
-		}
-		
-		clientResponse.setStatus(con.getResponseCode());
-		
-		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        final int length = 5000;
-
-        byte[] bytes = new byte[length];
-        int bytesRead = 0;
-
-        while ((bytesRead = byteStream.read(bytes, 0, length)) > 0) {
-            buffer.write(bytes,0,bytesRead);
-        }
-        buffer.flush();
-
-        byte[] byteResponse = buffer.toByteArray();
-        OutputStream ostream = clientResponse.getOutputStream();
-        ostream.write(byteResponse);
-        ostream.close();
         byteStream.close();
 	}
 	return false;
@@ -182,9 +206,9 @@ private HttpURLConnection doHTTPRequest(String uri, byte[] bytes, String method,
 
     if (bytes != null && bytes.length > 0 || method.equals("POST")) {
 
-    if (bytes == null){
-        bytes = new byte[0];
-    }
+        if (bytes == null){
+            bytes = new byte[0];
+        }
 
         con.setRequestMethod("POST");
         con.setDoOutput(true);
