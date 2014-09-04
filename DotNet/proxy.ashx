@@ -217,7 +217,10 @@ public class proxy : IHttpHandler {
 
             requestUri = addTokenToUri(uri, token, tokenParamName);
         }
-        
+        if ((serverUrl.HostRedirect != null) && (serverUrl.HostRedirect != string.Empty))
+        {
+            requestUri = serverUrl.HostRedirect + new Uri(requestUri).PathAndQuery;
+        }
 
         
         //forwarding original request
@@ -758,6 +761,7 @@ public class ProxyConfig
 
 public class ServerUrl {
     string url;
+    string hostRedirect;
     bool matchAll;
     string oauth2Endpoint;
     string domain;
@@ -774,6 +778,12 @@ public class ServerUrl {
     public string Url {
         get { return url; }
         set { url = value; }
+    }
+    [XmlAttribute("hostRedirect")]
+    public string HostRedirect
+    {
+        get { return hostRedirect; }
+        set { hostRedirect = value; }
     }
     [XmlAttribute("matchAll")]
     public bool MatchAll {
