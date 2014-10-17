@@ -224,9 +224,9 @@ class Proxy {
 
             if($this->hostRedirect != NULL) {
 
-                $this->proxyUrlWithData = $this->redirect($this->proxyUrlWithData, $this->hostRedirect);
+                $this->proxyUrlWithData = $this->redirect($this->proxyUrlWithData, $this->sessionUrl, $this->hostRedirect);
 
-                $this->proxyUrl = $this->redirect($this->proxyUrl, $this->hostRedirect);
+                $this->proxyUrl = $this->redirect($this->proxyUrl, $this->sessionUrl, $this->hostRedirect);
 
             }
 
@@ -252,72 +252,11 @@ class Proxy {
 
     }
 
-    public function redirect($sourceUrl, $targetUrl)
+    public function redirect($sourceUrl, $sessionUrl, $targetUrl)
     {
 
-        $source = $this->mb_parse_url($sourceUrl);
+        return $targetUrl . substr($sourceUrl, strlen($sessionUrl));
 
-        $target = $this->mb_parse_url($targetUrl);
-
-        if($target === FALSE){
-            $this->proxyLog->log("Malformed 'hostRedirect' property in configuration file");
-        }
-
-        $scheme = (isset($target['scheme']) ? $target['scheme'] : $source['scheme']) . '://';
-
-        $host = isset($target['host'])?$target['host']:$target['path'];
-
-        $port = isset($target['port']) ? ':' . $target['port'] : '';
-
-        $user = isset($source['user']) ? $source['user'] : '';
-
-        $pass = isset($source['pass']) ? $source['pass'] : '';
-
-        $user = isset($target['user']) ? $target['user'] : '';
-
-        $pass = isset($target['pass']) ? $target['pass'] : '';
-
-        $pass = ($user || $pass) ? "$pass@" : '';
-
-        $path = isset($source['path']) ? $source['path'] : '';
-
-        $query = isset($source['query']) ? '?' . $source['query'] : '';
-
-        $fragment = isset($source['fragment']) ? '#' . $source['fragment'] : '';
-
-        return $scheme . $user . $pass . $host . $port . $path . $query . $fragment;
-
-    }
-
-    /**
-     * UTF-8 aware parse_url() replacement. Courtesy lauris, see http://php.net/manual/en/function.parse-url.php#114817
-     * 
-     * @return array
-     */
-    private function mb_parse_url($url)
-    {
-        $enc_url = preg_replace_callback(
-            '%[^:/@?&=#]+%usD',
-            function ($matches)
-            {
-                return urlencode($matches[0]);
-            },
-            $url
-        );
-
-        $parts = parse_url($enc_url);
-
-        if($parts === false)
-        {
-            throw new \InvalidArgumentException('Malformed URL: ' . $url);
-        }
-
-        foreach($parts as $name => $value)
-        {
-            $parts[$name] = urldecode($value);
-        }
-
-        return $parts;
     }
 
     public function setupSession()
