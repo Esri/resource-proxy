@@ -16,6 +16,7 @@ using System.Xml.Serialization;
 using System.Web.Caching;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 public class proxy : IHttpHandler {
 
@@ -716,7 +717,7 @@ public class ProxyConfig
         get { return allowedReferers; }
         set
         {
-            allowedReferers = value;
+            allowedReferers = Regex.Replace(value, @"\s", "");
         }
     }
 
