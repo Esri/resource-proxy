@@ -293,6 +293,7 @@ private boolean checkReferer(String[] allowedReferers, String referer){
     if (allowedReferers != null && allowedReferers.length > 0){
         if (allowedReferers.length == 1 && allowedReferers[0].equals("*")) return true; //speed-up
         for (String allowedReferer : allowedReferers){
+            allowedReferer = allowedReferer.replaceAll("\\s", "");
             if (referer.toLowerCase().equals(allowedReferer.toLowerCase())) return true; //return true if match
             else if (allowedReferer.contains("*")){ //try if the allowed referer contains wildcard for subdomain
                  if (checkWildcardSubdomain(allowedReferer, referer)) return true;//return true if match wildcard subdomain
