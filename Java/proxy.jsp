@@ -26,6 +26,7 @@ java.util.logging.SimpleFormatter,
 java.util.logging.Level,
 java.util.List,
 java.util.Iterator,
+java.util.Enumeration,
 java.text.SimpleDateFormat" %>
 
 <!-- ----------------------------------------------------------
@@ -151,6 +152,17 @@ private boolean fetchAndPassBackToClient(HttpURLConnection con, HttpServletRespo
         byteStream.close();
 	}
 	return false;
+}
+
+private boolean passHeadersInfo(HttpServletRequest request, HttpURLConnection con) {
+ 
+    Enumeration headerNames = request.getHeaderNames();
+    while (headerNames.hasMoreElements()) {
+        String key = (String) headerNames.nextElement();
+        String value = request.getHeader(key);
+        con.setRequestProperty(key, value);
+    }
+    return true; 
 }
 
 private HttpURLConnection doHTTPRequest(String uri, String method) throws IOException{
@@ -957,7 +969,8 @@ try {
     //forwarding original request
     HttpURLConnection con = null;
     con = forwardToServer(request, addTokenToUri(uri, token), postBody);
-
+    //passing header info from request to connection
+    passHeadersInfo(request, con);
 
     if (passThrough || token == null || token.isEmpty() || hasClientToken) {
         //if token is not required or provided by the client, just fetch the response as is:
@@ -976,6 +989,7 @@ try {
             //we'll do second attempt to call the server with renewed token:
             token = getNewTokenIfCredentialsAreSpecified(serverUrl,uri);
             con = forwardToServer(request, addTokenToUri(uri, token), postBody);
+            passHeadersInfo(request, con); //passing header info from request to connection
 
             //storing the token in Application scope, to do not waste time on requesting new one until it expires or the app is restarted.
             synchronized(this){
