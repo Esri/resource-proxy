@@ -893,11 +893,6 @@ class Proxy {
 
         }
 
-        if(is_array($params)){ //If $params is array, convert it to a curl query string like 'image=png&f=json'
-
-            $params = $this->build_http_query($params);
-        }
-
         try {
 
             $this->initCurl();
@@ -908,7 +903,11 @@ class Proxy {
 
             curl_setopt($this->ch, CURLOPT_POST, true);
 
-            curl_setopt($this->ch, CURLOPT_POSTFIELDS, $params);
+            if(is_array($params)){ //If $params is array, convert it to a curl query string like 'image=png&f=json'
+                curl_setopt($this->ch, CURLOPT_POSTFIELDS, http_build_query($params));
+            } else {
+                curl_setopt($this->ch, CURLOPT_POSTFIELDS, $params);
+            }
 
             $this->response = curl_exec($this->ch);
 
@@ -1006,20 +1005,6 @@ class Proxy {
 
             $this->proxyLog->log($e->getMessage());
         }
-
-    }
-
-    public function build_http_query($query) //Support for older PHP versions here
-    {
-        $query_array = array();
-
-        foreach($query as $key => $value ){
-
-            $query_array[] = $key . '=' . $value;
-
-        }
-
-        return implode( '&', $query_array);
 
     }
 
