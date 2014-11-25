@@ -107,9 +107,9 @@ private HttpURLConnection forwardToServer(HttpServletRequest request,String uri,
 }
 
 private boolean fetchAndPassBackToClient(HttpURLConnection con, HttpServletResponse clientResponse, boolean ignoreAuthenticationErrors) throws IOException{
-	if (con!=null){
-		Map<String, List<String>> headerFields = con.getHeaderFields();
-        
+    if (con!=null){
+        Map<String, List<String>> headerFields = con.getHeaderFields();
+
         Set<String> headerFieldsSet = headerFields.keySet();
         Iterator<String> hearerFieldsIter = headerFieldsSet.iterator();
 
@@ -121,20 +121,20 @@ private boolean fetchAndPassBackToClient(HttpURLConnection con, HttpServletRespo
                 sb.append(value);
                 sb.append("");
             }
-            if (headerFieldKey != null) clientResponse.addHeader(headerFieldKey, sb.toString());            
+            if (headerFieldKey != null) clientResponse.addHeader(headerFieldKey, sb.toString());
         }
-		
-		InputStream byteStream;
-		if (con.getResponseCode() >= 400 && con.getErrorStream() != null){
-			if (ignoreAuthenticationErrors && (con.getResponseCode() == 498 || con.getResponseCode() == 499)) return true;
-			byteStream = con.getErrorStream();
-		}else{
-			byteStream = con.getInputStream();
-		}
-		
-		clientResponse.setStatus(con.getResponseCode());
-		
-		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+        InputStream byteStream;
+        if (con.getResponseCode() >= 400 && con.getErrorStream() != null){
+            if (ignoreAuthenticationErrors && (con.getResponseCode() == 498 || con.getResponseCode() == 499)) return true;
+            byteStream = con.getErrorStream();
+        }else{
+            byteStream = con.getInputStream();
+        }
+
+        clientResponse.setStatus(con.getResponseCode());
+
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         final int length = 5000;
 
         byte[] bytes = new byte[length];
@@ -150,8 +150,8 @@ private boolean fetchAndPassBackToClient(HttpURLConnection con, HttpServletRespo
         ostream.write(byteResponse);
         ostream.close();
         byteStream.close();
-	}
-	return false;
+    }
+    return false;
 }
 
 private boolean passHeadersInfo(HttpServletRequest request, HttpURLConnection con) {
@@ -162,7 +162,7 @@ private boolean passHeadersInfo(HttpServletRequest request, HttpURLConnection co
         String value = request.getHeader(key);
         if (!key.equalsIgnoreCase("host")) con.setRequestProperty(key, value);
     }
-    return true; 
+    return true;
 }
 
 private HttpURLConnection doHTTPRequest(String uri, String method) throws IOException{
@@ -256,26 +256,26 @@ private String getNewTokenIfCredentialsAreSpecified(ServerUrl su, String url) th
             }
         } else {
             //standalone ArcGIS Server token-based authentication
-            
+
             //if a request is already being made to generate a token, just let it go
             if (url.toLowerCase().contains("/generatetoken")){
-            	String tokenResponse = webResponseToString(doHTTPRequest(url, "POST"));
+                String tokenResponse = webResponseToString(doHTTPRequest(url, "POST"));
                 token = extractToken(tokenResponse, "token");
                 return token;
             }
-            
+
             String infoUrl = "";
             //lets look for '/rest/' in the request url (could be 'rest/services', 'rest/community'...)
             if (url.toLowerCase().contains("/rest/")){
-            	infoUrl = url.substring(0, url.indexOf("/rest/"));
-            	infoUrl += "/rest/info?f=json";
+                infoUrl = url.substring(0, url.indexOf("/rest/"));
+                infoUrl += "/rest/info?f=json";
             //if we don't find 'rest', lets look for the portal specific 'sharing' instead
             }else if (url.toLowerCase().contains("/sharing/")){
-            	infoUrl = url.substring(0, url.indexOf("sharing"));
-            	infoUrl += "/sharing/rest/info?f=json";
+                infoUrl = url.substring(0, url.indexOf("sharing"));
+                infoUrl += "/sharing/rest/info?f=json";
             }else
-            	return "-1"; //return -1, signaling that infourl can not be found
-            	
+                return "-1"; //return -1, signaling that infourl can not be found
+
             if (infoUrl != "") {
 
                 _log(Level.INFO,"[Info]: Querying security endpoint...");
@@ -318,11 +318,11 @@ private boolean checkReferer(String[] allowedReferers, String referer){
 
 
 private boolean checkWildcardSubdomain(String allowedReferer, String referer){
-    String[] allowedRefererParts = allowedReferer.split("(\\.)"); 
+    String[] allowedRefererParts = allowedReferer.split("(\\.)");
     String[] refererParts = referer.split("(\\.)");
-    
+
     int allowedIndex = allowedRefererParts.length-1;
-    int refererIndex = refererParts.length-1; 
+    int refererIndex = refererParts.length-1;
     while(allowedIndex >= 0 && refererIndex >= 0){
         if (allowedRefererParts[allowedIndex].equalsIgnoreCase(refererParts[refererIndex])){
             allowedIndex = allowedIndex - 1;
@@ -480,7 +480,7 @@ public static class ProxyConfig
 {
     public boolean canReadProxyConfig(){
         InputStream configFile = ProxyConfig.class.getClassLoader().getResourceAsStream("proxy.config");
-        if (configFile != null) 
+        if (configFile != null)
             return true;
         else
             return false;
@@ -647,37 +647,37 @@ public static class ProxyConfig
 
     public ServerUrl getConfigServerUrl(String uri) {
         //split request URL to compare with allowed server URLs
-    	String[] uriParts = uri.split("(/)|(\\?)");
+        String[] uriParts = uri.split("(/)|(\\?)");
         String[] configUriParts = new String[] {};
-                
+
         for (ServerUrl su : serverUrls) {
-        	//if a relative path is specified in the proxy configuration file, append what's in the request itself
+            //if a relative path is specified in the proxy configuration file, append what's in the request itself
             if (!su.getUrl().startsWith("http"))
                 su.setUrl(new StringBuilder(su.getUrl()).insert(0, uriParts[0]).toString());
-        	
+
             configUriParts = su.getUrl().split("/");
-            
+
             //if the request has less parts than the config, don't allow
             if (configUriParts.length > uriParts.length) continue;
-            
+
             int i = 1;
             //skip comparing the protocol, so that either http or https is considered valid
-            for (i = 1; i < configUriParts.length; i++)                
+            for (i = 1; i < configUriParts.length; i++)
             {
-                if (!configUriParts[i].toLowerCase().equals(uriParts[i].toLowerCase()) ) break;                      
+                if (!configUriParts[i].toLowerCase().equals(uriParts[i].toLowerCase()) ) break;
             }
             if (i == configUriParts.length)
             {
-            	//if the urls don't match exactly, and the individual matchAll tag is 'false', don't allow
+                //if the urls don't match exactly, and the individual matchAll tag is 'false', don't allow
                 if (configUriParts.length == uriParts.length || su.getMatchAll())
-                    return su;                    
-            }        
-        }       
-    	
+                    return su;
+            }
+        }
+
         if (this.mustMatch)
-        	return null;//if nothing match and mustMatch is true, return null
- 	  else
-        	return new ServerUrl(uri); //if mustMatch is false send the server URL back that is the same the uri to pass thru     
+            return null;//if nothing match and mustMatch is true, return null
+      else
+            return new ServerUrl(uri); //if mustMatch is false send the server URL back that is the same the uri to pass thru
     }
 
     public static boolean isUrlPrefixMatch(String prefix,String uri){
@@ -828,7 +828,7 @@ private static void _sendPingMessage(HttpServletResponse response, String versio
     response.setHeader("Accept-Encoding", "gzip");
     String message = "{ " +
         "\"Proxy Version\": \""+ version + "\"" +
-        //", \"Java Version\": \"" + System.getProperty("java.version") + "\"" + 
+        //", \"Java Version\": \"" + System.getProperty("java.version") + "\"" +
         ", \"Configuration File\": \"" + config + "\""  +
         ", \"Log File\": \""+ log + "\"" +
         "}";
@@ -846,8 +846,8 @@ try {
 
         out.clear();
         out = pageContext.pushBody();
-		
-		if (uri == null || uri.isEmpty()){
+
+        if (uri == null || uri.isEmpty()){
             response.sendError(403,"This proxy does not support empty parameters.");
             return;
         }
@@ -880,20 +880,20 @@ try {
                 return;
             }
         }
-        
+
         //Check to see if allowed referer list is specified and reject if referer is null
         if (request.getHeader("referer") == null && allowedReferers != null && !allowedReferers[0].equals("*")){
-		_log(Level.WARNING,"Proxy is being called by a null referer.  Access denied.");
+        _log(Level.WARNING,"Proxy is being called by a null referer.  Access denied.");
                 sendErrorResponse(response, "Current proxy configuration settings do not allow requests which do not include a referer header.", "403 - Forbidden: Access is denied.",HttpServletResponse.SC_FORBIDDEN);
                 return;
-	}
+    }
 
         serverUrl = getConfig().getConfigServerUrl(uri);
-		if (serverUrl == null) {
-        	//if no serverUrl found, send error message and get out.
-        	_sendURLMismatchError(response);
-        	return;
-        } 
+        if (serverUrl == null) {
+            //if no serverUrl found, send error message and get out.
+            _sendURLMismatchError(response);
+            return;
+        }
         passThrough = serverUrl == null;
     } catch (IllegalStateException e) {
         _log(Level.WARNING,"Proxy is being used for an unsupported service: " + uri);
@@ -1001,11 +1001,11 @@ try {
         }
     }
 } catch (FileNotFoundException e){
-	try {
-		_log("404 Not Found .",e);
-		response.sendError(404,e.getLocalizedMessage()+" is NOT Found.");
-		return;
-	}catch (IOException finalErr){
+    try {
+        _log("404 Not Found .",e);
+        response.sendError(404,e.getLocalizedMessage()+" is NOT Found.");
+        return;
+    }catch (IOException finalErr){
         _log("There was an error sending a response to the client.  Will not try again.", finalErr);
     }
 } catch (IOException e){

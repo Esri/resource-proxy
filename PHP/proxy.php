@@ -439,7 +439,7 @@ class Proxy {
 
     public function setupClassProperties()
     {
-    	$this->decodeCharacterEncoding(); // Sanitize url being proxied and removing encodings if present
+        $this->decodeCharacterEncoding(); // Sanitize url being proxied and removing encodings if present
 
         try {
 
@@ -486,21 +486,21 @@ class Proxy {
     
     public function decodeCharacterEncoding()
     {
-    	$hasHttpEncoding = $this->startsWith($_SERVER['QUERY_STRING'], 'http%3a%2f%2f');
-    	
-    	$hasHttpsEncoding = $this->startsWith($_SERVER['QUERY_STRING'], 'https%3a%2f%2f');
-    	
-    	if($hasHttpEncoding || $hasHttpsEncoding){
-    		
-    		$_SERVER['QUERY_STRING'] = urldecode($_SERVER['QUERY_STRING']); //Remove encoding from GET requests
-    		
-    		foreach($_POST as $k => $v) {
-    			
-    			$_POST[$k] = urldecode($v);  //Remove encoding for each POST value
-    			
-    		}
-    		
-    	}
+        $hasHttpEncoding = $this->startsWith($_SERVER['QUERY_STRING'], 'http%3a%2f%2f');
+        
+        $hasHttpsEncoding = $this->startsWith($_SERVER['QUERY_STRING'], 'https%3a%2f%2f');
+        
+        if($hasHttpEncoding || $hasHttpsEncoding){
+            
+            $_SERVER['QUERY_STRING'] = urldecode($_SERVER['QUERY_STRING']); //Remove encoding from GET requests
+            
+            foreach($_POST as $k => $v) {
+                
+                $_POST[$k] = urldecode($v);  //Remove encoding for each POST value
+                
+            }
+            
+        }
     }
 
     public function formatWithPrefix($url)
@@ -732,9 +732,9 @@ class Proxy {
 
         }
 
-    	if (strpos($this->proxyBody,'"code":403') !== false) {
+        if (strpos($this->proxyBody,'"code":403') !== false) {
         
-        	$isUnauthorized = true;
+            $isUnauthorized = true;
         
         }
 
@@ -810,30 +810,30 @@ class Proxy {
     
     public function curlError()
     {
-    	// see full of cURL error codes at http://curl.haxx.se/libcurl/c/libcurl-errors.html
+        // see full of cURL error codes at http://curl.haxx.se/libcurl/c/libcurl-errors.html
     
-    	$message = "cURL error (" . curl_errno($this->ch) . "): "
-    			. curl_error($this->ch) . ".";
+        $message = "cURL error (" . curl_errno($this->ch) . "): "
+                . curl_error($this->ch) . ".";
     
-    	$this->proxyLog->log($message);
+        $this->proxyLog->log($message);
     
-    	header('Status: 502', true, 502);  // 502 Bad Gateway -  The server, while acting as a gateway or proxy, received an invalid response from the upstream server it accessed in attempting to fulfill the request.
+        header('Status: 502', true, 502);  // 502 Bad Gateway -  The server, while acting as a gateway or proxy, received an invalid response from the upstream server it accessed in attempting to fulfill the request.
     
-    	header('Content-Type: application/json');
+        header('Content-Type: application/json');
     
-    	$configError = array(
-    			"error" => array("code" => 502,
-    					"details" => array($message),
-    					"message" => "Proxy failed due to curl error."
-    			));
+        $configError = array(
+                "error" => array("code" => 502,
+                        "details" => array($message),
+                        "message" => "Proxy failed due to curl error."
+                ));
     
-    	echo json_encode($configError);
+        echo json_encode($configError);
     
-    	curl_close($this->ch);
+        curl_close($this->ch);
     
-    	$this->ch = null;
+        $this->ch = null;
     
-    	exit();
+        exit();
     }
 
     public function proxyGet() {
@@ -854,7 +854,7 @@ class Proxy {
 
             if(curl_errno($this->ch) > 0 || empty($this->response))
             {
-            	$this->curlError();
+                $this->curlError();
 
             }else{
 

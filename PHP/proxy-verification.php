@@ -146,7 +146,7 @@ function versionPhpCheck()
         return "Pass";
     }elseif(version_compare(PHP_VERSION, '5.3.0', '>=') && version_compare(PHP_VERSION, '5.4.1', '<=')){
         return "Warning";
-	}else{
+    }else{
         return "Fail";
     }
 }
