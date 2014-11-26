@@ -559,12 +559,9 @@ class Proxy {
     {
         $canProcess = false;
 
-        if ($this->proxyConfig['mustmatch'] == false || $this->proxyConfig['mustmatch'] === "false") {
+        if ($this->proxyConfig['mustmatch'] == false || $this->proxyConfig['mustmatch'] === "false" || $this->proxyConfig['mustmatch'] == true || $this->proxyConfig['mustmatch'] == "true") {
 
-            $canProcess = true;
-
-        } else if ($this->proxyConfig['mustmatch'] == true || $this->proxyConfig['mustmatch'] == "true") {
-
+            //check with listed serverurl regardless if mustMatch is true or false
             foreach ($this->serverUrls as $key => $value) {
 
                 $s = $value['serverurl'][0];
@@ -612,6 +609,8 @@ class Proxy {
 
                 }
             }
+
+            if ($this->proxyConfig['mustmatch'] == false || $this->proxyConfig['mustmatch'] == "false") $canProcess = true; //if not found and mustMatch is false, then canProcess is true
 
         } else {
 
