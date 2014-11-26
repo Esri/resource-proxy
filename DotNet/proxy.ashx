@@ -20,7 +20,7 @@ using System.Text.RegularExpressions;
 
 public class proxy : IHttpHandler {
 
-    private static String version = "1.1";
+    private static String version = "1.1 beta";
 
     class RateMeter {
         double _rate; //internal rate is stored in requests per second
