@@ -160,7 +160,7 @@ private boolean passHeadersInfo(HttpServletRequest request, HttpURLConnection co
     while (headerNames.hasMoreElements()) {
         String key = (String) headerNames.nextElement();
         String value = request.getHeader(key);
-        con.setRequestProperty(key, value);
+        if (!key.equalsIgnoreCase("host")) con.setRequestProperty(key, value);
     }
     return true; 
 }
