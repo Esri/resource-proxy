@@ -398,6 +398,9 @@ public class proxy : IHttpHandler {
         req.Referer = referer;
         req.Method = method;
 
+        // Use the default system proxy
+        req.Proxy = System.Net.HttpWebRequest.GetSystemWebProxy();
+
         if (credentials != null)
             req.Credentials = credentials;
         
