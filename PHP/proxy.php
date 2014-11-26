@@ -8,6 +8,8 @@
  *
  */
 
+$version = "1.1 Beta";
+
 error_reporting(0);
 
 class Proxy {
@@ -204,6 +206,8 @@ class Proxy {
         $this->setupClassProperties();
 
         $this->checkEmptyParameters();
+        
+        $this->checkForPing();
 
         if ($this->proxyConfig['mustmatch'] != null && $this->proxyConfig['mustmatch'] == true || $this->proxyConfig['mustmatch'] == "true") {
 
@@ -355,11 +359,32 @@ class Proxy {
         exit();
     }
 
-
     public function checkEmptyParameters()
     {
         if(empty($this->proxyUrl)) {  // nothing to proxy
             $this->emptyParametersError();
+        }
+    }
+
+    public function checkForPing()
+    {
+        if($this->proxyUrl == "ping") {
+            $this->proxyLog->log("Pinged");
+
+            header('Status: 200', true, 200);
+            header('Content-Type: application/json');
+            
+            $curl_version = curl_version();
+            $pngMsg = array(
+                        "Proxy Version"      => $GLOBALS['version'],
+                        // "PHP Version"        => phpversion(),
+                        // "Curl Version"       => $curl_version[version],
+                        "Configuration File" => "OK", // or it would have failed in XmlParser()
+                        "Log File"           => "OK"  // or it would have failed in configurationParameterError()
+                    );
+
+            echo json_encode($pngMsg);
+            exit();
         }
     }
 
