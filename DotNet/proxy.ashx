@@ -323,6 +323,7 @@ public class proxy : IHttpHandler {
             {
                 case "content-type":
                 case "transfer-encoding":
+                case "accept-ranges":   // Prevent requests for partial content
                     continue;
                 default:
                     toResponse.AddHeader(headerKey, fromResponse.Headers[headerKey]);
