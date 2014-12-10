@@ -20,6 +20,8 @@ using System.Text.RegularExpressions;
 
 public class proxy : IHttpHandler {
 
+    private static String version = "1.1 beta";
+
     class RateMeter {
         double _rate; //internal rate is stored in requests per second
         int _countCap;
@@ -70,6 +72,30 @@ public class proxy : IHttpHandler {
         }
 
         string uri = context.Request.Url.Query.Substring(1);
+
+        //if uri is ping
+        if (uri.Equals("ping", StringComparison.InvariantCultureIgnoreCase))
+        {
+            ProxyConfig proxyConfig = ProxyConfig.GetCurrentConfig();
+
+            String checkConfig = (proxyConfig == null) ? "Not Readable" : "OK";
+            String checkLog = "";
+            if (checkConfig != "OK")
+            {
+                checkLog = "Can not verify";
+            }
+            else
+            {
+                String filename = proxyConfig.logFile;
+                checkLog = (filename != null && filename != "") ? "OK" : "Not Exist/Readable";
+
+                if (checkLog == "OK")
+                    logMessageToFile(string.Format("{0} {1}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "Log from ping"));
+            }
+
+            sendPingResponse(response, version, checkConfig, checkLog);
+            return;
+        }
 
         //if url is encoded, decode it.
         if (uri.StartsWith("http%3a%2f%2f", StringComparison.InvariantCultureIgnoreCase) || uri.StartsWith("https%3a%2f%2f", StringComparison.InvariantCultureIgnoreCase))
@@ -493,6 +519,21 @@ public class proxy : IHttpHandler {
              "/generateToken?token=" + portalToken + "&serverURL=" + su.Url + "&f=json";
         string tokenResponse = webResponseToString(doHTTPRequest(uri, "GET"));
         return extractToken(tokenResponse, "token");
+    }
+
+
+    private static void sendPingResponse(HttpResponse response, String version, String config, String log)
+    {
+        response.AddHeader("Content-Type", "application/json");
+        response.AddHeader("Accept-Encoding", "gzip");
+        String message = "{ " +
+            "\"Proxy Version\": \"" + version + "\"" +
+            ", \"Configuration File\": \"" + config + "\"" +
+            ", \"Log File\": \"" + log + "\"" +
+            "}";
+        response.StatusCode = 200;
+        response.Write(message);
+        response.Flush();
     }
 
     private static void sendErrorResponse(HttpResponse response, String errorDetails, String errorMessage, System.Net.HttpStatusCode errorCode)
