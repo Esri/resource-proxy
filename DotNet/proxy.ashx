@@ -376,7 +376,7 @@ public class proxy : IHttpHandler {
         if (method.Equals("POST"))
         {
             String[] uriArray = uri.Split('?');
-
+            uri = uriArray[0];
             if (uriArray.Length > 1)
             {
                 contentType = "application/x-www-form-urlencoded";
