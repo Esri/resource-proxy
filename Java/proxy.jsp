@@ -848,7 +848,9 @@ try {
         out = pageContext.pushBody();
 
         if (uri == null || uri.isEmpty()){
-            response.sendError(403,"This proxy does not support empty parameters.");
+            String errorMessage = "This proxy does not support empty parameters.";
+            _log(Level.WARNING, errorMessage);
+            sendErrorResponse(response, errorMessage, "400 - " + errorMessage, HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 

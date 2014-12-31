@@ -65,7 +65,7 @@ public class proxy : IHttpHandler {
         HttpResponse response = context.Response;
         if (context.Request.Url.Query.Length < 1)
         {
-            string errorMsg = "No URL specified";
+            string errorMsg = "This proxy does not support empty parameters.";
             log(TraceLevel.Error, errorMsg);
             sendErrorResponse(context.Response, null, errorMsg, System.Net.HttpStatusCode.BadRequest);
             return;

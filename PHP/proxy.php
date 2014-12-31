@@ -393,12 +393,12 @@ class Proxy {
         $message = "This proxy does not support empty parameters.";
         $this->proxyLog->log("$message");
 
-        header('Status: 403', true, 403);  // 403 Forbidden - The server understood the request, but is refusing to fulfill it.
+        header('Status: 400', true, 400);
 
         header('Content-Type: application/json');
 
         $configError = array(
-                "error" => array("code" => 403,
+                "error" => array("code" => 400,
                     "details" => array("$message"),
                     "message" => "$message"
                 ));
