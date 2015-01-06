@@ -13,6 +13,10 @@ A Java proxy that handles support for
 
 * Download and unzip the .zip file or clone the repository. You can download [a released version](https://github.com/Esri/resource-proxy/releases) (recommended) or the [most recent daily build](https://github.com/Esri/resource-proxy/archive/master.zip).
 * Install the contents of the Java folder as a Web Application in an web container such as Apache Tomcat.
+* Test that the proxy is installed and available:
+```
+http://[yourmachine]:8080/Java/proxy.jsp?ping
+```
 * Test that the proxy is able to forward requests directly in the browser using:
 ```
 http://[yourmachine]/Java/proxy.jsp?http://services.arcgisonline.com/ArcGIS/rest/services/?f=pjson
