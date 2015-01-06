@@ -817,9 +817,9 @@ private static void sendErrorResponse(HttpServletResponse response, String error
     output.flush();
 }
 
-private static void _sendURLMismatchError(HttpServletResponse response) throws IOException{
-     sendErrorResponse(response, "The proxy tried to resolve a prohibited or malformed URL. The server does not meet one of the preconditions that the requester put on the request.",
-                "403 - Forbidden: Access is denied.", HttpServletResponse.SC_FORBIDDEN);
+private static void _sendURLMismatchError(HttpServletResponse response, String attemptedUri) throws IOException{
+     sendErrorResponse(response, "Proxy has not been set up for this URL. Make sure there is a serverUrl in the configuration file that matches: " + attemptedUri,
+                 "Proxy has not been set up for this URL.", HttpServletResponse.SC_FORBIDDEN);
 }
 
 private static void _sendPingMessage(HttpServletResponse response, String version, String config, String log) throws IOException{
@@ -892,14 +892,14 @@ try {
         serverUrl = getConfig().getConfigServerUrl(uri);
         if (serverUrl == null) {
             //if no serverUrl found, send error message and get out.
-            _sendURLMismatchError(response);
+            _sendURLMismatchError(response, uri);
             return;
         }
         passThrough = serverUrl == null;
     } catch (IllegalStateException e) {
         _log(Level.WARNING, "Proxy is being used for an unsupported service: " + uri);
 
-        _sendURLMismatchError(response);
+        _sendURLMismatchError(response, uri);
 
         return;
     }

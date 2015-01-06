@@ -794,12 +794,9 @@ public class ProxyConfig
         }       
         
         if (mustMatch)
-            throw new ArgumentException("Proxy is being used for an unsupported service:");
-        
+            throw new ArgumentException("Proxy has not been set up for this URL. Make sure there is a serverUrl in the configuration file that matches: " + uri);
         return null;
     }
-
-
 }
 
 public class ServerUrl {

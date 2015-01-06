@@ -332,8 +332,8 @@ class Proxy {
 
         $configError = array(
                 "error" => array("code" => 403,
-                        "details" => array("The proxy tried to resolve a URL that was not found in the configuration file.  Possible solution would be to add another serverUrl into the configuration file or look for typos in the configuration file."),
-                        "message" => "Proxy failed due to configuration error."
+                        "details" => array("Proxy has not been set up for this URL. Make sure there is a serverUrl in the configuration file that matches: " . $this->proxyUrl),
+                        "message" => "Proxy has not been set up for this URL."
                 ));
 
         echo json_encode($configError);
