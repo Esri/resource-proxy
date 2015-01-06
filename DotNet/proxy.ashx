@@ -492,7 +492,7 @@ public class proxy : IHttpHandler {
                     infoUrl = infoUrl + "/sharing";
                 }
                 else
-                    throw new ApplicationException("Unable to determine the correct URL to request a token to access private resources");
+                    throw new ApplicationException("Unable to determine the correct URL to request a token to access private resources.");
                     
                 if (infoUrl != "") {
                     log(TraceLevel.Info," Querying security endpoint...");
