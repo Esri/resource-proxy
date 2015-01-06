@@ -825,7 +825,6 @@ private static void _sendURLMismatchError(HttpServletResponse response) throws I
 private static void _sendPingMessage(HttpServletResponse response, String version, String config, String log) throws IOException{
     response.setStatus(HttpServletResponse.SC_OK);
     response.setHeader("Content-Type", "application/json");
-    response.setHeader("Accept-Encoding", "gzip");
     String message = "{ " +
         "\"Proxy Version\": \""+ version + "\"" +
         //", \"Java Version\": \"" + System.getProperty("java.version") + "\"" +
