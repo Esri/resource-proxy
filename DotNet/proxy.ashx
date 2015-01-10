@@ -374,10 +374,13 @@ public class proxy : IHttpHandler {
     private void copyRequestHeaders(HttpRequest fromRequest, System.Net.HttpWebRequest toRequest)
     {
         foreach (var headerKey in fromRequest.Headers.AllKeys)
-        {        
+        {
             string headerValue = fromRequest.Headers[headerKey];
             switch (headerKey.ToLower())
             {
+                case "accept-encoding":
+                case "proxy-connection":
+                    continue;
                 case "range":
                     setRangeHeader(toRequest, headerValue);
                     break;
@@ -394,7 +397,7 @@ public class proxy : IHttpHandler {
                     break;
                 case "user-agent":
                     toRequest.UserAgent = headerValue;
-                    break;                    
+                    break;
                 default:
                     // Some headers are restricted and would throw an exception:
                     // http://msdn.microsoft.com/en-us/library/system.net.httpwebrequest.headers(v=vs.100).aspx
