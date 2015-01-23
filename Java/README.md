@@ -12,14 +12,14 @@ A Java proxy that handles support for
 ##Instructions
 
 * Download and unzip the .zip file or clone the repository. You can download [a released version](https://github.com/Esri/resource-proxy/releases) (recommended) or the [most recent daily build](https://github.com/Esri/resource-proxy/archive/master.zip).
-* Install the contents of the Java folder as a Web Application in an web container such as Apache Tomcat.
+* Install the contents of the Java folder as a Web Application in a web container such as Apache Tomcat.
 * Test that the proxy is installed and available:
 ```
 http://[yourmachine]:8080/Java/proxy.jsp?ping
 ```
 * Test that the proxy is able to forward requests directly in the browser using:
 ```
-http://[yourmachine]/Java/proxy.jsp?http://services.arcgisonline.com/ArcGIS/rest/services/?f=pjson
+http://[yourmachine]:8080/Java/proxy.jsp?http://services.arcgisonline.com/ArcGIS/rest/services/?f=pjson
 ```
 * Edit the proxy.config file in a text editor to set up your proxy configuration settings.
 * Update your application to use the proxy for the specified services. In this JavaScript example requests to route.arcgis.com will utilize the proxy.
@@ -27,7 +27,7 @@ http://[yourmachine]/Java/proxy.jsp?http://services.arcgisonline.com/ArcGIS/rest
 ```
     urlUtils.addProxyRule({
         urlPrefix: "route.arcgis.com",
-        proxyUrl: "http://[yourmachine]/proxy/proxy.jsp"
+        proxyUrl: "http://[yourmachine]:8080/Java/proxy.jsp"
     });
 ```
 * Security tip: By default, the proxy.config allows any referrer. To lock this down, replace the  ```*``` in the ```allowedReferers``` property with your own application URLs.
@@ -57,7 +57,7 @@ See the proxy.config for examples. Note: Refresh the proxy application after upd
 
 The proxy consists of the following files:
 * proxy.jsp: The actual proxy application. In most cases you will not need to modify this file.
-* WEB-INF/classes/proxy.config: This file contains the configuration settings for the proxy. This is where you will define all the resources that will use the proxy. After updating this file you will need to restart or update the proxy application from your web container. **Important note:** In order to keep your credentials safe, ensure that your web server will not display the text inside your proxy.config in the browser (ie: http://[yourmachine]/proxy/proxy.config).
+* WEB-INF/classes/proxy.config: This file contains the configuration settings for the proxy. This is where you will define all the resources that will use the proxy. After updating this file you will need to restart or update the proxy application from your web container. **Important note:** In order to keep your credentials safe, ensure that your web server will not display the text inside your proxy.config in the browser (ie: http://[yourmachine]:8080/Java/proxy.config).
 
 ##Requirements
 
