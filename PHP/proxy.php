@@ -596,15 +596,15 @@ class Proxy {
 
                 $s['url'] = $this->sanitizeUrl($s['url']); //Do all the URL cleanups and checks at once
 
-                if(is_string($s['matchall'])){
+                if(is_string($s['matchAll'])){
 
-                    $mustmatch = strtolower($s['matchall']);
+                    $mustmatch = strtolower($s['matchAll']);
 
-                    $s['matchall'] = $mustmatch;
+                    $s['matchAll'] = $mustmatch;
 
                 }
 
-                if ($s['matchall'] == true || $s['matchall'] === "true") {
+                if ($s['matchAll'] == true || $s['matchAll'] === "true") {
 
                     $urlStartsWith = $this->startsWith($this->proxyUrl, $s['url']);
 
@@ -620,7 +620,7 @@ class Proxy {
 
                     }
 
-                } else if ($s['matchAll'] == false || $s['matchall'] === "false"){
+                } else if ($s['matchAll'] == false || $s['matchAll'] === "false"){
 
                     $isEqual = $this->equals($this->proxyUrl, $s['url']);
 
