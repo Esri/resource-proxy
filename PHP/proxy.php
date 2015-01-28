@@ -675,28 +675,26 @@ class Proxy {
         } else if ($this->proxyConfig['mustmatch'] == true || $this->proxyConfig['mustmatch'] == "true") {
 
             foreach ($this->serverUrls as $key => $value) {
+                
+                $serverUrl = $value['serverurl'][0];
 
-                $s = $value['serverurl'][0];
+                $serverUrl['url'] = $this->sanitizeUrl($serverUrl['url']); //Do all the URL cleanups and checks at once
+                
+                if(is_string($serverUrl['matchall'])){
 
-                $s['url'] = $this->sanitizeUrl($s['url']); //Do all the URL cleanups and checks at once
-
-                if(is_string($s['matchAll'])){
-
-                    $mustmatch = strtolower($s['matchAll']);
-
-                    $s['matchAll'] = $mustmatch;
+                    $serverUrl['matchAll'] = strtolower($serverUrl['matchall']);
 
                 }
 
-                if ($s['matchAll'] == true || $s['matchAll'] === "true") {
+                if ($serverUrl['matchall'] == true || $serverUrl['matchall'] === "true") {
 
-                    $urlStartsWith = $this->startsWith($this->proxyUrl, $s['url']);
+                    $urlStartsWith = $this->startsWith($this->proxyUrl, $serverUrl['url']);
 
                     if ($urlStartsWith){
 
-                        $this->resource = $s;
+                        $this->resource = $serverUrl;
 
-                        $this->sessionUrl = $s['url'];
+                        $this->sessionUrl = $serverUrl['url'];
 
                         $canProcess = true;
 
@@ -704,15 +702,15 @@ class Proxy {
 
                     }
 
-                } else if ($s['matchAll'] == false || $s['matchAll'] === "false"){
+                } else if ($serverUrl['matchall'] == false || $serverUrl['matchall'] === "false"){
 
-                    $isEqual = $this->equals($this->proxyUrl, $s['url']);
+                    $isEqual = $this->equals($this->proxyUrl, $serverUrl['url']);
 
                     if($isEqual){
 
-                        $this->resource = $s;
+                        $this->resource = $serverUrl;
 
-                        $this->sessionUrl = $s['url'];
+                        $this->sessionUrl = $serverUrl['url'];
 
                         $canProcess = true;
 
