@@ -60,7 +60,7 @@ class Proxy {
      * @var array
      */
 
-    public $headers;
+    public $headers = array();
 
     /**
      * cURL resource used to send HTTP requests
@@ -189,6 +189,31 @@ class Proxy {
      */
 
     private  $unlinkPath;
+    
+    /**
+     * Holds a cloned copy of the resource response
+     *
+     * @var string
+     */
+    
+    public $responseClone;
+    
+    /**
+     * Holds headers sent by the client
+     *
+     * @var array
+    */
+    
+    public $clientRequestHeaders;
+    
+    /**
+     * Holds content length of last request
+     *
+     * @var int
+     */
+    
+    
+    public $contentLength;
 
 
 
@@ -202,6 +227,8 @@ class Proxy {
         $this->serverUrls = $configuration->serverUrls;
 
         $this->setupSession();
+        
+        $this->getIncomingHeaders();
 
         $this->setupClassProperties();
 
@@ -249,6 +276,36 @@ class Proxy {
 
         }
 
+    }
+    
+    public function getIncomingHeaders()
+    {
+        $headers = null;
+    
+        if (!function_exists('getallheaders'))
+        {
+            $headers = array();
+    
+            foreach ($_SERVER as $key => $value)
+            {
+    
+                if (substr($key,0,5)=="HTTP_") {
+                     
+                    $key = str_replace(" ","-",ucwords(strtolower(str_replace("_"," ",substr($key,5)))));
+    
+                    $headers[$key] = $value;
+    
+                }
+            }
+    
+        }else{
+    
+            $headers = getallheaders();
+    
+        }
+    
+        $this->clientRequestHeaders = $headers;
+    
     }
 
     public function makeDirectory($dir, $mode = 0777) //Not implemented.
@@ -410,46 +467,117 @@ class Proxy {
 
     public function setProxyHeaders()
     {
-        $header_size = curl_getinfo($this->ch, CURLINFO_HEADER_SIZE);
+        
+        $header_size = curl_getinfo($this->ch, CURLINFO_HEADER_SIZE); //cURL will go null after this 
 
         $header_content = trim(substr($this->response,0, $header_size));
-
-        $this->headers = preg_split( '/\r\n|\r|\n/', $header_content);
-
-        if((boolean)$this->headers){
-
-            foreach($this->headers as $key => $value) {
+        
+        $header_array = $this->parse_resource_headers($header_content);
+        
+        foreach ($header_array as $key => $value) {
+        
+            if(is_string($key)){
                 
-                if ($this->contains($value, "Transfer-Encoding: chunked")) { //See issue #75
-               
-                    continue;
+                $header = sprintf("%s: %s", $key, $value);
                 
-                }
+                $this->headers[] = $header;
                 
-                header($value); //Sets the header
-            
             }
-
-        }else{
-
-            header("Content-Type: text/plain;charset=utf-8"); //If preg_split does not evaluate use text/plain
+        
         }
+
     }
 
     public function setResponseBody()
     {
 
-        $header_size = curl_getinfo($this->ch,CURLINFO_HEADER_SIZE);
-
-        $this->proxyBody = substr($this->response, $header_size);
-
+        $this->proxyBody = substr($this->responseClone, $this->contentLength);
+        
+    }
+    
+    public function parse_resource_headers($raw_headers) //Takes the cURL response header (from the resource) and parses it into array
+    {
+        $headers = array();  //Thanks to this http://stackoverflow.com/questions/6368574/how-to-get-the-functionality-of-http-parse-headers-without-pecl
+    
+        $key = '';
+    
+        foreach(explode("\n", $raw_headers) as $i => $h) {
+    
+            $h = explode(':', $h, 2);
+    
+            if (isset($h[1])) {
+    
+                if (!isset($headers[$h[0]]))
+    
+                    $headers[$h[0]] = trim($h[1]);
+    
+                elseif (is_array($headers[$h[0]])) {
+    
+                    $headers[$h[0]] = array_merge($headers[$h[0]], array(trim($h[1])));
+    
+                } else {
+    
+                    $headers[$h[0]] = array_merge(array($headers[$h[0]]), array(trim($h[1])));
+                }
+    
+                $key = $h[0];
+    
+            } else {
+    
+                if (substr($h[0], 0, 1) == "\t"){
+    
+                    $headers[$key] .= "\r\n\t".trim($h[0]);
+    
+                } elseif (!$key){
+    
+                    $headers[0] = trim($h[0]);
+    
+                }
+            }
+        }
+    
+        return $headers;
     }
 
     public function getResponse()
     {
+        //Remove built in PHP headers
+        
 
+        foreach(headers_list() as $key => $value)
+        {
+            $pos = strripos($value, ":");
+            
+            $header_type = substr($value,0,$pos);
+            
+            if ($this->contains($value, "Cookie")) { //Don't remove the PHP session cookie
+                 
+                continue;
+            
+            }
+            
+            header_remove($header_type);
+            
+        }
+        
+        //Remove scenario causing provisional header error message
+        
+        foreach ($this->headers as $key => $value) {
+            
+            if ($this->contains($value, "Transfer-Encoding: chunked")) { //See issue #75
+                 
+                continue;
+            
+            }
+            
+            header($value, false);
+  
+        }
+
+        header("Content-length: " . strlen($this->proxyBody)); //Issue 190 with truncated response, not sure how to gzip the data (or keep gzip via CURLOPT_ENCODING) without extension.
+        
         echo $this->proxyBody;
-
+        
         $this->proxyLog->log("Proxy complete");
 
         $this->proxyConfig = null;
@@ -591,28 +719,27 @@ class Proxy {
         } else if ($this->proxyConfig['mustmatch'] == true || $this->proxyConfig['mustmatch'] == "true") {
 
             foreach ($this->serverUrls as $key => $value) {
+                
+                $serverUrl = $value['serverurl'][0];
 
-                $s = $value['serverurl'][0];
+                $serverUrl['url'] = $this->sanitizeUrl($serverUrl['url']); //Do all the URL cleanups and checks at once
+                
+                if(is_string($serverUrl['matchall'])){
 
-                $s['url'] = $this->sanitizeUrl($s['url']); //Do all the URL cleanups and checks at once
-
-                if(is_string($s['matchAll'])){
-
-                    $mustmatch = strtolower($s['matchAll']);
-
-                    $s['matchAll'] = $mustmatch;
+                    $serverUrl['matchAll'] = strtolower($serverUrl['matchall']);
 
                 }
 
-                if ($s['matchAll'] == true || $s['matchAll'] === "true") {
+                if ($serverUrl['matchall'] == true || $serverUrl['matchall'] === "true") {
 
-                    $urlStartsWith = $this->startsWith($this->proxyUrl, $s['url']);
+                    $urlStartsWith = $this->startsWith($this->proxyUrl, $serverUrl['url']);
+
 
                     if ($urlStartsWith){
 
-                        $this->resource = $s;
+                        $this->resource = $serverUrl;
 
-                        $this->sessionUrl = $s['url'];
+                        $this->sessionUrl = $serverUrl['url'];
 
                         $canProcess = true;
 
@@ -620,15 +747,15 @@ class Proxy {
 
                     }
 
-                } else if ($s['matchAll'] == false || $s['matchAll'] === "false"){
+                } else if ($serverUrl['matchall'] == false || $serverUrl['matchall'] === "false"){
 
-                    $isEqual = $this->equals($this->proxyUrl, $s['url']);
+                    $isEqual = $this->equals($this->proxyUrl, $serverUrl['url']);
 
                     if($isEqual){
 
-                        $this->resource = $s;
+                        $this->resource = $serverUrl;
 
-                        $this->sessionUrl = $s['url'];
+                        $this->sessionUrl = $serverUrl['url'];
 
                         $canProcess = true;
 
@@ -876,6 +1003,10 @@ class Proxy {
             curl_setopt($this->ch, CURLOPT_URL, $this->proxyUrlWithData);
 
             $this->response = curl_exec($this->ch);
+            
+            $this->responseClone = $this->response;
+            
+            $this->contentLength = curl_getinfo($this->ch,CURLINFO_HEADER_SIZE);
 
             if(curl_errno($this->ch) > 0 || empty($this->response))
             {
@@ -935,6 +1066,10 @@ class Proxy {
             }
 
             $this->response = curl_exec($this->ch);
+            
+            $this->responseClone = $this->response;
+            
+            $this->contentLength = curl_getinfo($this->ch,CURLINFO_HEADER_SIZE);
 
         } catch (Exception $e) {
 
@@ -1000,6 +1135,10 @@ class Proxy {
             curl_setopt($this->ch, CURLOPT_POSTFIELDS, $query_array);
 
             $this->response = curl_exec($this->ch);
+            
+            $this->responseClone = $this->response;
+            
+            $this->contentLength = curl_getinfo($this->ch,CURLINFO_HEADER_SIZE);
 
             if(curl_errno($this->ch) > 0 || empty($this->response))
             {
