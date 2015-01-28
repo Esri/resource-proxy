@@ -189,6 +189,14 @@ class Proxy {
      */
 
     private  $unlinkPath;
+    
+    /**
+     * Holds a cloned copy of the resource response
+     *
+     * @var resource
+     */
+    
+    public $responseClone;
 
 
 
