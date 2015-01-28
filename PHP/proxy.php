@@ -494,6 +494,50 @@ class Proxy {
         $this->proxyBody = substr($this->responseClone, $this->contentLength);
         
     }
+    
+    public function parse_resource_headers($raw_headers) //Takes the cURL response header (from the resource) and parses it into array
+    {
+        $headers = array();  //Thanks to this http://stackoverflow.com/questions/6368574/how-to-get-the-functionality-of-http-parse-headers-without-pecl
+    
+        $key = '';
+    
+        foreach(explode("\n", $raw_headers) as $i => $h) {
+    
+            $h = explode(':', $h, 2);
+    
+            if (isset($h[1])) {
+    
+                if (!isset($headers[$h[0]]))
+    
+                    $headers[$h[0]] = trim($h[1]);
+    
+                elseif (is_array($headers[$h[0]])) {
+    
+                    $headers[$h[0]] = array_merge($headers[$h[0]], array(trim($h[1])));
+    
+                } else {
+    
+                    $headers[$h[0]] = array_merge(array($headers[$h[0]]), array(trim($h[1])));
+                }
+    
+                $key = $h[0];
+    
+            } else {
+    
+                if (substr($h[0], 0, 1) == "\t"){
+    
+                    $headers[$key] .= "\r\n\t".trim($h[0]);
+    
+                } elseif (!$key){
+    
+                    $headers[0] = trim($h[0]);
+    
+                }
+            }
+        }
+    
+        return $headers;
+    }
 
     public function getResponse()
     {
@@ -689,6 +733,7 @@ class Proxy {
                 if ($serverUrl['matchall'] == true || $serverUrl['matchall'] === "true") {
 
                     $urlStartsWith = $this->startsWith($this->proxyUrl, $serverUrl['url']);
+
 
                     if ($urlStartsWith){
 
