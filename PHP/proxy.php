@@ -60,7 +60,7 @@ class Proxy {
      * @var array
      */
 
-    public $headers;
+    public $headers = array();
 
     /**
      * cURL resource used to send HTTP requests
@@ -193,10 +193,27 @@ class Proxy {
     /**
      * Holds a cloned copy of the resource response
      *
-     * @var resource
+     * @var string
      */
     
     public $responseClone;
+    
+    /**
+     * Holds headers sent by the client
+     *
+     * @var array
+    */
+    
+    public $clientRequestHeaders;
+    
+    /**
+     * Holds content length of last request
+     *
+     * @var int
+     */
+    
+    
+    public $contentLength;
 
 
 
@@ -210,6 +227,8 @@ class Proxy {
         $this->serverUrls = $configuration->serverUrls;
 
         $this->setupSession();
+        
+        $this->getIncomingHeaders();
 
         $this->setupClassProperties();
 
@@ -257,6 +276,36 @@ class Proxy {
 
         }
 
+    }
+    
+    public function getIncomingHeaders()
+    {
+        $headers = null;
+    
+        if (!function_exists('getallheaders'))
+        {
+            $headers = array();
+    
+            foreach ($_SERVER as $key => $value)
+            {
+    
+                if (substr($key,0,5)=="HTTP_") {
+                     
+                    $key = str_replace(" ","-",ucwords(strtolower(str_replace("_"," ",substr($key,5)))));
+    
+                    $headers[$key] = $value;
+    
+                }
+            }
+    
+        }else{
+    
+            $headers = getallheaders();
+    
+        }
+    
+        $this->clientRequestHeaders = $headers;
+    
     }
 
     public function makeDirectory($dir, $mode = 0777) //Not implemented.
@@ -418,46 +467,73 @@ class Proxy {
 
     public function setProxyHeaders()
     {
-        $header_size = curl_getinfo($this->ch, CURLINFO_HEADER_SIZE);
+        
+        $header_size = curl_getinfo($this->ch, CURLINFO_HEADER_SIZE); //cURL will go null after this 
 
         $header_content = trim(substr($this->response,0, $header_size));
-
-        $this->headers = preg_split( '/\r\n|\r|\n/', $header_content);
-
-        if((boolean)$this->headers){
-
-            foreach($this->headers as $key => $value) {
+        
+        $header_array = $this->parse_resource_headers($header_content);
+        
+        foreach ($header_array as $key => $value) {
+        
+            if(is_string($key)){
                 
-                if ($this->contains($value, "Transfer-Encoding: chunked")) { //See issue #75
-               
-                    continue;
+                $header = sprintf("%s: %s", $key, $value);
                 
-                }
+                $this->headers[] = $header;
                 
-                header($value); //Sets the header
-            
             }
-
-        }else{
-
-            header("Content-Type: text/plain;charset=utf-8"); //If preg_split does not evaluate use text/plain
+        
         }
+
     }
 
     public function setResponseBody()
     {
 
-        $header_size = curl_getinfo($this->ch,CURLINFO_HEADER_SIZE);
-
-        $this->proxyBody = substr($this->response, $header_size);
-
+        $this->proxyBody = substr($this->responseClone, $this->contentLength);
+        
     }
 
     public function getResponse()
     {
+        //Remove built in PHP headers
+        
 
+        foreach(headers_list() as $key => $value)
+        {
+            $pos = strripos($value, ":");
+            
+            $header_type = substr($value,0,$pos);
+            
+            if ($this->contains($value, "Cookie")) { //Don't remove the PHP session cookie
+                 
+                continue;
+            
+            }
+            
+            header_remove($header_type);
+            
+        }
+        
+        //Remove scenario causing provisional header error message
+        
+        foreach ($this->headers as $key => $value) {
+            
+            if ($this->contains($value, "Transfer-Encoding: chunked")) { //See issue #75
+                 
+                continue;
+            
+            }
+            
+            header($value, false);
+  
+        }
+
+        header("Content-length: " . strlen($this->proxyBody)); //Issue 190 with truncated response, not sure how to gzip the data (or keep gzip via CURLOPT_ENCODING) without extension.
+        
         echo $this->proxyBody;
-
+        
         $this->proxyLog->log("Proxy complete");
 
         $this->proxyConfig = null;
@@ -884,6 +960,10 @@ class Proxy {
             curl_setopt($this->ch, CURLOPT_URL, $this->proxyUrlWithData);
 
             $this->response = curl_exec($this->ch);
+            
+            $this->responseClone = $this->response;
+            
+            $this->contentLength = curl_getinfo($this->ch,CURLINFO_HEADER_SIZE);
 
             if(curl_errno($this->ch) > 0 || empty($this->response))
             {
@@ -943,6 +1023,10 @@ class Proxy {
             }
 
             $this->response = curl_exec($this->ch);
+            
+            $this->responseClone = $this->response;
+            
+            $this->contentLength = curl_getinfo($this->ch,CURLINFO_HEADER_SIZE);
 
         } catch (Exception $e) {
 
@@ -1008,6 +1092,10 @@ class Proxy {
             curl_setopt($this->ch, CURLOPT_POSTFIELDS, $query_array);
 
             $this->response = curl_exec($this->ch);
+            
+            $this->responseClone = $this->response;
+            
+            $this->contentLength = curl_getinfo($this->ch,CURLINFO_HEADER_SIZE);
 
             if(curl_errno($this->ch) > 0 || empty($this->response))
             {
