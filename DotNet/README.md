@@ -12,11 +12,19 @@ A .NET proxy that handles support for
 ##Instructions
 
 * Download and unzip the .zip file or clone the repository. You can download [a released version](https://github.com/Esri/resource-proxy/releases) (recommended) or the [most recent daily build](https://github.com/Esri/resource-proxy/archive/master.zip).
-* Install the contents of the DotNet folder as a .NET Web Application, specifying a .NET 4.0 application pool or later
+* Install the contents of the DotNet folder as a .NET Web Application, specifying a .NET 4.0 application pool or later. For example using the following steps:
+    * Open IIS Manager
+    * If you put the DotNet folder within wwwroot, right-click it and select "Convert to Application".
+    * Make sure the "Application pool" is at least 4.0.
+* Test that the proxy is installed and available:
+```
+http://[yourmachine]/DotNet/proxy.ashx?ping
+```
 * Test that the proxy is able to forward requests directly in the browser using:
 ```
 http://[yourmachine]/DotNet/proxy.ashx?http://services.arcgisonline.com/ArcGIS/rest/services/?f=pjson
 ```
+* Troubleshooting: If you get an error message 404.3, it's possible that ASP.NET have not been set up. On Windows 8, go to "Turn Windows features on or off" -> "Internet Information Services" -> "World Wide Web Services" -> "Application Development Features" -> "ASP.NET 4.5".
 * Edit the proxy.config file in a text editor to set up your proxy configuration settings.
 * Update your application to use the proxy for the specified services. In this JavaScript example requests to route.arcgis.com will utilize the proxy.
 
@@ -33,6 +41,7 @@ http://[yourmachine]/DotNet/proxy.ashx?http://services.arcgisonline.com/ArcGIS/r
 * Use the ProxyConfig tag to specify the following proxy level settings.
     * **mustMatch="true"** : When true only the sites listed using serverUrl will be proxied. Set to false to proxy any site, which can be useful in testing. However, we recommend setting it to "true" for production sites.
     * **allowedReferers="http://server.com/app1,http://server.com/app2"** : A comma-separated list of referer URLs. Only requests coming from referers in the list will be proxied.
+    * **logFile="proxylog.txt"** : When a logFile is specified, the proxy will log messages to this file.
 * Add a new \<serverUrl\> entry for each service that will use the proxy. The proxy.config allows you to use the serverUrl tag to specify one or more ArcGIS Server services that the proxy will forward requests to. The serverUrl tag has the following attributes:
     * **url**: Location of the ArcGIS Server service (or other URL) to proxy. Specify either the specific URL or the root (in which case you should set matchAll="false").
     * **matchAll="true"**: When true all requests that begin with the specified URL are forwarded. Otherwise, the URL requested must match exactly.
@@ -52,8 +61,8 @@ Example of proxy using application credentials and limiting requests to 10/minut
 <serverUrl url="http://route.arcgis.com"
     clientId="6Xo1d-example-9Kn2"
     clientSecret="5a5d50-example-c867b6efcf969bdcc6a2"
-    rateLimit=600
-    rateLimitPeriod=60
+    rateLimit="600"
+    rateLimitPeriod="60"
     matchAll="true">
 </serverUrl>
 ```
@@ -68,10 +77,12 @@ Note: You may have to refresh the proxy application after updates to the proxy.c
 ##Folders and Files
 
 The proxy consists of the following files:
-* proxy.config: This file contains the configuration settings for the proxy. This is where you will define all the resources that will use the proxy. After updating this file you might need to refresh the proxy application using IIS tools in order for the changes to take effect.
-* **Important note:** In order to keep your credentials safe, ensure that your web server will not display the text inside your proxy.config in the browser (ie: http://[yourmachine]/proxy/proxy.config).
+* proxy.config: This file contains the configuration settings for the proxy. This is where you will define all the resources that will use the proxy. After updating this file you might need to refresh the proxy application using IIS tools in order for the changes to take effect.  **Important note:** In order to keep your credentials safe, ensure that your web server will not display the text inside your proxy.config in the browser (ie: http://[yourmachine]/proxy/proxy.config).
 * proxy.ashx: The actual proxy application. In most cases you will not need to modify this file.
-* web.config: An XML file that stores ASP.NET configuration data. Use this file to configure logging for the proxy. By default the proxy will write log messages to a file named auth_proxy.log located in  'C:\Temp\Shared\proxy_logs'. Note that the folder location needs to exist in order for the log file to be successfully created.
+* proxy.xsd: a schema file for easier editing of proxy.config in Visual Studio.
+* Web.config: An XML file that stores ASP.NET configuration data. 
+NOTE: as of v1.1, log levels and log file locations are specified in proxy config. By default the proxy will write log messages to a file named auth_proxy.log located in  'C:\Temp\Shared\proxy_logs'. Note that the folder location needs to exist in order for the log file to be successfully created.
+
 ##Requirements
 
 * ASP.NET 4.0 or greater (4.5 is required on Windows 8/Server 2012, see [this article] (http://www.iis.net/learn/get-started/whats-new-in-iis-8/iis-80-using-aspnet-35-and-aspnet-45) for more information)

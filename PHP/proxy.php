@@ -3,10 +3,12 @@
 /**
  * PHP Proxy Client
  *
- * Version 1.0
+ * Version 1.1 beta
  * See https://github.com/Esri/resource-proxy for more information.
  *
  */
+
+$version = "1.1 Beta";
 
 error_reporting(0);
 
@@ -204,6 +206,8 @@ class Proxy {
         $this->setupClassProperties();
 
         $this->checkEmptyParameters();
+        
+        $this->checkForPing();
 
         if ($this->proxyConfig['mustmatch'] != null && $this->proxyConfig['mustmatch'] == true || $this->proxyConfig['mustmatch'] == "true") {
 
@@ -328,8 +332,8 @@ class Proxy {
 
         $configError = array(
                 "error" => array("code" => 403,
-                        "details" => array("The proxy tried to resolve a URL that was not found in the configuration file.  Possible solution would be to add another serverUrl into the configuration file or look for typos in the configuration file."),
-                        "message" => "Proxy failed due to configuration error."
+                        "details" => array("Proxy has not been set up for this URL. Make sure there is a serverUrl in the configuration file that matches: " . $this->proxyUrl),
+                        "message" => "Proxy has not been set up for this URL."
                 ));
 
         echo json_encode($configError);
@@ -355,12 +359,32 @@ class Proxy {
         exit();
     }
 
-
     public function checkEmptyParameters()
-<<<<<<< HEAD
     {
         if(empty($this->proxyUrl)) {  // nothing to proxy
             $this->emptyParametersError();
+        }
+    }
+
+    public function checkForPing()
+    {
+        if($this->proxyUrl == "ping") {
+            $this->proxyLog->log("Pinged");
+
+            header('Status: 200', true, 200);
+            header('Content-Type: application/json');
+            
+            $curl_version = curl_version();
+            $pngMsg = array(
+                        "Proxy Version"      => $GLOBALS['version'],
+                        // "PHP Version"        => phpversion(),
+                        // "Curl Version"       => $curl_version[version],
+                        "Configuration File" => "OK", // or it would have failed in XmlParser()
+                        "Log File"           => "OK"  // or it would have failed in configurationParameterError()
+                    );
+
+            echo json_encode($pngMsg);
+            exit();
         }
     }
 
@@ -369,55 +393,12 @@ class Proxy {
         $message = "This proxy does not support empty parameters.";
         $this->proxyLog->log("$message");
 
-        header('Status: 403', true, 403);  // 403 Forbidden - The server understood the request, but is refusing to fulfill it.
+        header('Status: 400', true, 400);
 
         header('Content-Type: application/json');
 
         $configError = array(
-                "error" => array("code" => 403,
-                    "details" => array("$message"),
-                    "message" => "$message"
-                ));
-
-        echo json_encode($configError);
-
-        exit();
-    }
-
-    public function setProxyHeaders()
-=======
->>>>>>> f494df3c03c4e446f562756287ca552ff679c076
-    {
-        if(empty($this->proxyUrl)) {  // nothing to proxy
-            $this->emptyParametersError();
-        }
-    }
-
-    public function emptyParametersError()
-    {
-        $message = "This proxy does not support empty parameters.";
-        $this->proxyLog->log("$message");
-
-<<<<<<< HEAD
-        $this->headers = preg_split( '/\r\n|\r|\n/', $header_content);
-
-        if((boolean)$this->headers){
-
-            foreach($this->headers as $key => $value) {
-            	
-            	if ($this->contains($value, "Transfer-Encoding: chunked")) { //See issue #75
-            	
-            		continue;
-            	}
-
-            	header($value);
-=======
-        header('Status: 403', true, 403);  // 403 Forbidden - The server understood the request, but is refusing to fulfill it.
-
-        header('Content-Type: application/json');
-
-        $configError = array(
-                "error" => array("code" => 403,
+                "error" => array("code" => 400,
                     "details" => array("$message"),
                     "message" => "$message"
                 ));
@@ -447,7 +428,6 @@ class Proxy {
                 
                 header($value); //Sets the header
             
->>>>>>> f494df3c03c4e446f562756287ca552ff679c076
             }
 
         }else{
@@ -484,7 +464,7 @@ class Proxy {
 
     public function setupClassProperties()
     {
-    	$this->decodeCharacterEncoding(); // Sanitize url being proxied and removing encodings if present
+        $this->decodeCharacterEncoding(); // Sanitize url being proxied and removing encodings if present
 
         try {
 
@@ -531,21 +511,21 @@ class Proxy {
     
     public function decodeCharacterEncoding()
     {
-    	$hasHttpEncoding = $this->startsWith($_SERVER['QUERY_STRING'], 'http%3a%2f%2f');
-    	
-    	$hasHttpsEncoding = $this->startsWith($_SERVER['QUERY_STRING'], 'https%3a%2f%2f');
-    	
-    	if($hasHttpEncoding || $hasHttpsEncoding){
-    		
-    		$_SERVER['QUERY_STRING'] = urldecode($_SERVER['QUERY_STRING']); //Remove encoding from GET requests
-    		
-    		foreach($_POST as $k => $v) {
-    			
-    			$_POST[$k] = urldecode($v);  //Remove encoding for each POST value
-    			
-    		}
-    		
-    	}
+        $hasHttpEncoding = $this->startsWith($_SERVER['QUERY_STRING'], 'http%3a%2f%2f');
+        
+        $hasHttpsEncoding = $this->startsWith($_SERVER['QUERY_STRING'], 'https%3a%2f%2f');
+        
+        if($hasHttpEncoding || $hasHttpsEncoding){
+            
+            $_SERVER['QUERY_STRING'] = urldecode($_SERVER['QUERY_STRING']); //Remove encoding from GET requests
+            
+            foreach($_POST as $k => $v) {
+                
+                $_POST[$k] = urldecode($v);  //Remove encoding for each POST value
+                
+            }
+            
+        }
     }
 
     public function formatWithPrefix($url)
@@ -616,15 +596,15 @@ class Proxy {
 
                 $s['url'] = $this->sanitizeUrl($s['url']); //Do all the URL cleanups and checks at once
 
-                if(is_string($s['matchall'])){
+                if(is_string($s['matchAll'])){
 
-                    $mustmatch = strtolower($s['matchall']);
+                    $mustmatch = strtolower($s['matchAll']);
 
-                    $s['matchall'] = $mustmatch;
+                    $s['matchAll'] = $mustmatch;
 
                 }
 
-                if ($s['matchall'] == true || $s['matchall'] === "true") {
+                if ($s['matchAll'] == true || $s['matchAll'] === "true") {
 
                     $urlStartsWith = $this->startsWith($this->proxyUrl, $s['url']);
 
@@ -640,7 +620,7 @@ class Proxy {
 
                     }
 
-                } else if ($s['matchAll'] == false || $s['matchall'] === "false"){
+                } else if ($s['matchAll'] == false || $s['matchAll'] === "false"){
 
                     $isEqual = $this->equals($this->proxyUrl, $s['url']);
 
@@ -777,9 +757,15 @@ class Proxy {
 
         }
 
+        if (strpos($this->proxyBody,'"code":403') !== false) {
+        
+            $isUnauthorized = true;
+        
+        }
+
         $errorCode = $jsonData->{'error'}->{'code'};
 
-        if($errorCode == 499 || $errorCode == 498)
+        if($errorCode == 499 || $errorCode == 498 || $errorCode == 403)
         {
             $isUnauthorized = true;
 
@@ -849,33 +835,31 @@ class Proxy {
     
     public function curlError()
     {
-    	// see full of cURL error codes at http://curl.haxx.se/libcurl/c/libcurl-errors.html
+        // see full of cURL error codes at http://curl.haxx.se/libcurl/c/libcurl-errors.html
     
-    	$message = "cURL error (" . curl_errno($this->ch) . "): "
-    			. curl_error($this->ch) . ".";
-    	 
-    	$this->proxyLog->log($message);
+        $message = "cURL error (" . curl_errno($this->ch) . "): "
+                . curl_error($this->ch) . ".";
     
-    	header('Status: 502', true, 502);  // 502 Bad Gateway -  The server, while acting as a gateway or proxy, received an invalid response from the upstream server it accessed in attempting to fulfill the request.
+        $this->proxyLog->log($message);
     
-    	header('Content-Type: application/json');
+        header('Status: 502', true, 502);  // 502 Bad Gateway -  The server, while acting as a gateway or proxy, received an invalid response from the upstream server it accessed in attempting to fulfill the request.
     
-    	$configError = array(
-    			"error" => array("code" => 502,
-    					"details" => array($message),
-    					"message" => "Proxy failed due to curl error."
-    			));
+        header('Content-Type: application/json');
     
-    	echo json_encode($configError);
-    	 
-    	curl_close($this->ch);
-    	 
-    	$this->ch = null;
+        $configError = array(
+                "error" => array("code" => 502,
+                        "details" => array($message),
+                        "message" => "Proxy failed due to curl error."
+                ));
     
-    	exit();
+        echo json_encode($configError);
+    
+        curl_close($this->ch);
+    
+        $this->ch = null;
+    
+        exit();
     }
-
-
 
     public function proxyGet() {
 
@@ -934,11 +918,6 @@ class Proxy {
 
         }
 
-        if(is_array($params)){ //If $params is array, convert it to a curl query string like 'image=png&f=json'
-
-            $params = $this->build_http_query($params);
-        }
-
         try {
 
             $this->initCurl();
@@ -949,7 +928,11 @@ class Proxy {
 
             curl_setopt($this->ch, CURLOPT_POST, true);
 
-            curl_setopt($this->ch, CURLOPT_POSTFIELDS, $params);
+            if(is_array($params)){ //If $params is array, convert it to a curl query string like 'image=png&f=json'
+                curl_setopt($this->ch, CURLOPT_POSTFIELDS, http_build_query($params));
+            } else {
+                curl_setopt($this->ch, CURLOPT_POSTFIELDS, $params);
+            }
 
             $this->response = curl_exec($this->ch);
 
@@ -1047,20 +1030,6 @@ class Proxy {
 
             $this->proxyLog->log($e->getMessage());
         }
-
-    }
-
-    public function build_http_query($query) //Support for older PHP versions here
-    {
-        $query_array = array();
-
-        foreach($query as $key => $value ){
-
-            $query_array[] = $key . '=' . $value;
-
-        }
-
-        return implode( '&', $query_array);
 
     }
 
@@ -1206,17 +1175,17 @@ class Proxy {
 
     public function getTokenEndpoint()
     {
-        if (stripos($this->resource['url'], "/rest/") !== false){
+        if ($this->contains($this->proxyUrl, "/rest/") !== false){
             
-            $position = stripos($this->resource['url'], "/rest/");
+            $position = stripos($this->proxyUrl, "/rest/");
             
-            $infoUrl = substr($this->resource['url'],0,$position) . "/rest/info";
+            $infoUrl = substr($this->proxyUrl,0,$position) . "/rest/info";
         
-        } else if (stripos($this->resource['url'], "/sharing/") !== false){
+        } else if ($this->contains($this->proxyUrl, "/sharing/") !== false){
 
-            $position = stripos($this->resource['url'], "/sharing/");
+            $position = stripos($this->proxyUrl, "/sharing/");
             
-            $infoUrl = substr($this->resource['url'],0,$position) . "/sharing/rest/info";    
+            $infoUrl = substr($this->proxyUrl,0,$position) . "/sharing/rest/info";    
 
         }else{
 
@@ -1293,11 +1262,7 @@ class Proxy {
 
         $isAllowedApplication = false;
 
-        $domain = substr($_SERVER['HTTP_REFERER'], strpos($this->referer, '://') + 3);
-
-        $domain = substr($domain, 0, strpos($domain, '/'));
-
-        if (in_array($domain, $this->proxyConfig['allowedreferers'])) {
+        if (in_array($this->referer, $this->proxyConfig['allowedreferers'])) {
 
             $isAllowedApplication = true;
 

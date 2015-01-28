@@ -6,6 +6,9 @@ FAQ
 This is by design in the security model for the ArcGIS platform. 
 [Applications using appId/appSecret by design](https://developers.arcgis.com/authentication/app-logins.html) don't have permission to search for private content, even if owned by the same person.
 
+##### When choosing an application pool in IIS, I only see 2.0 as an option
+
+Check out [this](http://stackoverflow.com/questions/4890245/how-to-add-asp-net-4-0-as-application-pool-on-iis-7-windows-7) StackOverflow thread for instructions on installing ASP.NET 4.0.
 
 ##### Where can I get help?
 

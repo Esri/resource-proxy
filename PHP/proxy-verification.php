@@ -15,7 +15,6 @@ body{
 }
 table {
     border: 1px solid #696969;
-    width: 50%;
 }
 .pass {
     color:#3CB371;
@@ -147,7 +146,7 @@ function versionPhpCheck()
         return "Pass";
     }elseif(version_compare(PHP_VERSION, '5.3.0', '>=') && version_compare(PHP_VERSION, '5.4.1', '<=')){
         return "Warning";
-	}else{
+    }else{
         return "Fail";
     }
 }
@@ -159,7 +158,7 @@ $writeable = can_write();
 $openssl = in_array('openssl', $extensions);
 $pdo_sqlite = in_array('pdo_sqlite', $extensions);
 $curl = in_array('curl', $extensions);
-
+$curl_version = curl_version();
 
 ?>
 <h2>Checks php proxy requirements</h2>
@@ -174,7 +173,7 @@ $curl = in_array('curl', $extensions);
 
 <tr>
 <td><span>Check PHP version 5.4.2 or newer?</span></td>
-<td><?php echo '<span class="'. strtolower($version) . '">' . $version . '</span>'; ?></td>
+<td><?php echo '<span class="'. strtolower($version) . '">' . $version . '</span> [v' . phpversion() . ']' ; ?></td>
 </tr>
 
 <tr>
@@ -192,12 +191,10 @@ $curl = in_array('curl', $extensions);
 <td><?php echo '<span class="'. strtolower($bool[$pdo_sqlite]) . '">' . $bool[$pdo_sqlite] . '</span>'; ?></td>
 </tr>
 
-
 <tr>
 <td><span>Check for Curl?</span></td>
-<td><?php echo '<span class="'. strtolower($bool[$curl]) . '">' . $bool[$curl] . '</span>'; ?></td>
+<td><?php echo '<span class="'. strtolower($bool[$curl]) . '">' . $bool[$curl] . '</span> [v.' . $curl_version[version] . ']'; ?></td>
 </tr>
-
 
 </table>
 
