@@ -593,15 +593,15 @@ class Proxy {
 
                 $s['url'] = $this->sanitizeUrl($s['url']); //Do all the URL cleanups and checks at once
 
-                if(is_string($s['matchAll'])){
+                if(is_string($s['matchall'])){
 
-                    $mustmatch = strtolower($s['matchAll']);
+                    $mustmatch = strtolower($s['matchall']);
 
-                    $s['matchAll'] = $mustmatch;
+                    $s['matchall'] = $mustmatch;
 
                 }
 
-                if ($s['matchAll'] == true || $s['matchAll'] === "true") {
+                if ($s['matchall'] == true || $s['matchall'] === "true") {
 
                     $urlStartsWith = $this->startsWith($this->proxyUrl, $s['url']);
 
@@ -617,7 +617,7 @@ class Proxy {
 
                     }
 
-                } else if ($s['matchAll'] == false || $s['matchAll'] === "false"){
+                } else if ($s['matchall'] == false || $s['matchall'] === "false"){
 
                     $isEqual = $this->equals($this->proxyUrl, $s['url']);
 
@@ -2455,6 +2455,7 @@ class XmlParser
         return $this->results;
     }
 
+    // lowercase array keys and properties etc from the config file
     function tagStart($parser, $name, $attrs)
     {
         $attrs = array_change_key_case($attrs, CASE_LOWER);
