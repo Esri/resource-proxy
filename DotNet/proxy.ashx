@@ -426,6 +426,9 @@ public class proxy : IHttpHandler {
         req.Referer = referer;
         req.Method = method;
 
+        // Use the default system proxy
+        req.Proxy = SYSTEM_PROXY;
+
         if (credentials != null)
             req.Credentials = credentials;
         
