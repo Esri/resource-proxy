@@ -802,6 +802,7 @@ public static class ServerUrl {
 private static Object _rateMapLock = new Object();
 
 private static void sendErrorResponse(HttpServletResponse response, String errorDetails, String errorMessage, int errorCode) throws IOException{
+    response.setHeader("Content-Type", "application/json");
     String message = "{" +
             "\"error\": {" +
             "\"code\": " + errorCode + "," +
