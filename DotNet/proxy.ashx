@@ -104,30 +104,34 @@ public class proxy : IHttpHandler {
         //referer
         //check against the list of referers if they have been specified in the proxy.config
         String[] allowedReferersArray = ProxyConfig.GetAllowedReferersArray();
-        if (allowedReferersArray != null && allowedReferersArray.Length > 0)
-        {
-            bool allowed = false;
+		 if (allowedReferersArray != null && allowedReferersArray.Length > 0 && context.Request.Headers["referer"] != null)
+        {           
+            PROXY_REFERER = context.Request.Headers["referer"];
             string requestReferer = context.Request.Headers["referer"];
-
-            foreach (var referer in allowedReferersArray)
-            {
-                if ((allowedReferersArray.Length == 1) && referer == String.Empty)
-                    break;
-
-                if (requestReferer != null && requestReferer != String.Empty && (ProxyConfig.isUrlPrefixMatch(referer, requestReferer)) || referer == "*")
-                {
-                    allowed = true;
-                    break;
-                }
-            }
-
-            if (!allowed)
-            {
-                string errorMsg = "Proxy is being used from an unsupported referer: " + context.Request.Headers["referer"];
-                log(TraceLevel.Error, errorMsg);
-                sendErrorResponse(context.Response, null, errorMsg, System.Net.HttpStatusCode.Forbidden);
+            try{
+                //only use the hostname of the referer url
+                requestReferer = new UriBuilder(context.Request.Headers["referer"]).Host;
+            }catch(Exception e){
+                log(TraceLevel.Warning, "Proxy is being used from an invalid referer: " + context.Request.Headers["referer"]);
+                sendErrorResponse(context.Response, "Error verifying referer. ", "403 - Forbidden: Access is denied.", System.Net.HttpStatusCode.Forbidden);
                 return;
+             }
+
+            if (!checkReferer(allowedReferersArray, requestReferer))
+            {
+                log(TraceLevel.Warning, "Proxy is being used from an unknown referer: " + context.Request.Headers["referer"]);
+                sendErrorResponse(context.Response, "Unsupported referer. ", "403 - Forbidden: Access is denied.", System.Net.HttpStatusCode.Forbidden);
             }
+            
+            
+        }
+        
+         //Check to see if allowed referer list is specified and reject if referer is null
+        if (context.Request.Headers["referer"] == null && allowedReferersArray != null && !allowedReferersArray[0].Equals("*"))
+        {
+            log(TraceLevel.Warning, "Proxy is being called by a null referer.  Access denied.");
+            sendErrorResponse(response, "Current proxy configuration settings do not allow requests which do not include a referer header.", "403 - Forbidden: Access is denied.", System.Net.HttpStatusCode.Forbidden);
+            return;
         }
 
         //Throttling: checking the rate limit coming from particular client IP
@@ -485,6 +489,42 @@ public class proxy : IHttpHandler {
         }
         return token;
     }
+	
+	 private bool checkWildcardSubdomain(String allowedReferer, String requestedReferer){    
+    String[] allowedRefererParts =Regex.Split(allowedReferer,"(\\.)");
+    String[] refererParts = Regex.Split(requestedReferer, "(\\.)");
+    
+    int allowedIndex = allowedRefererParts.Length-1;
+    int refererIndex = refererParts.Length-1; 
+    while(allowedIndex >= 0 && refererIndex >= 0){
+        if (allowedRefererParts[allowedIndex].Equals(refererParts[refererIndex],StringComparison.OrdinalIgnoreCase)){
+            allowedIndex = allowedIndex - 1;
+            refererIndex = refererIndex - 1;
+        }else{
+            if(allowedRefererParts[allowedIndex].Equals("*")){
+                allowedIndex = allowedIndex - 1;
+                refererIndex = refererIndex - 1;
+                continue; //next
+            }
+            return false;
+        }
+    }
+    return true;
+}
+    
+    private bool checkReferer(String[] allowedReferers, String referer){
+    if (allowedReferers != null && allowedReferers.Length > 0){
+        if (allowedReferers.Length == 1 && allowedReferers[0].Equals("*")) return true; //speed-up
+        foreach (String allowedReferer in allowedReferers){
+            if (referer.ToLower().Equals(allowedReferer.ToLower())) return true; //return true if match
+            else if (allowedReferer.Contains("*")){ //try if the allowed referer contains wildcard for subdomain
+                 if (checkWildcardSubdomain(allowedReferer, referer)) return true;//return true if match wildcard subdomain
+            }
+        }
+        return false;//no-match
+    }
+    return true;//when allowedReferer is null, then allow everything
+}
 
     private string exchangePortalTokenForServerToken(string portalToken, ServerUrl su) {
         //ideally, we should POST the token request
