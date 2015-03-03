@@ -405,7 +405,7 @@ public class proxy : IHttpHandler {
 
         if (method.Equals("POST"))
         {
-            String[] uriArray = uri.Split('?');
+            String[] uriArray = uri.Split(new char[] { '?' }, 2);
             uri = uriArray[0];
             if (uriArray.Length > 1)
             {
