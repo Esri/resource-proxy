@@ -14,17 +14,17 @@ These proxy files support:
 * Download and unzip the .zip file or clone the repository. You can download [a released version](https://github.com/Esri/resource-proxy/releases) (recommended) or the [most recent daily build](https://github.com/Esri/resource-proxy/archive/master.zip).
 * Follow the instructions in the readme file in the folder of the proxy you want to install (DotNet, Java, PHP) for installation instructions.
 
-##Main Folders and Files
+##Folders and Main Files
 
-* DotNet: .NET version of the proxy
-    * README.md
+* [DotNet: .NET version of the proxy](DotNet/README.md)
     * proxy.ashx
     * proxy.config
-*  Java: Java version of the proxy
     * README.md
+* [Java: Java version of the proxy](Java/README.md)
     * proxy.jsp
     * WEB-INF/classes/proxy.config
-*  PHP: PHP version of the proxy
+    * README.md
+* [PHP: PHP version of the proxy](PHP/README.md)
     * proxy.php
     * proxy.config
     * README.md

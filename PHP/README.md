@@ -13,6 +13,10 @@ A PHP proxy that handles support for
 
 * Download and unzip the .zip file or clone the repository. You can download [a released version](https://github.com/Esri/resource-proxy/releases) (recommended) or the [most recent daily build](https://github.com/Esri/resource-proxy/archive/master.zip).
 * Install the contents of the PHP folder by adding all files into a web directory.
+* Test that the proxy is installed and available:
+```
+http://[yourmachine]/PHP/proxy.php?ping
+```
 * Test that the proxy is able to forward requests directly in the browser using:
 ```
 http://[yourmachine]/PHP/proxy.php?http://services.arcgisonline.com/ArcGIS/rest/services/?f=pjson

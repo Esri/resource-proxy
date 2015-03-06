@@ -20,6 +20,8 @@ using System.Text.RegularExpressions;
 
 public class proxy : IHttpHandler {
 
+    private static String version = "1.1 beta";
+
     class RateMeter {
         double _rate; //internal rate is stored in requests per second
         int _countCap;
@@ -56,6 +58,7 @@ public class proxy : IHttpHandler {
     private static string PROXY_REFERER = "http://localhost/proxy/proxy.ashx";
     private static string DEFAULT_OAUTH = "https://www.arcgis.com/sharing/oauth2/";
     private static int CLEAN_RATEMAP_AFTER = 10000; //clean the rateMap every xxxx requests
+    private static System.Net.IWebProxy SYSTEM_PROXY = System.Net.HttpWebRequest.GetSystemWebProxy(); // Use the default system proxy
 
     private static Object _rateMapLock = new Object();
 
@@ -63,13 +66,37 @@ public class proxy : IHttpHandler {
         HttpResponse response = context.Response;
         if (context.Request.Url.Query.Length < 1)
         {
-            string errorMsg = "No URL specified";
+            string errorMsg = "This proxy does not support empty parameters.";
             log(TraceLevel.Error, errorMsg);
             sendErrorResponse(context.Response, null, errorMsg, System.Net.HttpStatusCode.BadRequest);
             return;
         }
 
         string uri = context.Request.Url.Query.Substring(1);
+
+        //if uri is ping
+        if (uri.Equals("ping", StringComparison.InvariantCultureIgnoreCase))
+        {
+            ProxyConfig proxyConfig = ProxyConfig.GetCurrentConfig();
+
+            String checkConfig = (proxyConfig == null) ? "Not Readable" : "OK";
+            String checkLog = "";
+            if (checkConfig != "OK")
+            {
+                checkLog = "Can not verify";
+            }
+            else
+            {
+                String filename = proxyConfig.logFile;
+                checkLog = (filename != null && filename != "") ? "OK" : "Not Exist/Readable";
+
+                if (checkLog == "OK")
+                    logMessageToFile(string.Format("{0} {1}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "Log from ping"));
+            }
+
+            sendPingResponse(response, version, checkConfig, checkLog);
+            return;
+        }
 
         //if url is encoded, decode it.
         if (uri.StartsWith("http%3a%2f%2f", StringComparison.InvariantCultureIgnoreCase) || uri.StartsWith("https%3a%2f%2f", StringComparison.InvariantCultureIgnoreCase))
@@ -323,6 +350,7 @@ public class proxy : IHttpHandler {
             {
                 case "content-type":
                 case "transfer-encoding":
+                case "accept-ranges":   // Prevent requests for partial content
                     continue;
                 default:
                     toResponse.AddHeader(headerKey, fromResponse.Headers[headerKey]);
@@ -377,8 +405,8 @@ public class proxy : IHttpHandler {
 
         if (method.Equals("POST"))
         {
-            String[] uriArray = uri.Split('?');
-
+            String[] uriArray = uri.Split(new char[] { '?' }, 2);
+            uri = uriArray[0];
             if (uriArray.Length > 1)
             {
                 contentType = "application/x-www-form-urlencoded";
@@ -397,6 +425,9 @@ public class proxy : IHttpHandler {
         req.ServicePoint.Expect100Continue = false;
         req.Referer = referer;
         req.Method = method;
+
+        // Use the default system proxy
+        req.Proxy = SYSTEM_PROXY;
 
         if (credentials != null)
             req.Credentials = credentials;
@@ -462,7 +493,7 @@ public class proxy : IHttpHandler {
                     infoUrl = infoUrl + "/sharing";
                 }
                 else
-                    throw new ApplicationException("Unable to determine the correct URL to request a token to access private resources");
+                    throw new ApplicationException("Unable to determine the correct URL to request a token to access private resources.");
                     
                 if (infoUrl != "") {
                     log(TraceLevel.Info," Querying security endpoint...");
@@ -493,6 +524,21 @@ public class proxy : IHttpHandler {
              "/generateToken?token=" + portalToken + "&serverURL=" + su.Url + "&f=json";
         string tokenResponse = webResponseToString(doHTTPRequest(uri, "GET"));
         return extractToken(tokenResponse, "token");
+    }
+
+
+    private static void sendPingResponse(HttpResponse response, String version, String config, String log)
+    {
+        response.AddHeader("Content-Type", "application/json");
+        response.AddHeader("Accept-Encoding", "gzip");
+        String message = "{ " +
+            "\"Proxy Version\": \"" + version + "\"" +
+            ", \"Configuration File\": \"" + config + "\"" +
+            ", \"Log File\": \"" + log + "\"" +
+            "}";
+        response.StatusCode = 200;
+        response.Write(message);
+        response.Flush();
     }
 
     private static void sendErrorResponse(HttpResponse response, String errorDetails, String errorMessage, System.Net.HttpStatusCode errorCode)
@@ -749,12 +795,9 @@ public class ProxyConfig
         }       
         
         if (mustMatch)
-            throw new ArgumentException("Proxy is being used for an unsupported service:");
-        
+            throw new ArgumentException("Proxy has not been set up for this URL. Make sure there is a serverUrl in the configuration file that matches: " + uri);
         return null;
     }
-
-
 }
 
 public class ServerUrl {

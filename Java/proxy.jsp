@@ -99,10 +99,10 @@ private byte[] readRequestPostBody(HttpServletRequest request) throws IOExceptio
     return new byte[0];
 }
 
-private HttpURLConnection forwardToServer(HttpServletRequest request,String uri, byte[] postBody) throws IOException{
+private HttpURLConnection forwardToServer(HttpServletRequest request, String uri, byte[] postBody) throws IOException{
     return
             postBody.length > 0 ?
-                    doHTTPRequest(uri,postBody,"POST",request.getHeader("Referer"),request.getContentType()) :
+                    doHTTPRequest(uri, postBody, "POST", request.getHeader("Referer"), request.getContentType()) :
                         doHTTPRequest(uri, request.getMethod());
 }
 
@@ -141,7 +141,7 @@ private boolean fetchAndPassBackToClient(HttpURLConnection con, HttpServletRespo
         int bytesRead = 0;
 
         while ((bytesRead = byteStream.read(bytes, 0, length)) > 0) {
-            buffer.write(bytes,0,bytesRead);
+            buffer.write(bytes, 0, bytesRead);
         }
         buffer.flush();
 
@@ -176,7 +176,7 @@ private HttpURLConnection doHTTPRequest(String uri, String method) throws IOExce
             contentType = "application/x-www-form-urlencoded";
             String queryString = uriArray[1];
 
-            bytes = URLEncoder.encode(queryString,"UTF-8").getBytes();
+            bytes = URLEncoder.encode(queryString, "UTF-8").getBytes();
         }
     }
     return doHTTPRequest(uri, bytes, method, PROXY_REFERER, contentType);
@@ -217,13 +217,13 @@ private String webResponseToString(HttpURLConnection con) throws IOException{
 
     InputStream in = con.getInputStream();
 
-    Reader reader = new BufferedReader(new InputStreamReader(in,"UTF-8"));
+    Reader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
     StringBuffer content = new StringBuffer();
     char[] buffer = new char[5000];
     int n;
 
     while ( ( n = reader.read(buffer)) != -1 ) {
-        content.append(buffer,0,n);
+        content.append(buffer, 0, n);
     }
     reader.close();
 
@@ -237,7 +237,7 @@ private String getNewTokenIfCredentialsAreSpecified(ServerUrl su, String url) th
     boolean isUserLogin = (su.getUsername() != null && !su.getUsername().isEmpty()) && (su.getPassword() != null && !su.getPassword().isEmpty());
     boolean isAppLogin = (su.getClientId() != null && !su.getClientId().isEmpty()) && (su.getClientSecret() != null && !su.getClientSecret().isEmpty());
     if (isUserLogin || isAppLogin) {
-        _log(Level.INFO,"Matching credentials found in configuration file. OAuth 2.0 mode: " + isAppLogin);
+        _log(Level.INFO, "Matching credentials found in configuration file. OAuth 2.0 mode: " + isAppLogin);
         if (isAppLogin) {
             //OAuth 2.0 mode authentication
             //"App Login" - authenticating using client_id and client_secret stored in config
@@ -247,7 +247,7 @@ private String getNewTokenIfCredentialsAreSpecified(ServerUrl su, String url) th
             if (su.getOAuth2Endpoint().charAt(su.getOAuth2Endpoint().length() - 1) != '/') {
                 su.setOAuth2Endpoint(su.getOAuth2Endpoint() + "/");
             }
-            _log(Level.INFO,"Service is secured by " + su.getOAuth2Endpoint() + ": getting new token...");
+            _log(Level.INFO, "Service is secured by " + su.getOAuth2Endpoint() + ": getting new token...");
             String uri = su.getOAuth2Endpoint() + "token?client_id=" + su.getClientId() + "&client_secret=" + su.getClientSecret() + "&grant_type=client_credentials&f=json";
             String tokenResponse = webResponseToString(doHTTPRequest(uri, "POST"));
             token = extractToken(tokenResponse, "access_token");
@@ -278,19 +278,19 @@ private String getNewTokenIfCredentialsAreSpecified(ServerUrl su, String url) th
 
             if (infoUrl != "") {
 
-                _log(Level.INFO,"[Info]: Querying security endpoint...");
+                _log(Level.INFO, "[Info]: Querying security endpoint...");
 
                 String tokenServiceUri = su.getTokenServiceUri();
 
                 if (tokenServiceUri == null || tokenServiceUri.isEmpty()){
-                    _log(Level.INFO,"Token URL not cached.  Querying rest info page...");
+                    _log(Level.INFO, "Token URL not cached.  Querying rest info page...");
                     String infoResponse = webResponseToString(doHTTPRequest(infoUrl, "GET"));
                     tokenServiceUri = getJsonValue(infoResponse, "tokenServicesUrl");
                     su.setTokenServiceUri(tokenServiceUri);
                 }
 
                  if (tokenServiceUri != null & !tokenServiceUri.isEmpty()){
-                    _log(Level.INFO,"[Info]: Service is secured by " + tokenServiceUri + ": getting new token...");
+                    _log(Level.INFO, "[Info]: Service is secured by " + tokenServiceUri + ": getting new token...");
                     String uri = tokenServiceUri + "?f=json&request=getToken&referer=" + PROXY_REFERER + "&expiration=60&username=" + su.getUsername() + "&password=" + su.getPassword();
                     String tokenResponse = webResponseToString(doHTTPRequest(uri, "POST"));
                     token = extractToken(tokenResponse, "token");
@@ -345,7 +345,7 @@ private String getFullUrl(String url){
 
 private String exchangePortalTokenForServerToken(String portalToken, ServerUrl su) throws IOException{
     String url = getFullUrl(su.getUrl());
-    _log(Level.INFO,"[Info]: Exchanging Portal token for Server-specific token for " + url + "...");
+    _log(Level.INFO, "[Info]: Exchanging Portal token for Server-specific token for " + url + "...");
     String uri = su.getOAuth2Endpoint().substring(0, su.getOAuth2Endpoint().toLowerCase().indexOf("/oauth2/")) +
          "/generateToken?token=" + portalToken + "&serverURL=" + url + "&f=json";
     String tokenResponse = webResponseToString(doHTTPRequest(uri, "GET"));
@@ -361,15 +361,15 @@ private String addTokenToUri(String uri, String token) {
 private String extractToken(String tokenResponse, String key) {
     String token = getJsonValue(tokenResponse, key);
     if (token == null || token.isEmpty()) {
-        _log(Level.WARNING,"Token cannot be obtained: " + tokenResponse);
+        _log(Level.WARNING, "Token cannot be obtained: " + tokenResponse);
     } else {
-        _log(Level.INFO,"Token obtained: " + token);
+        _log(Level.INFO, "Token obtained: " + token);
     }
     return token;
 }
 
 private String getJsonValue(String text, String key) {
-    _log(Level.FINE,"JSON Response: " + text);
+    _log(Level.FINE, "JSON Response: " + text);
     int i = text.indexOf(key);
     String value = "";
     if (i > -1) {
@@ -378,7 +378,7 @@ private String getJsonValue(String text, String key) {
             value.substring(1, value.indexOf('"', 1)) :
             value.substring(0, Math.max(0, Math.min(Math.min(value.indexOf(","), value.indexOf("]")), value.indexOf("}"))));
     }
-    _log(Level.FINE,"Extracted Value: " + value);
+    _log(Level.FINE, "Extracted Value: " + value);
     return value;
 }
 
@@ -418,7 +418,7 @@ private void cleanUpRatemap(ConcurrentHashMap<String, RateMeter> ratemap) {
         return false;
     }
 
-    private static void _log(Level level,String s,Throwable thrown) {
+    private static void _log(Level level, String s, Throwable thrown) {
         try {
 
             ProxyConfig proxyConfig = getConfig();
@@ -429,7 +429,7 @@ private void cleanUpRatemap(ConcurrentHashMap<String, RateMeter> ratemap) {
                 if (okToLog) {
 
                     if (logger.getUseParentHandlers()){
-                        FileHandler fh = new FileHandler(filename,true);
+                        FileHandler fh = new FileHandler(filename, true);
                         logger.addHandler(fh);
                         SimpleFormatter formatter = new SimpleFormatter();
                         fh.setFormatter(formatter);
@@ -453,9 +453,9 @@ private void cleanUpRatemap(ConcurrentHashMap<String, RateMeter> ratemap) {
                     }
 
                     if (thrown != null){
-                        logger.log(level,s,thrown);
+                        logger.log(level, s, thrown);
                     } else {
-                        logger.log(level,s);
+                        logger.log(level, s);
                     }
                 }
             }
@@ -468,12 +468,12 @@ private void cleanUpRatemap(ConcurrentHashMap<String, RateMeter> ratemap) {
         }
     }
 
-    private static void _log(String s,Throwable thrown){
-        _log(Level.SEVERE,s,thrown);
+    private static void _log(String s, Throwable thrown){
+        _log(Level.SEVERE, s, thrown);
     }
 
     private static void _log(Level level, String s){
-        _log(level,s,null);
+        _log(level, s, null);
     }
 
 public static class ProxyConfig
@@ -491,7 +491,7 @@ public static class ProxyConfig
 
         InputStream configFile = ProxyConfig.class.getClassLoader().getResourceAsStream("proxy.config");
          if (configFile != null) {
-             BufferedReader reader = new BufferedReader( new InputStreamReader (configFile,"UTF-8"));
+             BufferedReader reader = new BufferedReader( new InputStreamReader (configFile, "UTF-8"));
              String line = null;
              StringBuilder stringBuilder = new StringBuilder();
 
@@ -500,9 +500,9 @@ public static class ProxyConfig
              }
 
              String configFileStr = stringBuilder.toString();
-             configFileStr = configFileStr.replaceAll("(?ms)<!\\-\\-(.+?)\\-\\->","");
+             configFileStr = configFileStr.replaceAll("(?ms)<!\\-\\-(.+?)\\-\\->", "");
 
-             Pattern p = Pattern.compile("<\\s*ProxyConfig(.+?)>",Pattern.MULTILINE | Pattern.DOTALL);
+             Pattern p = Pattern.compile("<\\s*ProxyConfig(.+?)>", Pattern.MULTILINE | Pattern.DOTALL);
              Matcher m = p.matcher(configFileStr);
              boolean found = m.find();
 
@@ -523,42 +523,42 @@ public static class ProxyConfig
                         config.setAllowedReferers(allowedReferers.split(","));
                     }
 
-                    String logFile = ProxyConfig.getAttributeWithRegex("logFile",proxyConfigAttributes);
+                    String logFile = ProxyConfig.getAttributeWithRegex("logFile", proxyConfigAttributes);
                     if (logFile != null && !logFile.isEmpty()){
                         config.setLogFile(logFile);
                     }
 
-                    String logLevel = ProxyConfig.getAttributeWithRegex("logLevel",proxyConfigAttributes);
+                    String logLevel = ProxyConfig.getAttributeWithRegex("logLevel", proxyConfigAttributes);
                     if (logLevel != null && !logLevel.isEmpty()){
                         config.setLogLevel(logLevel);
                     }
 
 
-                    p = Pattern.compile("<\\s*serverUrls\\s*>(.+?)<\\s*/\\s*serverUrls\\s*>",Pattern.MULTILINE | Pattern.DOTALL);
+                    p = Pattern.compile("<\\s*serverUrls\\s*>(.+?)<\\s*/\\s*serverUrls\\s*>", Pattern.MULTILINE | Pattern.DOTALL);
                     m = p.matcher(configFileStr);
                     found = m.find();
 
                     if (found) {
                         String serverUrls = m.group(1);
                         if (serverUrls != null && !serverUrls.isEmpty()) {
-                            p = Pattern.compile("<\\s*serverUrl (.+?)((<\\s*/\\s*serverUrl\\s*)|/)>",Pattern.MULTILINE | Pattern.DOTALL);
+                            p = Pattern.compile("<\\s*serverUrl (.+?)((<\\s*/\\s*serverUrl\\s*)|/)>", Pattern.MULTILINE | Pattern.DOTALL);
                             m = p.matcher(serverUrls);
 
                             ArrayList<ServerUrl> serverList = new ArrayList<ServerUrl>();
                             while(m.find()){
                                 String server = m.group(1);
-                                String url = ProxyConfig.getAttributeWithRegex("url",server);
-                                String matchAll = ProxyConfig.getAttributeWithRegex("matchAll",server);
-                                String oauth2Endpoint = ProxyConfig.getAttributeWithRegex("oauth2Endpoint",server);
-                                String username = ProxyConfig.getAttributeWithRegex("username",server);
-                                String password = ProxyConfig.getAttributeWithRegex("password",server);
-                                String clientId = ProxyConfig.getAttributeWithRegex("clientId",server);
-                                String clientSecret = ProxyConfig.getAttributeWithRegex("clientSecret",server);
-                                String rateLimit = ProxyConfig.getAttributeWithRegex("rateLimit",server);
-                                String rateLimitPeriod = ProxyConfig.getAttributeWithRegex("rateLimitPeriod",server);
-                                String tokenServiceUri = ProxyConfig.getAttributeWithRegex("tokenServiceUri",server);
+                                String url = ProxyConfig.getAttributeWithRegex("url", server);
+                                String matchAll = ProxyConfig.getAttributeWithRegex("matchAll", server);
+                                String oauth2Endpoint = ProxyConfig.getAttributeWithRegex("oauth2Endpoint", server);
+                                String username = ProxyConfig.getAttributeWithRegex("username", server);
+                                String password = ProxyConfig.getAttributeWithRegex("password", server);
+                                String clientId = ProxyConfig.getAttributeWithRegex("clientId", server);
+                                String clientSecret = ProxyConfig.getAttributeWithRegex("clientSecret", server);
+                                String rateLimit = ProxyConfig.getAttributeWithRegex("rateLimit", server);
+                                String rateLimitPeriod = ProxyConfig.getAttributeWithRegex("rateLimitPeriod", server);
+                                String tokenServiceUri = ProxyConfig.getAttributeWithRegex("tokenServiceUri", server);
 
-                                serverList.add(new ServerUrl(url,matchAll,oauth2Endpoint,username,password,clientId,clientSecret,rateLimit,rateLimitPeriod,tokenServiceUri));
+                                serverList.add(new ServerUrl(url, matchAll, oauth2Endpoint, username, password, clientId, clientSecret, rateLimit, rateLimitPeriod, tokenServiceUri));
                             }
 
                             config.setServerUrls(serverList.toArray(new ServerUrl[serverList.size()]));
@@ -680,7 +680,7 @@ public static class ProxyConfig
             return new ServerUrl(uri); //if mustMatch is false send the server URL back that is the same the uri to pass thru
     }
 
-    public static boolean isUrlPrefixMatch(String prefix,String uri){
+    public static boolean isUrlPrefixMatch(String prefix, String uri){
         return uri.toLowerCase().startsWith(prefix.toLowerCase()) ||
                 uri.toLowerCase().replace("https://","http://").startsWith(prefix.toLowerCase()) ||
                 uri.toLowerCase().substring(uri.indexOf("//")).startsWith(prefix.toLowerCase());
@@ -699,7 +699,7 @@ public static class ServerUrl {
     String rateLimitPeriod;
     String tokenServiceUri;
 
-    public ServerUrl(String url,String matchAll,String oauth2Endpoint,String username,String password,String clientId,String clientSecret, String rateLimit,
+    public ServerUrl(String url, String matchAll, String oauth2Endpoint, String username, String password, String clientId, String clientSecret, String rateLimit,
             String rateLimitPeriod, String tokenServiceUri){
 
         this.url = url;
@@ -795,13 +795,14 @@ public static class ServerUrl {
 
         this.tokenServiceUri = value;
 
-        tokenServiceMap.put(this.url,value);
+        tokenServiceMap.put(this.url, value);
     }
 }
 
 private static Object _rateMapLock = new Object();
 
 private static void sendErrorResponse(HttpServletResponse response, String errorDetails, String errorMessage, int errorCode) throws IOException{
+    response.setHeader("Content-Type", "application/json");
     String message = "{" +
             "\"error\": {" +
             "\"code\": " + errorCode + "," +
@@ -817,20 +818,19 @@ private static void sendErrorResponse(HttpServletResponse response, String error
     output.flush();
 }
 
-private static void _sendURLMismatchError(HttpServletResponse response) throws IOException{
-     sendErrorResponse(response,"The proxy tried to resolve a prohibited or malformed URL. The server does not meet one of the preconditions that the requester put on the request.",
-                "403 - Forbidden: Access is denied.",HttpServletResponse.SC_FORBIDDEN);
+private static void _sendURLMismatchError(HttpServletResponse response, String attemptedUri) throws IOException{
+     sendErrorResponse(response, "Proxy has not been set up for this URL. Make sure there is a serverUrl in the configuration file that matches: " + attemptedUri,
+                 "Proxy has not been set up for this URL.", HttpServletResponse.SC_FORBIDDEN);
 }
 
 private static void _sendPingMessage(HttpServletResponse response, String version, String config, String log) throws IOException{
     response.setStatus(HttpServletResponse.SC_OK);
     response.setHeader("Content-Type", "application/json");
-    response.setHeader("Accept-Encoding", "gzip");
     String message = "{ " +
-        "\"Proxy Version\": \""+ version + "\"" +
+        "\"Proxy Version\": \"" + version + "\"" +
         //", \"Java Version\": \"" + System.getProperty("java.version") + "\"" +
         ", \"Configuration File\": \"" + config + "\""  +
-        ", \"Log File\": \""+ log + "\"" +
+        ", \"Log File\": \"" + log + "\"" +
         "}";
     OutputStream output = response.getOutputStream();
     output.write(message.getBytes());
@@ -838,7 +838,7 @@ private static void _sendPingMessage(HttpServletResponse response, String versio
 }
 %><%
 String uri = request.getQueryString();
-_log(Level.INFO,"Creating request for: " + uri);
+_log(Level.INFO, "Creating request for: " + uri);
 ServerUrl serverUrl;
 boolean passThrough = false;
 try {
@@ -848,7 +848,9 @@ try {
         out = pageContext.pushBody();
 
         if (uri == null || uri.isEmpty()){
-            response.sendError(403,"This proxy does not support empty parameters.");
+            String errorMessage = "This proxy does not support empty parameters.";
+            _log(Level.WARNING, errorMessage);
+            sendErrorResponse(response, errorMessage, "400 - " + errorMessage, HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
@@ -860,7 +862,7 @@ try {
         }
 
         //check if the uri is encoded then decode it
-         if (uri.toLowerCase().startsWith("http%3a%2f%2f") || uri.toLowerCase().startsWith("https%3a%2f%2f")) uri= URLDecoder.decode(uri, "UTF-8");
+        if (uri.toLowerCase().startsWith("http%3a%2f%2f") || uri.toLowerCase().startsWith("https%3a%2f%2f")) uri= URLDecoder.decode(uri, "UTF-8");
 
         String[] allowedReferers = getConfig().getAllowedReferers();
         if (allowedReferers != null && allowedReferers.length > 0 && request.getHeader("referer") != null){
@@ -870,35 +872,35 @@ try {
                 //only use the hostname of the referer url
                 hostReferer = new URL(request.getHeader("referer")).getHost();
             }catch(Exception e){
-                _log(Level.WARNING,"Proxy is being used from an invalid referer: " + request.getHeader("referer"));
-                sendErrorResponse(response, "Error verifying referer. ", "403 - Forbidden: Access is denied.",HttpServletResponse.SC_FORBIDDEN);
+                _log(Level.WARNING, "Proxy is being used from an invalid referer: " + request.getHeader("referer"));
+                sendErrorResponse(response, "Error verifying referer. ", "403 - Forbidden: Access is denied.", HttpServletResponse.SC_FORBIDDEN);
                 return;
             }
             if (!checkReferer(allowedReferers, hostReferer)){
-                _log(Level.WARNING,"Proxy is being used from an unknown referer: " + request.getHeader("referer"));
-                sendErrorResponse(response, "Unsupported referer. ", "403 - Forbidden: Access is denied.",HttpServletResponse.SC_FORBIDDEN);
+                _log(Level.WARNING, "Proxy is being used from an unknown referer: " + request.getHeader("referer"));
+                sendErrorResponse(response, "Unsupported referer. ", "403 - Forbidden: Access is denied.", HttpServletResponse.SC_FORBIDDEN);
                 return;
             }
         }
 
         //Check to see if allowed referer list is specified and reject if referer is null
         if (request.getHeader("referer") == null && allowedReferers != null && !allowedReferers[0].equals("*")){
-        _log(Level.WARNING,"Proxy is being called by a null referer.  Access denied.");
-                sendErrorResponse(response, "Current proxy configuration settings do not allow requests which do not include a referer header.", "403 - Forbidden: Access is denied.",HttpServletResponse.SC_FORBIDDEN);
+        _log(Level.WARNING, "Proxy is being called by a null referer.  Access denied.");
+                sendErrorResponse(response, "Current proxy configuration settings do not allow requests which do not include a referer header.", "403 - Forbidden: Access is denied.", HttpServletResponse.SC_FORBIDDEN);
                 return;
     }
 
         serverUrl = getConfig().getConfigServerUrl(uri);
         if (serverUrl == null) {
             //if no serverUrl found, send error message and get out.
-            _sendURLMismatchError(response);
+            _sendURLMismatchError(response, uri);
             return;
         }
         passThrough = serverUrl == null;
     } catch (IllegalStateException e) {
-        _log(Level.WARNING,"Proxy is being used for an unsupported service: " + uri);
+        _log(Level.WARNING, "Proxy is being used for an unsupported service: " + uri);
 
-        _sendURLMismatchError(response);
+        _sendURLMismatchError(response, uri);
 
         return;
     }
@@ -909,8 +911,8 @@ try {
             ConcurrentHashMap<String, RateMeter> ratemap = (ConcurrentHashMap<String, RateMeter>)application.getAttribute("rateMap");
             if (ratemap == null){
                 ratemap = new ConcurrentHashMap<String, RateMeter>();
-                application.setAttribute("rateMap",ratemap);
-                application.setAttribute("rateMap_cleanup_counter",0);
+                application.setAttribute("rateMap", ratemap);
+                application.setAttribute("rateMap_cleanup_counter", 0);
             }
 
 
@@ -924,10 +926,10 @@ try {
                 }
             }
             if (!rate.click()) {
-                _log(Level.WARNING,"Pair " + key + " is throttled to " + serverUrl.getRateLimit() + " requests per " + serverUrl.getRateLimitPeriod() + " minute(s). Come back later.");
+                _log(Level.WARNING, "Pair " + key + " is throttled to " + serverUrl.getRateLimit() + " requests per " + serverUrl.getRateLimitPeriod() + " minute(s). Come back later.");
 
-                sendErrorResponse(response,"This is a metered resource, number of requests have exceeded the rate limit interval.",
-                        "Error 429 - Too Many Requests",429);
+                sendErrorResponse(response, "This is a metered resource, number of requests have exceeded the rate limit interval.",
+                        "Error 429 - Too Many Requests", 429);
 
                 return;
             }
@@ -939,7 +941,7 @@ try {
                 cnt = 0;
                 cleanUpRatemap(ratemap);
             }
-            application.setAttribute("rateMap_cleanup_counter",new Integer(cnt));
+            application.setAttribute("rateMap_cleanup_counter", new Integer(cnt));
         };
     }
 
@@ -958,12 +960,12 @@ try {
 
         //if still no token, let's see if there are credentials stored in configuration which we can use to obtain new token
         if (!tokenIsInApplicationScope){
-            token = getNewTokenIfCredentialsAreSpecified(serverUrl,uri);
+            token = getNewTokenIfCredentialsAreSpecified(serverUrl, uri);
         }
 
         if (token != null && !token.isEmpty() && !tokenIsInApplicationScope) {
             //storing the token in Application scope, to do not waste time on requesting new one until it expires or the app is restarted.
-            application.setAttribute("token_for_" + serverUrl.getUrl(),token);
+            application.setAttribute("token_for_" + serverUrl.getUrl(), token);
         }
     }
 
@@ -985,16 +987,16 @@ try {
 
         //checking if previously used token has expired and needs to be renewed
         if (tokenRequired) {
-            _log(Level.INFO,"Renewing token and trying again.");
+            _log(Level.INFO, "Renewing token and trying again.");
             //server returned error - potential cause: token has expired.
             //we'll do second attempt to call the server with renewed token:
-            token = getNewTokenIfCredentialsAreSpecified(serverUrl,uri);
+            token = getNewTokenIfCredentialsAreSpecified(serverUrl, uri);
             con = forwardToServer(request, addTokenToUri(uri, token), postBody);
             passHeadersInfo(request, con); //passing header info from request to connection
 
             //storing the token in Application scope, to do not waste time on requesting new one until it expires or the app is restarted.
             synchronized(this){
-                application.setAttribute("token_for_" + serverUrl.getUrl(),token);
+                application.setAttribute("token_for_" + serverUrl.getUrl(), token);
             }
 
             fetchAndPassBackToClient(con, response, true);
@@ -1002,16 +1004,16 @@ try {
     }
 } catch (FileNotFoundException e){
     try {
-        _log("404 Not Found .",e);
-        response.sendError(404,e.getLocalizedMessage()+" is NOT Found.");
+        _log("404 Not Found .", e);
+        response.sendError(404, e.getLocalizedMessage() + " is NOT Found.");
         return;
     }catch (IOException finalErr){
         _log("There was an error sending a response to the client.  Will not try again.", finalErr);
     }
 } catch (IOException e){
     try {
-        _log("A fatal proxy error occurred.",e);
-        response.sendError(500,e.getLocalizedMessage());
+        _log("A fatal proxy error occurred.", e);
+        response.sendError(500, e.getLocalizedMessage());
         return;
     } catch (IOException finalErr){
         _log("There was an error sending a response to the client.  Will not try again.", finalErr);
