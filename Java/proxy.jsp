@@ -80,6 +80,11 @@ private String PROXY_REFERER = "http://localhost/proxy.jsp";
 private static String DEFAULT_OAUTH = "https://www.arcgis.com/sharing/oauth2/";
 private static int CLEAN_RATEMAP_AFTER = 10000;
 
+private static String[] contentTypesToMapToXml = { 
+  "application/vnd.google-earth.kml+xml",
+  "application/vnd.ogc.wms_xml" //ksz-mod
+ };
+
 //setReferer if real referer exist
 private void setReferer(String r){
     PROXY_REFERER = r;
@@ -123,6 +128,18 @@ private boolean fetchAndPassBackToClient(HttpURLConnection con, HttpServletRespo
             }
             if (headerFieldKey != null) clientResponse.addHeader(headerFieldKey, sb.toString());
         }
+		
+		String contentType = clientResponse.getContentType();		
+		if (contentType != null) {
+			for (int i = 0; i < contentTypesToMapToXml.length; i++) {
+				if (contentType.indexOf(contentTypesToMapToXml[i]) >= 0) {
+					clientResponse.setContentType("application/xml");
+					break;
+				}
+			}
+		}		
+		clientResponse.setHeader("Access-Control-Allow-Origin","*");
+		clientResponse.setHeader("Access-Control-Allow-Headers","Origin, X-Requested-With, Content-Type, Accept");  
 
         InputStream byteStream;
         if (con.getResponseCode() >= 400 && con.getErrorStream() != null){
