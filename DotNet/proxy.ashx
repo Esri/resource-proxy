@@ -59,10 +59,19 @@ public class proxy : IHttpHandler {
     private static string DEFAULT_OAUTH = "https://www.arcgis.com/sharing/oauth2/";
     private static int CLEAN_RATEMAP_AFTER = 10000; //clean the rateMap every xxxx requests
     private static System.Net.IWebProxy SYSTEM_PROXY = System.Net.HttpWebRequest.GetSystemWebProxy(); // Use the default system proxy
-
+    private static LogTraceListener logTraceListener = null;
     private static Object _rateMapLock = new Object();
 
     public void ProcessRequest(HttpContext context) {
+
+        
+        if (logTraceListener == null)
+        {
+            logTraceListener = new LogTraceListener();
+            Trace.Listeners.Add(logTraceListener);
+        }
+        
+        
         HttpResponse response = context.Response;
         if (context.Request.Url.Query.Length < 1)
         {
@@ -91,7 +100,8 @@ public class proxy : IHttpHandler {
                 checkLog = (filename != null && filename != "") ? "OK" : "Not Exist/Readable";
 
                 if (checkLog == "OK")
-                    logMessageToFile(string.Format("{0} {1}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "Log from ping"));
+                    log(TraceLevel.Info, string.Format("{0} {1}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "Log from ping"));
+                
             }
 
             sendPingResponse(response, version, checkConfig, checkLog);
@@ -621,26 +631,61 @@ public class proxy : IHttpHandler {
     //writing Log file
     private static void log(TraceLevel logLevel, string msg) {
         string logMessage = string.Format("{0} {1}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), msg);
-        if (TraceLevel.Error == logLevel)
+        
+        ProxyConfig config = ProxyConfig.GetCurrentConfig();
+        TraceSwitch ts = null;
+
+        if (config.logLevel != null)
         {
-            Trace.TraceError(logMessage);
-            logMessageToFile(logMessage);
-        }
-        else if (TraceLevel.Warning == logLevel)
-        {
-            Trace.TraceWarning(logMessage);
-            logMessageToFile(logMessage);
+            ts = new TraceSwitch("TraceLevelSwitch", "TraceSwitch in the web.config file", config.logLevel);
         }
         else
         {
-            Trace.TraceInformation(logMessage);
-            logMessageToFile(logMessage);
+            ts = new TraceSwitch("TraceLevelSwitch", "TraceSwitch in the web.config file", "Error");
+            config.logLevel = "Error";
         }
+
+        Trace.WriteLineIf(logLevel <= ts.Level, logMessage);
     }
 
     private static object _lockobject = new object();
 
-    private static void logMessageToFile(String message)
+}
+
+class LogTraceListener : TraceListener
+{
+    private static object _lockobject = new object();
+    public override void Write(string message)
+    {
+        //Only log messages to disk if logFile has value in configuration, otherwise log nothing.   
+        ProxyConfig config = ProxyConfig.GetCurrentConfig();
+        
+        if (config.LogFile != null)
+        {
+            string log = config.LogFile;
+            if (!log.Contains("\\") || log.Contains(".\\"))
+            {
+                if (log.Contains(".\\")) //If this type of relative pathing .\log.txt
+                {
+                    log = log.Replace(".\\", "");
+                }
+                string configDirectory = HttpContext.Current.Server.MapPath("proxy.config"); //Cannot use System.Web.Hosting.HostingEnvironment.ApplicationPhysicalPath b/ config may be in a child directory
+                string path = configDirectory.Replace("proxy.config", "");
+                log = path + log;
+            }
+
+            lock (_lockobject)
+            {
+                using (StreamWriter sw = File.AppendText(log))
+                {
+                    sw.Write(message);
+                }
+            }
+        }
+    }
+
+
+    public override void WriteLine(string message)
     {
         //Only log messages to disk if logFile has value in configuration, otherwise log nothing.   
         ProxyConfig config = ProxyConfig.GetCurrentConfig();
@@ -651,14 +696,15 @@ public class proxy : IHttpHandler {
             {
                 if (log.Contains(".\\")) //If this type of relative pathing .\log.txt
                 {
-                    log = log.Replace(".\\", "");  
+                    log = log.Replace(".\\", "");
                 }
                 string configDirectory = HttpContext.Current.Server.MapPath("proxy.config"); //Cannot use System.Web.Hosting.HostingEnvironment.ApplicationPhysicalPath b/ config may be in a child directory
-                string path = configDirectory.Replace("proxy.config","");
-                log = path + log;  
+                string path = configDirectory.Replace("proxy.config", "");
+                log = path + log;
             }
-        
-            lock(_lockobject) {
+
+            lock (_lockobject)
+            {
                 using (StreamWriter sw = File.AppendText(log))
                 {
                     sw.WriteLine(message);
@@ -666,6 +712,7 @@ public class proxy : IHttpHandler {
             }
         }
     }
+
 }
 
 
@@ -726,6 +773,7 @@ public class ProxyConfig
 
     ServerUrl[] serverUrls;
     public String logFile;
+    public String logLevel;
     bool mustMatch;
     //referer
     static String allowedReferers;
@@ -753,6 +801,15 @@ public class ProxyConfig
         get { return logFile; }
         set
         { logFile = value; }
+    }
+
+    //logLevel
+    [XmlAttribute("logLevel")]
+    public String LogLevel
+    {
+        get { return logLevel; }
+        set
+        { logLevel = value; }
     }
 
 
