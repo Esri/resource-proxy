@@ -102,8 +102,8 @@ private byte[] readRequestPostBody(HttpServletRequest request) throws IOExceptio
 private HttpURLConnection forwardToServer(HttpServletRequest request, String uri, byte[] postBody) throws IOException{
     return
             postBody.length > 0 ?
-                    doHTTPRequest(uri, postBody, "POST", request.getHeader("Referer"), request.getContentType()) :
-                        doHTTPRequest(uri, request.getMethod());
+                    doHTTPRequest(request, uri, postBody, "POST", request.getHeader("Referer"), request.getContentType()) :
+                        doHTTPRequest(request, uri, request.getMethod());
 }
 
 private boolean fetchAndPassBackToClient(HttpURLConnection con, HttpServletResponse clientResponse, boolean ignoreAuthenticationErrors) throws IOException{
@@ -166,7 +166,10 @@ private boolean passHeadersInfo(HttpServletRequest request, HttpURLConnection co
 }
 
 private HttpURLConnection doHTTPRequest(String uri, String method) throws IOException{
+    return doHTTPRequest(null, uri, method);
+}
 
+private HttpURLConnection doHTTPRequest(HttpServletRequest request, String uri, String method) throws IOException{
     byte[] bytes = null;
     String contentType = null;
     if (method.equals("POST")){
@@ -179,10 +182,10 @@ private HttpURLConnection doHTTPRequest(String uri, String method) throws IOExce
             bytes = URLEncoder.encode(queryString, "UTF-8").getBytes();
         }
     }
-    return doHTTPRequest(uri, bytes, method, PROXY_REFERER, contentType);
+    return doHTTPRequest(request, uri, bytes, method, PROXY_REFERER, contentType);
 }
 
-private HttpURLConnection doHTTPRequest(String uri, byte[] bytes, String method, String referer, String contentType) throws IOException{
+private HttpURLConnection doHTTPRequest(HttpServletRequest request, String uri, byte[] bytes, String method, String referer, String contentType) throws IOException{
     URL url = new URL(uri);
     HttpURLConnection con = (HttpURLConnection)url.openConnection();
 
@@ -191,6 +194,11 @@ private HttpURLConnection doHTTPRequest(String uri, byte[] bytes, String method,
 
     con.setRequestProperty("Referer", referer);
     con.setRequestMethod(method);
+
+    //passing header info from request to connection
+    if (request != null) {
+        passHeadersInfo(request, con);
+    }
 
     if (bytes != null && bytes.length > 0 || method.equals("POST")) {
 
@@ -972,8 +980,6 @@ try {
     //forwarding original request
     HttpURLConnection con = null;
     con = forwardToServer(request, addTokenToUri(uri, token), postBody);
-    //passing header info from request to connection
-    passHeadersInfo(request, con);
 
     if (passThrough || token == null || token.isEmpty() || hasClientToken) {
         //if token is not required or provided by the client, just fetch the response as is:
@@ -992,7 +998,6 @@ try {
             //we'll do second attempt to call the server with renewed token:
             token = getNewTokenIfCredentialsAreSpecified(serverUrl, uri);
             con = forwardToServer(request, addTokenToUri(uri, token), postBody);
-            passHeadersInfo(request, con); //passing header info from request to connection
 
             //storing the token in Application scope, to do not waste time on requesting new one until it expires or the app is restarted.
             synchronized(this){
