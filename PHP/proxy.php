@@ -721,7 +721,7 @@ class Proxy {
                 $serverUrl['url'] = $this->sanitizeUrl($serverUrl['url']); //Do all the URL cleanups and checks at once
                 
                 if(is_string($serverUrl['matchall'])){
-                    $serverUrl['matchAll'] = strtolower($serverUrl['matchall']);
+                    $serverUrl['matchall'] = strtolower($serverUrl['matchall']);
                 }
 
                 if ($serverUrl['matchall'] == true || $serverUrl['matchall'] === "true") {
