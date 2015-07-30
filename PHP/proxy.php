@@ -719,12 +719,13 @@ class Proxy {
                 
                 $serverUrl = $value['serverurl'][0];
                 $serverUrl['url'] = $this->sanitizeUrl($serverUrl['url']); //Do all the URL cleanups and checks at once
-                
+				$serverUrl['matchall'] = strtolower((string) $serverUrl['matchall']);
+				
                 if(is_string($serverUrl['matchall'])){
-                    $serverUrl['matchAll'] = strtolower($serverUrl['matchall']);
+                    $serverUrl['matchall'] = strtolower($serverUrl['matchall']);
                 }
 
-                if ($serverUrl['matchall'] == true || $serverUrl['matchall'] === "true") {
+                if ( $serverUrl['matchall'] === "true") {
 
                     $urlStartsWith = $this->startsWith($this->proxyUrl, $serverUrl['url']);
 
@@ -736,11 +737,9 @@ class Proxy {
 
                         $canProcess = true;
 
-                        return $canProcess;
-
                     }
 
-                } else if ($serverUrl['matchall'] == false || $serverUrl['matchall'] === "false"){
+                } else if ( $serverUrl['matchall'] === "false"){
 
                     $isEqual = $this->equals($this->proxyUrl, $serverUrl['url']);
 
@@ -751,10 +750,8 @@ class Proxy {
                         $this->sessionUrl = $serverUrl['url'];
 
                         $canProcess = true;
-
-                        return $canProcess;
+          
                     }
-
                 }
             }
 
