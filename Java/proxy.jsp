@@ -171,7 +171,7 @@ private HttpURLConnection doHTTPRequest(String uri, String method) throws IOExce
     String contentType = null;
     if (method.equals("POST")){
         String[] uriArray = uri.split("\\?");
-
+        uri = uriArray[0];
         if (uriArray.length > 1){
             contentType = "application/x-www-form-urlencoded";
             String queryString = uriArray[1];
