@@ -163,11 +163,11 @@ private boolean fetchAndPassBackToClient(HttpURLConnection con, HttpServletRespo
 }
 
 private boolean passHeadersInfo(Map mapHeaderInfo, HttpURLConnection con) {
-    Iterator it = mapHeaderInfo.entrySet().iterator();
-    while (it.hasNext()) {
-      Map.Entry pair = (Map.Entry)it.next();
+    Iterator headerIterator = mapHeaderInfo.entrySet().iterator();
+    while (headerIterator.hasNext()) {
+      Map.Entry pair = (Map.Entry)headerIterator.next();
       con.setRequestProperty(pair.getKey().toString(),pair.getValue().toString());
-      it.remove(); // avoids a ConcurrentModificationException
+      headerIterator.remove(); // avoids a ConcurrentModificationException
     }
     return true;
 }
@@ -175,11 +175,14 @@ private boolean passHeadersInfo(Map mapHeaderInfo, HttpURLConnection con) {
 private HttpURLConnection doHTTPRequest(String uri, String method) throws IOException{
 
     byte[] bytes = null;
+    HashMap<String, String> headerInfo=new HashMap<String, String>();
+    headerInfo.put("Referer", PROXY_REFERER);
+    
     if (method.equals("POST")){
         String[] uriArray = uri.split("\\?",2);
+        headerInfo.put("Content-Type","application/x-www-form-urlencoded");
 
         if (uriArray.length > 1){
-            headerInfo.put("Content-Type","application/x-www-form-urlencoded");
             String queryString = uriArray[1];
 
             bytes = URLEncoder.encode(queryString, "UTF-8").getBytes();
@@ -196,7 +199,7 @@ private HttpURLConnection doHTTPRequest(String uri, byte[] bytes, String method,
     con.setReadTimeout(10000);
     con.setRequestMethod(method);
 
-	passHeadersInfo(mapHeaderInfo, con);
+    passHeadersInfo(mapHeaderInfo, con);
 	
     if (bytes != null && bytes.length > 0 || method.equals("POST")) {
 
@@ -206,6 +209,7 @@ private HttpURLConnection doHTTPRequest(String uri, byte[] bytes, String method,
 
         con.setRequestMethod("POST");
         con.setDoOutput(true);
+        
 
         OutputStream os = con.getOutputStream();
         os.write(bytes);
