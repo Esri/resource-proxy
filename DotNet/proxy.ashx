@@ -58,7 +58,7 @@ public class proxy : IHttpHandler {
     private static string PROXY_REFERER = "http://localhost/proxy/proxy.ashx";
     private static string DEFAULT_OAUTH = "https://www.arcgis.com/sharing/oauth2/";
     private static int CLEAN_RATEMAP_AFTER = 10000; //clean the rateMap every xxxx requests
-    private static System.Net.IWebProxy SYSTEM_PROXY = System.Net.HttpWebRequest.GetSystemWebProxy(); // Use the default system proxy
+    private static System.Net.IWebProxy SYSTEM_PROXY = System.Net.HttpWebRequest.DefaultWebProxy; // Use the default system proxy
     private static LogTraceListener logTraceListener = null;
     private static Object _rateMapLock = new Object();
 
