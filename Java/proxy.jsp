@@ -27,6 +27,7 @@ java.util.logging.Level,
 java.util.List,
 java.util.Iterator,
 java.util.Enumeration,
+java.util.HashMap,
 java.text.SimpleDateFormat" %>
 
 <!-- ----------------------------------------------------------
@@ -100,10 +101,17 @@ private byte[] readRequestPostBody(HttpServletRequest request) throws IOExceptio
 }
 
 private HttpURLConnection forwardToServer(HttpServletRequest request, String uri, byte[] postBody) throws IOException{
+    Enumeration headerNames = request.getHeaderNames();
+    HashMap<String, String> mapHeaderInfo = new HashMap<String, String>();
+    while (headerNames.hasMoreElements()) {
+      String key = (String) headerNames.nextElement();
+      String value = request.getHeader(key);
+      if (!key.equalsIgnoreCase("host")) mapHeaderInfo.put(key, value);
+    }
     return
             postBody.length > 0 ?
-                    doHTTPRequest(uri, postBody, "POST", request.getHeader("Referer"), request.getContentType()) :
-                        doHTTPRequest(uri, request.getMethod());
+                    doHTTPRequest(uri, postBody, "POST", mapHeaderInfo) :
+                    doHTTPRequest(uri, request.getMethod());
 }
 
 private boolean fetchAndPassBackToClient(HttpURLConnection con, HttpServletResponse clientResponse, boolean ignoreAuthenticationErrors) throws IOException{
@@ -154,13 +162,12 @@ private boolean fetchAndPassBackToClient(HttpURLConnection con, HttpServletRespo
     return false;
 }
 
-private boolean passHeadersInfo(HttpServletRequest request, HttpURLConnection con) {
- 
-    Enumeration headerNames = request.getHeaderNames();
-    while (headerNames.hasMoreElements()) {
-        String key = (String) headerNames.nextElement();
-        String value = request.getHeader(key);
-        if (!key.equalsIgnoreCase("host")) con.setRequestProperty(key, value);
+private boolean passHeadersInfo(Map mapHeaderInfo, HttpURLConnection con) {
+    Iterator headerIterator = mapHeaderInfo.entrySet().iterator();
+    while (headerIterator.hasNext()) {
+      Map.Entry pair = (Map.Entry)headerIterator.next();
+      con.setRequestProperty(pair.getKey().toString(),pair.getValue().toString());
+      headerIterator.remove(); // avoids a ConcurrentModificationException
     }
     return true;
 }
@@ -168,30 +175,32 @@ private boolean passHeadersInfo(HttpServletRequest request, HttpURLConnection co
 private HttpURLConnection doHTTPRequest(String uri, String method) throws IOException{
 
     byte[] bytes = null;
-    String contentType = null;
+    HashMap<String, String> headerInfo=new HashMap<String, String>();
+    headerInfo.put("Referer", PROXY_REFERER);
+    
     if (method.equals("POST")){
         String[] uriArray = uri.split("\\?",2);
+        headerInfo.put("Content-Type","application/x-www-form-urlencoded");
 
         if (uriArray.length > 1){
-            contentType = "application/x-www-form-urlencoded";
             String queryString = uriArray[1];
 
             bytes = URLEncoder.encode(queryString, "UTF-8").getBytes();
         }
     }
-    return doHTTPRequest(uri, bytes, method, PROXY_REFERER, contentType);
+    return doHTTPRequest(uri, bytes, method, headerInfo);
 }
 
-private HttpURLConnection doHTTPRequest(String uri, byte[] bytes, String method, String referer, String contentType) throws IOException{
+private HttpURLConnection doHTTPRequest(String uri, byte[] bytes, String method, Map mapHeaderInfo) throws IOException{
     URL url = new URL(uri);
     HttpURLConnection con = (HttpURLConnection)url.openConnection();
 
     con.setConnectTimeout(5000);
     con.setReadTimeout(10000);
-
-    con.setRequestProperty("Referer", referer);
     con.setRequestMethod(method);
 
+    passHeadersInfo(mapHeaderInfo, con);
+	
     if (bytes != null && bytes.length > 0 || method.equals("POST")) {
 
     if (bytes == null){
@@ -200,11 +209,7 @@ private HttpURLConnection doHTTPRequest(String uri, byte[] bytes, String method,
 
         con.setRequestMethod("POST");
         con.setDoOutput(true);
-        if (contentType == null || contentType.isEmpty()){
-            contentType = "application/x-www-form-urlencoded";
-        }
-
-        con.setRequestProperty("Content-Type", contentType);
+        
 
         OutputStream os = con.getOutputStream();
         os.write(bytes);
@@ -972,8 +977,6 @@ try {
     //forwarding original request
     HttpURLConnection con = null;
     con = forwardToServer(request, addTokenToUri(uri, token), postBody);
-    //passing header info from request to connection
-    passHeadersInfo(request, con);
 
     if (passThrough || token == null || token.isEmpty() || hasClientToken) {
         //if token is not required or provided by the client, just fetch the response as is:
@@ -992,7 +995,6 @@ try {
             //we'll do second attempt to call the server with renewed token:
             token = getNewTokenIfCredentialsAreSpecified(serverUrl, uri);
             con = forwardToServer(request, addTokenToUri(uri, token), postBody);
-            passHeadersInfo(request, con); //passing header info from request to connection
 
             //storing the token in Application scope, to do not waste time on requesting new one until it expires or the app is restarted.
             synchronized(this){
