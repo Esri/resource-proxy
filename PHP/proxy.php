@@ -151,6 +151,13 @@ class Proxy {
     public $sessionUrl;
 
     /**
+     * Holds the host url we're redirecting to
+     *
+     * @var string
+     */
+
+    public $hostRedirect='';
+    /**
      * Allowed application urls array is just an array of urls
      *
      * @var array
@@ -246,6 +253,14 @@ class Proxy {
 
             $this->verifyConfiguration();
 
+            if($this->hostRedirect != NULL) {
+
+                $this->proxyUrlWithData = $this->redirect($this->proxyUrlWithData, $this->sessionUrl, $this->hostRedirect);
+
+                $this->proxyUrl = $this->redirect($this->proxyUrl, $this->sessionUrl, $this->hostRedirect);
+
+            }
+
             if ($this->meter->underMeterCap()) {
 
                 $this->runProxy();
@@ -265,6 +280,13 @@ class Proxy {
             $this->configurationParameterError();
 
         }
+
+    }
+
+    public function redirect($sourceUrl, $sessionUrl, $targetUrl)
+    {
+
+        return $targetUrl . substr($sourceUrl, strlen($sessionUrl));
 
     }
 
@@ -730,6 +752,8 @@ class Proxy {
 
                         $this->sessionUrl = $serverUrl['url'];
 
+                        $this->hostRedirect = $s['hostredirect'];
+
                         $canProcess = true;
 
                     }
@@ -743,6 +767,8 @@ class Proxy {
                         $this->resource = $serverUrl;
 
                         $this->sessionUrl = $serverUrl['url'];
+
+                        $this->hostRedirect = $s['hostredirect'];
 
                         $canProcess = true;
           
