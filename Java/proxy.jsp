@@ -665,9 +665,9 @@ public static class ProxyConfig
             //if the request has less parts than the config, don't allow
             if (configUriParts.length > uriParts.length) continue;
 
-            int i = 1;
-            //skip comparing the protocol, so that either http or https is considered valid
-            for (i = 1; i < configUriParts.length; i++)
+            int i;
+            //try to match configUrl to the requested url, including protocol
+            for (i = 0; i < configUriParts.length; i++)
             {
                 if (!configUriParts[i].toLowerCase().equals(uriParts[i].toLowerCase()) ) break;
             }
