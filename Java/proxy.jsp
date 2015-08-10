@@ -1,6 +1,6 @@
 <%@page session="false"%>
-<%@page import=
-                "java.net.HttpURLConnection,
+<%@page import="
+java.net.HttpURLConnection,
 java.net.URL,
 java.net.URLEncoder,
 java.net.URLDecoder,
@@ -153,9 +153,9 @@ java.text.SimpleDateFormat" %>
       }
       buffer.flush();
 
-	  //Check if the content of the HttpURLConnection contains error message
+      //Check if the content of the HttpURLConnection contains error message
       String strResponse = buffer.toString();
-      if (!ignoreAuthenticationErrors && strResponse.indexOf("{\"error\":{") > -1 && (strResponse.indexOf("\"code\":498") > -1 || strResponse.indexOf("\"code\":499") > -1)) {
+      if (!ignoreAuthenticationErrors && strResponse.indexOf("error") > -1 && strResponse.indexOf("code") > -1 || ( strResponse.indexOf("498") > -1 || strResponse.indexOf("499") > -1)) {
         return true;
       }
 
