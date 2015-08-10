@@ -214,6 +214,7 @@ java.text.SimpleDateFormat" %>
 
       OutputStream os = con.getOutputStream();
       os.write(bytes);
+      bytes = null;
     }
 
     return con;
@@ -282,7 +283,7 @@ java.text.SimpleDateFormat" %>
         }else
           return "-1"; //return -1, signaling that infourl can not be found
 
-        if (infoUrl != "") {
+        if (!infoUrl.equals("")) {
 
           _log(Level.INFO, "[Info]: Querying security endpoint...");
 
@@ -417,7 +418,7 @@ java.text.SimpleDateFormat" %>
     try{
       ProxyConfig proxyConfig = getConfig();
       String filename = proxyConfig.getLogFile();
-      return filename != null && filename != "" && !filename.isEmpty() && logger != null;
+      return filename != null && !filename.equals("") && !filename.isEmpty() && logger != null;
     }catch (Exception e) {
       e.printStackTrace();
     }
@@ -504,6 +505,7 @@ java.text.SimpleDateFormat" %>
         while( ( line = reader.readLine() ) != null ) {
           stringBuilder.append( line );
         }
+        reader.close();
 
         String configFileStr = stringBuilder.toString();
         configFileStr = configFileStr.replaceAll("(?ms)<!\\-\\-(.+?)\\-\\->", "");
