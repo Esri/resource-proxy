@@ -119,10 +119,10 @@ java.text.SimpleDateFormat" %>
       Map<String, List<String>> headerFields = con.getHeaderFields();
 
       Set<String> headerFieldsSet = headerFields.keySet();
-      Iterator<String> hearerFieldsIter = headerFieldsSet.iterator();
+      Iterator<String> headerFieldsIter = headerFieldsSet.iterator();
 
-      while (hearerFieldsIter.hasNext()){
-        String headerFieldKey = hearerFieldsIter.next();
+      while (headerFieldsIter.hasNext()){
+        String headerFieldKey = headerFieldsIter.next();
         List<String> headerFieldValue = headerFields.get(headerFieldKey);
         StringBuilder sb = new StringBuilder();
         for (String value : headerFieldValue) {
