@@ -153,6 +153,12 @@ java.text.SimpleDateFormat" %>
       }
       buffer.flush();
 
+      //Check if the content of the HttpURLConnection contains error message
+      String strResponse = buffer.toString();
+      if (!ignoreAuthenticationErrors && strResponse.indexOf("error") > -1 && (strResponse.indexOf(" \"code\": 498") > -1 || strResponse.indexOf(" \"code\": 499") > -1)) {
+        return true;
+      }
+
       byte[] byteResponse = buffer.toByteArray();
       OutputStream ostream = clientResponse.getOutputStream();
       ostream.write(byteResponse);
