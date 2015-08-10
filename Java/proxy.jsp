@@ -1,6 +1,6 @@
 <%@page session="false"%>
-<%@page import=
-"java.net.HttpURLConnection,
+<%@page import="
+java.net.HttpURLConnection,
 java.net.URL,
 java.net.URLEncoder,
 java.net.URLDecoder,
@@ -31,12 +31,12 @@ java.util.HashMap,
 java.text.SimpleDateFormat" %>
 
 <!-- ----------------------------------------------------------
- *
- * JSP proxy client
- *
- * Version 1.1 beta
- * See https://github.com/Esri/resource-proxy for more information.
- *
+*
+* JSP proxy client
+*
+* Version 1.1 beta
+* See https://github.com/Esri/resource-proxy for more information.
+*
 ----------------------------------------------------------- -->
 
 <%! final String version = "1.1 Beta";   %>
@@ -119,10 +119,10 @@ java.text.SimpleDateFormat" %>
       Map<String, List<String>> headerFields = con.getHeaderFields();
 
       Set<String> headerFieldsSet = headerFields.keySet();
-      Iterator<String> hearerFieldsIter = headerFieldsSet.iterator();
+      Iterator<String> headerFieldsIter = headerFieldsSet.iterator();
 
-      while (hearerFieldsIter.hasNext()){
-        String headerFieldKey = hearerFieldsIter.next();
+      while (headerFieldsIter.hasNext()){
+        String headerFieldKey = headerFieldsIter.next();
         List<String> headerFieldValue = headerFields.get(headerFieldKey);
         StringBuilder sb = new StringBuilder();
         for (String value : headerFieldValue) {
@@ -666,19 +666,19 @@ java.text.SimpleDateFormat" %>
         //if the request has less parts than the config, don't allow
         if (configUriParts.length > uriParts.length) continue;
 
-            int i;
-            //try to match configUrl to the requested url, including protocol
-            for (i = 0; i < configUriParts.length; i++)
-            {
-                if (!configUriParts[i].toLowerCase().equals(uriParts[i].toLowerCase()) ) break;
-            }
-            if (i == configUriParts.length)
-            {
-                //if the urls don't match exactly, and the individual matchAll tag is 'false', don't allow
-                if (configUriParts.length == uriParts.length || su.getMatchAll())
-                    return su;
-            }
+        int i;
+        //try to match configUrl to the requested url, including protocol
+        for (i = 0; i < configUriParts.length; i++)
+        {
+          if (!configUriParts[i].toLowerCase().equals(uriParts[i].toLowerCase()) ) break;
         }
+        if (i == configUriParts.length)
+        {
+          //if the urls don't match exactly, and the individual matchAll tag is 'false', don't allow
+          if (configUriParts.length == uriParts.length || su.getMatchAll())
+            return su;
+        }
+      }
 
       if (this.mustMatch)
         return null;//if nothing match and mustMatch is true, return null
