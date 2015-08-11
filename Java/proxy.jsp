@@ -427,7 +427,7 @@ java.text.SimpleDateFormat" %>
     }
 
     //writing Log file
-    private static final Object _lockobject = new Object();
+    private static Object _lockobject = new Object();
     private static Logger logger = Logger.getLogger("ESRI_PROXY_LOGGER");
 
     private boolean okToLog(){
@@ -820,7 +820,7 @@ java.text.SimpleDateFormat" %>
         }
     }
 
-    private static final Object _rateMapLock = new Object();
+    private static Object _rateMapLock = new Object();
 
     private static void sendErrorResponse(HttpServletResponse response, String errorDetails, String errorMessage, int errorCode) throws IOException{
         response.setHeader("Content-Type", "application/json");
