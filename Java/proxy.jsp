@@ -308,10 +308,18 @@ java.text.SimpleDateFormat" %>
                         _log(Level.INFO, "Token URL not cached.  Querying rest info page...");
                         String infoResponse = webResponseToString(doHTTPRequest(infoUrl, "GET"));
                         tokenServiceUri = getJsonValue(infoResponse, "tokenServicesUrl");
+
+                        //if tokenServiceUri is not in the rest/info, try to find the owningSystemUrl
+                        if (tokenServiceUri.isEmpty()){
+                            String owningSystemUrl = getJsonValue(infoResponse, "owningSystemUrl");
+                            if (!owningSystemUrl.isEmpty())
+                                tokenServiceUri = owningSystemUrl + "/sharing/generateToken";
+                        }
+
                         su.setTokenServiceUri(tokenServiceUri);
                     }
 
-                    if (tokenServiceUri != null && !tokenServiceUri.isEmpty()){
+                    if (!tokenServiceUri.isEmpty()){
                         _log(Level.INFO, "[Info]: Service is secured by " + tokenServiceUri + ": getting new token...");
                         String uri = tokenServiceUri + "?f=json&request=getToken&referer=" + URLEncoder.encode(PROXY_REFERER,"UTF-8") + "&expiration=60&username=" + URLEncoder.encode(su.getUsername(),"UTF-8") + "&password=" + URLEncoder.encode(su.getPassword(), "UTF-8");
                         String tokenResponse = webResponseToString(doHTTPRequest(uri, "POST"));
