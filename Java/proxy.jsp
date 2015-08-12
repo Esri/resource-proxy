@@ -128,7 +128,7 @@ java.text.SimpleDateFormat" %>
             //copy the response header to the response to the client
             for (String headerFieldKey : headerFieldsSet){
                 //prevent request for partial content
-                if (headerFieldKey.toLowerCase().equals("accept-ranges")){
+                if (headerFieldKey != null && headerFieldKey.toLowerCase().equals("accept-ranges")){
                     continue;
                 }
 
