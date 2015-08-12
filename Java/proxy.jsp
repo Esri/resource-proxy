@@ -308,6 +308,14 @@ java.text.SimpleDateFormat" %>
                         _log(Level.INFO, "Token URL not cached.  Querying rest info page...");
                         String infoResponse = webResponseToString(doHTTPRequest(infoUrl, "GET"));
                         tokenServiceUri = getJsonValue(infoResponse, "tokenServicesUrl");
+
+                        //If the tokenServiceUri does not exist, check the owningSystemUrl for token endpoint
+                        if (tokenServiceUri.isEmpty()){
+                            String owningSystemUrl = getJsonValue(infoResponse, "owningSystemUrl");
+                            if (!owningSystemUrl.isEmpty()){
+                                tokenServiceUri = owningSystemUrl + "/sharing/generateToken";
+                            }
+                        }
                         su.setTokenServiceUri(tokenServiceUri);
                     }
 
