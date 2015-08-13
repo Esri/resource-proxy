@@ -524,6 +524,11 @@ class Proxy {
         $key = '';
 
         foreach(explode("\n", $raw_headers) as $i => $h) {
+            //PHP and cURL will return all headers, need to filter out the redirect headers. http://php.net/manual/en/function.curl-setopt.php#103232
+            if ($h == "\r" || $h == "\n"){
+                $headers = array();
+                continue;
+            }
 
             $h = explode(':', $h, 2);
 
@@ -610,7 +615,6 @@ class Proxy {
 
         exit();
     }
-
 
     public function setupClassProperties()
     {
