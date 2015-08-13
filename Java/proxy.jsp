@@ -4,6 +4,7 @@ java.net.HttpURLConnection,
 java.net.URL,
 java.net.URLEncoder,
 java.net.URLDecoder,
+java.net.MalformedURLException,
 java.io.BufferedReader,
 java.io.ByteArrayOutputStream,
 java.io.DataInputStream,
@@ -127,6 +128,11 @@ java.text.SimpleDateFormat" %>
 
             //copy the response header to the response to the client
             for (String headerFieldKey : headerFieldsSet){
+                //prevent request for partial content
+                if (headerFieldKey != null && headerFieldKey.toLowerCase().equals("accept-ranges")){
+                    continue;
+                }
+
                 List<String> headerFieldValue = headerFields.get(headerFieldKey);
                 StringBuilder sb = new StringBuilder();
                 for (String value : headerFieldValue) {
@@ -159,7 +165,8 @@ java.text.SimpleDateFormat" %>
 
             //if the content of the HttpURLConnection contains error message, it means the token expired, so let proxy try again
             String strResponse = buffer.toString();
-            if (!ignoreAuthenticationErrors && strResponse.contains("error") && (strResponse.contains(" \"code\": 498") || strResponse.contains(" \"code\": 499"))) {
+            if (!ignoreAuthenticationErrors && strResponse.contains("error") && (strResponse.contains("\"code\": 498") || strResponse.contains("\"code\": 499")
+                    || strResponse.contains("\"code\":498") || strResponse.contains("\"code\":499"))) {
                 return true;
             }
 
@@ -586,8 +593,9 @@ java.text.SimpleDateFormat" %>
                                     String rateLimit = ProxyConfig.getAttributeWithRegex("rateLimit", server);
                                     String rateLimitPeriod = ProxyConfig.getAttributeWithRegex("rateLimitPeriod", server);
                                     String tokenServiceUri = ProxyConfig.getAttributeWithRegex("tokenServiceUri", server);
+                                    String hostRedirect = ProxyConfig.getAttributeWithRegex("hostRedirect", server);
 
-                                    serverList.add(new ServerUrl(url, matchAll, oauth2Endpoint, username, password, clientId, clientSecret, rateLimit, rateLimitPeriod, tokenServiceUri));
+                                    serverList.add(new ServerUrl(url, matchAll, oauth2Endpoint, username, password, clientId, clientSecret, rateLimit, rateLimitPeriod, tokenServiceUri, hostRedirect));
                                 }
 
                                 config.setServerUrls(serverList.toArray(new ServerUrl[serverList.size()]));
@@ -727,9 +735,10 @@ java.text.SimpleDateFormat" %>
         String rateLimit;
         String rateLimitPeriod;
         String tokenServiceUri;
+        String hostRedirect;
 
         public ServerUrl(String url, String matchAll, String oauth2Endpoint, String username, String password, String clientId, String clientSecret, String rateLimit,
-                         String rateLimitPeriod, String tokenServiceUri){
+                         String rateLimitPeriod, String tokenServiceUri, String hostRedirect){
 
             this.url = url;
             this.matchAll = matchAll == null || matchAll.isEmpty() || Boolean.parseBoolean(matchAll);
@@ -741,6 +750,7 @@ java.text.SimpleDateFormat" %>
             this.rateLimit = rateLimit;
             this.rateLimitPeriod = rateLimitPeriod;
             this.tokenServiceUri = tokenServiceUri;
+            this.hostRedirect = hostRedirect;
 
         }
 
@@ -762,6 +772,13 @@ java.text.SimpleDateFormat" %>
         }
         public void setMatchAll(boolean value){
             this.matchAll = value;
+        }
+        public String getHostRedirect() {
+            return hostRedirect;
+        }
+
+        public void setHostRedirect(String hostRedirect) {
+            this.hostRedirect = hostRedirect;
         }
 
         public String getOAuth2Endpoint(){
@@ -866,13 +883,25 @@ java.text.SimpleDateFormat" %>
         output.flush();
     }
 
+    //check if the originalUri needs to be host-redirected
+    private String uriHostRedirect(String originalUri, ServerUrl serverUrl) throws MalformedURLException{
+        if (serverUrl.hostRedirect != null && !serverUrl.hostRedirect.isEmpty()){
+            URL request = new URL(originalUri);
+            String redirectHost = serverUrl.getHostRedirect();
+            redirectHost = redirectHost.endsWith("/")?redirectHost.substring(0, redirectHost.length()-1):redirectHost;
+
+            return redirectHost + request.getPath() + (request.getQuery()!=null?("?" + request.getQuery()):"");
+        }
+        return originalUri;
+    }
+
     @SuppressWarnings("unchecked")
     private ConcurrentHashMap<String, RateMeter> castRateMap(Object rateMap){
         return (ConcurrentHashMap<String, RateMeter>) rateMap;
     }
 %><%
-    String uri = request.getQueryString();
-    _log(Level.INFO, "Creating request for: " + uri);
+    String originalUri = request.getQueryString();
+    _log(Level.INFO, "Creating request for: " + originalUri);
     ServerUrl serverUrl;
 
     try {
@@ -881,24 +910,24 @@ java.text.SimpleDateFormat" %>
             out.clear();
             out = pageContext.pushBody();
 
-            //check if the uri to be proxied is empty
-            if (uri == null || uri.isEmpty()){
+            //check if the requestUri to be proxied is empty
+            if (originalUri == null || originalUri.isEmpty()){
                 String errorMessage = "This proxy does not support empty parameters.";
                 _log(Level.WARNING, errorMessage);
                 sendErrorResponse(response, errorMessage, "400 - " + errorMessage, HttpServletResponse.SC_BAD_REQUEST);
                 return;
             }
 
-            //check if the uri to be proxied is "ping"
-            if (uri.equalsIgnoreCase("ping")){
+            //check if the requestUri to be proxied is "ping"
+            if (originalUri.equalsIgnoreCase("ping")){
                 String checkConfig = getConfig().canReadProxyConfig() ? "OK": "Not Readable";
                 String checkLog = okToLog() ? "OK": "Not Exist/Readable";
                 _sendPingMessage(response, version, checkConfig, checkLog);
                 return;
             }
 
-            //check if the uri is encoded then decode it
-            if (uri.toLowerCase().startsWith("http%3a%2f%2f") || uri.toLowerCase().startsWith("https%3a%2f%2f")) uri= URLDecoder.decode(uri, "UTF-8");
+            //check if the requestUri is encoded then decode it
+            if (originalUri.toLowerCase().startsWith("http%3a%2f%2f") || originalUri.toLowerCase().startsWith("https%3a%2f%2f")) originalUri = URLDecoder.decode(originalUri, "UTF-8");
 
             //check the Referer in request header against the allowedReferer in proxy.config
             String[] allowedReferers = getConfig().getAllowedReferers();
@@ -921,23 +950,23 @@ java.text.SimpleDateFormat" %>
             }
 
             //Check to see if allowed referer list is specified and reject if referer is null
-            if (request.getHeader("referer") == null && allowedReferers != null && !allowedReferers[0].equals("*")){
+            if (request.getHeader("referer") == null && allowedReferers != null && !allowedReferers[0].equals("*")) {
                 _log(Level.WARNING, "Proxy is being called by a null referer.  Access denied.");
                 sendErrorResponse(response, "Current proxy configuration settings do not allow requests which do not include a referer header.", "403 - Forbidden: Access is denied.", HttpServletResponse.SC_FORBIDDEN);
                 return;
             }
 
             //get the serverUrl from proxy.config
-            serverUrl = getConfig().getConfigServerUrl(uri);
+            serverUrl = getConfig().getConfigServerUrl(originalUri);
             if (serverUrl == null) {
                 //if no serverUrl found, send error message and get out.
-                _sendURLMismatchError(response, uri);
+                _sendURLMismatchError(response, originalUri);
                 return;
             }
         } catch (IllegalStateException e) {
-            _log(Level.WARNING, "Proxy is being used for an unsupported service: " + uri);
+            _log(Level.WARNING, "Proxy is being used for an unsupported service: " + originalUri);
 
-            _sendURLMismatchError(response, uri);
+            _sendURLMismatchError(response, originalUri);
 
             return;
         }
@@ -985,9 +1014,11 @@ java.text.SimpleDateFormat" %>
         //readying body (if any) of POST request
         byte[] postBody = readRequestPostBody(request);
         String post = new String(postBody);
+        //check if the originalUri needs to be host-redirected
+        String requestUri = uriHostRedirect(originalUri, serverUrl);
 
         //if token comes with client request, it takes precedence over token or credentials stored in configuration
-        boolean hasClientToken = uri.contains("?token=") || uri.contains("&token=") || post.contains("?token=") || post.contains("&token=");
+        boolean hasClientToken = requestUri.contains("?token=") || requestUri.contains("&token=") || post.contains("?token=") || post.contains("&token=");
         String token = "";
         if (!hasClientToken) {
             // Get new token and append to the request.
@@ -997,7 +1028,7 @@ java.text.SimpleDateFormat" %>
 
             //if still no token, let's see if there are credentials stored in configuration which we can use to obtain new token
             if (!tokenIsInApplicationScope){
-                token = getNewTokenIfCredentialsAreSpecified(serverUrl, uri);
+                token = getNewTokenIfCredentialsAreSpecified(serverUrl, requestUri);
             }
 
             if (token != null && !token.isEmpty() && !tokenIsInApplicationScope) {
@@ -1007,7 +1038,7 @@ java.text.SimpleDateFormat" %>
         }
 
         //forwarding original request
-        HttpURLConnection con = forwardToServer(request, addTokenToUri(uri, token), postBody);
+        HttpURLConnection con = forwardToServer(request, addTokenToUri(requestUri, token), postBody);
 
         if ( token == null || token.isEmpty() || hasClientToken) {
             //if token is not required or provided by the client, just fetch the response as is:
@@ -1024,8 +1055,8 @@ java.text.SimpleDateFormat" %>
                 _log(Level.INFO, "Renewing token and trying again.");
                 //server returned error - potential cause: token has expired.
                 //we'll do second attempt to call the server with renewed token:
-                token = getNewTokenIfCredentialsAreSpecified(serverUrl, uri);
-                con = forwardToServer(request, addTokenToUri(uri, token), postBody);
+                token = getNewTokenIfCredentialsAreSpecified(serverUrl, requestUri);
+                con = forwardToServer(request, addTokenToUri(requestUri, token), postBody);
 
                 //storing the token in Application scope, to do not waste time on requesting new one until it expires or the app is restarted.
                 synchronized(this){
