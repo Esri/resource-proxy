@@ -382,7 +382,6 @@ public class proxy : IHttpHandler {
     
     private bool fetchAndPassBackToClient(System.Net.WebResponse serverResponse, HttpResponse clientResponse, bool ignoreAuthenticationErrors) {
         if (serverResponse != null) {
-            copyHeaders(serverResponse, clientResponse);
             using (Stream byteStream = serverResponse.GetResponseStream()) {
                 // Text response
                 if (serverResponse.ContentType.Contains("text") ||
@@ -392,15 +391,20 @@ public class proxy : IHttpHandler {
                         string strResponse = sr.ReadToEnd();
                         if (
                             !ignoreAuthenticationErrors
-                            && strResponse.IndexOf("{\"error\":{") > -1
-                            && (strResponse.IndexOf("\"code\":498") > -1 || strResponse.IndexOf("\"code\":499") > -1)
+                            && strResponse.Contains("error")
+                            && (strResponse.Contains("\"code\": 498") || strResponse.Contains("\"code\": 499") || strResponse.Contains("\"code\":498") || strResponse.Contains("\"code\":499"))
                         )
                             return true;
+
+                        //Copy the header info and the content to the reponse to client
+                        copyHeaders(serverResponse, clientResponse);
                         clientResponse.Write(strResponse);
                     }
                 } else {
                     // Binary response (image, lyr file, other binary file)
 
+                    //Copy the header info to the reponse to client
+                    copyHeaders(serverResponse, clientResponse);
                     // Tell client not to cache the image since it's dynamic
                     clientResponse.CacheControl = "no-cache";
                     byte[] buffer = new byte[32768];
