@@ -227,6 +227,11 @@ public class proxy : IHttpHandler {
         string token = string.Empty;
         string tokenParamName = null;
 
+        if ((serverUrl.HostRedirect != null) && (serverUrl.HostRedirect != string.Empty))
+        {
+            requestUri = serverUrl.HostRedirect + new Uri(requestUri).PathAndQuery;
+        }
+
         if (serverUrl.Domain != null)
         {
             credentials = new System.Net.NetworkCredential(serverUrl.Username, serverUrl.Password, serverUrl.Domain);
@@ -234,7 +239,7 @@ public class proxy : IHttpHandler {
         else
         {
             //if token comes with client request, it takes precedence over token or credentials stored in configuration
-            hasClientToken = uri.Contains("?token=") || uri.Contains("&token=") || post.Contains("?token=") || post.Contains("&token=");
+            hasClientToken = requestUri.Contains("?token=") || requestUri.Contains("&token=") || post.Contains("?token=") || post.Contains("&token=");
 
             if (!hasClientToken)
             {
@@ -248,7 +253,7 @@ public class proxy : IHttpHandler {
                 {
                     token = serverUrl.AccessToken;
                     if (String.IsNullOrEmpty(token))
-                        token = getNewTokenIfCredentialsAreSpecified(serverUrl, uri);
+                        token = getNewTokenIfCredentialsAreSpecified(serverUrl, requestUri);
                 }
 
                 if (!String.IsNullOrEmpty(token) && !tokenIsInApplicationScope)
@@ -266,13 +271,8 @@ public class proxy : IHttpHandler {
             if (String.IsNullOrEmpty(tokenParamName))
                 tokenParamName = "token";
 
-            requestUri = addTokenToUri(uri, token, tokenParamName);
+            requestUri = addTokenToUri(requestUri, token, tokenParamName);
         }
-        if ((serverUrl.HostRedirect != null) && (serverUrl.HostRedirect != string.Empty))
-        {
-            requestUri = serverUrl.HostRedirect + new Uri(requestUri).PathAndQuery;
-        }
-
         
         //forwarding original request
         System.Net.WebResponse serverResponse = null;
@@ -325,8 +325,8 @@ public class proxy : IHttpHandler {
                 log(TraceLevel.Info, "Renewing token and trying again.");
                 //server returned error - potential cause: token has expired.
                 //we'll do second attempt to call the server with renewed token:
-                token = getNewTokenIfCredentialsAreSpecified(serverUrl, uri);
-                serverResponse = forwardToServer(context, addTokenToUri(uri, token, tokenParamName), postBody);
+                token = getNewTokenIfCredentialsAreSpecified(serverUrl, requestUri);
+                serverResponse = forwardToServer(context, addTokenToUri(requestUri, token, tokenParamName), postBody);
 
                 //storing the token in Application scope, to do not waste time on requesting new one untill it expires or the app is restarted.
                 context.Application.Lock();
