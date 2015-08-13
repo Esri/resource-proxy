@@ -392,7 +392,7 @@ public class proxy : IHttpHandler {
                         if (
                             !ignoreAuthenticationErrors
                             && strResponse.Contains("error")
-                            && (strResponse.Contains("\"code\": 498") || strResponse.Contains("\"code\": 499"))
+                            && (strResponse.Contains("\"code\": 498") || strResponse.Contains("\"code\": 499") || strResponse.Contains("\"code\":498") || strResponse.Contains("\"code\":499"))
                         )
                             return true;
 

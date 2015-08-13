@@ -159,7 +159,8 @@ java.text.SimpleDateFormat" %>
 
             //if the content of the HttpURLConnection contains error message, it means the token expired, so let proxy try again
             String strResponse = buffer.toString();
-            if (!ignoreAuthenticationErrors && strResponse.contains("error") && (strResponse.contains(" \"code\": 498") || strResponse.contains(" \"code\": 499"))) {
+            if (!ignoreAuthenticationErrors && strResponse.contains("error") && (strResponse.contains("\"code\": 498") || strResponse.contains("\"code\": 499")
+                    || strResponse.contains("\"code\":498") || strResponse.contains("\"code\":499"))) {
                 return true;
             }
 
