@@ -884,7 +884,7 @@ java.text.SimpleDateFormat" %>
             String redirectHost = serverUrl.getHostRedirect();
             redirectHost = redirectHost.endsWith("/")?redirectHost.substring(0, redirectHost.length()-1):redirectHost;
             String queryString = request.getQuery();
-            return redirectHost + request.getPath() + (queryString != null ? ("?" + queryString : "");
+            return redirectHost + request.getPath() + (queryString != null) ? ("?" + queryString) : "";
         }
         return originalUri;
     }
