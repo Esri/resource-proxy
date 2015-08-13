@@ -114,10 +114,16 @@ public class proxy : IHttpHandler {
         
         log(TraceLevel.Info, uri);
         ServerUrl serverUrl;
-        bool passThrough = false;
         try {
             serverUrl = getConfig().GetConfigServerUrl(uri);
-            passThrough = serverUrl == null;
+            
+            if (serverUrl == null) {
+                //if no serverUrl found, send error message and get out.
+                string errorMsg = "The request URL does not match with the ServerUrl in proxy.config! Please check the proxy.config!";
+                log(TraceLevel.Error, errorMsg);
+                sendErrorResponse(context.Response, null, errorMsg, System.Net.HttpStatusCode.BadRequest);
+                return;
+            }
         }
         //if XML couldn't be parsed
         catch (InvalidOperationException ex) {
@@ -175,7 +181,7 @@ public class proxy : IHttpHandler {
         }
 
         //Throttling: checking the rate limit coming from particular client IP
-        if (!passThrough && serverUrl.RateLimit > -1) {
+        if (serverUrl.RateLimit > -1) {
             lock (_rateMapLock)
             {
                 ConcurrentDictionary<string, RateMeter> ratemap = (ConcurrentDictionary<string, RateMeter>)context.Application["rateMap"];
@@ -221,7 +227,7 @@ public class proxy : IHttpHandler {
         string token = string.Empty;
         string tokenParamName = null;
 
-        if (!passThrough && serverUrl.Domain != null)
+        if (serverUrl.Domain != null)
         {
             credentials = new System.Net.NetworkCredential(serverUrl.Username, serverUrl.Password, serverUrl.Domain);
         }
@@ -230,7 +236,7 @@ public class proxy : IHttpHandler {
             //if token comes with client request, it takes precedence over token or credentials stored in configuration
             hasClientToken = uri.Contains("?token=") || uri.Contains("&token=") || post.Contains("?token=") || post.Contains("&token=");
 
-            if (!passThrough && !hasClientToken)
+            if (!hasClientToken)
             {
                 // Get new token and append to the request.
                 // But first, look up in the application scope, maybe it's already there:
@@ -303,7 +309,7 @@ public class proxy : IHttpHandler {
             return;
         }
 
-        if (passThrough || string.IsNullOrEmpty(token) || hasClientToken)
+        if (string.IsNullOrEmpty(token) || hasClientToken)
             //if token is not required or provided by the client, just fetch the response as is:
             fetchAndPassBackToClient(serverResponse, response, true);
         else {
