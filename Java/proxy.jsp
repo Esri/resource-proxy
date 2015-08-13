@@ -884,7 +884,7 @@ java.text.SimpleDateFormat" %>
             String redirectHost = serverUrl.getHostRedirect();
             redirectHost = redirectHost.endsWith("/")?redirectHost.substring(0, redirectHost.length()-1):redirectHost;
             String queryString = request.getQuery();
-            return redirectHost + request.getPath() + (queryString != null) ? ("?" + queryString) : "";
+            return redirectHost + request.getPath() + ((queryString != null) ? ("?" + queryString) : "");
         }
         return originalUri;
     }
@@ -904,7 +904,7 @@ java.text.SimpleDateFormat" %>
             out.clear();
             out = pageContext.pushBody();
 
-            //check if the requestUri to be proxied is empty
+            //check if the originalUri to be proxied is empty
             if (originalUri == null || originalUri.isEmpty()){
                 String errorMessage = "This proxy does not support empty parameters.";
                 _log(Level.WARNING, errorMessage);
@@ -912,7 +912,7 @@ java.text.SimpleDateFormat" %>
                 return;
             }
 
-            //check if the requestUri to be proxied is "ping"
+            //check if the originalUri to be proxied is "ping"
             if (originalUri.equalsIgnoreCase("ping")){
                 String checkConfig = getConfig().canReadProxyConfig() ? "OK": "Not Readable";
                 String checkLog = okToLog() ? "OK": "Not Exist/Readable";
@@ -920,7 +920,7 @@ java.text.SimpleDateFormat" %>
                 return;
             }
 
-            //check if the requestUri is encoded then decode it
+            //check if the originalUri is encoded then decode it
             if (originalUri.toLowerCase().startsWith("http%3a%2f%2f") || originalUri.toLowerCase().startsWith("https%3a%2f%2f")) originalUri = URLDecoder.decode(originalUri, "UTF-8");
 
             //check the Referer in request header against the allowedReferer in proxy.config
