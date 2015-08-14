@@ -803,14 +803,14 @@ class Proxy {
     public function useSessionToken()
     {
 
-        $sessonKey = 'token_for_' . $this->sessionUrl;
+        $sessionKey = 'token_for_' . $this->sessionUrl;
 
-        $sessonKey = sprintf("'%s'", $sessonKey);
+        $sessionKey = sprintf("'%s'", $sessionKey);
 
-        if(isset($_SESSION[$sessonKey])) //Try to get token from session
+        if(isset($_SESSION[$sessionKey])) //Try to get token from session
         {
 
-            $token = $_SESSION[$sessonKey];
+            $token = $_SESSION[$sessionKey];
 
             $this->appendToken($token);
 
@@ -864,11 +864,11 @@ class Proxy {
 
                     $this->proxyLog->log("Removing session value");
 
-                    $sessonKey = 'token_for_' . $this->sessionUrl;
+                    $sessionKey = 'token_for_' . $this->sessionUrl;
 
-                    $sessonKey = sprintf("'%s'", $sessonKey);
+                    $sessionKey = sprintf("'%s'", $sessionKey);
 
-                    unset($_SESSION[$sessonKey]);  //Remove token from session
+                    unset($_SESSION[$sessionKey]);  //Remove token from session
                 }
 
                 $this->runProxy();
@@ -1289,15 +1289,15 @@ class Proxy {
 
     public function addTokenToSession($token) {
 
-        $sessonKey = 'token_for_' . $this->sessionUrl;
+        $sessionKey = 'token_for_' . $this->sessionUrl;
 
-        $sessonKey = sprintf("'%s'", $sessonKey);
+        $sessionKey = sprintf("'%s'", $sessionKey);
 
         try {
 
             $this->proxyLog->log('Adding token to session');
 
-            $_SESSION[$sessonKey] = $token;
+            $_SESSION[$sessionKey] = $token;
 
         }catch(Exception $e){
 
