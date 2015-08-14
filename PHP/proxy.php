@@ -490,7 +490,7 @@ class Proxy {
     public function setProxyHeaders()
     {
 
-        $header_size = curl_getinfo($this->ch, CURLINFO_HEADER_SIZE); //cURL will go null after this 
+        $header_size = curl_getinfo($this->ch, CURLINFO_HEADER_SIZE); //cURL will go null after this
 
         $header_content = trim(substr($this->response,0, $header_size));
 
@@ -524,6 +524,11 @@ class Proxy {
         $key = '';
 
         foreach(explode("\n", $raw_headers) as $i => $h) {
+            //PHP and cURL will return all headers, need to filter out the redirect headers. http://php.net/manual/en/function.curl-setopt.php#103232
+            if ($h == "\r"){
+                $headers = array();
+                continue;
+            }
 
             $h = explode(':', $h, 2);
 
@@ -610,7 +615,6 @@ class Proxy {
 
         exit();
     }
-
 
     public function setupClassProperties()
     {
@@ -752,7 +756,7 @@ class Proxy {
 
                         $this->sessionUrl = $serverUrl['url'];
 
-                        $this->hostRedirect = $s['hostredirect'];
+                        $this->hostRedirect = $serverUrl['hostredirect'];
 
                         $canProcess = true;
 
@@ -768,7 +772,7 @@ class Proxy {
 
                         $this->sessionUrl = $serverUrl['url'];
 
-                        $this->hostRedirect = $s['hostredirect'];
+                        $this->hostRedirect = $serverUrl['hostredirect'];
 
                         $canProcess = true;
 
