@@ -830,8 +830,10 @@ class Proxy {
 
     public function hasTokeninRequest()
     {
-        if(strrpos($this->proxyUrlWithData, "?token=") || strpos($this->proxyUrlWithData, "&token=") || strpos($this->proxyData, "?token=") || strpos($this->proxyData,"&token=" ))
+        if(strpos($this->proxyUrlWithData, "?token=") || strpos($this->proxyUrlWithData, "&token=") || strpos($this->proxyData, "?token=") || strpos($this->proxyData,"&token=" ))
+        {
             return true;
+        }
         return false;
     }
 
