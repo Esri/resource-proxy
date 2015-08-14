@@ -531,8 +531,12 @@ public class proxy : IHttpHandler {
                     //lets send a request to try and determine the URL of a token generator
                     string infoResponse = webResponseToString(doHTTPRequest(infoUrl, "GET"));
                     String tokenServiceUri = getJsonValue(infoResponse, "tokenServicesUrl");
-                    if (string.IsNullOrEmpty(tokenServiceUri))
-                        tokenServiceUri = getJsonValue(infoResponse, "tokenServiceUrl");
+                    if (string.IsNullOrEmpty(tokenServiceUri)) {
+                        string owningSystemUrl = getJsonValue(infoResponse, "owningSystemUrl");
+                        if (!string.IsNullOrEmpty(owningSystemUrl)) {
+                            tokenServiceUri = owningSystemUrl + "/sharing/generateToken";
+                        }
+                    }      
                     if (tokenServiceUri != "") {
                         log(TraceLevel.Info," Service is secured by " + tokenServiceUri + ": getting new token...");
                         string uri = tokenServiceUri + "?f=json&request=getToken&referer=" + PROXY_REFERER + "&expiration=60&username=" + su.Username + "&password=" + su.Password;
