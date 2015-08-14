@@ -524,9 +524,12 @@ class Proxy {
         $key = '';
 
         foreach(explode("\n", $raw_headers) as $i => $h) {
+
             //PHP and cURL will return all headers, need to filter out the redirect headers. http://php.net/manual/en/function.curl-setopt.php#103232
             if ($h == "\r"){
+
                 $headers = array();
+
                 continue;
             }
 
@@ -818,14 +821,36 @@ class Proxy {
 
             $this->proxyLog->log("Using session token");
 
+            return true;
+
         }
+
+        return false;
+    }
+
+    public function hasTokeninRequest()
+    {
+        if(strrpos($this->proxyUrlWithData, "?token=") || strpos($this->proxyUrlWithData, "&token=") || strpos($this->proxyData, "?token=") || strpos($this->proxyData,"&token=" ))
+            return true;
+        return false;
     }
 
     public function runProxy()
     {
+        //If 1) token is NOT stored in the session and 2) token is NOT provided along the request, we need to request it up-front.
+        if(!$this->useSessionToken() && !$this->hasTokeninRequest())
+        {
+            $token = $this->getNewTokenIfCredentialsAreSpecified();
 
-        $this->useSessionToken();
+            if(!empty($token) || $token != null)
+            {
+                $this->addTokenToSession($token);
 
+                $this->appendToken($token);
+            }
+        }
+
+        //send the first request
         if($this->proxyMethod == "FILES"){
 
             $this->proxyFiles();
@@ -841,8 +866,10 @@ class Proxy {
 
         }
 
+        //Check the response to see if any error occurs
         $isUnauthorized = $this->isUnauthorized();
 
+        //If error occurs, try to request with a new token
         if($isUnauthorized === true) {
 
             if($this->attemptsCount < $this->allowedAttempts) {
@@ -952,8 +979,14 @@ class Proxy {
 
             }else{
 
-                $this->proxyUrlWithData = $this->proxyUrlWithData . "&token=" . $token;
+                //check if the original proxyUrlWithData is with query string or not
+                if(parse_url($this->proxyUrlWithData, PHP_URL_QUERY)!= null)
 
+                    $this->proxyUrlWithData = $this->proxyUrlWithData . "&token=" . $token;
+
+                else
+
+                    $this->proxyUrlWithData = $this->proxyUrlWithData . "?token=" . $token;
             }
 
         }
