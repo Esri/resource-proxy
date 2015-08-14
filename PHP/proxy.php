@@ -524,11 +524,6 @@ class Proxy {
         $key = '';
 
         foreach(explode("\n", $raw_headers) as $i => $h) {
-            //PHP and cURL will return all headers, need to filter out the redirect headers. http://php.net/manual/en/function.curl-setopt.php#103232
-            if ($h == "\r"){
-                $headers = array();
-                continue;
-            }
 
             $h = explode(':', $h, 2);
 
@@ -756,7 +751,7 @@ class Proxy {
 
                         $this->sessionUrl = $serverUrl['url'];
 
-                        $this->hostRedirect = $serverUrl['hostredirect'];
+                        $this->hostRedirect = $s['hostredirect'];
 
                         $canProcess = true;
 
@@ -772,7 +767,7 @@ class Proxy {
 
                         $this->sessionUrl = $serverUrl['url'];
 
-                        $this->hostRedirect = $serverUrl['hostredirect'];
+                        $this->hostRedirect = $s['hostredirect'];
 
                         $canProcess = true;
 
