@@ -918,19 +918,19 @@ class Proxy {
 
         $jsonData = json_decode($this->proxyBody);
 
-        if (strpos($this->proxyBody,'"code":499') !== false) {
+        if (strpos($this->proxyBody,'"code":499') !== false || strpos($this->proxyBody,'"code": 499') !== false ) {
 
             $isUnauthorized = true;
 
         }
 
-        if (strpos($this->proxyBody,'"code":498') !== false) {
+        if (strpos($this->proxyBody,'"code":498') !== false || strpos($this->proxyBody,'"code": 498') !== false) {
 
             $isUnauthorized = true;
 
         }
 
-        if (strpos($this->proxyBody,'"code":403') !== false) {
+        if (strpos($this->proxyBody,'"code":403') !== false || strpos($this->proxyBody,'"code": 403') !== false) {
 
             $isUnauthorized = true;
 
@@ -1040,9 +1040,15 @@ class Proxy {
         exit();
     }
 
-    public function proxyGet() {
+    public function proxyGet($url) {
 
         $this->response = null;
+
+        //If $url is not set, use the $this->proxyUrlWithData as the $url
+        if(empty($url) || $url == null)
+        {
+            $url = $this->proxyUrlWithData;
+        }
 
         try {
 
@@ -1052,7 +1058,7 @@ class Proxy {
 
             curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
 
-            curl_setopt($this->ch, CURLOPT_URL, $this->proxyUrlWithData);
+            curl_setopt($this->ch, CURLOPT_URL, $url);
 
             $this->response = curl_exec($this->ch);
 
@@ -1352,7 +1358,7 @@ class Proxy {
             'request' => 'getToken',
             'f' => 'json',
             'referer' => $this->referer,
-            'expiration' => 60,
+            'expiration' => 1,
             'username' => $this->resource['username'],
             'password' => $this->resource['password']
         ));
@@ -1383,7 +1389,8 @@ class Proxy {
             $infoUrl = $this->resource['url'] . "/arcgis/rest/info";
         }
 
-        $this->proxyPost($infoUrl,array('f' => 'json'));
+        //Request /rest/info via GET request
+        $this->proxyGet($infoUrl .= "?f=json");
 
         $infoResponse = json_decode($this->proxyBody, true);
 
@@ -1395,7 +1402,18 @@ class Proxy {
 
         }else{
 
-            $this->proxyLog->log("Unable to get token endpoint");
+            //If no tokenServicesUrl, try to find owningSystemUrl as token endpoint
+            if(!empty($infoResponse['owningSystemUrl']))
+            {
+                $tokenServiceUri = $infoResponse['owningSystemUrl'] . "/sharing/generateToken";
+
+                $this->proxyLog->log("Federated service: get token endpoint from owningSystemUrl");
+            }
+            else
+            {
+                $this->proxyLog->log("Unable to get token endpoint");
+            }
+
         }
 
         return $tokenServiceUri;
