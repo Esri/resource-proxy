@@ -1407,7 +1407,7 @@ class Proxy {
             {
                 $tokenServiceUri = $infoResponse['owningSystemUrl'] . "/sharing/generateToken";
 
-                $this->proxyLog->log("Federated service: get token endpoint from owningSystemUrl");
+                $this->proxyLog->log("Federated service: got token endpoint from owningSystemUrl");
             }
             else
             {
