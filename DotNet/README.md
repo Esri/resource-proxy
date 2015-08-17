@@ -81,7 +81,7 @@ The proxy consists of the following files:
 * proxy.ashx: The actual proxy application. In most cases you will not need to modify this file.
 * proxy.xsd: a schema file for easier editing of proxy.config in Visual Studio.
 * Web.config: An XML file that stores ASP.NET configuration data. 
-NOTE: as of v1.1, log levels and log file locations are specified in proxy config. By default the proxy will write log messages to a file named auth_proxy.log located in  'C:\Temp\Shared\proxy_logs'. Note that the folder location needs to exist in order for the log file to be successfully created.
+NOTE: as of v1.1.0, log levels and log file locations are specified in proxy config. By default the proxy will write log messages to a file named auth_proxy.log located in  'C:\Temp\Shared\proxy_logs'. Note that the folder location needs to exist in order for the log file to be successfully created.
 
 ##Requirements
 
