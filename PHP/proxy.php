@@ -916,8 +916,6 @@ class Proxy {
 
         $isUnauthorized = false;
 
-        $jsonData = json_decode($this->proxyBody);
-
         if (strpos($this->proxyBody,'"code":499') !== false || strpos($this->proxyBody,'"code": 499') !== false ) {
 
             $isUnauthorized = true;
@@ -932,14 +930,6 @@ class Proxy {
 
         if (strpos($this->proxyBody,'"code":403') !== false || strpos($this->proxyBody,'"code": 403') !== false) {
 
-            $isUnauthorized = true;
-
-        }
-
-        $errorCode = $jsonData->{'error'}->{'code'};
-
-        if($errorCode == 499 || $errorCode == 498 || $errorCode == 403)
-        {
             $isUnauthorized = true;
 
         }
