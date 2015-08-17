@@ -1358,7 +1358,7 @@ class Proxy {
             'request' => 'getToken',
             'f' => 'json',
             'referer' => $this->referer,
-            'expiration' => 1,
+            'expiration' => 60,
             'username' => $this->resource['username'],
             'password' => $this->resource['password']
         ));
@@ -1407,7 +1407,7 @@ class Proxy {
             {
                 $tokenServiceUri = $infoResponse['owningSystemUrl'] . "/sharing/generateToken";
 
-                $this->proxyLog->log("Federated service: get token endpoint from owningSystemUrl");
+                $this->proxyLog->log("Federated service: got token endpoint from owningSystemUrl");
             }
             else
             {
