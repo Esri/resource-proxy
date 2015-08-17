@@ -7,17 +7,22 @@ Unreleased
 
 ######Date TBD
 
+### Added 
 - Support 10.3 tokens
-- Better HTTP header handling
-- Security enhancements
-- Better referrer handling
 - Add "?ping" for easier testing
-- Support ? in password
 - (DotNet) Support Windows authentication
 - Support federated service
+
+### Fixed
+- Better referrer handling
+- Support ? in password
+- Multiple redirects
 - Handle token expiration
 - Remove HTTP range-request Header
-- Multiple redirects
+
+### Security
+- Better HTTP header handling
+- Security enhancements
 
 
 1.0
