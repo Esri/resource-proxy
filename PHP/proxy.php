@@ -915,23 +915,26 @@ class Proxy {
     {
 
         $isUnauthorized = false;
+        
+        $jsonData = json_decode($this->proxyBody);
+        
+        $errorCode = $jsonData->{'error'}->{'code'};
 
         if (strpos($this->proxyBody,'"code":499') !== false || strpos($this->proxyBody,'"code": 499') !== false ) {
 
             $isUnauthorized = true;
 
-        }
-
-        if (strpos($this->proxyBody,'"code":498') !== false || strpos($this->proxyBody,'"code": 498') !== false) {
+        } elseif (strpos($this->proxyBody,'"code":498') !== false || strpos($this->proxyBody,'"code": 498') !== false) {
 
             $isUnauthorized = true;
 
-        }
-
-        if (strpos($this->proxyBody,'"code":403') !== false || strpos($this->proxyBody,'"code": 403') !== false) {
+        } elseif (strpos($this->proxyBody,'"code":403') !== false || strpos($this->proxyBody,'"code": 403') !== false) {
 
             $isUnauthorized = true;
 
+        } elseif ($errorCode == 499 || $errorCode == 498 || $errorCode == 403)
+        {
+            $isUnauthorized = true;
         }
 
         if($isUnauthorized){
