@@ -1,3 +1,25 @@
+# Change Log
+All notable changes to this project will be documented in this file.
+This project adheres to [Semantic Versioning](http://semver.org/).
+
+Unreleased
+==========
+
+######Date TBD
+
+- Support 10.3 tokens
+- Better HTTP header handling
+- Security enhancements
+- Better referrer handling
+- Add "?ping" for easier testing
+- Support ? in password
+- (DotNet) Support Windows authentication
+- Support federated service
+- Handle token expiration
+- Remove HTTP range-request Header
+- Multiple redirects
+
+
 1.0
 ===
 
