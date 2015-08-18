@@ -504,6 +504,9 @@ class Proxy {
 
                 $this->headers[] = $header;
 
+            } elseif($key === 0)
+            {
+                $this->headers[] = $value;
             }
 
         }
@@ -931,9 +934,9 @@ class Proxy {
         } else
         {
             $jsonData = json_decode($this->proxyBody);
-            
+
             $errorCode = $jsonData->{'error'}->{'code'};
-            
+
             if ($errorCode == 499 || $errorCode == 498 || $errorCode == 403)
             {
                 $isUnauthorized = true;
