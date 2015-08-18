@@ -243,7 +243,7 @@ class Proxy {
 
         $this->checkForPing();
 
-        if ($this->proxyConfig['mustmatch'] != null && $this->proxyConfig['mustmatch'] == true || $this->proxyConfig['mustmatch'] == "true") {
+        if (isset($this->proxyConfig['mustmatch']) && $this->proxyConfig['mustmatch'] === true || $this->proxyConfig['mustmatch'] === "true") {
 
             if($this->isAllowedApplication() == false){
 
@@ -253,7 +253,7 @@ class Proxy {
 
             $this->verifyConfiguration();
 
-            if($this->hostRedirect != NULL) {
+            if(isset($this->hostRedirect)) {
 
                 $this->proxyUrlWithData = $this->redirect($this->proxyUrlWithData, $this->sessionUrl, $this->hostRedirect);
 
@@ -271,7 +271,7 @@ class Proxy {
 
             }
 
-        } else if($this->proxyConfig['mustmatch'] != null && $this->proxyConfig['mustmatch'] == false) {
+        } else if(isset($this->proxyConfig['mustmatch']) && $this->proxyConfig['mustmatch'] === false || $this->proxyConfig['mustmatch'] === "false") {
 
             $this->runProxy();
 
@@ -844,7 +844,7 @@ class Proxy {
         {
             $token = $this->getNewTokenIfCredentialsAreSpecified();
 
-            if(!empty($token) || $token != null)
+            if(!empty($token) || isset($token))
             {
                 $this->addTokenToSession($token);
 
@@ -882,7 +882,7 @@ class Proxy {
 
                 $token = $this->getNewTokenIfCredentialsAreSpecified();
 
-                if(!empty($token) || $token != null) {
+                if(!empty($token) || isset($token)) {
 
                     $this->addTokenToSession($token);
 
@@ -978,7 +978,7 @@ class Proxy {
             }else{
 
                 //check if the original proxyUrlWithData is with query string or not
-                if(parse_url($this->proxyUrlWithData, PHP_URL_QUERY)!= null)
+                if(!is_null(parse_url($this->proxyUrlWithData, PHP_URL_QUERY)))
 
                     $this->proxyUrlWithData = $this->proxyUrlWithData . "&token=" . $token;
 
@@ -1041,7 +1041,7 @@ class Proxy {
         $this->response = null;
 
         //If $url is not set, use the $this->proxyUrlWithData as the $url
-        if(empty($url) || $url == null)
+        if(empty($url) || is_null($url))
         {
             $url = $this->proxyUrlWithData;
         }
@@ -1095,7 +1095,7 @@ class Proxy {
 
         $this->proxyBody = null;
 
-        if(empty($url) || $url == null || empty($params) || $url == $params){ //If no $url or $params passed, default to class property values
+        if(empty($url) || is_null($url) || empty($params) || $url === $params){ //If no $url or $params passed, default to class property values
 
             $url = $this->proxyUrl;
 
@@ -1505,7 +1505,7 @@ class ProxyLog {
 
     public function __construct($configuration = null) {
 
-        if($configuration != null){
+        if(isset($configuration)){
 
             $this->proxyConfig = $configuration->proxyConfig;
 
@@ -1870,7 +1870,7 @@ class RateMeter
 
     public function getConnection()
     {
-        if($this->con != null)
+        if(isset($this->con))
         {
             return $this->con;
 
@@ -1925,7 +1925,7 @@ class RateMeter
 
             chmod($this->dbname,0777);
 
-            if($db != null)
+            if(isset($db))
             {
                 $db->beginTransaction();
 
@@ -2270,7 +2270,7 @@ class RateMeter
 
         $this->updateClicks(1, $clickCount); //Updating the click table so we know when to clean up (aka after 10,000 requests)
 
-        if ($lastRequest != null || count($lastRequest) > 0) {
+        if (isset($lastRequest) || count($lastRequest) > 0) {
 
             $count = $lastRequest['count'];
 
@@ -2333,7 +2333,7 @@ class RateMeter
     {
 
 
-        if($firstTime == null)
+        if(is_null($firstTime))
         {
             $this->proxyLog->log("No time value was returned from 'ips' table in Sqlite database!");
 
@@ -2353,7 +2353,7 @@ class RateMeter
 
         }
 
-        if($secondTime == null)
+        if(is_null($secondTime))
         {
             $secondTime = microtime(true);
         }
