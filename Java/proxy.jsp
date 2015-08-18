@@ -50,7 +50,6 @@ java.text.SimpleDateFormat" %>
             if (hasCRLF(inputLine)) {
                 filteredLine = filteredLine.replace("\n","").replace("\r","");
             }
-
             return filteredLine;
         }
 
@@ -60,70 +59,7 @@ java.text.SimpleDateFormat" %>
             if (hasCRLF(inputLine)) {
                 filteredLine = filteredLine.replace("\n",replaceString).replace("\r",replaceString);
             }
-
             return filteredLine;
-        }
-
-        //Adapted from  https://github.com/douglascrockford/JSON-java/blob/master/JSONObject.java
-        public static String escapeJSONText(String inputJSONText) {
-            StringBuilder w = new StringBuilder();
-
-            if (inputJSONText == null || inputJSONText.length() == 0) {
-                w.append("\"\"");
-                return w.toString();
-            }
-
-            char b;
-            char c = 0;
-            String hhhh;
-            int i;
-            int len = inputJSONText.length();
-
-            w.append('"');
-            for (i = 0; i < len; i += 1) {
-                b = c;
-                c = inputJSONText.charAt(i);
-                switch (c) {
-                    case '\\':
-                    case '"':
-                        w.append('\\');
-                        w.append(c);
-                        break;
-                    case '/':
-                        if (b == '<') {
-                            w.append('\\');
-                        }
-                        w.append(c);
-                        break;
-                    case '\b':
-                        w.append("\\b");
-                        break;
-                    case '\t':
-                        w.append("\\t");
-                        break;
-                    case '\n':
-                        w.append("\\n");
-                        break;
-                    case '\f':
-                        w.append("\\f");
-                        break;
-                    case '\r':
-                        w.append("\\r");
-                        break;
-                    default:
-                        if (c < ' ' || (c >= '\u0080' && c < '\u00a0')
-                                || (c >= '\u2000' && c < '\u2100')) {
-                            w.append("\\u");
-                            hhhh = Integer.toHexString(c);
-                            w.append("0000", 0, 4 - hhhh.length());
-                            w.append(hhhh);
-                        } else {
-                            w.append(c);
-                        }
-                }
-            }
-            w.append('"');
-            return w.toString();
         }
 
         public static boolean hasCRLF(String inputLine) {
@@ -942,8 +878,8 @@ java.text.SimpleDateFormat" %>
                 "\"error\": {" +
                 "\"code\": " + errorCode + "," +
                 "\"details\": [" +
-                "\"" + DataValidUtil.escapeJSONText(errorDetails) + "\"" +
-                "], \"message\": \"" + DataValidUtil.escapeJSONText(errorMessage) + "\"}}";
+                "\"" + errorDetails + "\"" +
+                "], \"message\": \"" + errorMessage + "\"}}";
 
         response.setStatus(errorCode);
         OutputStream output = response.getOutputStream();
