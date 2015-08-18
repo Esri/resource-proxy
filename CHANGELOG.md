@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased][unreleased]
+## [Unreleased]
 
 ### Added 
 - Support for 10.3 tokens
@@ -43,5 +43,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 - Initial public release
 
-[unreleased]: https://github.com/Esri/resource-proxy/compare/v1.0...HEAD
+[Unreleased]: https://github.com/Esri/resource-proxy/compare/v1.0...HEAD
 [1.0]: https://github.com/Esri/resource-proxy/compare/v0.9...v1.0
