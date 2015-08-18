@@ -164,7 +164,9 @@ java.text.SimpleDateFormat" %>
                     sb.append(value);
                     sb.append("");
                 }
-                if (headerFieldKey != null) clientResponse.addHeader(headerFieldKey, DataValidUtil.removeCRLF(sb.toString()));
+                if (headerFieldKey != null){
+                    clientResponse.addHeader(headerFieldKey, DataValidUtil.removeCRLF(sb.toString()));
+                }
             }
 
             //copy the response content to the response to the client
