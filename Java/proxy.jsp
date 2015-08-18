@@ -35,14 +35,105 @@ java.text.SimpleDateFormat" %>
 *
 * JSP proxy client
 *
-* Version 1.1 beta
+* Version 1.1.0-beta
 * See https://github.com/Esri/resource-proxy for more information.
 *
 ----------------------------------------------------------- -->
 
-<%! final String version = "1.1 Beta";   %>
+<%! final String version = "1.1.0-beta";   %>
 
 <%!
+    public static final class DataValidUtil {
+        public static String removeCRLF(String inputLine) {
+            String filteredLine = inputLine;
+
+            if (hasCRLF(inputLine)) {
+                filteredLine = inputLine.replace("\n","");
+                filteredLine = inputLine.replace("\r","");
+            }
+
+            return filteredLine;
+        }
+
+        public static String replaceCRLF(String inputLine, String replaceString) {
+            String filteredLine = inputLine;
+
+            if (hasCRLF(inputLine)) {
+                filteredLine = inputLine.replace("\n",replaceString);
+                filteredLine = inputLine.replace("\r",replaceString);
+            }
+
+            return filteredLine;
+        }
+
+        //Adapted from  https://github.com/douglascrockford/JSON-java/blob/master/JSONObject.java
+        public static String escapeJSONText(String inputJSONText) {
+            StringWriter w = new StringWriter();
+
+            if (inputJSONText == null || inputJSONText.length() == 0) {
+                w.write("\"\"");
+                return w.toString();
+            }
+
+            char b;
+            char c = 0;
+            String hhhh;
+            int i;
+            int len = inputJSONText.length();
+
+            w.write('"');
+            for (i = 0; i < len; i += 1) {
+                b = c;
+                c = inputJSONText.charAt(i);
+                switch (c) {
+                    case '\\':
+                    case '"':
+                        w.write('\\');
+                        w.write(c);
+                        break;
+                    case '/':
+                        if (b == '<') {
+                            w.write('\\');
+                        }
+                        w.write(c);
+                        break;
+                    case '\b':
+                        w.write("\\b");
+                        break;
+                    case '\t':
+                        w.write("\\t");
+                        break;
+                    case '\n':
+                        w.write("\\n");
+                        break;
+                    case '\f':
+                        w.write("\\f");
+                        break;
+                    case '\r':
+                        w.write("\\r");
+                        break;
+                    default:
+                        if (c < ' ' || (c >= '\u0080' && c < '\u00a0')
+                                || (c >= '\u2000' && c < '\u2100')) {
+                            w.write("\\u");
+                            hhhh = Integer.toHexString(c);
+                            w.write("0000", 0, 4 - hhhh.length());
+                            w.write(hhhh);
+                        } else {
+                            w.write(c);
+                        }
+                }
+            }
+            w.write('"');
+            return w.toString();
+        }
+
+        public static boolean hasCRLF(String inputLine) {
+            return inputLine.contains("\n") || inputLine.contains("\r");
+        }
+
+    }
+
     public static class RateMeter {
         double _rate; //internal rate is stored in requests per second
         int _countCap;
@@ -139,7 +230,7 @@ java.text.SimpleDateFormat" %>
                     sb.append(value);
                     sb.append("");
                 }
-                if (headerFieldKey != null) clientResponse.addHeader(headerFieldKey, sb.toString());
+                if (headerFieldKey != null) clientResponse.addHeader(headerFieldKey, DataValidUtil.removeCRLF(sb.toString()));
             }
 
             //copy the response content to the response to the client
@@ -491,9 +582,9 @@ java.text.SimpleDateFormat" %>
                     }
 
                     if (thrown != null){
-                        logger.log(level, s, thrown);
+                        logger.log(level, DataValidUtil.replaceCRLF(s, "__"), thrown);
                     } else {
-                        logger.log(level, s);
+                        logger.log(level, DataValidUtil.replaceCRLF(s, "__"));
                     }
                 }
             }
@@ -853,8 +944,8 @@ java.text.SimpleDateFormat" %>
                 "\"error\": {" +
                 "\"code\": " + errorCode + "," +
                 "\"details\": [" +
-                "\"" + errorDetails + "\"" +
-                "], \"message\": \"" + errorMessage + "\"}}";
+                "\"" + DataValidUtil.escapeJSONText(errorDetails) + "\"" +
+                "], \"message\": \"" + DataValidUtil.escapeJSONText(errorMessage) + "\"}}";
 
         response.setStatus(errorCode);
         OutputStream output = response.getOutputStream();
