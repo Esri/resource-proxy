@@ -504,6 +504,7 @@ class Proxy {
 
                 $this->headers[] = $header;
 
+            // $key === 0 means this is HTTP status code, which doesn't have a key
             } elseif($key === 0)
             {
                 $this->headers[] = $value;
