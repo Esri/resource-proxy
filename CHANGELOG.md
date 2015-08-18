@@ -1,7 +1,28 @@
-1.0
-===
+# Change Log
+All notable changes to this project will be documented in this file.
+This project adheres to [Semantic Versioning](http://semver.org/).
 
-######2014-04-14
+## [Unreleased][unreleased]
+
+### Added 
+- Support 10.3 tokens
+- Add "?ping" for easier testing
+- (DotNet) Support Windows authentication
+- Support federated service
+
+### Fixed
+- Better referrer handling
+- Support ? in password
+- Multiple redirects
+- Handle token expiration
+- Remove HTTP range-request Header
+
+### Security
+- Better HTTP header handling
+- Security enhancements
+
+
+## [1.0] - 2014-04-14
 
 - Better proxies
 - Case insensitive URL comparisons
@@ -20,9 +41,6 @@
 - Added version number to each proxy code file
 
 
-0.9
-===
-
-######2014-02-14
+## [0.9] - 2014-02-14
 
  - Initial public release

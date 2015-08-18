@@ -35,12 +35,12 @@ java.text.SimpleDateFormat" %>
 *
 * JSP proxy client
 *
-* Version 1.1 beta
+* Version 1.1.0-beta
 * See https://github.com/Esri/resource-proxy for more information.
 *
 ----------------------------------------------------------- -->
 
-<%! final String version = "1.1 Beta";   %>
+<%! final String version = "1.1.0-beta";   %>
 
 <%!
     public static class RateMeter {
