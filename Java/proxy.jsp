@@ -43,6 +43,31 @@ java.text.SimpleDateFormat" %>
 <%! final String version = "1.1.0-beta";   %>
 
 <%!
+    public static final class DataValidUtil {
+        public static String removeCRLF(String inputLine) {
+            String filteredLine = inputLine;
+
+            if (hasCRLF(inputLine)) {
+                filteredLine = filteredLine.replace("\n","").replace("\r","");
+            }
+            return filteredLine;
+        }
+
+        public static String replaceCRLF(String inputLine, String replaceString) {
+            String filteredLine = inputLine;
+
+            if (hasCRLF(inputLine)) {
+                filteredLine = filteredLine.replace("\n",replaceString).replace("\r",replaceString);
+            }
+            return filteredLine;
+        }
+
+        public static boolean hasCRLF(String inputLine) {
+            return inputLine.contains("\n") || inputLine.contains("\r");
+        }
+
+    }
+
     public static class RateMeter {
         double _rate; //internal rate is stored in requests per second
         int _countCap;
@@ -139,7 +164,9 @@ java.text.SimpleDateFormat" %>
                     sb.append(value);
                     sb.append("");
                 }
-                if (headerFieldKey != null) clientResponse.addHeader(headerFieldKey, sb.toString());
+                if (headerFieldKey != null){
+                    clientResponse.addHeader(headerFieldKey, DataValidUtil.removeCRLF(sb.toString()));
+                }
             }
 
             //copy the response content to the response to the client
@@ -491,9 +518,9 @@ java.text.SimpleDateFormat" %>
                     }
 
                     if (thrown != null){
-                        logger.log(level, s, thrown);
+                        logger.log(level, DataValidUtil.replaceCRLF(s, "__"), thrown);
                     } else {
-                        logger.log(level, s);
+                        logger.log(level, DataValidUtil.replaceCRLF(s, "__"));
                     }
                 }
             }
