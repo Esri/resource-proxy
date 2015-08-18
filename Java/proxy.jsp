@@ -48,8 +48,7 @@ java.text.SimpleDateFormat" %>
             String filteredLine = inputLine;
 
             if (hasCRLF(inputLine)) {
-                filteredLine = inputLine.replace("\n","");
-                filteredLine = inputLine.replace("\r","");
+                filteredLine = filteredLine.replace("\n","").replace("\r","");
             }
 
             return filteredLine;
@@ -59,8 +58,7 @@ java.text.SimpleDateFormat" %>
             String filteredLine = inputLine;
 
             if (hasCRLF(inputLine)) {
-                filteredLine = inputLine.replace("\n",replaceString);
-                filteredLine = inputLine.replace("\r",replaceString);
+                filteredLine = filteredLine.replace("\n",replaceString).replace("\r",replaceString);
             }
 
             return filteredLine;
@@ -68,10 +66,10 @@ java.text.SimpleDateFormat" %>
 
         //Adapted from  https://github.com/douglascrockford/JSON-java/blob/master/JSONObject.java
         public static String escapeJSONText(String inputJSONText) {
-            StringWriter w = new StringWriter();
+            StringBuilder w = new StringBuilder();
 
             if (inputJSONText == null || inputJSONText.length() == 0) {
-                w.write("\"\"");
+                w.append("\"\"");
                 return w.toString();
             }
 
@@ -81,50 +79,50 @@ java.text.SimpleDateFormat" %>
             int i;
             int len = inputJSONText.length();
 
-            w.write('"');
+            w.append('"');
             for (i = 0; i < len; i += 1) {
                 b = c;
                 c = inputJSONText.charAt(i);
                 switch (c) {
                     case '\\':
                     case '"':
-                        w.write('\\');
-                        w.write(c);
+                        w.append('\\');
+                        w.append(c);
                         break;
                     case '/':
                         if (b == '<') {
-                            w.write('\\');
+                            w.append('\\');
                         }
-                        w.write(c);
+                        w.append(c);
                         break;
                     case '\b':
-                        w.write("\\b");
+                        w.append("\\b");
                         break;
                     case '\t':
-                        w.write("\\t");
+                        w.append("\\t");
                         break;
                     case '\n':
-                        w.write("\\n");
+                        w.append("\\n");
                         break;
                     case '\f':
-                        w.write("\\f");
+                        w.append("\\f");
                         break;
                     case '\r':
-                        w.write("\\r");
+                        w.append("\\r");
                         break;
                     default:
                         if (c < ' ' || (c >= '\u0080' && c < '\u00a0')
                                 || (c >= '\u2000' && c < '\u2100')) {
-                            w.write("\\u");
+                            w.append("\\u");
                             hhhh = Integer.toHexString(c);
-                            w.write("0000", 0, 4 - hhhh.length());
-                            w.write(hhhh);
+                            w.append("0000", 0, 4 - hhhh.length());
+                            w.append(hhhh);
                         } else {
-                            w.write(c);
+                            w.append(c);
                         }
                 }
             }
-            w.write('"');
+            w.append('"');
             return w.toString();
         }
 
