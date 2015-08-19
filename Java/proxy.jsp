@@ -365,14 +365,60 @@ java.text.SimpleDateFormat" %>
         return token;
     }
 
-    private boolean checkReferer(String[] allowedReferers, String referer){
+    private boolean properStartOrEqualTo(String shortString, String longString){
+        //If equal, return true
+        if (longString.equals(shortString)){
+            return true;
+        }
+
+        //proper-start takes care of example.com/folder vs example.com/folders situation
+        if(longString.toLowerCase().startsWith(shortString.toLowerCase())){
+            //If the shortString ends with "/", it will be a proper starts
+            if (shortString.endsWith("/")){
+                return true;
+            }
+
+            //If the next character on longString is "/", it is a proper-start
+            if (longString.charAt(longString.indexOf(shortString)+shortString.length()) == '/'){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean checkReferer(String[] allowedReferers, String referer) throws MalformedURLException{
         if (allowedReferers != null && allowedReferers.length > 0){
-            if (allowedReferers.length == 1 && allowedReferers[0].equals("*")) return true; //speed-up
+            if (allowedReferers.length == 1 && allowedReferers[0].equals("*")) {
+                return true; //speed-up
+            }
+
             for (String allowedReferer : allowedReferers){
                 allowedReferer = allowedReferer.replaceAll("\\s", "");
-                if (referer.toLowerCase().equals(allowedReferer.toLowerCase())) return true; //return true if match
-                else if (allowedReferer.contains("*")){ //try if the allowed referer contains wildcard for subdomain
+
+                if (allowedReferer.contains("*")){ //try if the allowed referer contains wildcard for subdomain
                     if (checkWildcardSubdomain(allowedReferer, referer)) return true;//return true if match wildcard subdomain
+                }
+
+                //if allowedReferer starts with https:// or http://, then exact match is required
+                if (allowedReferer.startsWith("https://") || allowedReferer.startsWith("http://")){
+                    if (properStartOrEqualTo(allowedReferer, referer)){
+                        return true;
+                    }
+                }
+                else {
+                    URL refererURL = new URL(referer);
+                    String protocol = refererURL.getProtocol();
+                    String refererNoProtocol;
+                    //If allowReferer looks like //sub.domain.com,
+                    if (allowedReferer.startsWith("//")){
+                        refererNoProtocol = referer.replace(protocol+":","");
+                    } else {
+                        refererNoProtocol = referer.replace(protocol+"://","");
+                    }
+
+                    if (properStartOrEqualTo(allowedReferer, refererNoProtocol)){
+                        return true; //return true if match
+                    }
                 }
             }
             return false;//no-match
@@ -380,9 +426,10 @@ java.text.SimpleDateFormat" %>
         return true;//when allowedReferer is null, then allow everything
     }
 
-
     //check the wildcard in allowedReferer in proxy.config
-    private boolean checkWildcardSubdomain(String allowedReferer, String referer){
+    private boolean checkWildcardSubdomain(String allowedReferer, String referer) throws MalformedURLException{
+        String refererHost = new URL(referer).getHost();
+
         String[] allowedRefererParts = allowedReferer.split("(\\.)");
         String[] refererParts = referer.split("(\\.)");
 
@@ -960,16 +1007,16 @@ java.text.SimpleDateFormat" %>
             String[] allowedReferers = getConfig().getAllowedReferers();
             if (allowedReferers != null && allowedReferers.length > 0 && request.getHeader("referer") != null){
                 setReferer(request.getHeader("referer")); //replace PROXY_REFERER with real proxy
-                String hostReferer;
+                String httpReferer;
                 try{
                     //only use the hostname of the referer url
-                    hostReferer = new URL(request.getHeader("referer")).getHost();
+                    httpReferer = new URL(request.getHeader("referer")).toString();
                 }catch(Exception e){
                     _log(Level.WARNING, "Proxy is being used from an invalid referer: " + request.getHeader("referer"));
                     sendErrorResponse(response, "Error verifying referer. ", "403 - Forbidden: Access is denied.", HttpServletResponse.SC_FORBIDDEN);
                     return;
                 }
-                if (!checkReferer(allowedReferers, hostReferer)){
+                if (!checkReferer(allowedReferers, httpReferer)){
                     _log(Level.WARNING, "Proxy is being used from an unknown referer: " + request.getHeader("referer"));
                     sendErrorResponse(response, "Unsupported referer. ", "403 - Forbidden: Access is denied.", HttpServletResponse.SC_FORBIDDEN);
                     return;
