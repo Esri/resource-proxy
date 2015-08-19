@@ -12,6 +12,7 @@
                                     <xs:attribute name="matchAll" type="xs:boolean" use="required" />
                                     <xs:attribute name="username" type="xs:string" use="optional" />
                                     <xs:attribute name="password" type="xs:string" use="optional" />
+                                    <xs:attribute name="domain" type="xs:string" use="optional" />
                                     <xs:attribute name="clientId" type="xs:string" use="optional" />
                                     <xs:attribute name="clientSecret" type="xs:string" use="optional" />
                                     <xs:attribute name="oauthEndpoint" type="xs:anyURI" use="optional" />
