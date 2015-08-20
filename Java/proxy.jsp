@@ -226,10 +226,10 @@ java.text.SimpleDateFormat" %>
         HashMap<String, String> headerInfo=new HashMap<>();
         headerInfo.put("Referer", PROXY_REFERER);
         if (method.equals("POST")){
-            String[] uriArray = uri.split("\\?",2);
+            String[] uriArray = uri.split("\\?", 2);
             uri = uriArray[0];
 
-            headerInfo.put("Content-Type","application/x-www-form-urlencoded");
+            headerInfo.put("Content-Type", "application/x-www-form-urlencoded");
 
             if (uriArray.length > 1){
                 String queryString = uriArray[1];
@@ -365,25 +365,39 @@ java.text.SimpleDateFormat" %>
         return token;
     }
 
-    private boolean properStartOrEqualTo(String shortString, String longString){
+    private boolean pathMatched(String allowedRefererPath, String refererPath){
         //If equal, return true
-        if (longString.equals(shortString)){
+        if (refererPath.equals(allowedRefererPath)){
             return true;
         }
 
-        //proper-start takes care of example.com/folder vs example.com/folders situation
-        if(longString.toLowerCase().startsWith(shortString.toLowerCase())){
-            //If the shortString ends with "/", it will be a proper starts
-            if (shortString.endsWith("/")){
-                return true;
-            }
-
-            //If the next character on longString is "/", it is a proper-start
-            if (longString.charAt(longString.indexOf(shortString)+shortString.length()) == '/'){
+        //If the allowedRefererPath contain a ending star and match the begining part of referer, it is proper start with.
+        if (allowedRefererPath.endsWith("*")){
+            allowedRefererPath = allowedRefererPath.substring(0, allowedRefererPath.length()-1);
+            if (refererPath.toLowerCase().startsWith(allowedRefererPath.toLowerCase())){
                 return true;
             }
         }
         return false;
+    }
+
+    private boolean domainMatched(String allowedRefererDomain, String refererDomain) throws MalformedURLException{
+        if (allowedRefererDomain.equals(refererDomain)){
+            return true;
+        }
+
+        //try if the allowed referer contains wildcard for subdomain
+        if (allowedRefererDomain.contains("*")){
+            if (checkWildcardSubdomain(allowedRefererDomain, refererDomain)){
+                return true;//return true if match wildcard subdomain
+            }
+        }
+
+        return false;
+    }
+
+    private boolean protocolMatch(String allowedRefererProtocol, String refererProtocol){
+        return allowedRefererProtocol.equals(refererProtocol);
     }
 
     private boolean checkReferer(String[] allowedReferers, String referer) throws MalformedURLException{
@@ -395,43 +409,42 @@ java.text.SimpleDateFormat" %>
             for (String allowedReferer : allowedReferers){
                 allowedReferer = allowedReferer.replaceAll("\\s", "");
 
-                if (allowedReferer.contains("*")){ //try if the allowed referer contains wildcard for subdomain
-                    if (checkWildcardSubdomain(allowedReferer, referer)) return true;//return true if match wildcard subdomain
-                }
+                URL refererURL = new URL(referer);
+                URL allowedRefererURL;
 
+                //since the allowedReferer can be a malformedURL, we first construct a valid one to be compared with referer
                 //if allowedReferer starts with https:// or http://, then exact match is required
                 if (allowedReferer.startsWith("https://") || allowedReferer.startsWith("http://")){
-                    if (properStartOrEqualTo(allowedReferer, referer)){
-                        return true;
+                    allowedRefererURL = new URL(allowedReferer);
+                } else {
+
+                    String protocol = refererURL.getProtocol();
+                    //if allowedReferer starts with "//" or no protocol, we use the one from refererURL to prefix to allowedReferer.
+                    if (allowedReferer.startsWith("//")){
+                        allowedRefererURL = new URL(protocol+":"+allowedReferer);
+                    } else {
+                        //if the allowedReferer looks like "example.esri.com"
+                        allowedRefererURL = new URL(protocol+"://"+allowedReferer);
                     }
                 }
-                else {
-                    URL refererURL = new URL(referer);
-                    String protocol = refererURL.getProtocol();
-                    String refererNoProtocol;
-                    //If allowReferer looks like //sub.domain.com,
-                    if (allowedReferer.startsWith("//")){
-                        refererNoProtocol = referer.replace(protocol+":","");
-                    } else {
-                        refererNoProtocol = referer.replace(protocol+"://","");
-                    }
 
-                    if (properStartOrEqualTo(allowedReferer, refererNoProtocol)){
-                        return true; //return true if match
-                    }
+                //Check if both domain and path match
+                if (protocolMatch(allowedRefererURL.getProtocol(), refererURL.getProtocol()) &&
+                        domainMatched(allowedRefererURL.getHost(), refererURL.getHost()) &&
+                        pathMatched(allowedRefererURL.getPath(), refererURL.getPath())){
+                    return true;
                 }
             }
-            return false;//no-match
+            return false;//no-match in allowedReferer, does not allow the request
         }
         return true;//when allowedReferer is null, then allow everything
     }
 
     //check the wildcard in allowedReferer in proxy.config
-    private boolean checkWildcardSubdomain(String allowedReferer, String referer) throws MalformedURLException{
-        String refererHost = new URL(referer).getHost();
+    private boolean checkWildcardSubdomain(String allowedRefererDomain, String refererDomain) throws MalformedURLException{
 
-        String[] allowedRefererParts = allowedReferer.split("(\\.)");
-        String[] refererParts = referer.split("(\\.)");
+        String[] allowedRefererParts = allowedRefererDomain.split("(\\.)");
+        String[] refererParts = refererDomain.split("(\\.)");
 
         int allowedIndex = allowedRefererParts.length-1;
         int refererIndex = refererParts.length-1;
