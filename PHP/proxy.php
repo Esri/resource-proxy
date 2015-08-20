@@ -1693,9 +1693,11 @@ class ProxyLog {
 
     }
 
-
     public function log($message)
     {
+        global $proxyDataValid;
+
+        $message = $proxyDataValid->replaceCRLF($message, "__");
 
         if ($this->proxyConfig['loglevel'] == 0) {
 
@@ -1728,6 +1730,18 @@ class ProxyLog {
 
     }
 
+}
+
+class DataValidUtil
+{
+    public function replaceCRLF($lineString, $replaceString)
+    {
+        $filteredString = str_replace("\n", $replaceString, $lineString);
+
+        $filteredString = str_replace("\r", $replaceString, $filteredString);
+
+        return $filteredString;
+    }
 }
 
 class RateMeter
@@ -2698,6 +2712,7 @@ class XmlParser
 
 }
 
+$proxyDataValid = new DataValidUtil();
 
 $proxyConfig = new ProxyConfig();
 
