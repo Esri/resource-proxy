@@ -446,16 +446,17 @@ java.text.SimpleDateFormat" %>
         String[] allowedRefererParts = allowedRefererDomain.split("(\\.)");
         String[] refererParts = refererDomain.split("(\\.)");
 
-        int allowedIndex = allowedRefererParts.length-1;
-        int refererIndex = refererParts.length-1;
-        while(allowedIndex >= 0 && refererIndex >= 0){
-            if (allowedRefererParts[allowedIndex].equalsIgnoreCase(refererParts[refererIndex])){
-                allowedIndex = allowedIndex - 1;
-                refererIndex = refererIndex - 1;
+        if (allowedRefererParts.length != refererParts.length){
+            return false;
+        }
+
+        int index = allowedRefererParts.length-1;
+        while(index >= 0){
+            if (allowedRefererParts[index].equalsIgnoreCase(refererParts[index])){
+                index = index - 1;
             }else{
-                if(allowedRefererParts[allowedIndex].equals("*")){
-                    allowedIndex = allowedIndex - 1;
-                    refererIndex = refererIndex - 1;
+                if(allowedRefererParts[index].equals("*")){
+                    index = index - 1;
                     continue; //next
                 }
                 return false;
