@@ -17,6 +17,7 @@ using System.Web.Caching;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.Text;
 
 public class proxy : IHttpHandler {
 
@@ -551,44 +552,84 @@ public class proxy : IHttpHandler {
         return token;
     }
 
-    private bool checkWildcardSubdomain(String allowedReferer, String requestedReferer, String protocol)
+    private bool checkWildcardSubdomain(String allowedReferer, String requestedReferer)
     {
         String[] allowedRefererParts = Regex.Split(allowedReferer, "(\\.)");
         String[] refererParts = Regex.Split(requestedReferer, "(\\.)");
 
-        int allowedIndex = allowedRefererParts.Length - 1;
-        int refererIndex = refererParts.Length - 1;
-        while (allowedIndex >= 0 && refererIndex >= 0)
+        if (allowedRefererParts.Length != refererParts.Length)
         {
-            if (allowedRefererParts[allowedIndex].Equals(refererParts[refererIndex], StringComparison.OrdinalIgnoreCase) || allowedRefererParts[allowedIndex].Equals(protocol+refererParts[refererIndex], StringComparison.OrdinalIgnoreCase))
+            return false;
+        }
+        
+        int index = allowedRefererParts.Length - 1;
+        while (index >= 0)
+        {
+            if (allowedRefererParts[index].Equals(refererParts[index], StringComparison.OrdinalIgnoreCase))
             {
-                allowedIndex = allowedIndex - 1;
-                refererIndex = refererIndex - 1;
+                index = index - 1;
             }
             else
             {
-                if (allowedRefererParts[allowedIndex].Equals("*") || allowedRefererParts[allowedIndex].Equals(protocol + "*"))
+                if (allowedRefererParts[index].Equals("*"))
                 {
-                    allowedIndex = allowedIndex - 1;
-                    refererIndex = refererIndex - 1;
+                    index = index - 1;
                     continue; //next
-                }
-                if (refererParts[refererIndex].Contains("/"))
-                {
-                    if (refererParts[refererIndex].StartsWith(allowedRefererParts[allowedIndex]) && ((refererParts[refererIndex] + "/").StartsWith(allowedRefererParts[allowedIndex] + "/")))
-                    {
-                        //check folder match. 
-                        // if domain/folder compared with domain/folders, is not a match
-                        allowedIndex = allowedIndex - 1;
-                        refererIndex = refererIndex - 1;
-                        continue; //next
-                    }
-                }
-
+                }              
                 return false;
             }
         }
         return true;
+    }
+
+    private bool pathMatched(String allowedRefererPath, String refererPath)
+    {
+        //If equal, return true
+        if (refererPath.Equals(allowedRefererPath))
+        {
+            return true;
+        }
+
+        //If the allowedRefererPath contain a ending star and match the begining part of referer, it is proper start with.
+        if (allowedRefererPath.EndsWith("*"))
+        {
+            String allowedRefererPathShort = allowedRefererPath.Substring(0, allowedRefererPath.Length - 1);
+            if (refererPath.ToLower().StartsWith(allowedRefererPathShort.ToLower()))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private bool domainMatched(String allowedRefererDomain, String refererDomain)
+    {
+        if (allowedRefererDomain.Equals(refererDomain)){
+            return true;
+        }
+
+        //try if the allowed referer contains wildcard for subdomain
+        if (allowedRefererDomain.Contains("*")){
+            if (checkWildcardSubdomain(allowedRefererDomain, refererDomain)){
+                return true;//return true if match wildcard subdomain
+            }
+        }
+
+        return false;
+    }
+
+    private bool protocolMatch(String allowedRefererProtocol, String refererProtocol)
+    {
+        return allowedRefererProtocol.Equals(refererProtocol);
+    }
+    
+    private String getDomainfromURL(String url, String protocol)
+    {
+        String domain = url.Substring(protocol.Length + 3);
+        
+        domain = domain.IndexOf('/') >= 0 ? domain.Substring(0, domain.IndexOf('/')) : domain;
+        
+        return domain; 
     }
 
     private bool checkReferer(String[] allowedReferers, String referer)
@@ -596,40 +637,53 @@ public class proxy : IHttpHandler {
         if (allowedReferers != null && allowedReferers.Length > 0)
         {
             if (allowedReferers.Length == 1 && allowedReferers[0].Equals("*")) return true; //speed-up
+            
             foreach (String allowedReferer in allowedReferers)
             {
-                //get protocol type
-                String protocol = "";
-                if (allowedReferer.StartsWith("http://")) protocol = "http://";
-                else if (allowedReferer.StartsWith("https://")) protocol = "https://";
-                else if (allowedReferer.StartsWith("//")) protocol = "//";
 
-                // allowedReferer = "http://" or "https://", must exact match    
-                if (protocol.Equals("http://") || protocol.Equals("https://"))
+                //Parse the protocol, domain and path of the referer
+                String refererProtocol = referer.StartsWith("https://") ? "https" : "http";
+                String refererDomain = getDomainfromURL(referer, refererProtocol);
+                String refererPath = referer.Substring(refererProtocol.Length + 3 + refererDomain.Length);
+                
+                
+                String allowedRefererCannonical = null;
+
+                //since the allowedReferer can be a malformed URL, we first construct a valid one to be compared with referer
+                //if allowedReferer starts with https:// or http://, then exact match is required
+                if (allowedReferer.StartsWith("https://") || allowedReferer.StartsWith("http://"))
                 {
-                    if (referer.ToLower().Equals(allowedReferer.ToLower())) return true;
+                    allowedRefererCannonical = allowedReferer;
+                    
                 }
                 else
                 {
-                    // protocol = "//" or ""
-                    // accept "http://" "https://" "//" or ""
-                    String allowedRefererAccepted = allowedReferer;
-                    if (protocol.Equals("//"))
+
+                    String protocol = refererProtocol;
+                    //if allowedReferer starts with "//" or no protocol, we use the one from refererURL to prefix to allowedReferer.
+                    if (allowedReferer.StartsWith("//"))
                     {
-                        allowedRefererAccepted = allowedReferer.Substring(allowedReferer.IndexOf("//") + 2);
+                        allowedRefererCannonical = protocol + ":" + allowedReferer;
                     }
-
-                    referer = (referer.Contains("//")) ? referer.Substring(referer.IndexOf("//") + 2) : referer;
-                    if (referer.ToLower().Equals(allowedRefererAccepted.ToLower())) return true;
+                    else
+                    {
+                        //if the allowedReferer looks like "example.esri.com"
+                        allowedRefererCannonical = protocol + "://" + allowedReferer;
+                    }
                 }
 
-                if (allowedReferer.Contains("*") || referer.Contains("/"))
-                {   //try if the allowed referer contains wildcard for subdomain or folder
+                //parse the protocol, domain and the path of the allowedReferer
+                String allowedRefererProtocol = allowedRefererCannonical.StartsWith("https://") ? "https" : "http";
+                String allowedRefererDomain = getDomainfromURL(allowedRefererCannonical, allowedRefererProtocol);
+                String allowedRefererPath = allowedRefererCannonical.Substring(allowedRefererProtocol.Length + 3 + allowedRefererDomain.Length);
 
-                    if (checkWildcardSubdomain(allowedReferer, referer, protocol)) return true;
-
+                //Check if both domain and path match
+                if (protocolMatch(allowedRefererProtocol, refererProtocol) &&
+                        domainMatched(allowedRefererDomain, refererDomain) &&
+                        pathMatched(allowedRefererPath, refererPath))
+                {
+                    return true;
                 }
-
             }
             return false;//no-match
         }
