@@ -17,7 +17,6 @@ using System.Web.Caching;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
-using System.Text;
 
 public class proxy : IHttpHandler {
 
