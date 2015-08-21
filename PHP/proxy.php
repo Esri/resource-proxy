@@ -385,12 +385,12 @@ class Proxy {
 
         $this->proxyLog->log("Rate meter exceeded by " . $_SERVER['REMOTE_ADDR']);
 
-        header('Status: 403', true, 403);
+        header('Status: 402', true, 402);
 
         header('Content-Type: application/json');
 
         $exceededError = array(
-            "error" => array("code" => 403,
+            "error" => array("code" => 402,
                 "details" => array("This is a metered resource, number of requests have exceeded the rate limit interval."),
                 "message" => "Unable to proxy request for requested resource."
             ));
@@ -1486,7 +1486,7 @@ class Proxy {
 
     public function protocolMatch($allowedRefererProtocol, $refererProtocol)
     {
-       return strcmp($allowedRefererProtocol, $refererProtocol) === 0;
+        return strcmp($allowedRefererProtocol, $refererProtocol) === 0;
     }
 
     public function domainMatch($allowedRefererDomain, $refererDomain)
@@ -1560,8 +1560,8 @@ class Proxy {
                 }
             }
             if ($this->protocolMatch($allowedRefererArray['scheme'], $refererArray['scheme']) &&
-            $this->domainMatch($allowedRefererArray['host'], $refererArray['host']) &&
-            $this->pathMatch($allowedRefererArray['path'], $refererArray['path'])){
+                $this->domainMatch($allowedRefererArray['host'], $refererArray['host']) &&
+                $this->pathMatch($allowedRefererArray['path'], $refererArray['path'])){
 
                 return true; //return true if match
             }
@@ -2746,12 +2746,12 @@ class XmlParser
             $message = "Proxy error: problem reading proxy configuration file.";
             // This is before we have the log location, so we cannot log to logfile
 
-            header('Status: 403', true, 403);  // 403 Forbidden - The server understood the request, but is refusing to fulfill it. For example, if a directory or file is unreadable due to file permissions.
+            header('Status: 402', true, 402);  // 402 Forbidden - The server understood the request, but is refusing to fulfill it. For example, if a directory or file is unreadable due to file permissions.
 
             header('Content-Type: application/json');
 
             $configError = array(
-                "error" => array("code" => 403,
+                "error" => array("code" => 402,
                     "details" => array("$message"),
                     "message" => "$message"
                 ));
