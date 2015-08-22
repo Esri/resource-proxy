@@ -423,12 +423,12 @@ class Proxy {
     public function allowedApplicationError()
     {
 
-        header('Status: 402', true, 402);
+        header('Status: 403', true, 403);
 
         header('Content-Type: application/json');
 
         $allowedApplicationError = array(
-            "error" => array("code" => 402,
+            "error" => array("code" => 403,
                 "details" => array("This is a protected resource.  Application access is restricted."),
                 "message" => "Application access is restricted.  Unable to proxy request."
             ));
@@ -504,7 +504,7 @@ class Proxy {
 
                 $this->headers[] = $header;
 
-            // $key === 0 means this is HTTP status code, which doesn't have a key
+                // $key === 0 means this is HTTP status code, which doesn't have a key
             } elseif($key === 0)
             {
                 $this->headers[] = $value;
@@ -1230,10 +1230,10 @@ class Proxy {
 
     }
 
-    function startsWith($requested, $needed)
+    function startsWith($haystack, $needle)
     {
 
-        return stripos($requested, $needed) === 0;
+        return stripos($haystack, $needle) === 0;
 
     }
 
@@ -1451,11 +1451,131 @@ class Proxy {
         return $token;
     }
 
+    public function checkWildcardSubDomain($allowedRefererDomain, $refererDomain)
+    {
+        $allowedRefererArray = explode(".", $allowedRefererDomain);
+
+        $refererArray = explode(".", $refererDomain);
+
+        if(count($allowedRefererArray) !== count($refererArray))
+        {
+            return false;
+        }
+
+        $index = count($allowedRefererArray) - 1;
+
+        while($index >=0)
+        {
+            if($allowedRefererArray[$index] === $refererArray[$index])
+            {
+                $index = $index - 1;
+
+            }else{
+
+                if($allowedRefererArray[$index] === "*")
+                {
+                    $index = $index - 1;
+
+                    continue;
+                }
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public function protocolMatch($allowedRefererProtocol, $refererProtocol)
+    {
+        return strcmp($allowedRefererProtocol, $refererProtocol) === 0;
+    }
+
+    public function domainMatch($allowedRefererDomain, $refererDomain)
+    {
+        if(strcmp($allowedRefererDomain, $refererDomain) === 0)
+        {
+            return true;
+        }
+
+        //try if the allowed referer contains wildcard for subdomain
+        if(strpos($allowedRefererDomain, "*") !== false)
+        {
+            if($this->checkWildcardSubDomain($allowedRefererDomain, $refererDomain))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function pathMatch($allowedRefererPath, $refererPath)
+    {
+        if(strcmp($allowedRefererPath, $refererPath) === 0)
+        {
+            return true;
+        }
+        if($this->endsWith($allowedRefererPath, "*"))
+        {
+            $allowedRefererPathShort = rtrim($allowedRefererPath, "*");
+
+            if($this->startsWith($refererPath, $allowedRefererPathShort))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function endsWith($haystack, $needle) {
+        // search forward starting from end minus needle length characters
+        return $needle === "" || (($temp = strlen($haystack) - strlen($needle)) >= 0 && strpos($haystack, $needle, $temp) !== FALSE);
+    }
+
+    public function checkAllowedReferer(){
+
+        foreach($this->proxyConfig['allowedreferers'] as $allowedReferer)
+        {
+            //Trim the whitespaces
+            $allowedReferer = trim($allowedReferer);
+
+            $refererArray = parse_url($this->referer);
+
+            $allowedRefererArray = null;
+
+            //TODO: add implementation
+            if($this->startsWith($allowedReferer, "https://") || $this->startsWith($allowedReferer, "http://"))
+            {
+                $allowedRefererArray = parse_url($allowedReferer);
+
+            } else {
+
+                $protocol = $refererArray['scheme'];
+
+                if($this->startsWith($allowedReferer, "//"))
+                {
+                    $allowedRefererArray = parse_url($protocol . ":" . $allowedReferer);
+
+                } else {
+
+                    $allowedRefererArray = parse_url($protocol . "://" . $allowedReferer);
+                }
+            }
+            if ($this->protocolMatch($allowedRefererArray['scheme'], $refererArray['scheme']) &&
+                $this->domainMatch($allowedRefererArray['host'], $refererArray['host']) &&
+                $this->pathMatch($allowedRefererArray['path'], $refererArray['path'])){
+
+                return true; //return true if match
+            }
+
+        }
+        return false;
+    }
+
 
     public function isAllowedApplication()
     {
 
-        if(in_array("*",$this->proxyConfig['allowedreferers'])){
+        //if allowedReferer = "" or "*" (if allowedReferer does not exist, it will be "")
+        if(in_array("*",$this->proxyConfig['allowedreferers']) || in_array("",$this->proxyConfig['allowedreferers'])){
 
             $this->referer = $_SERVER['SERVER_NAME']; //This is to enable browser testing when * is used
 
@@ -1471,14 +1591,15 @@ class Proxy {
 
         $isAllowedApplication = false;
 
-        if (in_array($this->referer, $this->proxyConfig['allowedreferers'])) {
+        if ($this->checkAllowedReferer()) {
 
             $isAllowedApplication = true;
 
         }else{
 
-            $this->proxyLog->log("Attempt made to use this proxy from " . $this->referer . " and " . $_SERVER['REMOTE_ADDR']);
+            $message = "Attempt made to use this proxy from " . $this->referer . " and " . $_SERVER['REMOTE_ADDR'];
 
+            $this->proxyLog->log($message);
         }
 
         return $isAllowedApplication;
@@ -2639,12 +2760,12 @@ class XmlParser
             $message = "Proxy error: problem reading proxy configuration file.";
             // This is before we have the log location, so we cannot log to logfile
 
-            header('Status: 403', true, 403);  // 403 Forbidden - The server understood the request, but is refusing to fulfill it. For example, if a directory or file is unreadable due to file permissions.
+            header('Status: 402', true, 402);  // 402 Forbidden - The server understood the request, but is refusing to fulfill it. For example, if a directory or file is unreadable due to file permissions.
 
             header('Content-Type: application/json');
 
             $configError = array(
-                "error" => array("code" => 403,
+                "error" => array("code" => 402,
                     "details" => array("$message"),
                     "message" => "$message"
                 ));
