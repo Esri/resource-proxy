@@ -254,14 +254,16 @@ public class proxy : IHttpHandler {
                     token = serverUrl.AccessToken;
                     if (String.IsNullOrEmpty(token))
                         token = getNewTokenIfCredentialsAreSpecified(serverUrl, requestUri);
+
+                    if (String.IsNullOrEmpty(token)) {
+                        // still no token, try cookie
+                        token = extractTokenFromCookie(context.Request.Headers["cookie"], "token");
+                    }
                 }
 
                 if (!String.IsNullOrEmpty(token) && !tokenIsInApplicationScope)
                 {
-                    //storing the token in Application scope, to do not waste time on requesting new one untill it expires or the app is restarted.
-                    context.Application.Lock();
-                    context.Application["token_for_" + serverUrl.Url] = token;
-                    context.Application.UnLock();
+                    storeToken(context, serverUrl.Url, token);
                 }
             }
 
@@ -328,14 +330,12 @@ public class proxy : IHttpHandler {
                 token = getNewTokenIfCredentialsAreSpecified(serverUrl, requestUri);
                 serverResponse = forwardToServer(context, addTokenToUri(requestUri, token, tokenParamName), postBody);
 
-                //storing the token in Application scope, to do not waste time on requesting new one untill it expires or the app is restarted.
-                context.Application.Lock();
-                context.Application["token_for_" + serverUrl.Url] = token;
-                context.Application.UnLock();
+                storeToken(context, serverUrl.Url, token);
 
                 fetchAndPassBackToClient(serverResponse, response, true);
             }
         }
+        log(TraceLevel.Info, "done");
         response.End();
     }
 
@@ -346,6 +346,14 @@ public class proxy : IHttpHandler {
 /**
 * Private
 */
+    private void storeToken(HttpContext context, string url, string token) {
+        //storing the token in Application scope, to do not waste time on requesting new one untill it expires or the app is restarted.
+        log(TraceLevel.Info, "storing token " + token + " for " + url);
+        context.Application.Lock();
+        context.Application["token_for_" + url] = token;
+        context.Application.UnLock();
+    }
+
     private byte[] readRequestPostBody(HttpContext context) {
         if (context.Request.InputStream.Length > 0) {
             byte[] bytes = new byte[context.Request.InputStream.Length];
@@ -432,6 +440,7 @@ public class proxy : IHttpHandler {
         byte[] bytes = null;
         String contentType = null;
         log(TraceLevel.Info, "Sending request!");
+        log(TraceLevel.Info, "Full url=" + uri);
 
         if (method.Equals("POST"))
         {
@@ -548,6 +557,7 @@ public class proxy : IHttpHandler {
 
             }
         }
+        log(TraceLevel.Info, "Tried to get new token, returning " + token);
         return token;
     }
 
@@ -748,6 +758,23 @@ public class proxy : IHttpHandler {
         if (!String.IsNullOrEmpty(token))
             uri += uri.Contains("?")? "&" + tokenParamName + "=" + token : "?" + tokenParamName + "=" + token;
         return uri;
+    }
+
+    private string extractTokenFromCookie(string cookie, string key) {
+        String token = "";
+		if (!string.IsNullOrEmpty(cookie))
+		{
+			int i = cookie.IndexOf(key);
+			if (i > -1) {
+				token = cookie.Substring(cookie.IndexOf('=', i) + 1).Trim();
+				token = token.Substring(0, token.IndexOf(";"));
+			}
+		}
+		if (string.IsNullOrEmpty(token))
+			log(TraceLevel.Error," Token cannot be obtained from cookie: " + cookie);
+		else
+			log(TraceLevel.Info," Token obtained from cookie: " + token);
+        return token;
     }
 
     private string extractToken(string tokenResponse, string key) {
