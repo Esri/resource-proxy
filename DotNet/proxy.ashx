@@ -201,7 +201,7 @@ public class proxy : IHttpHandler {
                 if (!rate.click())
                 {
                     log(TraceLevel.Warning, " Pair " + key + " is throttled to " + serverUrl.RateLimit + " requests per " + serverUrl.RateLimitPeriod + " minute(s). Come back later.");
-                    sendErrorResponse(context.Response, "This is a metered resource, number of requests have exceeded the rate limit interval.", "Unable to proxy request for requested resource", System.Net.HttpStatusCode.PaymentRequired);
+                    sendErrorResponse(context.Response, "This is a metered resource, number of requests have exceeded the rate limit interval.", "Unable to proxy request for requested resource", (System.Net.HttpStatusCode)429);
                     return;
                 }
 
@@ -720,6 +720,10 @@ public class proxy : IHttpHandler {
             message += string.Format(",details:[message:\"{0}\"]", errorDetails);
         message += "}}";
         response.StatusCode = (int)errorCode;
+        //custom status description for when the rate limit has been exceeded
+        if (response.StatusCode == 429) {
+            response.StatusDescription = "Too Many Requests";
+        }
         //this displays our customized error messages instead of IIS's custom errors
         response.TrySkipIisCustomErrors = true;
         response.Write(message);
