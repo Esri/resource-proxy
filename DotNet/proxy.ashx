@@ -767,7 +767,7 @@ public class proxy : IHttpHandler {
 			int i = cookie.IndexOf(key);
 			if (i > -1) {
 				token = cookie.Substring(cookie.IndexOf('=', i) + 1).Trim();
-				token = token.Substring(0, token.IndexOf(";"));
+				token = string.IsNullOrEmpty(token) ? token.Substring(0, token.IndexOf(";")) : token;
 			}
 		}
 		if (string.IsNullOrEmpty(token))
