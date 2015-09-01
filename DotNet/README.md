@@ -40,7 +40,7 @@ http://[yourmachine]/DotNet/proxy.ashx?http://services.arcgisonline.com/ArcGIS/r
 
 * Use the ProxyConfig tag to specify the following proxy level settings.
     * **mustMatch="true"** : When true only the sites listed using serverUrl will be proxied. Set to false to proxy any site, which can be useful in testing. However, we recommend setting it to "true" for production sites.
-    * **allowedReferers="http://server.com/app1,http://server.com/app2"** : A comma-separated list of referer URLs. Only requests coming from referers in the list will be proxied.
+    * **allowedReferers="http://server.com/app1,http://server.com/app2"** : A comma-separated list of referer URLs. Only requests coming from referers in the list will be proxied. See https://github.com/Esri/resource-proxy/issues/282 for detailed usage.
     * **logFile="proxylog.txt"** : When a logFile is specified, the proxy will log messages to this file.
 * Add a new \<serverUrl\> entry for each service that will use the proxy. The proxy.config allows you to use the serverUrl tag to specify one or more ArcGIS Server services that the proxy will forward requests to. The serverUrl tag has the following attributes:
     * **url**: Location of the ArcGIS Server service (or other URL) to proxy. Specify either the specific URL or the root (in which case you should set matchAll="false").

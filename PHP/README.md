@@ -39,7 +39,7 @@ http://[yourmachine]/PHP/proxy.php?http://services.arcgisonline.com/ArcGIS/rest/
 * Use the ProxyConfig tag to specify the following proxy level settings.
     * **mustMatch="true"** : When true only the sites listed using serverUrl will be proxied. Set to false to proxy any site, which can be useful in testing. However, we recommend setting it to "true" for production sites.
     * **logFile="<file with local path>"** : When a path to a local file is specified event messages will be logged.
-    * **allowedReferers="http://server.com/application1,https://server.com/application2"**: A list of referer URLs. Only requests coming from referers in the list will be proxied.
+    * **allowedReferers="http://server.com/application1,https://server.com/application2"**: A list of referer URLs. Only requests coming from referers in the list will be proxied. See https://github.com/Esri/resource-proxy/issues/282 for detailed usage.
 * Add a new \<serverUrl\> entry for each service that will use the proxy page. The proxy.config allows you to use the serverUrl tag to specify one or more ArcGIS Server services that the proxy will forward requests to. The serverUrl tag has the following attributes:
     * **url**: Location of the ArcGIS Server service (or other URL) to proxy. Specify either the specific URL or the root (in which case you should set matchAll="true").
     * **matchAll="true"**: When true all requests that begin with the specified URL are forwarded. Otherwise, the URL requested must match exactly.

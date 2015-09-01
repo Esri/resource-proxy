@@ -12,6 +12,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Better referer handling
+- Improved allowedReferers support
 - Support for '?' in passwords
 - Handling of multiple redirects
 - Handling of token expiration
