@@ -54,6 +54,7 @@ http://[yourmachine]/DotNet/proxy.ashx?http://services.arcgisonline.com/ArcGIS/r
     * **accessToken**: OAuth2 access token to use instead of on-demand access-token generation using clientId & clientSecret.
     * **rateLimit**: The maximum number of requests with a particular referer over the specified **rateLimitPeriod**.
     * **rateLimitPeriod**: The time period (in minutes) within which the specified number of requests (rate_limit) sent with a particular referer will be tracked. The default value is 60 (one hour).
+    * **hostRedirect**: The real URL to use instead of the "alias" one provided in the `url` property and that should be redirected. Example: `<serverUrl url="http://fakedomain" hostRedirect="http://172.16.85.2"/>`.
 
 Note: Refresh the proxy application after updates to the proxy.config have been made.
 
