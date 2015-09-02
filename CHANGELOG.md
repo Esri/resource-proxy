@@ -6,9 +6,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added 
 - Support for 10.3 tokens
+- Support for federated services
+- Support for hostRedirect to use aliased domains
 - Added "?ping" for easier testing
 - (DotNet) Support for Windows authentication
-- Support for federated services
 
 ### Fixed
 - Better referer handling

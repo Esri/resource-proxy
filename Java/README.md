@@ -50,6 +50,7 @@ http://[yourmachine]:8080/Java/proxy.jsp?http://services.arcgisonline.com/ArcGIS
     * **oauth2Endpoint**: When using OAuth 2.0 authentication specify the portal specific OAuth 2.0 authentication endpoint. The default value is https://www.arcgis.com/sharing/oauth2/.
     * **rateLimit**: The maximum number of requests from a particular client ip address over the specified **rateLimitPeriod**.
     * **rateLimitPeriod**: The time period (in minutes) within which the specified number of requests (rate_limit) sent from a particular client ip address will be tracked. The default value is 60 (one hour).
+    * **hostRedirect**: The real URL to use instead of the "alias" one provided in the `url` property and that should be redirected. Example: `<serverUrl url="http://fakedomain" hostRedirect="http://172.16.85.2"/>`.
 
 See the proxy.config for examples. Note: Refresh the proxy application after updates to the proxy.config have been made.
 
