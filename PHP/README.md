@@ -36,7 +36,7 @@ http://[yourmachine]/PHP/proxy.php?http://services.arcgisonline.com/ArcGIS/rest/
 ## Folders and Files
 
 The proxy consists of the following files:
-* proxy.config: This file contains the configuration settings for the proxy. This is where you will define all the resources that will use the proxy (more information can be found [here](.././README.md#Proxy-Configuration-Settings)).
+* proxy.config: This file contains the configuration settings for the proxy. This is where you will define all the resources that will use the proxy (more information can be found [here](.././README.md#proxy-configuration-settings)).
 * proxy.php: The actual proxy application. In most cases you will not need to modify this file.
 
 Other useful files in the repo:

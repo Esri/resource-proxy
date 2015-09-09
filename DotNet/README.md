@@ -39,7 +39,7 @@ http://[yourmachine]/DotNet/proxy.ashx?http://services.arcgisonline.com/ArcGIS/r
 ## Folders and Files
 
 The proxy consists of the following files:
-* proxy.config: This file contains the configuration settings for the proxy (more information can be found [here](.././README.md#Proxy-Configuration-Settings)). This is where you will define all the resources that will use the proxy. After updating this file you might need to refresh the proxy application using IIS tools in order for the changes to take effect.  **Important note:** In order to keep your credentials safe, ensure that your web server will not display the text inside your proxy.config in the browser (ie: http://[yourmachine]/proxy/proxy.config).
+* proxy.config: This file contains the configuration settings for the proxy (more information can be found [here](.././README.md#proxy-configuration-settings)). This is where you will define all the resources that will use the proxy. After updating this file you might need to refresh the proxy application using IIS tools in order for the changes to take effect.  **Important note:** In order to keep your credentials safe, ensure that your web server will not display the text inside your proxy.config in the browser (ie: http://[yourmachine]/proxy/proxy.config).
 * proxy.ashx: The actual proxy application. In most cases you will not need to modify this file.
 * proxy.xsd: a schema file for easier editing of proxy.config in Visual Studio.
 * Web.config: An XML file that stores ASP.NET configuration data.

@@ -36,7 +36,7 @@ http://[yourmachine]:8080/Java/proxy.jsp?http://services.arcgisonline.com/ArcGIS
 
 The proxy consists of the following files:
 * proxy.jsp: The actual proxy application. In most cases you will not need to modify this file.
-* WEB-INF/classes/proxy.config: This file contains the configuration settings for the proxy. This is where you will define all the resources that will use the proxy (more information can be found [here](.././README.md#Proxy-Configuration-Settings)). After updating this file you will need to restart or update the proxy application from your web container. **Important note:** In order to keep your credentials safe, ensure that your web server will not display the text inside your proxy.config in the browser (ie: http://[yourmachine]:8080/Java/proxy.config).
+* WEB-INF/classes/proxy.config: This file contains the configuration settings for the proxy. This is where you will define all the resources that will use the proxy (more information can be found [here](.././README.md#proxy-configuration-settings)). After updating this file you will need to restart or update the proxy application from your web container. **Important note:** In order to keep your credentials safe, ensure that your web server will not display the text inside your proxy.config in the browser (ie: http://[yourmachine]:8080/Java/proxy.config).
 
 ## Requirements
 
