@@ -21,7 +21,7 @@ http://[yourmachine]:8080/Java/proxy.jsp?ping
 ```
 http://[yourmachine]:8080/Java/proxy.jsp?http://services.arcgisonline.com/ArcGIS/rest/services/?f=pjson
 ```
-* Edit the proxy.config file in a text editor to set up your proxy configuration settings.
+* Edit the proxy.config file in a text editor to set up your [proxy configuration settings](../README.md#proxy-configuration-settings).
 * Update your application to use the proxy for the specified services. In this JavaScript example requests to route.arcgis.com will utilize the proxy.
 
 ```

@@ -25,7 +25,7 @@ http://[yourmachine]/DotNet/proxy.ashx?ping
 http://[yourmachine]/DotNet/proxy.ashx?http://services.arcgisonline.com/ArcGIS/rest/services/?f=pjson
 ```
 * Troubleshooting: If you get an error message 404.3, it's possible that ASP.NET have not been set up. On Windows 8, go to "Turn Windows features on or off" -> "Internet Information Services" -> "World Wide Web Services" -> "Application Development Features" -> "ASP.NET 4.5".
-* Edit the proxy.config file in a text editor to set up your proxy configuration settings.
+* Edit the proxy.config file in a text editor to set up your [proxy configuration settings](../README.md#proxy-configuration-settings).
 * Update your application to use the proxy for the specified services. In this JavaScript example requests to route.arcgis.com will utilize the proxy.
 
 ```
