@@ -35,7 +35,7 @@ These proxy files support:
 
 ##Issues
 
-Found a bug or want to request a new feature? Let us know by submitting an issue.
+Found a bug or want to request a new feature? Check out previously logged [Issues](https://github.com/Esri/resource-proxy/issues) and/or our [FAQ](FAQ.md).  If you don't see what you're looking for, feel free to submit a [new issue](https://github.com/Esri/resource-proxy/issues/new).
 
 ##Contributing
 

@@ -155,7 +155,6 @@ $bool = array(true=>"Pass", false=>"Fail");
 $version = versionPhpCheck();
 $extensions = get_loaded_extensions();
 $writeable = can_write();
-$openssl = in_array('openssl', $extensions);
 $pdo_sqlite = in_array('pdo_sqlite', $extensions);
 $curl = in_array('curl', $extensions);
 $curl_version = curl_version();
@@ -179,11 +178,6 @@ $curl_version = curl_version();
 <tr>
 <td><span>Check if directory is writable?</span></td>
 <td><?php echo '<span class="'. strtolower($bool[$writeable]) . '">' . $bool[$writeable] . '</span>'; ?></td>
-</tr>
-
-<tr>
-<td><span>Check for OpenSSL extension?</span></td>
-<td><?php echo '<span class="'. strtolower($bool[$openssl]) . '">' . $bool[$openssl] . '</span>'; ?></td>
 </tr>
 
 <tr>

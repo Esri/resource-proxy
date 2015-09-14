@@ -38,7 +38,7 @@ http://[yourmachine]:8080/Java/proxy.jsp?http://services.arcgisonline.com/ArcGIS
     * **mustMatch="true"** : When true only the sites listed using serverUrl will be proxied. Set to false to proxy any site, which can be useful in testing. However, we recommend setting it to "true" for production sites.
     * **logFile="\<file with local path\>"** : When a path to a local file is specified event messages will be logged.
     * **logLevel="SEVERE"** : Sets the level of logging to be used.  Defaults to SEVERE. Possible values are SEVERE, WARNING, INFO, CONFIG, FINE, FINER and FINEST.
-    * **allowedReferers ="http://server.com/application1,https://server.com/application2"**: A comma-separated list of referer URLs. Only requests coming from referers in the list will be proxied.
+    * **allowedReferers ="http://server.com/application1,https://server.com/application2"**: A comma-separated list of referer URLs. Only requests coming from referers in the list will be proxied. See https://github.com/Esri/resource-proxy/issues/282 for detailed usage.
 * Add new \<serverUrl\> entry for each service that will use the proxy. The proxy.config allows you to use the serverUrl tag to specify one or more ArcGIS Server services that the proxy will forward requests to. The serverUrl tags has the following attributes:
     * **url**: Location of the ArcGIS Server service (or other URL) to proxy. Specify either the specific URL or the root (in which case you should set matchAll="false"). If the location starts with "//", any protocol will be accepted, if the location starts with "http://", both http or https will be accepted, and if the location starts with "https://", only https will be accepted.
     * **matchAll="true"**: When true all requests that begin with the specified URL are forwarded. Otherwise, the URL requested must match exactly.
@@ -50,6 +50,7 @@ http://[yourmachine]:8080/Java/proxy.jsp?http://services.arcgisonline.com/ArcGIS
     * **oauth2Endpoint**: When using OAuth 2.0 authentication specify the portal specific OAuth 2.0 authentication endpoint. The default value is https://www.arcgis.com/sharing/oauth2/.
     * **rateLimit**: The maximum number of requests from a particular client ip address over the specified **rateLimitPeriod**.
     * **rateLimitPeriod**: The time period (in minutes) within which the specified number of requests (rate_limit) sent from a particular client ip address will be tracked. The default value is 60 (one hour).
+    * **hostRedirect**: The real URL to use instead of the "alias" one provided in the `url` property and that should be redirected. Example: `<serverUrl url="http://fakedomain" hostRedirect="http://172.16.85.2"/>`.
 
 See the proxy.config for examples. Note: Refresh the proxy application after updates to the proxy.config have been made.
 
