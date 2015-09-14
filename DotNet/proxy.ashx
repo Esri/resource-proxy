@@ -792,11 +792,16 @@ public class ProxyConfig
                 if (configUriParts.Length == uriParts.Length || su.MatchAll)
                     return su;
             }                  
-        }       
-        
-        if (mustMatch)
+        }
+
+        if (!mustMatch)
+        {
+            return new ServerUrl(uri);
+        }
+        else
+        {
             throw new ArgumentException("Proxy has not been set up for this URL. Make sure there is a serverUrl in the configuration file that matches: " + uri);
-        return null;
+        }
     }
 }
 
@@ -813,6 +818,15 @@ public class ServerUrl {
     string tokenParamName;
     string rateLimit;
     string rateLimitPeriod;
+
+    private ServerUrl()
+    {
+    }
+
+    public ServerUrl(String url)
+    {
+        this.url = url;
+    }
     
     [XmlAttribute("url")]
     public string Url {
