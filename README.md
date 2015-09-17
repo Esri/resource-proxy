@@ -31,21 +31,21 @@ These proxy files support:
 
 ##Troubleshooting
 
-* Watch the web requests being handled by the proxy to ensure that the proxy and the web resource locations are correct and properly configured in the application. Use something like [Fiddler](http://www.telerik.com/fiddler) or developer tools like [Network panel in Chrome Developer Tools](https://developer.chrome.com/devtools/docs/network#network-panel-overview)
+* Watch the web requests being handled by the proxy to ensure that the proxy and the web resource locations are correct and properly configured in the application. Use something like [Fiddler](http://www.telerik.com/fiddler) or developer tools like [Network panel in Chrome Developer Tools](https://developer.chrome.com/devtools/docs/network#network-panel-overview).
     
 ##Product Resources
 
-* [ArcGIS API for JavaScript – Using the proxy](https://developers.arcgis.com/javascript/jshelp/ags_proxy.html)
+* [ArcGIS API for JavaScript](https://developers.arcgis.com/javascript/jshelp/ags_proxy.html)
 
-* [Web AppBuilder for ArcGIS (Developer Edition) – Use proxy](https://developers.arcgis.com/web-appbuilder/guide/use-proxy.htm)
+* [Web AppBuilder for ArcGIS (Developer Edition)](https://developers.arcgis.com/web-appbuilder/guide/use-proxy.htm)
 
-* [Esri Leaflet – Working with Proxies](https://developers.arcgis.com/authentication/working-with-proxies/#esri-leaflet)
+* [Esri Leaflet](https://developers.arcgis.com/authentication/working-with-proxies/#esri-leaflet)
 
-* [ArcGIS API for Flex – Using the proxy page](https://developers.arcgis.com/flex/guide/using-the-proxy-page.htm)
+* [ArcGIS API for Flex](https://developers.arcgis.com/flex/guide/using-the-proxy-page.htm)
 
-* [ArcGIS API for Silverlight – Secure services](https://developers.arcgis.com/silverlight/guide/secure-services.htm)
+* [ArcGIS API for Silverlight](https://developers.arcgis.com/silverlight/guide/secure-services.htm)
 
-* [Setting up a Proxy blog](http://blogs.esri.com/esri/supportcenter/2015/04/07/setting-up-a-proxy)
+* [Setting up a Proxy](http://blogs.esri.com/esri/supportcenter/2015/04/07/setting-up-a-proxy) blog
     
 ##Requirements
 
