@@ -45,7 +45,7 @@ These proxy files support:
 
 * [ArcGIS API for Silverlight](https://developers.arcgis.com/silverlight/guide/secure-services.htm)
 
-* [Setting up a Proxy](http://blogs.esri.com/esri/supportcenter/2015/04/07/setting-up-a-proxy) blog
+* [Setting up a Proxy blog](http://blogs.esri.com/esri/supportcenter/2015/04/07/setting-up-a-proxy)
     
 ##Requirements
 
