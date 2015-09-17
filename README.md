@@ -29,6 +29,20 @@ These proxy files support:
     * proxy.config
     * README.md
 
+##Troubleshooting
+
+* Watch the web requests being handled by the proxy to ensure that the proxy and the web resource locations are correct and properly configured in the application. Use something like [Fiddler](http://www.telerik.com/fiddler) or developer tools like [Network panel in Chrome Developer Tools](https://developer.chrome.com/devtools/docs/network#network-panel-overview).
+    
+##Product Resources
+
+* [ArcGIS API for JavaScript](https://developers.arcgis.com/javascript/jshelp/ags_proxy.html)
+
+* [Web AppBuilder for ArcGIS (Developer Edition)](https://developers.arcgis.com/web-appbuilder/guide/use-proxy.htm)
+
+* [Esri Leaflet](https://developers.arcgis.com/authentication/working-with-proxies/#esri-leaflet)
+
+* [Setting up a Proxy blog](http://blogs.esri.com/esri/supportcenter/2015/04/07/setting-up-a-proxy)
+    
 ##Requirements
 
 * See the README.md file in the folder of the proxy you want to install for platform specific requirements.
