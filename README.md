@@ -41,10 +41,6 @@ These proxy files support:
 
 * [Esri Leaflet](https://developers.arcgis.com/authentication/working-with-proxies/#esri-leaflet)
 
-* [ArcGIS API for Flex](https://developers.arcgis.com/flex/guide/using-the-proxy-page.htm)
-
-* [ArcGIS API for Silverlight](https://developers.arcgis.com/silverlight/guide/secure-services.htm)
-
 * [Setting up a Proxy blog](http://blogs.esri.com/esri/supportcenter/2015/04/07/setting-up-a-proxy)
     
 ##Requirements
