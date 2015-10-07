@@ -57,11 +57,11 @@ All three proxies respect the XML configuration properties listed below.
     * **username**: Username to use when requesting a token - if needed for ArcGIS Server token based authentication.
     * **password**: Password to use when requesting a token - if needed for ArcGIS Server token based authentication.
     * **tokenServiceUri**: If username and password are specified, the proxy will use the supplied token service uri to request a token.  If this value is left blank, the proxy will request a token URL from the ArcGIS server.
-    * **domain**: The Windows domain to use with username/password when using Windows Authentication.
+    * **domain**: The Windows domain to use with username/password when using Windows Authentication. Only applies to DotNet proxy.
     * **clientId**.  Used with clientSecret for OAuth authentication to obtain a token - if needed for OAuth 2.0 authentication. **NOTE**: If used to access hosted services, the service(s) must be owned by the user accessing it, (with the exception of credit-based esri services, e.g. routing, geoenrichment, etc.)
     * **clientSecret**: Used with clientId for OAuth authentication to obtain a token - if needed for OAuth 2.0 authentication.
     * **oauth2Endpoint**: When using OAuth 2.0 authentication specify the portal specific OAuth 2.0 authentication endpoint. The default value is https://www.arcgis.com/sharing/oauth2/.
-    * **accessToken**: OAuth2 access token to use instead of on-demand access-token generation using clientId & clientSecret.
+    * **accessToken**: OAuth2 access token to use instead of on-demand access-token generation using clientId & clientSecret. Only applies to DotNet proxy.
     * **rateLimit**: The maximum number of requests with a particular referer over the specified **rateLimitPeriod**.
     * **rateLimitPeriod**: The time period (in minutes) within which the specified number of requests (rate_limit) sent with a particular referer will be tracked. The default value is 60 (one hour).
     * **hostRedirect**: The real URL to use instead of the "alias" one provided in the `url` property and that should be redirected. Example: `<serverUrl url="http://fakedomain" hostRedirect="http://172.16.85.2"/>`.
