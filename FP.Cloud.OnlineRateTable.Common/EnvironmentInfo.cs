@@ -12,5 +12,6 @@ namespace FP.Cloud.OnlineRateTable.Common
         public int CarrierId { get; set; }
         public DateTime UtcDate { get; set; }
         public string Culture { get; set; }
+        public string SenderZipCode { get; set; }
     }
 }
