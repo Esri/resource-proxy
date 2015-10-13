@@ -17,6 +17,7 @@ namespace FP.Cloud.OnlineRateTable.Data
         }
 
         public DbSet<RateTable> RateTables { get; set; }
+        public DbSet<RateTableFile> RateTableFiles { get; set; }
 
         public static ApplicationDbContext Create()
         {

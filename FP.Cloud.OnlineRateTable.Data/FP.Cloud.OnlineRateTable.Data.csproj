@@ -99,9 +99,14 @@
     <Compile Include="Migrations\201510090757581_RateTable.Designer.cs">
       <DependentUpon>201510090757581_RateTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510130628386_RateTableFiles.cs" />
+    <Compile Include="Migrations\201510130628386_RateTableFiles.Designer.cs">
+      <DependentUpon>201510130628386_RateTableFiles.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RateTable.cs" />
+    <Compile Include="RateTableFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -114,6 +119,15 @@
     <EmbeddedResource Include="Migrations\201510090757581_RateTable.resx">
       <DependentUpon>201510090757581_RateTable.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510130628386_RateTableFiles.resx">
+      <DependentUpon>201510130628386_RateTableFiles.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FP.Cloud.OnlineRateTable.Common\FP.Cloud.OnlineRateTable.Common.csproj">
+      <Project>{0dd4a6a3-1b46-474d-90ae-324cd5d7f8a0}</Project>
+      <Name>FP.Cloud.OnlineRateTable.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

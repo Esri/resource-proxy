@@ -14,6 +14,7 @@ namespace FP.Cloud.OnlineRateTable.Bootstrapper
         public override void Load()
         {
             Bind<IRateCalculation>().To<OnlineRateCalculation>();
+            Bind<IRateTableManager>().To<RateTableManager>();
         }
     }
 }

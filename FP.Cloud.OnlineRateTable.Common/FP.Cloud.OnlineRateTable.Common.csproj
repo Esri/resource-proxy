@@ -40,28 +40,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActionResultInfo.cs" />
-    <Compile Include="AnyInfo.cs" />
-    <Compile Include="AttributeInfo.cs" />
-    <Compile Include="EActionId.cs" />
-    <Compile Include="EAnyType.cs" />
-    <Compile Include="EProductDescriptionState.cs" />
-    <Compile Include="EQueryType.cs" />
-    <Compile Include="EScaleMode.cs" />
+    <Compile Include="Interfaces\IRateTableManager.cs" />
+    <Compile Include="ProductCalculation\ActionResultInfo.cs" />
+    <Compile Include="ProductCalculation\AnyInfo.cs" />
+    <Compile Include="ProductCalculation\AttributeInfo.cs" />
+    <Compile Include="ProductCalculation\EActionId.cs" />
+    <Compile Include="ProductCalculation\EAnyType.cs" />
+    <Compile Include="ProductCalculation\EProductDescriptionState.cs" />
+    <Compile Include="ProductCalculation\EQueryType.cs" />
+    <Compile Include="ProductCalculation\EScaleMode.cs" />
     <Compile Include="Interfaces\IRateCalculation.cs" />
-    <Compile Include="PCalcResultInfo.cs" />
-    <Compile Include="PostageInfo.cs" />
-    <Compile Include="ProductDescriptionInfo.cs" />
-    <Compile Include="ShowMenuDescriptionInfo.cs" />
-    <Compile Include="DescriptionInfo.cs" />
-    <Compile Include="EnvironmentInfo.cs" />
-    <Compile Include="EWeightUnit.cs" />
+    <Compile Include="ProductCalculation\PCalcResultInfo.cs" />
+    <Compile Include="ProductCalculation\PostageInfo.cs" />
+    <Compile Include="ProductCalculation\ProductDescriptionInfo.cs" />
+    <Compile Include="ProductCalculation\ShowMenuDescriptionInfo.cs" />
+    <Compile Include="ProductCalculation\DescriptionInfo.cs" />
+    <Compile Include="ProductCalculation\EnvironmentInfo.cs" />
+    <Compile Include="ProductCalculation\EWeightUnit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RequestDescriptionInfo.cs" />
-    <Compile Include="SelectIndexDescriptionInfo.cs" />
-    <Compile Include="SelectValueDescriptionInfo.cs" />
-    <Compile Include="ValueEntryInfo.cs" />
-    <Compile Include="WeightInfo.cs" />
+    <Compile Include="ProductCalculation\RequestDescriptionInfo.cs" />
+    <Compile Include="ProductCalculation\SelectIndexDescriptionInfo.cs" />
+    <Compile Include="ProductCalculation\SelectValueDescriptionInfo.cs" />
+    <Compile Include="ProductCalculation\ValueEntryInfo.cs" />
+    <Compile Include="ProductCalculation\WeightInfo.cs" />
+    <Compile Include="RateTable\EFileType.cs" />
+    <Compile Include="RateTable\RateTableFileInfo.cs" />
+    <Compile Include="RateTable\RateTableInfo.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

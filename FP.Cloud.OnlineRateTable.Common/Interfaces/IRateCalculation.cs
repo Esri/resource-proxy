@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FP.Cloud.OnlineRateTable.Common.ProductCalculation;
 
 namespace FP.Cloud.OnlineRateTable.Common.Interfaces
 {
