@@ -9,7 +9,7 @@ A PHP proxy that handles support for
 * Enabling logging
 * Both resource and referer based rate limiting
 
-##Instructions
+## Instructions
 
 * Download and unzip the .zip file or clone the repository. You can download [a released version](https://github.com/Esri/resource-proxy/releases) (recommended) or the [most recent daily build](https://github.com/Esri/resource-proxy/archive/master.zip).
 * Install the contents of the PHP folder by adding all files into a web directory.
@@ -21,7 +21,7 @@ http://[yourmachine]/PHP/proxy.php?ping
 ```
 http://[yourmachine]/PHP/proxy.php?http://services.arcgisonline.com/ArcGIS/rest/services/?f=pjson
 ```
-* Edit the proxy.config file in a text editor to set up your proxy configuration settings.
+* Edit the proxy.config file in a text editor to set up your [proxy configuration settings](../README.md#proxy-configuration-settings).
 * Update your application to use the proxy for the specified services. In this JavaScript example requests to route.arcgis.com will utilize the proxy.
 
 ```
@@ -33,29 +33,10 @@ http://[yourmachine]/PHP/proxy.php?http://services.arcgisonline.com/ArcGIS/rest/
 * Security tip: By default, the proxy.config allows any referrer. To lock this down, replace the  ```*``` in the ```allowedReferers``` property with your own application URLs.
 * Security tip: Verify that the ```proxy.config``` file is not accessible via the Internet and that the PHP server is configured correctly. To verify the proxy setup, open ```http://[yourmachine]/PHP/proxy-verification.php``` in a web browser and follow the  instructions.
 
-
-##Proxy Configuration Settings
-
-* Use the ProxyConfig tag to specify the following proxy level settings.
-    * **mustMatch="true"** : When true only the sites listed using serverUrl will be proxied. Set to false to proxy any site, which can be useful in testing. However, we recommend setting it to "true" for production sites.
-    * **logFile="<file with local path>"** : When a path to a local file is specified event messages will be logged.
-    * **allowedReferers="http://server.com/application1,https://server.com/application2"**: A list of referer URLs. Only requests coming from referers in the list will be proxied. See https://github.com/Esri/resource-proxy/issues/282 for detailed usage.
-* Add a new \<serverUrl\> entry for each service that will use the proxy page. The proxy.config allows you to use the serverUrl tag to specify one or more ArcGIS Server services that the proxy will forward requests to. The serverUrl tag has the following attributes:
-    * **url**: Location of the ArcGIS Server service (or other URL) to proxy. Specify either the specific URL or the root (in which case you should set matchAll="true").
-    * **matchAll="true"**: When true all requests that begin with the specified URL are forwarded. Otherwise, the URL requested must match exactly.
-    * **username**: Username to use when requesting a token - if needed for ArcGIS Server token based authentication.
-    * **password**: Password to use when requesting a token - if needed for ArcGIS Server token based authentication.
-    * **clientId**:  Used with clientSecret for OAuth authentication to obtain a token - if needed for OAuth 2.0 authentication. **NOTE**: If used to access hosted services, the service(s) must be owned by the user accessing it, (with the exception of credit-based esri services, e.g. routing, geoenrichment, etc.)
-    * **clientSecret**: Used with clientId for OAuth authentication to obtain a token - if needed for OAuth 2.0 authentication.
-    * **oauth2Endpoint**: When using OAuth 2.0 authentication specify the portal specific OAuth 2.0 authentication endpoint. The default value is https://www.arcgis.com/sharing/oauth2/.
-    * **rateLimit**: The maximum number of requests with a particular referer over the specified **rateLimitPeriod**.
-    * **rateLimitPeriod**: The time period (in minutes) within which the specified number of requests (rate_limit) sent with a particular referer will be tracked. The default value is 60 (one hour).
-    * **hostRedirect**: The real URL to use instead of the "alias" one provided in the `url` property and that should be redirected. Example: `<serverUrl url="http://fakedomain" hostRedirect="http://172.16.85.2"/>`.
-
-##Folders and Files
+## Folders and Files
 
 The proxy consists of the following files:
-* proxy.config: This file contains the configuration settings for the proxy. This is where you will define all the resources that will use the proxy.
+* proxy.config: This file contains the [configuration settings for the proxy](../README.md#proxy-configuration-settings). This is where you will define all the resources that will use the proxy.
 * proxy.php: The actual proxy application. In most cases you will not need to modify this file.
 
 Other useful files in the repo:
@@ -64,9 +45,9 @@ Other useful files in the repo:
 
 Files created by the proxy:
 * proxy.sqlite: This file is created dynamically after proxy.php runs.  This file supports rate metering.
-* proxy_log.log: This file is created when the proxy.php runs (and logging is enabled). Note: If you do not have write permissions to this directory this file will not be created for you. To check for write permissions run the proxy-verification.php. 
+* proxy_log.log: This file is created when the proxy.php runs (and logging is enabled). Note: If you do not have write permissions to this directory this file will not be created for you. To check for write permissions run the proxy-verification.php.
 
-##Requirements
+## Requirements
 
 * PHP 5.4.2 (recommended)
 * cURL PHP extension
@@ -86,53 +67,6 @@ Note, the example configuration file contains the ```*``` within ```allowedRefer
 
 ```
 http://[yourmachine]/PHP/proxy.php?http://[machineyouknow]/arcgis/rest/services
-```
-
-XML example
-
-```
-<ProxyConfig
-    mustMatch="true"
-    logFile="proxy_log_xml.log"
-    allowedReferers="http://server.com/application1,https://server.com/application2,*">
-
-  <serverUrls>
-
-      <serverUrl
-          url="http://sampleserver6.arcgisonline.com"
-          username="username"
-          password="password"
-          rateLimit="120"
-          rateLimitPeriod="60"
-          matchAll="true"/>
-
-      <serverUrl
-          url="geoenrich.arcgis.com"
-          username="username"
-          password="password"
-          rateLimit="120"
-          rateLimitPeriod="60"
-          matchAll="true"/>
-
-      <serverUrl
-          url="https://route.arcgis.com"
-          matchAll="true"
-          oauth2Endpoint="https://www.arcgis.com/sharing/oauth2"
-          clientId="6Xo1d-example-9Kn2"
-          clientSecret="5a5d50-example-c867b6efcf969bdcc6a2"
-          rateLimit="120"
-          rateLimitPeriod="60">
-      </serverUrl>
-
-      <serverUrl
-          url="http://services.arcgisonline.com/ArcGIS/rest/services/"
-          rateLimit="120"
-          rateLimitPeriod="60"
-          matchAll="false"/>
-
-  </serverUrls>
-
-</ProxyConfig>
 ```
 
 JSON example
@@ -227,7 +161,7 @@ Example .htaccess file:
 ```
 
 Note if system permissions allow write access to Apache's main ```httpd.conf``` server config file, avoid doing file request filtering inside the ```.htaccess``` altogether.
-File filtering directives added to Apache's main ```httpd.conf``` can lead to faster performance.  Find the ```Directory``` or existing ```Files``` tags in the main 
+File filtering directives added to Apache's main ```httpd.conf``` can lead to faster performance.  Find the ```Directory``` or existing ```Files``` tags in the main
 ```httpd.conf``` and add these lines after to prevent users from downloading the .sqlite, .log and .config files from the server.
 
 ```
