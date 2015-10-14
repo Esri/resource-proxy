@@ -35,7 +35,8 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
             return table?.ToRateTableInfo();
         }
 
-        public async Task<IEnumerable<RateTableInfo>> GetFiltered(string variant, string version, int? carrier, DateTime? validFrom, string culture)
+        public async Task<IEnumerable<RateTableInfo>> GetFiltered(string variant, string version, int? carrier, 
+            DateTime? validFrom, string culture, int start, int count)
         {
             IEnumerable<RateTable> tables =
                 await m_DbContext.RateTables.Cast<RateTable>()
@@ -44,7 +45,9 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
                                 (!carrier.HasValue || r.CarrierId == carrier.Value) &&
                                 (!validFrom.HasValue || r.ValidFrom.CompareTo(validFrom.Value) >= 0) &&
                                 (string.IsNullOrEmpty(culture) || r.Culture == culture)).ToListAsync();
-            return tables.Select(r => r.ToRateTableInfo());
+
+            var sorted = tables.OrderBy(t => t.Id).Skip(start).Take(count);
+            return sorted.Select(r => r.ToRateTableInfo());
         }
 
         public async Task<RateTableInfo> AddNew(RateTableInfo newInfo)

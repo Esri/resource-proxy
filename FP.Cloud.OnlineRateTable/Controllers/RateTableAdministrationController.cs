@@ -45,6 +45,16 @@ namespace FP.Cloud.OnlineRateTable.Controllers
             return await m_Manager.GetById(id);
         }
 
+        [ResponseType(typeof(IEnumerable<RateTableInfo>))]
+        [HttpPost]
+        [ActionName("GetFiltered")]
+        [Authorize(Roles = "RateTableAdministrators")]
+        public async Task<IEnumerable<RateTableInfo>> GetRateTables(GetRateTableRequest request)
+        {
+            return await m_Manager.GetFiltered(request.Variant, request.Version, request.Carrier, 
+                request.ValidFrom, request.Culture, request.StartValue, request.ItemCount);
+        }
+
         [ResponseType(typeof(RateTableInfo))]
         [HttpPost]
         [ActionName("AddNew")]
@@ -57,6 +67,19 @@ namespace FP.Cloud.OnlineRateTable.Controllers
             }
             RateTableInfo resultEntry = await m_Manager.AddNew(info);
             return Ok(resultEntry);
+        }
+
+        [ResponseType(typeof(void))]
+        [HttpDelete]
+        [ActionName("Delete")]
+        [Authorize(Roles = "RateTableAdministrators")]
+        public async Task<IHttpActionResult> DeleteById(int id)
+        {
+            if (await m_Manager.DeleteRateTable(id) == false)
+            {
+                return NotFound();
+            }
+            return Ok();
         }
         #endregion
     }

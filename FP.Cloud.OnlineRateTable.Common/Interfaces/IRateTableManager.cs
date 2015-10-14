@@ -11,6 +11,6 @@ namespace FP.Cloud.OnlineRateTable.Common.Interfaces
         Task<bool> DeleteRateTable(int id);
         IEnumerable<RateTableInfo> GetAll();
         Task<RateTableInfo> GetById(int id);
-        Task<IEnumerable<RateTableInfo>> GetFiltered(string variant, string version, int? carrier, DateTime? validFrom, string culture);
+        Task<IEnumerable<RateTableInfo>> GetFiltered(string variant, string version, int? carrier, DateTime? validFrom, string culture, int start, int count);
     }
 }
