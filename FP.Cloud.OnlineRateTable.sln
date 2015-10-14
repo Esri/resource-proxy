@@ -17,8 +17,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FP.Cloud.OnlineRateTable.Bu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FP.Cloud.OnlineRateTable.Bootstrapper", "FP.Cloud.OnlineRateTable.Bootstrapper\FP.Cloud.OnlineRateTable.Bootstrapper.csproj", "{606E499B-B02E-4227-B979-E5C80849419A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FP.Cloud.OnlineRateTable.Web", "FP.Cloud.OnlineRateTable.Web\FP.Cloud.OnlineRateTable.Web.csproj", "{1FB5D381-CC80-4EA4-8957-56AC0D25E040}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,10 +51,6 @@ Global
 		{606E499B-B02E-4227-B979-E5C80849419A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{606E499B-B02E-4227-B979-E5C80849419A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{606E499B-B02E-4227-B979-E5C80849419A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1FB5D381-CC80-4EA4-8957-56AC0D25E040}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1FB5D381-CC80-4EA4-8957-56AC0D25E040}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1FB5D381-CC80-4EA4-8957-56AC0D25E040}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1FB5D381-CC80-4EA4-8957-56AC0D25E040}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
