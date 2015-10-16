@@ -4,6 +4,15 @@ namespace FP.Cloud.OnlineRateTable.Common.ProductCalculation
 {
     public class SelectValueDescriptionInfo : DescriptionInfo
     {
-        IEnumerable<ValueEntryInfo> ValueEntries { get; set; }
+        #region properties
+        List<ValueEntryInfo> ValueEntries { get; set; }
+        #endregion
+
+        #region constructor
+        public SelectValueDescriptionInfo()
+        {
+            ValueEntries = new List<ValueEntryInfo>();
+        }
+        #endregion
     }
 }

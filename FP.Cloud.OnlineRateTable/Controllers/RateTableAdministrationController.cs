@@ -1,4 +1,4 @@
-﻿using System;
+﻿    using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -27,13 +27,13 @@ namespace FP.Cloud.OnlineRateTable.Controllers
         #endregion
 
         #region public web API
-        [ResponseType(typeof(IQueryable<RateTableInfo>))]
+        [ResponseType(typeof(IEnumerable<RateTableInfo>))]
         [HttpGet]
         [ActionName("GetAll")]
         [Authorize(Roles = "RateTableAdministrators")]
-        public IQueryable<RateTableInfo> GetAllRateTables()
+        public async Task<IEnumerable<RateTableInfo>> GetAllRateTables()
         {
-            return m_Manager.GetAll().AsQueryable();
+            return await m_Manager.GetAll();
         }
 
         [ResponseType(typeof(RateTableInfo))]
@@ -66,6 +66,24 @@ namespace FP.Cloud.OnlineRateTable.Controllers
                 return BadRequest(ModelState);
             }
             RateTableInfo resultEntry = await m_Manager.AddNew(info);
+            return Ok(resultEntry);
+        }
+
+        [ResponseType(typeof(RateTableInfo))]
+        [HttpPost]
+        [ActionName("Update")]
+        [Authorize(Roles = "RateTableAdministrators")]
+        public async Task<IHttpActionResult> UpdateTable(RateTableInfo info)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            RateTableInfo resultEntry = await m_Manager.Update(info);
+            if(null == resultEntry)
+            {
+                return NotFound();
+            }
             return Ok(resultEntry);
         }
 

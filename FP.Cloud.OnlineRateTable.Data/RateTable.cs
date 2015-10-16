@@ -35,19 +35,25 @@ namespace FP.Cloud.OnlineRateTable.Data
                 CarrierDetails = CarrierDetails,
                 ValidFrom = ValidFrom,
                 Culture = Culture,
-                PackageFiles = PackageFiles.Select(p => p.ToRateTableFileInfo())
+                PackageFiles = PackageFiles.Select(p => p.ToRateTableFileInfo()).ToList()
             };
+        }
+
+        public void UpdateRateTable(RateTableInfo info)
+        {
+            Variant = info.Variant;
+            VersionNumber = info.VersionNumber;
+            CarrierId = info.CarrierId;
+            CarrierDetails = info.CarrierDetails;
+            ValidFrom = info.ValidFrom;
+            Culture = info.Culture;
+            //associated package files can't be updated by now
         }
 
         public static RateTable New(RateTableInfo info)
         {
             RateTable r = new RateTable();
-            r.Variant = info.Variant;
-            r.VersionNumber = info.VersionNumber;
-            r.CarrierId = info.CarrierId;
-            r.CarrierDetails = info.CarrierDetails;
-            r.ValidFrom = info.ValidFrom;
-            r.Culture = info.Culture;
+            r.UpdateRateTable(info);
             foreach (RateTableFileInfo fileInfo in info.PackageFiles)
             {
                 r.PackageFiles.Add(RateTableFile.New(fileInfo));

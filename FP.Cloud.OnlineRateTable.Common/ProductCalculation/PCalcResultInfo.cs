@@ -3,7 +3,7 @@
     public class PCalcResultInfo
     {
         public ProductDescriptionInfo ProductDescription { get; set; }
-        DescriptionInfo QueryDescription { get; set; }
-        EQueryType QueryType { get; set; }
+        public DescriptionInfo QueryDescription { get; set; }
+        public EQueryType QueryType { get; set; }
     }
 }

@@ -24,9 +24,10 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
         #endregion
 
         #region public
-        public IEnumerable<RateTableInfo> GetAll()
+        public async Task<IEnumerable<RateTableInfo>> GetAll()
         {
-            return m_DbContext.RateTables.Select(r => r.ToRateTableInfo());
+            List<RateTable> temp = await m_DbContext.RateTables.ToListAsync();
+            return temp.Select(r => r.ToRateTableInfo());
         }
 
         public async Task<RateTableInfo> GetById(int id)
@@ -68,6 +69,19 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
                 return true;
             }
             return false;
+        }
+
+        public async Task<RateTableInfo> Update(RateTableInfo updatedInfo)
+        {
+            RateTable table = await m_DbContext.RateTables.FirstOrDefaultAsync(r => r.Id == updatedInfo.Id);
+            if(null != table)
+            {
+                table.UpdateRateTable(updatedInfo);
+                m_DbContext.Entry(table).State = EntityState.Modified;
+                await m_DbContext.SaveChangesAsync();
+                return table.ToRateTableInfo();
+            }
+            return null;
         }
         #endregion
     }
