@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace FP.Cloud.OnlineRateTable.Web.Models.ApiModels
+namespace FP.Cloud.OnlineRateTable.Common.Authorization
 {
     public class AccessToken
     {

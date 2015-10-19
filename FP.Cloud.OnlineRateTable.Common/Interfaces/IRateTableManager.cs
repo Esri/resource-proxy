@@ -10,8 +10,8 @@ namespace FP.Cloud.OnlineRateTable.Common.Interfaces
         Task<RateTableInfo> AddNew(RateTableInfo newInfo);
         Task<RateTableInfo> Update(RateTableInfo updatedInfo);
         Task<bool> DeleteRateTable(int id);
-        Task<IEnumerable<RateTableInfo>> GetAll();
+        Task<IEnumerable<RateTableInfo>> GetAll(bool includeFileData);
         Task<RateTableInfo> GetById(int id);
-        Task<IEnumerable<RateTableInfo>> GetFiltered(string variant, string version, int? carrier, DateTime? validFrom, string culture, int start, int count);
+        Task<IEnumerable<RateTableInfo>> GetFiltered(string variant, string version, int? carrier, DateTime? validFrom, string culture, int start, int count, bool includeFileData);
     }
 }

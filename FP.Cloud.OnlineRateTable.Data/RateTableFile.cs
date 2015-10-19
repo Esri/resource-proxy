@@ -37,6 +37,16 @@ namespace FP.Cloud.OnlineRateTable.Data
             };
         }
 
+        public RateTableFileInfo ToRateTableFileInfoShort()
+        {
+            return new RateTableFileInfo()
+            {
+                Id = Id,
+                FileName = FileName,
+                FileType = Enum.IsDefined(typeof(EFileType), FileType) ? (EFileType)FileType : EFileType.Undefined
+            };
+        }
+
         public static RateTableFile New(RateTableFileInfo info)
         {
             return new RateTableFile()

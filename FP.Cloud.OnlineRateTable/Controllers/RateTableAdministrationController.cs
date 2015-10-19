@@ -31,9 +31,9 @@ namespace FP.Cloud.OnlineRateTable.Controllers
         [HttpGet]
         [ActionName("GetAll")]
         [Authorize(Roles = "RateTableAdministrators")]
-        public async Task<IEnumerable<RateTableInfo>> GetAllRateTables()
+        public async Task<IEnumerable<RateTableInfo>> GetAllRateTables(bool includeFileData)
         {
-            return await m_Manager.GetAll();
+            return await m_Manager.GetAll(includeFileData);
         }
 
         [ResponseType(typeof(RateTableInfo))]
@@ -52,7 +52,7 @@ namespace FP.Cloud.OnlineRateTable.Controllers
         public async Task<IEnumerable<RateTableInfo>> GetRateTables(GetRateTableRequest request)
         {
             return await m_Manager.GetFiltered(request.Variant, request.Version, request.Carrier, 
-                request.ValidFrom, request.Culture, request.StartValue, request.ItemCount);
+                request.ValidFrom, request.Culture, request.StartValue, request.ItemCount, request.IncludeFileData);
         }
 
         [ResponseType(typeof(RateTableInfo))]

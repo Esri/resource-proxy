@@ -39,6 +39,21 @@ namespace FP.Cloud.OnlineRateTable.Data
             };
         }
 
+        public RateTableInfo ToRateTableInfoShort()
+        {
+            return new RateTableInfo()
+            {
+                Id = Id,
+                Variant = Variant,
+                VersionNumber = VersionNumber,
+                CarrierId = CarrierId,
+                CarrierDetails = CarrierDetails,
+                ValidFrom = ValidFrom,
+                Culture = Culture,
+                PackageFiles = PackageFiles.Select(p => p.ToRateTableFileInfoShort()).ToList()
+            };
+        }
+
         public void UpdateRateTable(RateTableInfo info)
         {
             Variant = info.Variant;

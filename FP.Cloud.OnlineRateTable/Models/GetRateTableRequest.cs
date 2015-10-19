@@ -14,5 +14,6 @@ namespace FP.Cloud.OnlineRateTable.Models
         public string Culture { get; set; }
         public int StartValue { get; set; }
         public int ItemCount { get; set; }
+        public bool IncludeFileData{ get; set; }
     }
 }

@@ -24,10 +24,10 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
         #endregion
 
         #region public
-        public async Task<IEnumerable<RateTableInfo>> GetAll()
+        public async Task<IEnumerable<RateTableInfo>> GetAll(bool includeFileData)
         {
             List<RateTable> temp = await m_DbContext.RateTables.ToListAsync();
-            return temp.Select(r => r.ToRateTableInfo());
+            return includeFileData ? temp.Select(r => r.ToRateTableInfo()) : temp.Select(r => r.ToRateTableInfoShort());
         }
 
         public async Task<RateTableInfo> GetById(int id)
@@ -37,7 +37,7 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
         }
 
         public async Task<IEnumerable<RateTableInfo>> GetFiltered(string variant, string version, int? carrier, 
-            DateTime? validFrom, string culture, int start, int count)
+            DateTime? validFrom, string culture, int start, int count, bool includeFileData)
         {
             IEnumerable<RateTable> tables =
                 await m_DbContext.RateTables.Cast<RateTable>()
@@ -48,7 +48,7 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
                                 (string.IsNullOrEmpty(culture) || r.Culture == culture)).ToListAsync();
 
             var sorted = tables.OrderBy(t => t.Id).Skip(start).Take(count);
-            return sorted.Select(r => r.ToRateTableInfo());
+            return includeFileData ? sorted.Select(r => r.ToRateTableInfo()) : sorted.Select(r => r.ToRateTableInfoShort());
         }
 
         public async Task<RateTableInfo> AddNew(RateTableInfo newInfo)

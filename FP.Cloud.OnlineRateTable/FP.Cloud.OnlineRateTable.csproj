@@ -204,7 +204,6 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\RateCalculationController.cs" />
     <Compile Include="Controllers\RateTableAdministrationController.cs" />
-    <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

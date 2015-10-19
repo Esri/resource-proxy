@@ -20,6 +20,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
         {
             RestRequest request = GetNewRequest();
             request.Resource = "GetAll";
+            request.AddParameter("includeFileData", false, ParameterType.GetOrPost);
 
             return await Execute<List<RateTableInfo>>(request, m_RateTableApi, true) ;
         }
