@@ -12,6 +12,21 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
+            @Html.DisplayNameFor(model => model.ValidFrom)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ValidFrom)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Culture)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Culture)
+        </dd>
+        <dt>
             @Html.DisplayNameFor(model => model.Variant)
         </dt>
 
@@ -24,7 +39,7 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.VersionNumber)
+            @Html.DisplayFor(model => model.FormattedVersion)
         </dd>
 
         <dt>
@@ -44,21 +59,14 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.ValidFrom)
+            @Html.DisplayNameFor(model => model.PackageFiles)
         </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.ValidFrom)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Culture)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Culture)
-        </dd>
-
+        @foreach (var fileInfo in Model.PackageFiles)
+        {
+            <dd>
+                @Html.DisplayFor(model => fileInfo.FileName)
+            </dd>
+        }
     </dl>
 
     @using (Html.BeginForm()) {

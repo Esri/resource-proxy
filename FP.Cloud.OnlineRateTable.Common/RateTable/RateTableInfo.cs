@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -35,13 +36,33 @@ namespace FP.Cloud.OnlineRateTable.Common.RateTable
         [Display(Name = "Language")]
         [Required(ErrorMessage = "Please specify a valid language description")]
         public string Culture { get; set; }
+
+        [Display(Name = "Package files")]
         public List<RateTableFileInfo> PackageFiles { get; set; }
+
+        [IgnoreDataMember]
+        public string FormattedVersion
+        {
+            get { return GetFormattedVersion(); }
+        }
         #endregion
 
         #region constructor
         public RateTableInfo()
         {
             PackageFiles = new List<RateTableFileInfo>();
+        }
+        #endregion
+
+        #region private
+        private string GetFormattedVersion()
+        {
+            string hexValue = string.Format("{0:X8}", NumberConverter.TryParse<int>(VersionNumber, int.TryParse));
+            //read revision (last 4 digits)
+            ushort revision = NumberConverter.Parse<ushort>(hexValue.Substring(hexValue.Length - 4), System.Globalization.NumberStyles.HexNumber, ushort.Parse);
+            //read version
+            ushort version = NumberConverter.Parse<ushort>(hexValue.Substring(hexValue.Length - 8, 4), System.Globalization.NumberStyles.HexNumber, ushort.Parse);
+            return string.Format("{0:#0}.{1:#00}", version, revision);
         }
         #endregion
     }
