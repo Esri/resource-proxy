@@ -20,6 +20,7 @@ namespace FP.Cloud.OnlineRateTable.Data
         public string FileName { get; set; }
         public int FileType { get; set; }
         public byte[] FileData { get; set; }
+        public long Checksum { get; set; }
         public virtual RateTable RateTable { get; set; }
         #endregion
 
@@ -30,8 +31,9 @@ namespace FP.Cloud.OnlineRateTable.Data
             {
                 Id = Id,
                 FileName = FileName,
-                FileType = Enum.IsDefined(typeof (EFileType), FileType) ? (EFileType) FileType : EFileType.Undefined,
-                FileData = FileData
+                FileType = Enum.IsDefined(typeof(EFileType), FileType) ? (EFileType)FileType : EFileType.Undefined,
+                FileData = new List<byte>(FileData),
+                Checksum = Checksum
             };
         }
 
@@ -41,7 +43,8 @@ namespace FP.Cloud.OnlineRateTable.Data
             {
                 FileName = info.FileName,
                 FileType = (int) info.FileType,
-                FileData = info.FileData
+                FileData = info.FileData.ToArray(),
+                Checksum = info.Checksum
             };
         }
         #endregion

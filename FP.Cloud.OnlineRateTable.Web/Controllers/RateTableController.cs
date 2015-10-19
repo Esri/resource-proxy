@@ -9,17 +9,39 @@ using System.Web;
 using System.Web.Mvc;
 using FP.Cloud.OnlineRateTable.Common.RateTable;
 using FP.Cloud.OnlineRateTable.Web.Repositories;
+using FP.Cloud.OnlineRateTable.Web.Models.ViewModels;
+using FP.Cloud.OnlineRateTable.Web.Scenarios;
+using FP.Cloud.OnlineRateTable.Common.ScenarioRunner;
+using Ninject;
 
 namespace FP.Cloud.OnlineRateTable.Web.Controllers
 {
     public class RateTableController : Controller
     {
-        private RateTableRepository m_Repository = new RateTableRepository();
+        #region members
+        private RateTableRepository m_Repository;
+        private UserRepository m_UserRepository;
+        #endregion
+
+        #region properties
+        [Inject]
+        public ExtractArchiveScenario ExtractScenario{get; set;}
+        [Inject]
+        public ReadMetaDataScenario ReadMetaScenario { get; set; }
+        #endregion
+
+        #region constructor
+        public RateTableController(RateTableRepository repository, UserRepository userRepository, ExtractArchiveScenario extractScenario)
+        {
+            m_UserRepository = userRepository;
+            m_Repository = repository;
+            ExtractScenario = extractScenario;
+        }
+        #endregion
 
         public async Task<ActionResult> Login()
         {
-            UserRepository user = new UserRepository();
-            await user.Login("k.nicolai@francotyp.com", "#Sicher01");
+            await m_UserRepository.Login("k.nicolai@francotyp.com", "#Sicher01");
             return  RedirectToAction("Index");
         }
         // GET: RateTable
@@ -54,15 +76,41 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,Variant,VersionNumber,CarrierId,CarrierDetails,ValidFrom,Culture")] RateTableInfo rateTableInfo)
+        public async Task<ActionResult> Create([Bind(Include = "ValidFrom,Culture,ZipUpload")] RateTableViewModel rateTableViewModel, HttpPostedFileBase upload)
         {
+            if (upload == null || upload.ContentLength == 0)
+            {
+                ModelState.AddModelError("ZipUpload", "This field is required");
+            }
+            else if (upload.ContentType != "application/x-zip-compressed")
+            {
+                ModelState.AddModelError("ZipUpload", "Please choose a zip archive.");
+            }
             if (ModelState.IsValid)
             {
-                await m_Repository.AddNewRateTable(rateTableInfo);
-                return RedirectToAction("Index");
+                //add basic stuff
+                RateTableInfo rateTableInfo = new RateTableInfo();
+                rateTableInfo.Culture = rateTableViewModel.Culture;
+                rateTableInfo.ValidFrom = rateTableViewModel.ValidFrom;
+
+                //add the files
+                ScenarioResult<List<RateTableFileInfo>> extractResult = ExtractScenario.Execute(upload.InputStream);
+                if(extractResult.Success)
+                {
+                    rateTableInfo.PackageFiles = extractResult.Value;
+                    ScenarioResult metaResult = ReadMetaScenario.Execute(rateTableInfo);
+                    if(metaResult.Success)
+                    {
+                        //parsing meta file succeeded - information is stored in rateTableInfo
+                        //add new item to database
+                        await m_Repository.AddNewRateTable(rateTableInfo);
+                        return RedirectToAction("Index");
+                    }
+                }
+                ModelState.AddModelError("ZipUpload", "Error processing RateTable file");
             }
 
-            return View(rateTableInfo);
+            return View(rateTableViewModel);
         }
 
         // GET: RateTable/Edit/5

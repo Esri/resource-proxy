@@ -12,17 +12,18 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
     {
         #region constants
         protected readonly string FP_ACCESS_TOKEN = "FpAccessToken";
-        protected readonly RestRequest m_Request = new RestRequest();
         #endregion
 
-        #region constructor
-        protected RateTableApi()
+        #region protected
+        protected RestRequest GetNewRequest()
         {
-            m_Request.RequestFormat = DataFormat.Json;
+            RestRequest request = new RestRequest();
+            request.RequestFormat = DataFormat.Json;
+            return request;
         }
         #endregion
 
-        public async Task<T> Execute<T>(string uri, bool authenticationRequired) where T : new()
+        public async Task<T> Execute<T>(RestRequest request, string uri, bool authenticationRequired) where T : new()
         {
             var client = new RestClient();
             client.BaseUrl = new Uri(uri);
@@ -32,10 +33,10 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
                 //read token from storage
                 string token = (string)HttpContext.Current.Session[FP_ACCESS_TOKEN];
                 //add bearer token to header
-                m_Request.AddHeader("Authorization", string.Format("Bearer {0}", token));
+                request.AddHeader("Authorization", string.Format("Bearer {0}", token));
             }
             
-            var response = await client.ExecuteTaskAsync<T>(m_Request);
+            var response = await client.ExecuteTaskAsync<T>(request);
 
             if (response.ErrorException != null)
             {

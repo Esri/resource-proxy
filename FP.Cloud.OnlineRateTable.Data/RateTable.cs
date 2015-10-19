@@ -53,11 +53,13 @@ namespace FP.Cloud.OnlineRateTable.Data
         public static RateTable New(RateTableInfo info)
         {
             RateTable r = new RateTable();
+            List<RateTableFile> fileList = new List<RateTableFile>();
             r.UpdateRateTable(info);
             foreach (RateTableFileInfo fileInfo in info.PackageFiles)
             {
-                r.PackageFiles.Add(RateTableFile.New(fileInfo));
+                fileList.Add(RateTableFile.New(fileInfo));
             }
+            r.PackageFiles = fileList;
             return r;
         }
 

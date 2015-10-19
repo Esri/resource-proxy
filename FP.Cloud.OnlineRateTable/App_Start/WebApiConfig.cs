@@ -32,6 +32,12 @@ namespace FP.Cloud.OnlineRateTable
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
+
+            // Controllers with Actions
+            config.Routes.MapHttpRoute(
+                name: "ControllerAndActionAndId",
+                routeTemplate: "api/{controller}/{action}/{id}"
+            );
         }
     }
 }

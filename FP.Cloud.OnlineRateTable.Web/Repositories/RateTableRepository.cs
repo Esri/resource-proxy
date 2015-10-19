@@ -18,17 +18,19 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
         #region public
         public async Task<IEnumerable<RateTableInfo>> GetAllRateTables()
         {
-            m_Request.Resource = "GetAll";
+            RestRequest request = GetNewRequest();
+            request.Resource = "GetAll";
 
-            return await Execute<List<RateTableInfo>>(m_RateTableApi, true) ;
+            return await Execute<List<RateTableInfo>>(request, m_RateTableApi, true) ;
         }
 
         public async Task<RateTableInfo> GetById(int id)
         {
-            m_Request.Resource = "GetById";
-            m_Request.AddParameter("id", id, ParameterType.GetOrPost);
+            RestRequest request = GetNewRequest();
+            request.Resource = "GetById";
+            request.AddParameter("id", id, ParameterType.GetOrPost);
 
-            return await Execute<RateTableInfo>(m_RateTableApi, true);
+            return await Execute<RateTableInfo>(request, m_RateTableApi, true);
         }
 
         public async Task<IEnumerable<RateTableInfo>> GetFilteredRateTables()
@@ -39,32 +41,38 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
         public async Task<RateTableInfo> AddNewRateTable(RateTableInfo info)
         {
             info.ValidFrom = new DateTime(info.ValidFrom.Year, info.ValidFrom.Month, info.ValidFrom.Day, 0, 0, 0, DateTimeKind.Utc);
-            m_Request.Resource = "AddNew";
-            m_Request.Method = Method.POST;
-            m_Request.AddBody(info);
 
-            RateTableInfo result = await Execute<RateTableInfo>(m_RateTableApi, true);
+            RestRequest request = GetNewRequest();
+            request.Resource = "AddNew";
+            request.Method = Method.POST;
+            request.AddBody(info);
+
+            RateTableInfo result = await Execute<RateTableInfo>(request, m_RateTableApi, true);
             return result;
         }
 
         public async Task<RateTableInfo> UpdateRateTable(RateTableInfo info)
         {
             info.ValidFrom = new DateTime(info.ValidFrom.Year, info.ValidFrom.Month, info.ValidFrom.Day, 0, 0, 0, DateTimeKind.Utc);
-            m_Request.Resource = "Update";
-            m_Request.Method = Method.POST;
-            m_Request.AddBody(info);
 
-            RateTableInfo result = await Execute<RateTableInfo>(m_RateTableApi, true);
+            RestRequest request = GetNewRequest();
+            request.Resource = "Update";
+            request.Method = Method.POST;
+            request.AddBody(info);
+
+            RateTableInfo result = await Execute<RateTableInfo>(request, m_RateTableApi, true);
             return result;
         }
 
         public async Task<bool> DeleteRateTable(int id)
         {
-            m_Request.Resource = "Delete";
-            m_Request.Method = Method.DELETE;
-            m_Request.AddParameter("id", id, ParameterType.GetOrPost);
+            RestRequest request = GetNewRequest();
+            request.Resource = @"Delete/{id}";
+            request.Method = Method.DELETE;
+            request.AddParameter("id", id, ParameterType.UrlSegment);
 
-            return await Execute<bool>(m_RateTableApi, true);
+            await Execute<bool>(request, m_RateTableApi, true);
+            return true;
         }
 
         #region IDisposable Support

@@ -12,13 +12,14 @@ namespace FP.Cloud.OnlineRateTable.Common.RateTable
         public int Id { get; set; }
         public string FileName { get; set; }
         public EFileType FileType { get; set; }
-        public byte[] FileData { get; set; }
+        public List<byte> FileData { get; set; }
+        public long Checksum { get; set; }
         #endregion
 
         #region constructor
         public RateTableFileInfo()
         {
-            FileData = new byte[0];
+            FileData = new List<byte>();
         }
         #endregion
     }

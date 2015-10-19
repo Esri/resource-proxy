@@ -87,7 +87,7 @@ namespace FP.Cloud.OnlineRateTable.Controllers
             return Ok(resultEntry);
         }
 
-        [ResponseType(typeof(void))]
+        [ResponseType(typeof(bool))]
         [HttpDelete]
         [ActionName("Delete")]
         [Authorize(Roles = "RateTableAdministrators")]
@@ -97,7 +97,7 @@ namespace FP.Cloud.OnlineRateTable.Controllers
             {
                 return NotFound();
             }
-            return Ok();
+            return Ok(true);
         }
         #endregion
     }

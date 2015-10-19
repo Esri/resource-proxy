@@ -11,6 +11,7 @@ namespace FP.Cloud.OnlineRateTable.Common.RateTable
         Undefined = 0,
         RateTable = 1,
         PawnCode = 2,
-        Zip2Zone = 3
+        Zip2Zone = 3,
+        Meta = 4
     }
 }

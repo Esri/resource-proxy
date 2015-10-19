@@ -1,4 +1,4 @@
-﻿using FP.Cloud.OnlineRateTable.Web.Models;
+﻿using FP.Cloud.OnlineRateTable.Web.Models.ApiModels;
 using RestSharp;
 using System;
 using System.Collections.Generic;
@@ -19,13 +19,14 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
         #region public
         public async Task Login(string user, string password)
         {
-            m_Request.Resource = "Token";
-            m_Request.AddParameter("grant_type", "password", ParameterType.GetOrPost);
-            m_Request.AddParameter("username", user, ParameterType.GetOrPost);
-            m_Request.AddParameter("password", password, ParameterType.GetOrPost);
-            m_Request.Method = Method.POST;
+            RestRequest request = GetNewRequest();
+            request.Resource = "Token";
+            request.AddParameter("grant_type", "password", ParameterType.GetOrPost);
+            request.AddParameter("username", user, ParameterType.GetOrPost);
+            request.AddParameter("password", password, ParameterType.GetOrPost);
+            request.Method = Method.POST;
 
-            AccessToken t = await Execute<AccessToken>(m_TokenApi, false);
+            AccessToken t = await Execute<AccessToken>(request, m_TokenApi, false);
 
             if(null != t && string.IsNullOrEmpty(t.TokenValue) == false)
             {

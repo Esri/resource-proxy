@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Interfaces\IRateTableManager.cs" />
+    <Compile Include="NumberConverter.cs" />
     <Compile Include="ProductCalculation\ActionResultInfo.cs" />
     <Compile Include="ProductCalculation\AnyInfo.cs" />
     <Compile Include="ProductCalculation\AttributeInfo.cs" />
@@ -67,6 +68,8 @@
     <Compile Include="RateTable\EFileType.cs" />
     <Compile Include="RateTable\RateTableFileInfo.cs" />
     <Compile Include="RateTable\RateTableInfo.cs" />
+    <Compile Include="ScenarioRunner\ScenarioResult.cs" />
+    <Compile Include="ScenarioRunner\ScenarioRunner.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
