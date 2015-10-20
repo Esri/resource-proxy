@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace FP.Cloud.OnlineRateTable.Common.ProductCalculation
 {
+    [Serializable]
     public class AttributeInfo
     {
         #region properties

@@ -2,6 +2,7 @@
 
 namespace FP.Cloud.OnlineRateTable.Common.ProductCalculation
 {
+    [Serializable]
     public class PostageInfo
     {
         public UInt64 PostageValue { get; set; }

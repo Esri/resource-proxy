@@ -2,6 +2,7 @@
 
 namespace FP.Cloud.OnlineRateTable.Common.ProductCalculation
 {
+    [Serializable]
     public class EnvironmentInfo
     {
         public string Iso3CountryCode { get; set; }
