@@ -70,7 +70,6 @@ namespace FP.Cloud.OnlineRateTable.Web.App_Start
             kernel.Bind<ScenarioRunner>().ToSelf();
             kernel.Bind<ExtractArchiveScenario>().ToSelf();
             kernel.Bind<ReadMetaDataScenario>().ToSelf();
-            kernel.Bind<CreateAuthCookieScenario>().ToSelf();
         }        
     }
 }

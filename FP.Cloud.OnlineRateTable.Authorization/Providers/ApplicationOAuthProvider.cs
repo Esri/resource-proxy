@@ -9,7 +9,6 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OAuth;
-using FP.Cloud.OnlineRateTable.Authorization.Models;
 using FP.Cloud.OnlineRateTable.Data.Identity;
 
 namespace FP.Cloud.OnlineRateTable.Authorization.Providers

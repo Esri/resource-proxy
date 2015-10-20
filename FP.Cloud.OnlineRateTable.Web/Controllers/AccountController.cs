@@ -2,9 +2,8 @@
 using FP.Cloud.OnlineRateTable.Web.Repositories;
 using FP.Cloud.OnlineRateTable.Web.Scenarios;
 using Microsoft.AspNet.Identity;
+using Microsoft.Owin;
 using Microsoft.Owin.Security;
-using Microsoft.Owin.Security.DataHandler.Encoder;
-using Microsoft.Owin.Security.DataHandler.Serializer;
 using Ninject;
 using System;
 using System.Collections.Generic;
@@ -18,12 +17,8 @@ using System.Web.Security;
 namespace FP.Cloud.OnlineRateTable.Web.Controllers
 {
     [Authorize]
-    public class AccountController : Controller
+    public class AccountController : BaseController
     {
-        #region const
-        private const string COOKIE_NAME = "FP.Cloud.OnlineRateTable.Authorization.Auth";
-        #endregion
-
         #region members
         private UserRepository m_UserRepository;
         #endregion
@@ -34,11 +29,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
             m_UserRepository = userRepository;
         }
         #endregion
-
-        #region properties
-        [Inject]
-        public CreateAuthCookieScenario AuthCookieScenario { get; set; }
-        #endregion
+        
 
         // GET: Account/Register
         [AllowAnonymous]
@@ -83,16 +74,13 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
             AccessToken result = await m_UserRepository.Login(model.Email, model.Password);
             if ((null != result) && (string.IsNullOrEmpty(result.TokenValue) == false))
             {
-                var cookieResult = AuthCookieScenario.Execute(result, model.RememberMe, returnUrl, COOKIE_NAME);
-                if (cookieResult.Success)
-                {
-                    //Let's keep the user authenticated in the MVC webapp.
-                    //By using the AccessToken, we can use User.Identity.Name in the MVC controllers to make API calls.
-                    FormsAuthentication.SetAuthCookie(result.TokenValue, model.RememberMe);
+                List<UserClaim> userClaims = await m_UserRepository.GetUserClaims(result.TokenValue);
 
-                    //And now, we have the cookie.
-                    Response.SetCookie(cookieResult.Value);
-                }
+                List<Claim> claimList = userClaims.Select(c => new Claim(c.ClaimType, c.ClaimValue)).ToList();
+                claimList.Add(new Claim(TOKEN_CLAIM, result.TokenValue));
+                var id = new ClaimsIdentity(claimList, DefaultAuthenticationTypes.ApplicationCookie);
+ 
+                AuthenticationManager.SignIn(id);
             }
 
             return Redirect(returnUrl ?? "/");
@@ -100,16 +88,10 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult SignOut()
+        public async Task<ActionResult> SignOut()
         {
-            FormsAuthentication.SignOut();
-
-            //Clear the auth cookie
-            if (Response.Cookies[COOKIE_NAME] != null)
-            {
-                var c = new HttpCookie(COOKIE_NAME) { Expires = DateTime.Now.AddDays(-1) };
-                Response.Cookies.Add(c);
-            }
+            await m_UserRepository.Logout(GetAuthToken());
+            AuthenticationManager.SignOut();
 
             return RedirectToAction("Index", "Home");
         }
