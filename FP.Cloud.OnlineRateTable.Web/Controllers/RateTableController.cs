@@ -9,9 +9,6 @@ using FP.Cloud.OnlineRateTable.Web.Models.ViewModels;
 using FP.Cloud.OnlineRateTable.Web.Scenarios;
 using FP.Cloud.OnlineRateTable.Common.ScenarioRunner;
 using Ninject;
-using Microsoft.Owin.Security;
-using System.Security.Claims;
-using System.Linq;
 
 namespace FP.Cloud.OnlineRateTable.Web.Controllers
 {

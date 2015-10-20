@@ -54,6 +54,24 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
             request.Method = Method.GET;
             return await Execute<List<UserClaim>>(request, m_ManageApi, authToken);
         }
+
+        public async Task<ManageInfoViewModel> GetManageInfo(string returnUrl, string authToken)
+        {
+            RestRequest request = GetNewRequest();
+            request.Resource = "ManageInfo";
+            request.Method = Method.GET;
+            return await Execute<ManageInfoViewModel>(request, m_ManageApi, authToken);
+
+        }
+
+        public async Task ChangePassword(ChangePasswordBindingModel model, string authToken)
+        {
+            RestRequest request = GetNewRequest();
+            request.Resource = "ChangePassword";
+            request.Method = Method.POST;
+            request.AddObject(model);
+            await Execute<object>(request, m_ManageApi, authToken);
+        }
         #endregion
 
         #region IDisposable Support

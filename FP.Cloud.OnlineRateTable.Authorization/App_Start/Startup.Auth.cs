@@ -9,7 +9,6 @@ using Microsoft.Owin.Security.Google;
 using Microsoft.Owin.Security.OAuth;
 using Owin;
 using FP.Cloud.OnlineRateTable.Authorization.Providers;
-using FP.Cloud.OnlineRateTable.Authorization.Models;
 using FP.Cloud.OnlineRateTable.Data;
 using FP.Cloud.OnlineRateTable.Data.Identity;
 
