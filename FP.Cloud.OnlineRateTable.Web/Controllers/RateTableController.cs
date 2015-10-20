@@ -9,11 +9,14 @@ using FP.Cloud.OnlineRateTable.Web.Models.ViewModels;
 using FP.Cloud.OnlineRateTable.Web.Scenarios;
 using FP.Cloud.OnlineRateTable.Common.ScenarioRunner;
 using Ninject;
+using Microsoft.Owin.Security;
+using System.Security.Claims;
+using System.Linq;
 
 namespace FP.Cloud.OnlineRateTable.Web.Controllers
 {
-    [Authorize]
-    public class RateTableController : Controller
+    [Authorize(Roles = "RateTableAdministrators")]
+    public class RateTableController : BaseController
     {
         #region members
         private RateTableRepository m_Repository;
@@ -34,8 +37,8 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
         #endregion
         // GET: RateTable
         public async Task<ActionResult> Index()
-        {
-            return View(await m_Repository.GetAllRateTables(User.Identity.Name));
+        {   
+            return View(await m_Repository.GetAllRateTables(GetAuthToken()));
         }
 
         // GET: RateTable/Details/5
@@ -45,7 +48,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            RateTableInfo rateTableInfo = await m_Repository.GetById(id.Value, User.Identity.Name);
+            RateTableInfo rateTableInfo = await m_Repository.GetById(id.Value, GetAuthToken());
             if (rateTableInfo == null)
             {
                 return HttpNotFound();
@@ -91,7 +94,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
                     {
                         //parsing meta file succeeded - information is stored in rateTableInfo
                         //add new item to database
-                        await m_Repository.AddNewRateTable(rateTableInfo, User.Identity.Name);
+                        await m_Repository.AddNewRateTable(rateTableInfo, GetAuthToken());
                         return RedirectToAction("Index");
                     }
                 }
@@ -108,7 +111,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            RateTableInfo rateTableInfo = await m_Repository.GetById(id.Value, User.Identity.Name);
+            RateTableInfo rateTableInfo = await m_Repository.GetById(id.Value, GetAuthToken());
             if (rateTableInfo == null)
             {
                 return HttpNotFound();
@@ -125,7 +128,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                await m_Repository.UpdateRateTable(rateTableInfo, User.Identity.Name);
+                await m_Repository.UpdateRateTable(rateTableInfo, GetAuthToken());
                 return RedirectToAction("Index");
             }
             return View(rateTableInfo);
@@ -138,7 +141,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            RateTableInfo rateTableInfo = await m_Repository.GetById(id.Value, User.Identity.Name);
+            RateTableInfo rateTableInfo = await m_Repository.GetById(id.Value, GetAuthToken());
             if (rateTableInfo == null)
             {
                 return HttpNotFound();
@@ -151,15 +154,16 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            RateTableInfo rateTableInfo = await m_Repository.GetById(id, User.Identity.Name);
+            RateTableInfo rateTableInfo = await m_Repository.GetById(id, GetAuthToken());
             if (null == rateTableInfo)
             {
                 return HttpNotFound();
             }
-            await m_Repository.DeleteRateTable(id, User.Identity.Name);
+            await m_Repository.DeleteRateTable(id, GetAuthToken());
             return RedirectToAction("Index");
         }
 
+        #region protected
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -168,5 +172,6 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
             }
             base.Dispose(disposing);
         }
+        #endregion
     }
 }

@@ -54,6 +54,7 @@
     <Compile Include="Authorization\RemoveLoginBindingModel.cs" />
     <Compile Include="Authorization\SetPasswordBindingModel.cs" />
     <Compile Include="Authorization\SignInModel.cs" />
+    <Compile Include="Authorization\UserClaim.cs" />
     <Compile Include="Interfaces\IRateTableManager.cs" />
     <Compile Include="NumberConverter.cs" />
     <Compile Include="ProductCalculation\ActionResultInfo.cs" />

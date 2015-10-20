@@ -18,6 +18,7 @@ using FP.Cloud.OnlineRateTable.Authorization.Providers;
 using FP.Cloud.OnlineRateTable.Authorization.Results;
 using FP.Cloud.OnlineRateTable.Data.Identity;
 using FP.Cloud.OnlineRateTable.Common.Authorization;
+using System.Linq;
 
 namespace FP.Cloud.OnlineRateTable.Authorization.Controllers
 {
@@ -66,6 +67,15 @@ namespace FP.Cloud.OnlineRateTable.Authorization.Controllers
                 HasRegistered = externalLogin == null,
                 LoginProvider = externalLogin != null ? externalLogin.LoginProvider : null
             };
+        }
+
+        // GET api/Account/UserClaims
+        [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
+        [Route("UserClaims")]
+        public List<UserClaim> GetUserClaims()
+        {
+            var identity = User.Identity as ClaimsIdentity;
+            return identity.Claims.Select(c => new UserClaim { ClaimType = c.Type, ClaimValue = c.Value }).ToList();
         }
 
         // POST api/Account/Logout

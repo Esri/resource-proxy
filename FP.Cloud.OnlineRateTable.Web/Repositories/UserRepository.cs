@@ -1,7 +1,9 @@
 ﻿using FP.Cloud.OnlineRateTable.Common.Authorization;
 using RestSharp;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -27,6 +29,15 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
             return await Execute<AccessToken>(request, m_TokenApi, string.Empty);
         }
 
+        public async Task Logout(string authToken)
+        {
+            RestRequest request = GetNewRequest();
+            request.Resource = "Logout";
+            request.Method = Method.POST;
+
+            await Execute<object>(request, m_ManageApi, authToken);
+        }
+
         public async Task Register(RegisterBindingModel model)
         {
             RestRequest request = GetNewRequest();
@@ -34,6 +45,14 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
             request.Method = Method.POST;
             request.AddObject(model);
             await Execute<object>(request, m_ManageApi, string.Empty);
+        }
+
+        public async Task<List<UserClaim>> GetUserClaims(string authToken)
+        {
+            RestRequest request = GetNewRequest();
+            request.Resource = "UserClaims";
+            request.Method = Method.GET;
+            return await Execute<List<UserClaim>>(request, m_ManageApi, authToken);
         }
         #endregion
 
