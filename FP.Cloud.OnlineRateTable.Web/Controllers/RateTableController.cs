@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Net;
 using System.Web;
@@ -16,11 +12,11 @@ using Ninject;
 
 namespace FP.Cloud.OnlineRateTable.Web.Controllers
 {
+    [Authorize]
     public class RateTableController : Controller
     {
         #region members
         private RateTableRepository m_Repository;
-        private UserRepository m_UserRepository;
         #endregion
 
         #region properties
@@ -31,23 +27,15 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
         #endregion
 
         #region constructor
-        public RateTableController(RateTableRepository repository, UserRepository userRepository, ExtractArchiveScenario extractScenario)
+        public RateTableController(RateTableRepository repository)
         {
-            m_UserRepository = userRepository;
             m_Repository = repository;
-            ExtractScenario = extractScenario;
         }
         #endregion
-
-        public async Task<ActionResult> Login()
-        {
-            await m_UserRepository.Login("k.nicolai@francotyp.com", "#Sicher01");
-            return  RedirectToAction("Index");
-        }
         // GET: RateTable
         public async Task<ActionResult> Index()
         {
-            return View(await m_Repository.GetAllRateTables());
+            return View(await m_Repository.GetAllRateTables(User.Identity.Name));
         }
 
         // GET: RateTable/Details/5
@@ -57,7 +45,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            RateTableInfo rateTableInfo = await m_Repository.GetById(id.Value);
+            RateTableInfo rateTableInfo = await m_Repository.GetById(id.Value, User.Identity.Name);
             if (rateTableInfo == null)
             {
                 return HttpNotFound();
@@ -103,7 +91,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
                     {
                         //parsing meta file succeeded - information is stored in rateTableInfo
                         //add new item to database
-                        await m_Repository.AddNewRateTable(rateTableInfo);
+                        await m_Repository.AddNewRateTable(rateTableInfo, User.Identity.Name);
                         return RedirectToAction("Index");
                     }
                 }
@@ -120,7 +108,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            RateTableInfo rateTableInfo = await m_Repository.GetById(id.Value);
+            RateTableInfo rateTableInfo = await m_Repository.GetById(id.Value, User.Identity.Name);
             if (rateTableInfo == null)
             {
                 return HttpNotFound();
@@ -137,7 +125,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                await m_Repository.UpdateRateTable(rateTableInfo);
+                await m_Repository.UpdateRateTable(rateTableInfo, User.Identity.Name);
                 return RedirectToAction("Index");
             }
             return View(rateTableInfo);
@@ -150,7 +138,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            RateTableInfo rateTableInfo = await m_Repository.GetById(id.Value);
+            RateTableInfo rateTableInfo = await m_Repository.GetById(id.Value, User.Identity.Name);
             if (rateTableInfo == null)
             {
                 return HttpNotFound();
@@ -163,12 +151,12 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            RateTableInfo rateTableInfo = await m_Repository.GetById(id);
+            RateTableInfo rateTableInfo = await m_Repository.GetById(id, User.Identity.Name);
             if (null == rateTableInfo)
             {
                 return HttpNotFound();
             }
-            await m_Repository.DeleteRateTable(id);
+            await m_Repository.DeleteRateTable(id, User.Identity.Name);
             return RedirectToAction("Index");
         }
 

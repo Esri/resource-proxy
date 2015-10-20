@@ -3,10 +3,7 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data.Entity;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace FP.Cloud.OnlineRateTable.Web.Repositories
 {
@@ -16,30 +13,30 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
         private string m_RateTableApi = string.Format("{0}/api/RateTableAdministration", ConfigurationManager.AppSettings["RateTableUrl"]);
         #endregion
         #region public
-        public async Task<IEnumerable<RateTableInfo>> GetAllRateTables()
+        public async Task<IEnumerable<RateTableInfo>> GetAllRateTables(string authToken)
         {
             RestRequest request = GetNewRequest();
             request.Resource = "GetAll";
             request.AddParameter("includeFileData", false, ParameterType.GetOrPost);
 
-            return await Execute<List<RateTableInfo>>(request, m_RateTableApi, true) ;
+            return await Execute<List<RateTableInfo>>(request, m_RateTableApi, authToken) ;
         }
 
-        public async Task<RateTableInfo> GetById(int id)
+        public async Task<RateTableInfo> GetById(int id, string authToken)
         {
             RestRequest request = GetNewRequest();
             request.Resource = "GetById";
             request.AddParameter("id", id, ParameterType.GetOrPost);
 
-            return await Execute<RateTableInfo>(request, m_RateTableApi, true);
+            return await Execute<RateTableInfo>(request, m_RateTableApi, authToken);
         }
 
-        public async Task<IEnumerable<RateTableInfo>> GetFilteredRateTables()
+        public async Task<IEnumerable<RateTableInfo>> GetFilteredRateTables(string authToken)
         {
             return null;
         }
 
-        public async Task<RateTableInfo> AddNewRateTable(RateTableInfo info)
+        public async Task<RateTableInfo> AddNewRateTable(RateTableInfo info, string authToken)
         {
             info.ValidFrom = new DateTime(info.ValidFrom.Year, info.ValidFrom.Month, info.ValidFrom.Day, 0, 0, 0, DateTimeKind.Utc);
 
@@ -48,11 +45,11 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
             request.Method = Method.POST;
             request.AddBody(info);
 
-            RateTableInfo result = await Execute<RateTableInfo>(request, m_RateTableApi, true);
+            RateTableInfo result = await Execute<RateTableInfo>(request, m_RateTableApi, authToken);
             return result;
         }
 
-        public async Task<RateTableInfo> UpdateRateTable(RateTableInfo info)
+        public async Task<RateTableInfo> UpdateRateTable(RateTableInfo info, string authToken)
         {
             info.ValidFrom = new DateTime(info.ValidFrom.Year, info.ValidFrom.Month, info.ValidFrom.Day, 0, 0, 0, DateTimeKind.Utc);
 
@@ -61,18 +58,18 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
             request.Method = Method.POST;
             request.AddBody(info);
 
-            RateTableInfo result = await Execute<RateTableInfo>(request, m_RateTableApi, true);
+            RateTableInfo result = await Execute<RateTableInfo>(request, m_RateTableApi, authToken);
             return result;
         }
 
-        public async Task<bool> DeleteRateTable(int id)
+        public async Task<bool> DeleteRateTable(int id, string authToken)
         {
             RestRequest request = GetNewRequest();
             request.Resource = @"Delete/{id}";
             request.Method = Method.DELETE;
             request.AddParameter("id", id, ParameterType.UrlSegment);
 
-            await Execute<bool>(request, m_RateTableApi, true);
+            await Execute<bool>(request, m_RateTableApi, authToken);
             return true;
         }
 

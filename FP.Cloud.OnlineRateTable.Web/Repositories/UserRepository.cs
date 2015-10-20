@@ -15,7 +15,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
         #endregion
 
         #region public
-        public async Task Login(string user, string password)
+        public async Task<AccessToken> Login(string user, string password)
         {
             RestRequest request = GetNewRequest();
             request.Resource = "Token";
@@ -24,12 +24,16 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
             request.AddParameter("password", password, ParameterType.GetOrPost);
             request.Method = Method.POST;
 
-            AccessToken t = await Execute<AccessToken>(request, m_TokenApi, false);
+            return await Execute<AccessToken>(request, m_TokenApi, string.Empty);
+        }
 
-            if(null != t && string.IsNullOrEmpty(t.TokenValue) == false)
-            {
-                HttpContext.Current.Session[FP_ACCESS_TOKEN] = t.TokenValue;
-            }
+        public async Task Register(RegisterBindingModel model)
+        {
+            RestRequest request = GetNewRequest();
+            request.Resource = "Register";
+            request.Method = Method.POST;
+            request.AddObject(model);
+            await Execute<object>(request, m_ManageApi, string.Empty);
         }
         #endregion
 

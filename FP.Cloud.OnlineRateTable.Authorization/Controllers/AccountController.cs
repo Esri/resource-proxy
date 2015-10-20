@@ -17,6 +17,7 @@ using FP.Cloud.OnlineRateTable.Authorization.Models;
 using FP.Cloud.OnlineRateTable.Authorization.Providers;
 using FP.Cloud.OnlineRateTable.Authorization.Results;
 using FP.Cloud.OnlineRateTable.Data.Identity;
+using FP.Cloud.OnlineRateTable.Common.Authorization;
 
 namespace FP.Cloud.OnlineRateTable.Authorization.Controllers
 {

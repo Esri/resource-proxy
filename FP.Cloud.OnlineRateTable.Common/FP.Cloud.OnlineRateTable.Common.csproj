@@ -47,6 +47,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Authorization\AccessToken.cs" />
+    <Compile Include="Authorization\AddExternalLoginBindingModel.cs" />
+    <Compile Include="Authorization\ChangePasswordBindingModel.cs" />
+    <Compile Include="Authorization\RegisterBindingModel.cs" />
+    <Compile Include="Authorization\RegisterExternalBindingModel.cs" />
+    <Compile Include="Authorization\RemoveLoginBindingModel.cs" />
+    <Compile Include="Authorization\SetPasswordBindingModel.cs" />
+    <Compile Include="Authorization\SignInModel.cs" />
     <Compile Include="Interfaces\IRateTableManager.cs" />
     <Compile Include="NumberConverter.cs" />
     <Compile Include="ProductCalculation\ActionResultInfo.cs" />

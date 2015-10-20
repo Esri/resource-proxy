@@ -21,19 +21,16 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
             request.RequestFormat = DataFormat.Json;
             return request;
         }
-        #endregion
 
-        public async Task<T> Execute<T>(RestRequest request, string uri, bool authenticationRequired) where T : new()
+        protected async Task<T> Execute<T>(RestRequest request, string uri, string authToken) where T : new()
         {
             var client = new RestClient();
             client.BaseUrl = new Uri(uri);
 
-            if(authenticationRequired)
+            if(string.IsNullOrEmpty(authToken) == false)
             {
-                //read token from storage
-                string token = (string)HttpContext.Current.Session[FP_ACCESS_TOKEN];
                 //add bearer token to header
-                request.AddHeader("Authorization", string.Format("Bearer {0}", token));
+                request.AddHeader("Authorization", string.Format("Bearer {0}", authToken));
             }
             
             var response = await client.ExecuteTaskAsync<T>(request);
@@ -45,5 +42,6 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
             }
             return response.Data;
         }
+        #endregion
     }
 }

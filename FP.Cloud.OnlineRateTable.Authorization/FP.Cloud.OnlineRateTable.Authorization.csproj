@@ -209,7 +209,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />
@@ -283,6 +282,10 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FP.Cloud.OnlineRateTable.Common\FP.Cloud.OnlineRateTable.Common.csproj">
+      <Project>{0dd4a6a3-1b46-474d-90ae-324cd5d7f8a0}</Project>
+      <Name>FP.Cloud.OnlineRateTable.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\FP.Cloud.OnlineRateTable.Data\FP.Cloud.OnlineRateTable.Data.csproj">
       <Project>{7aa1f8d5-19b7-4546-b500-d70c931314e0}</Project>
       <Name>FP.Cloud.OnlineRateTable.Data</Name>

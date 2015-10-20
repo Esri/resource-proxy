@@ -15,15 +15,15 @@ namespace FP.Cloud.OnlineRateTable.Common.Authorization
         public string TokenType { get; set; }
 
         [DeserializeAs(Name = "expires_in")]
-        public TimeSpan LifeSpan { get; set; }
+        public uint LifeSpan { get; set; }
 
         [DeserializeAs(Name = "userName")]
         public string UserName { get; set; }
 
         [DeserializeAs(Name = ".issued")]
-        public DateTime IssueTimestamp { get; set; }
+        public DateTimeOffset IssueTimestamp { get; set; }
 
         [DeserializeAs(Name = ".expires")]
-        public DateTime ExpireTimestamp { get; set; }
+        public DateTimeOffset ExpireTimestamp { get; set; }
     }
 }
