@@ -3,6 +3,7 @@
 #include "boost/filesystem/path.hpp"
 #include "QueryCreationStrategy.hpp"
 #include "QueryShowMenuCreationStrategy.hpp"
+#include "Lock.hpp"
 #include "PCalcProxy.hpp"
 
 USING_PRODUCTCALCULATION_NAMESPACE
@@ -108,6 +109,7 @@ ExtendedErrorCode^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::CalculateSt
 
 PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(EnvironmentInfo^ environment, WeightInfo^ weight)
 {
+	Lock lock(this);
 	int nextAction = 0;
 
 	this->Initialize(environment);
@@ -119,6 +121,8 @@ PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(Env
 
 PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(EnvironmentInfo^ environment, ProductDescriptionInfo^ product, ActionResultInfo^ actionResult)
 {
+	Lock lock(this);
+
 	this->Calculate(environment, product->Weight);
 
 	ProductCalculation::ActionResultType target;
