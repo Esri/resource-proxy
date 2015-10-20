@@ -45,6 +45,9 @@
     <ClInclude Include="QueryShowMenuCreationStrategy.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="IPCalcProxy.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp">

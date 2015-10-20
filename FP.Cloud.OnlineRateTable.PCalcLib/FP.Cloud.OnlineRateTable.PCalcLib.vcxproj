@@ -167,6 +167,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ExtendedErrorCode.hpp" />
+    <ClInclude Include="IPCalcProxy.hpp" />
     <ClInclude Include="PCalcFactory.hpp" />
     <ClInclude Include="PCalcFactoryCPP.hpp" />
     <ClInclude Include="PCalcLib.hpp" />

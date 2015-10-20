@@ -7,7 +7,7 @@
 BEGIN_PCALC_LIB_NAMESPACE
 
 	[System::Serializable]
-	public ref class ExtendedErrorCode
+	private ref class ExtendedErrorCode
 	{
 	private:
 		INT32	m_MainCode;

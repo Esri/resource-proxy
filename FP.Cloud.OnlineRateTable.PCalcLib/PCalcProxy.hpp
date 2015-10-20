@@ -2,13 +2,14 @@
 
 #include "PCalcLib.hpp"
 #include "ExtendedErrorCode.hpp"
+#include "IPCalcProxy.hpp"
 #include "PCalcFactory.hpp"
 
 BEGIN_PCALC_LIB_NAMESPACE
 
 using namespace FP::Cloud::OnlineRateTable::Common::ProductCalculation;
 
-public ref class PCalcProxy : System::MarshalByRefObject
+private ref class PCalcProxy : System::MarshalByRefObject, public IPCalcProxy
 	{
 	public:
 		PCalcProxy();
@@ -18,8 +19,8 @@ public ref class PCalcProxy : System::MarshalByRefObject
 		ExtendedErrorCode^ LoadPawn(System::String^ file);
 		ExtendedErrorCode^ LoadProductTable(System::String^ file);	
 
-		PCalcResultInfo^ Calculate(EnvironmentInfo^ environment, WeightInfo^ weight);
-		PCalcResultInfo^ Calculate(EnvironmentInfo^ environment, ProductDescriptionInfo^ product, ActionResultInfo^ actionResult);
+		virtual PCalcResultInfo^ Calculate(EnvironmentInfo^ environment, WeightInfo^ weight);
+		virtual PCalcResultInfo^ Calculate(EnvironmentInfo^ environment, ProductDescriptionInfo^ product, ActionResultInfo^ actionResult);
 		
 		void Unload();
 

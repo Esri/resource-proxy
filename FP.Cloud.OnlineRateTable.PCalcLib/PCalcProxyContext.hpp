@@ -8,12 +8,12 @@ BEGIN_PCALC_LIB_NAMESPACE
 public ref class PCalcProxyContext
 {
 public:
-	PCalcProxyContext(void);
+	PCalcProxyContext(System::String^ amxPath, System::String^ tablePath);
 	~PCalcProxyContext(void);
 
-	property PCalcProxy^ Proxy
+	property IPCalcProxy^ Proxy
 	{
-		PCalcProxy^ get()
+		IPCalcProxy^ get()
 		{
 			return m_Proxy;
 		}

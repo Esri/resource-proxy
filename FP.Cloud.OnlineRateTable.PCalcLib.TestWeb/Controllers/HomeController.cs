@@ -24,22 +24,18 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.TestWeb.Controllers
 
         public ActionResult Index()
         {
-            using (var context = new PCalcProxyContext())
+            string pawnFile = HttpContext.Server.MapPath("~/App_Data/Pt2097152.amx");
+            string tableFile = HttpContext.Server.MapPath("~/App_Data/Pt2097152.bin");
+
+            using (var context = new PCalcProxyContext(pawnFile, tableFile))
             {
-                string pawnFile = HttpContext.Server.MapPath("~/App_Data/Pt2097152.amx");
-                string tableFile = HttpContext.Server.MapPath("~/App_Data/Pt2097152.bin");
-                PCalcProxy manager = context.Proxy;
-
-                manager.Create();
-                manager.LoadPawn(pawnFile);
-                manager.LoadProductTable(tableFile);
-
+                IPCalcProxy proxy = context.Proxy;
                 EnvironmentInfo env = new EnvironmentInfo() { Culture = "de", SenderZipCode = "123" };
                 PCalcResultInfo result = null;
 
-                result = manager.Calculate(env, new WeightInfo() { WeightUnit = EWeightUnit.Gram, WeightValue = 20 });
-                result = manager.Calculate(env, result.ProductDescription, new ActionResultInfo() { Action = EActionId.ShowMenu, Label = 1, Results = new List<AnyInfo> { new AnyInfo() { AnyType = EAnyType.INT32, AnyValue = "0" } } });
-                result = manager.Calculate(env, result.ProductDescription, new ActionResultInfo() { Action = EActionId.ShowMenu, Label = 1, Results = new List<AnyInfo> { new AnyInfo() { AnyType = EAnyType.INT32, AnyValue = "0" } } });
+                result = proxy.Calculate(env, new WeightInfo() { WeightUnit = EWeightUnit.Gram, WeightValue = 20 });
+                result = proxy.Calculate(env, result.ProductDescription, new ActionResultInfo() { Action = EActionId.ShowMenu, Label = 1, Results = new List<AnyInfo> { new AnyInfo() { AnyType = EAnyType.INT32, AnyValue = "0" } } });
+                result = proxy.Calculate(env, result.ProductDescription, new ActionResultInfo() { Action = EActionId.ShowMenu, Label = 1, Results = new List<AnyInfo> { new AnyInfo() { AnyType = EAnyType.INT32, AnyValue = "0" } } });
             }
 
             return View();
