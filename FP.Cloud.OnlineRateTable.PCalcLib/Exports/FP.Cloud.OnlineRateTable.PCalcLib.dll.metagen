@@ -1,0 +1,43 @@
+ImageRuntimeVersion: v4.0.30319
+Assembly FP.Cloud.OnlineRateTable.PCalcLib, Version=1.0.*, Culture=Invariante Sprache (Invariantes Land): 
+	hash=SHA1, flags=PublicKey
+Assembly mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
+	hash=None, flags=None
+Assembly FP.Cloud.OnlineRateTable.Common, Version=1.0.*, Culture=Invariante Sprache (Invariantes Land): 
+	hash=None, flags=None
+Assembly System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
+	hash=None, flags=None
+Assembly System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
+	hash=None, flags=None
+Assembly System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
+	hash=None, flags=None
+Class PawnErrors: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
+    Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+  Fields:
+    UInt32 PUB_FUNC_NOT_IN_TABLE = 150994944 : Public, Static, Literal, HasDefault
+    UInt32 PUB_FUNC_NOT_IN_PAWN_SCRIPT = 150994945 : Public, Static, Literal, HasDefault
+    UInt32 CREATE_AMX_FAILED = 150994946 : Public, Static, Literal, HasDefault
+    UInt32 SCRIPT_RETURNED_ERROR = 150994947 : Public, Static, Literal, HasDefault
+    UInt32 AMX_PUSH_FAILDED = 150994948 : Public, Static, Literal, HasDefault
+    UInt32 EXEC_SCRIPT_FAILED = 150994949 : Public, Static, Literal, HasDefault
+    UInt32 LAST_PAWN_ERROR = 150994950 : Public, Static, Literal, HasDefault
+    UInt32 NUM_ERROR_ENTRIES = 6 : Public, Static, Literal, HasDefault
+Interface FP.Cloud.OnlineRateTable.PCalcLib.IPCalcProxy: AutoLayout, AnsiClass, Class, Public, ClassSemanticsMask, Abstract, BeforeFieldInit
+  Methods:
+    Calculate(EnvironmentInfo, ProductDescriptionInfo, ActionResultInfo): PrivateScope, Public, Virtual, HideBySig, VtableLayoutMask, Abstract
+    Calculate(EnvironmentInfo, WeightInfo): PrivateScope, Public, Virtual, HideBySig, VtableLayoutMask, Abstract
+Class FP.Cloud.OnlineRateTable.PCalcLib.PCalcProxyContext: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
+    Void .ctor(System.String, System.String): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+  Interfaces:
+    System.IDisposable
+  Properties:
+    FP.Cloud.OnlineRateTable.PCalcLib.IPCalcProxy Proxy 'get ' : 
+  Methods:
+    get_Proxy(): PrivateScope, Public, HideBySig, SpecialName
+    Dispose(): PrivateScope, Public, Final, Virtual, HideBySig
+Class VariantSpecific.MyZip2ZoneConverter: AutoLayout, AnsiClass, Class, Public, Abstract, BeforeFieldInit
+    Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+  Methods:
+    SetInstance(MyZip2ZoneConverter): PrivateScope, Public, Static, HideBySig
+    GetInstance(): PrivateScope, Public, Static, HideBySig
+    GetZones(String, String): PrivateScope, Public, Virtual, HideBySig, VtableLayoutMask, Abstract

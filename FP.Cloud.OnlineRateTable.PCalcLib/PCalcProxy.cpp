@@ -39,7 +39,8 @@ void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Initialize()
 {
 	EXTENDED_ERROR_CODE error(GENERAL_Error::SUCCESSFUL);
 	try
-	{		m_Factory->GetPCalcMgr()->PCalcInitialize();
+	{
+		m_Factory->GetPCalcMgr()->PCalcInitialize();
 	}
 	catch (ProdCalcException ex)
 	{
@@ -117,7 +118,7 @@ PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(Env
 	ProductCalculation::ResultValueVectorType results;
 
 	this->Calculate(environment, product->Weight);
-	
+
 	target.ID = (int)actionResult->Action;
 	target.Label = actionResult->Label;
 	for each(AnyInfo^ current in actionResult->Results)
@@ -132,13 +133,13 @@ PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(Env
 		}
 	}
 	target.Result = results;
-	 
+
 	ProductCalculation::IProductDescParameterPtr parameter = m_Factory->GetProdDesc()->AccessCurrProduct();
 	parameter->SetProductCode(product->ProductCode);
 	parameter->SetProductID(product->ProductId);
 	parameter->SetActionResult(target);
 
-	this->CalculateNext(nextAction);	
+	this->CalculateNext(nextAction);
 	return this->ProcessResult(nextAction);
 }
 
@@ -174,7 +175,7 @@ void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::SetEnvironment(Environmen
 	IPropertiesPtr properties = config->AccessCurrentProperties();
 
 	properties->SetValue(EnvironmentProperty::REQUEST_ORIGIN_ZIP_CODE, PCalcManagedLib::ConvertToString(environment->SenderZipCode));
-	properties->SetValue(EnvironmentProperty::REQUEST_LANG,PCalcManagedLib::ConvertToString(environment->Culture));
+	properties->SetValue(EnvironmentProperty::REQUEST_LANG, PCalcManagedLib::ConvertToString(environment->Culture));
 
 	config->ChangeProperties(properties);
 }

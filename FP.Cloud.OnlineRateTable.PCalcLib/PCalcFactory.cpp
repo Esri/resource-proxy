@@ -58,3 +58,4 @@ ProductCalculation::IPCalcReportManagerPtr PCalcFactory::GetPCalcReportMgr(void)
 {
 	return m_pFactory->GetPCalcReportMgr();
 }
+

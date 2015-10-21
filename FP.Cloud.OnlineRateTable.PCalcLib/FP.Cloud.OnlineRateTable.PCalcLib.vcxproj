@@ -188,6 +188,7 @@
     <ClCompile Include="PCalcProxy.cpp" />
     <ClCompile Include="PCalcProxyContext.cpp" />
     <ClCompile Include="QueryCreationStrategy.cpp" />
+    <ClCompile Include="QueryShowMenuCreationStrategy.cpp" />
     <ClCompile Include="ZipToZoneMap.cpp" />
   </ItemGroup>
   <ItemGroup>

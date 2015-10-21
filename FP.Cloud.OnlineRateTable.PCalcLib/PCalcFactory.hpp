@@ -18,14 +18,14 @@ private ref class PCalcFactory
 public:
 	PCalcFactory(void);
 	~PCalcFactory(void);
-	ProductCalculation::IPCalcConfigurationPtr		GetConfig(void);
-	ProductCalculation::IPCalcManagerPtr			GetPCalcMgr(void);
-	ProductCalculation::IProductDescriptionPtr		GetProdDesc(void);
-	ProductCalculation::IPCalcActionManagerPtr		GetActionMgr(void);
-	ProductCalculation::IPTMgrPtr					GetPTMgr(void);
-	ProductCalculation::IPCalcMemoryKeyManagerPtr	GetPCalcMemoryKeyMgr(void);
-	ProductCalculation::IPCalcGeneralInfoManagerPtr	GetPCalcGeneralInfoMgr(void);
-	ProductCalculation::IPCalcReportManagerPtr		GetPCalcReportMgr(void);
+	ProductCalculation::IPCalcConfigurationPtr GetConfig(void);
+	ProductCalculation::IPCalcManagerPtr GetPCalcMgr(void);
+	ProductCalculation::IProductDescriptionPtr GetProdDesc(void);
+	ProductCalculation::IPCalcActionManagerPtr GetActionMgr(void);
+	ProductCalculation::IPTMgrPtr GetPTMgr(void);
+	ProductCalculation::IPCalcMemoryKeyManagerPtr GetPCalcMemoryKeyMgr(void);
+	ProductCalculation::IPCalcGeneralInfoManagerPtr GetPCalcGeneralInfoMgr(void);
+	ProductCalculation::IPCalcReportManagerPtr GetPCalcReportMgr(void);
 
 protected:
 	!PCalcFactory(void);
@@ -35,3 +35,6 @@ private:
 };
 
 END_PCALC_LIB_NAMESPACE
+
+
+
