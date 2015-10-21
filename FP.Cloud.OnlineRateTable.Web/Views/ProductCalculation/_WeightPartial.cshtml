@@ -1,0 +1,20 @@
+﻿@model FP.Cloud.OnlineRateTable.Common.ProductCalculation.WeightInfo
+
+<div>
+    <h4>Weight</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.WeightValue)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.WeightValue)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
