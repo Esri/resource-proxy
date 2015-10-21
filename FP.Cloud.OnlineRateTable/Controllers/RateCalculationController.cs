@@ -1,6 +1,5 @@
 ﻿using FP.Cloud.OnlineRateTable.Common;
 using FP.Cloud.OnlineRateTable.Common.Interfaces;
-using FP.Cloud.OnlineRateTable.Models;
 using Ninject;
 using System;
 using System.Collections.Generic;
@@ -11,6 +10,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using FP.Cloud.OnlineRateTable.Common.ProductCalculation;
+using FP.Cloud.OnlineRateTable.Common.ProductCalculation.ApiRequests;
 
 namespace FP.Cloud.OnlineRateTable.Controllers
 {

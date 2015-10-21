@@ -13,7 +13,27 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
     {
         public async Task<PCalcResultInfo> StartCalculation(EnvironmentInfo environment, WeightInfo weight)
         {
-            throw new NotImplementedException();
+            return new PCalcResultInfo()
+            {
+                QueryType = EQueryType.ShowMenu,
+                ProductDescription = new ProductDescriptionInfo()
+                {
+                    Postage = new PostageInfo() { CurrencySymbol = "$", PostageDecimals = 2, PostageValue = 200 },
+                    ProductCode = 1,
+                    ProductId = 34,
+                    RateVersion = 2007654,
+                    ScaleMode = EScaleMode.NO_SCALE,
+                    State = EProductDescriptionState.Incomplete,
+                    Weight = weight,
+                    WeightClass = 1
+                },
+                QueryDescription = new ShowMenuDescriptionInfo()
+                {
+                    AdditionalInfo = "Additional Details",
+                    DescriptionTitle = "Choose from the following entries",
+                    MenuEntries = new List<string>() { "Entry0", "Entry1", "Entry2", "Entry3", "Entry4" }
+                }
+            };
         }
 
         public async Task<PCalcResultInfo> Calculate(EnvironmentInfo environment, ProductDescriptionInfo productDescription, ActionResultInfo actionResult)

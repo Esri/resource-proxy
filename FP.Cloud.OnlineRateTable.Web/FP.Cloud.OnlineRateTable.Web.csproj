@@ -172,12 +172,14 @@
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\ProductCalculationController.cs" />
     <Compile Include="Controllers\RateTableController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\ViewModels\RateTableViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\ProductCalculationRepository.cs" />
     <Compile Include="Repositories\RateTableApi.cs" />
     <Compile Include="Repositories\RateTableRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
@@ -300,8 +302,9 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Manage\Index.cshtml" />
     <Content Include="Views\Manage\ChangePassword.cshtml" />
-    <Content Include="Views\ProductCalculation\ProductCalculation.cshtml" />
+    <Content Include="Views\ProductCalculation\Index.cshtml" />
     <Content Include="Views\ProductCalculation\_WeightPartial.cshtml" />
+    <Content Include="Views\ProductCalculation\_ShowMenuPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

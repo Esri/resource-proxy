@@ -1,0 +1,25 @@
+﻿@model FP.Cloud.OnlineRateTable.Common.ProductCalculation.ShowMenuDescriptionInfo
+
+<div>
+    <h4>Please select a service</h4>
+    <hr />
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayFor(model => model.DescriptionTitle)
+            </th>
+        </tr>
+
+        @{int i = 0; }
+        @foreach (var item in Model.MenuEntries)
+        {
+            <tr>
+                <td>
+                    @Html.ActionLink(item, "Edit", new { id = "@i" })
+                </td>
+            </tr>
+            i++;
+        }
+
+    </table>
+</div>

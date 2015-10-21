@@ -4,11 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using FP.Cloud.OnlineRateTable.Common.ProductCalculation;
+using System.Runtime.Serialization;
 
-namespace FP.Cloud.OnlineRateTable.Models
+namespace FP.Cloud.OnlineRateTable.Common.ProductCalculation.ApiRequests
 {
-    public class StartCalculationRequest : BaseRequest
+    [Serializable]
+    [DataContract]
+    public class StartCalculationRequest : CalculationBaseRequest
     {
+        [DataMember]
         public WeightInfo Weight { get; set; }
     }
 }

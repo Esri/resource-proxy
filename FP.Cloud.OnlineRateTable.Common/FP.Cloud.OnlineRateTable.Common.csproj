@@ -63,6 +63,12 @@
     <Compile Include="NumberConverter.cs" />
     <Compile Include="ProductCalculation\ActionResultInfo.cs" />
     <Compile Include="ProductCalculation\AnyInfo.cs" />
+    <Compile Include="ProductCalculation\ApiRequests\CalculationBaseRequest.cs" />
+    <Compile Include="ProductCalculation\ApiRequests\CalculateRequest.cs" />
+    <Compile Include="ProductCalculation\ApiRequests\GetRateTableRequest.cs" />
+    <Compile Include="ProductCalculation\ApiRequests\StartCalculationRequest.cs" />
+    <Compile Include="ProductCalculation\ApiRequests\StepBackRequest.cs" />
+    <Compile Include="ProductCalculation\ApiRequests\UpdateWeightRequest.cs" />
     <Compile Include="ProductCalculation\AttributeInfo.cs" />
     <Compile Include="ProductCalculation\EActionId.cs" />
     <Compile Include="ProductCalculation\EAnyType.cs" />
@@ -86,11 +92,22 @@
     <Compile Include="RateTable\EFileType.cs" />
     <Compile Include="RateTable\RateTableFileInfo.cs" />
     <Compile Include="RateTable\RateTableInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="ScenarioRunner\ScenarioResult.cs" />
     <Compile Include="ScenarioRunner\ScenarioRunner.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
