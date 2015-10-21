@@ -21,7 +21,7 @@ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::~PCalcProxy()
 	this->!PCalcProxy();
 }
 
-ExtendedErrorCode^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Create()
+void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Create()
 {
 	EXTENDED_ERROR_CODE error(GENERAL_Error::SUCCESSFUL);
 
@@ -33,11 +33,9 @@ ExtendedErrorCode^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Create()
 	{
 		error = ex.GetErrorCode();
 	}
-
-	return ConvertErrorCode(error);
 }
 
-ExtendedErrorCode^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Initialize()
+void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Initialize()
 {
 	EXTENDED_ERROR_CODE error(GENERAL_Error::SUCCESSFUL);
 	try
@@ -47,17 +45,15 @@ ExtendedErrorCode^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Initialize(
 	{
 		error = ex.GetErrorCode();
 	}
-
-	return ConvertErrorCode(error);
 }
 
-ExtendedErrorCode^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Initialize(EnvironmentInfo^ environment)
+void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Initialize(EnvironmentInfo^ environment)
 {
 	this->SetEnvironment(environment);
-	return this->Initialize();
+	this->Initialize();
 }
 
-ExtendedErrorCode^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::LoadPawn(System::String^ file)
+void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::LoadPawn(System::String^ file)
 {
 	EXTENDED_ERROR_CODE error(GENERAL_Error::SUCCESSFUL);
 	try
@@ -70,11 +66,9 @@ ExtendedErrorCode^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::LoadPawn(Sy
 	{
 		error = ex.GetErrorCode();
 	}
-
-	return ConvertErrorCode(error);
 }
 
-ExtendedErrorCode^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::LoadProductTable(System::String^ file)
+void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::LoadProductTable(System::String^ file)
 {
 	EXTENDED_ERROR_CODE error(GENERAL_Error::SUCCESSFUL);
 	try
@@ -86,11 +80,9 @@ ExtendedErrorCode^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::LoadProduct
 	{
 		error = ex.GetErrorCode();
 	}
-
-	return ConvertErrorCode(error);
 }
 
-ExtendedErrorCode^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::CalculateStart([System::Runtime::InteropServices::Out] INT32 %rNextAction)
+void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::CalculateStart([System::Runtime::InteropServices::Out] INT32 %rNextAction)
 {
 	EXTENDED_ERROR_CODE error(GENERAL_Error::SUCCESSFUL);
 	int nextAction = 0;
@@ -104,7 +96,6 @@ ExtendedErrorCode^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::CalculateSt
 	}
 
 	rNextAction = nextAction;
-	return ConvertErrorCode(error);
 }
 
 PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(EnvironmentInfo^ environment, WeightInfo^ weight)
@@ -115,21 +106,20 @@ PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(Env
 	this->Initialize(environment);
 	this->SetWeight(weight);
 	this->CalculateStart(nextAction);
-
 	return this->ProcessResult(nextAction);
 }
 
 PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(EnvironmentInfo^ environment, ProductDescriptionInfo^ product, ActionResultInfo^ actionResult)
 {
 	Lock lock(this);
+	INT32 nextAction = 0;
+	ProductCalculation::ActionResultType target;
+	ProductCalculation::ResultValueVectorType results;
 
 	this->Calculate(environment, product->Weight);
-
-	ProductCalculation::ActionResultType target;
+	
 	target.ID = (int)actionResult->Action;
 	target.Label = actionResult->Label;
-
-	ProductCalculation::ResultValueVectorType results;
 	for each(AnyInfo^ current in actionResult->Results)
 	{
 		switch (current->AnyType)
@@ -148,13 +138,11 @@ PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(Env
 	parameter->SetProductID(product->ProductId);
 	parameter->SetActionResult(target);
 
-	INT32 nextAction = 0;
-	this->CalculateNext(nextAction);
-	
+	this->CalculateNext(nextAction);	
 	return this->ProcessResult(nextAction);
 }
 
-ExtendedErrorCode^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::CalculateNext([System::Runtime::InteropServices::Out] INT32 %rNextAction)
+void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::CalculateNext([System::Runtime::InteropServices::Out] INT32 %rNextAction)
 {
 	EXTENDED_ERROR_CODE error(GENERAL_Error::SUCCESSFUL);
 	int nextAction = 0;
@@ -168,7 +156,6 @@ ExtendedErrorCode^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::CalculateNe
 	}
 
 	rNextAction = nextAction;
-	return ConvertErrorCode(error);
 }
 
 FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::!PCalcProxy()

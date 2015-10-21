@@ -15,9 +15,9 @@ private ref class PCalcProxy : System::MarshalByRefObject, public IPCalcProxy
 		PCalcProxy();
 		~PCalcProxy();
 
-		ExtendedErrorCode^ Create();
-		ExtendedErrorCode^ LoadPawn(System::String^ file);
-		ExtendedErrorCode^ LoadProductTable(System::String^ file);	
+		void Create();
+		void LoadPawn(System::String^ file);
+		void LoadProductTable(System::String^ file);
 
 		virtual PCalcResultInfo^ Calculate(EnvironmentInfo^ environment, WeightInfo^ weight);
 		virtual PCalcResultInfo^ Calculate(EnvironmentInfo^ environment, ProductDescriptionInfo^ product, ActionResultInfo^ actionResult);
@@ -26,10 +26,10 @@ private ref class PCalcProxy : System::MarshalByRefObject, public IPCalcProxy
 
 	protected:
 		!PCalcProxy();
-		ExtendedErrorCode^ Initialize(EnvironmentInfo^ environment);
-		ExtendedErrorCode^ Initialize();
-		ExtendedErrorCode^ CalculateStart([System::Runtime::InteropServices::Out] INT32 %rNextAction);
-		ExtendedErrorCode^ CalculateNext([System::Runtime::InteropServices::Out] INT32 %rNextAction);
+		void Initialize(EnvironmentInfo^ environment);
+		void Initialize();
+		void CalculateStart([System::Runtime::InteropServices::Out] INT32 %rNextAction);
+		void CalculateNext([System::Runtime::InteropServices::Out] INT32 %rNextAction);
 		PCalcResultInfo^ ProcessResult(INT32 nextAction);
 		void SetEnvironment(EnvironmentInfo^ environment);
 		void SetWeight(WeightInfo^ weight);
