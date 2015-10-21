@@ -17,6 +17,7 @@ using System.Web.Caching;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.Net;
 
 public class proxy : IHttpHandler {
 
@@ -231,8 +232,11 @@ public class proxy : IHttpHandler {
         {
             requestUri = serverUrl.HostRedirect + new Uri(requestUri).PathAndQuery;
         }
-
-        if (serverUrl.Domain != null)
+        if (serverUrl.UseAppPoolIdentity)
+	    {
+		    credentials=CredentialCache.DefaultNetworkCredentials;
+	    }
+    	else if (serverUrl.Domain != null)
         {
             credentials = new System.Net.NetworkCredential(serverUrl.Username, serverUrl.Password, serverUrl.Domain);
         }
@@ -1034,6 +1038,7 @@ public class ServerUrl {
     bool matchAll;
     string oauth2Endpoint;
     string domain;
+    bool useAppPoolIdentity;
     string username;
     string password;
     string clientId;
@@ -1078,6 +1083,12 @@ public class ServerUrl {
     {
         get { return domain; }
         set { domain = value; }
+    }
+    [XmlAttribute("useAppPoolIdentity")]
+    public bool UseAppPoolIdentity
+    {
+        get { return useAppPoolIdentity; }
+        set { useAppPoolIdentity = value; }
     }
     [XmlAttribute("username")]
     public string Username {
