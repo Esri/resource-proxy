@@ -1,13 +1,13 @@
-#include "QueryShowMenuCreationStrategy.hpp"
+#include "NextActionShowMenuProcessor.hpp"
 
 using namespace FP::Cloud::OnlineRateTable::Common::ProductCalculation;
 
-FP::Cloud::OnlineRateTable::PCalcLib::QueryShowMenuCreationStrategy::QueryShowMenuCreationStrategy(PCalcFactory^ factory) : QueryCreationStrategy(factory)
+FP::Cloud::OnlineRateTable::PCalcLib::NextActionShowMenuProcessor::NextActionShowMenuProcessor(PCalcFactory^ factory) : NextActionProcessor(factory)
 {
 
 }
 
-void FP::Cloud::OnlineRateTable::PCalcLib::QueryShowMenuCreationStrategy::SetQueryDescription(PCalcResultInfo^ resultInfo)
+void FP::Cloud::OnlineRateTable::PCalcLib::NextActionShowMenuProcessor::SetDescription(PCalcResultInfo^ resultInfo)
 {
 	ProductCalculation::MenuDescType showMenu = this->Factory->GetActionMgr()->GetActionShowMenu();
 

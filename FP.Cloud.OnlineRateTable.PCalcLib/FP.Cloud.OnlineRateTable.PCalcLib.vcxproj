@@ -172,10 +172,13 @@
     <ClInclude Include="PCalcFactory.hpp" />
     <ClInclude Include="PCalcFactoryCPP.hpp" />
     <ClInclude Include="PCalcLib.hpp" />
+    <ClInclude Include="PCalcLibException.hpp" />
+    <ClInclude Include="PCalcManager.hpp" />
     <ClInclude Include="PCalcProxy.hpp" />
     <ClInclude Include="PCalcProxyContext.hpp" />
-    <ClInclude Include="QueryShowMenuCreationStrategy.hpp" />
-    <ClInclude Include="QueryCreationStrategy.hpp" />
+    <ClInclude Include="NextActionProcessorFactory.hpp" />
+    <ClInclude Include="NextActionShowMenuProcessor.hpp" />
+    <ClInclude Include="NextActionProcessor.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Stdafx.h" />
   </ItemGroup>
@@ -185,10 +188,12 @@
     <ClCompile Include="ExtendedErrorCode.cpp" />
     <ClCompile Include="PCalcFactory.cpp" />
     <ClCompile Include="PCalcFactoryCPP.cpp" />
+    <ClCompile Include="PCalcManager.cpp" />
     <ClCompile Include="PCalcProxy.cpp" />
     <ClCompile Include="PCalcProxyContext.cpp" />
-    <ClCompile Include="QueryCreationStrategy.cpp" />
-    <ClCompile Include="QueryShowMenuCreationStrategy.cpp" />
+    <ClCompile Include="NextActionProcessorFactory.cpp" />
+    <ClCompile Include="NextActionProcessor.cpp" />
+    <ClCompile Include="NextActionShowMenuProcessor.cpp" />
     <ClCompile Include="ZipToZoneMap.cpp" />
   </ItemGroup>
   <ItemGroup>

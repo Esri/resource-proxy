@@ -1,15 +1,15 @@
-#include "QueryCreationStrategy.hpp"
+#include "NextActionProcessor.hpp"
 
 using namespace FP::Cloud::OnlineRateTable::Common::ProductCalculation;
 
-FP::Cloud::OnlineRateTable::PCalcLib::QueryCreationStrategy::QueryCreationStrategy(PCalcFactory^ factory)
+FP::Cloud::OnlineRateTable::PCalcLib::NextActionProcessor::NextActionProcessor(PCalcFactory^ factory)
 	: m_Factory(factory)
 {
-
 }
 
-void FP::Cloud::OnlineRateTable::PCalcLib::QueryCreationStrategy::SetResult(PCalcResultInfo^ resultInfo)
+PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::NextActionProcessor::GetResult()
 {
+	PCalcResultInfo^ result = gcnew PCalcResultInfo();
 	ProductCalculation::IProductDescParameterPtr parameter = m_Factory->GetProdDesc()->AccessCurrProduct();
 	ProductDescriptionInfo^ product = gcnew ProductDescriptionInfo();
 
@@ -21,6 +21,8 @@ void FP::Cloud::OnlineRateTable::PCalcLib::QueryCreationStrategy::SetResult(PCal
 	product->ProductId = parameter->GetProductID();
 	product->Weight = weight;
 
-	resultInfo->ProductDescription = product;
-	SetQueryDescription(resultInfo);
+	result->ProductDescription = product;
+	SetDescription(result);
+
+	return result;
 }

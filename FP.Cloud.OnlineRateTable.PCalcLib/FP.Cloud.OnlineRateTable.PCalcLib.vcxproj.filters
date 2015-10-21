@@ -39,16 +39,25 @@
     <ClInclude Include="PCalcProxyContext.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="QueryCreationStrategy.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="QueryShowMenuCreationStrategy.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="IPCalcProxy.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Lock.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="PCalcLibException.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="PCalcManager.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="NextActionProcessor.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="NextActionShowMenuProcessor.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="NextActionProcessorFactory.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
@@ -77,10 +86,16 @@
     <ClCompile Include="PCalcProxyContext.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="QueryCreationStrategy.cpp">
+    <ClCompile Include="PCalcManager.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="QueryShowMenuCreationStrategy.cpp">
+    <ClCompile Include="NextActionProcessor.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="NextActionShowMenuProcessor.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="NextActionProcessorFactory.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
