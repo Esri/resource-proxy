@@ -1,4 +1,7 @@
-﻿namespace FP.Cloud.OnlineRateTable.Common.ProductCalculation
+﻿using System;
+using System.Runtime.Serialization;
+
+namespace FP.Cloud.OnlineRateTable.Common.ProductCalculation
 {
     [Serializable]
     public class WeightInfo
