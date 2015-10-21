@@ -1,3 +1,4 @@
+#include "PCalcManager.hpp"
 #include "PCalcProxyContext.hpp"
 
 BEGIN_PCALC_LIB_NAMESPACE
@@ -11,9 +12,9 @@ PCalcProxyContext::PCalcProxyContext(System::String^ amxPath, System::String^ ta
 	m_Domain = System::AppDomain::CreateDomain(System::Guid::NewGuid().ToString(), nullptr, setup);
 	m_Proxy = (PCalcProxy^)m_Domain->CreateInstanceAndUnwrap(System::Reflection::Assembly::GetExecutingAssembly()->FullName, PCalcProxy::typeid->FullName);
 
-	m_Proxy->Create();
-	m_Proxy->LoadPawn(amxPath);
-	m_Proxy->LoadProductTable(tablePath);
+	m_Proxy->Manager->Create();
+	m_Proxy->Manager->LoadPawn(amxPath);
+	m_Proxy->Manager->LoadProductTable(tablePath);
 }
 
 FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxyContext::~PCalcProxyContext(void)

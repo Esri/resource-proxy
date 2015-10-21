@@ -1,42 +1,47 @@
 #pragma once
 
 #include "PCalcLib.hpp"
-#include "ExtendedErrorCode.hpp"
 #include "IPCalcProxy.hpp"
 #include "PCalcFactory.hpp"
+#include "PCalcManager.hpp"
+#include "NextActionProcessorFactory.hpp"
+
+namespace ProductCalculation
+{
+	struct ActionResultType;
+}
 
 BEGIN_PCALC_LIB_NAMESPACE
 
-using namespace FP::Cloud::OnlineRateTable::Common::ProductCalculation;
-
 private ref class PCalcProxy : System::MarshalByRefObject, public IPCalcProxy
-	{
-	public:
-		PCalcProxy();
-		~PCalcProxy();
+{
+public:
+	PCalcProxy();
+	~PCalcProxy();
 
-		ExtendedErrorCode^ Create();
-		ExtendedErrorCode^ LoadPawn(System::String^ file);
-		ExtendedErrorCode^ LoadProductTable(System::String^ file);	
+	virtual PCalcResultInfo^ Calculate(EnvironmentInfo^ environment, WeightInfo^ weight);
+	virtual PCalcResultInfo^ Calculate(EnvironmentInfo^ environment, ProductDescriptionInfo^ product, ActionResultInfo^ actionResult);
 
-		virtual PCalcResultInfo^ Calculate(EnvironmentInfo^ environment, WeightInfo^ weight);
-		virtual PCalcResultInfo^ Calculate(EnvironmentInfo^ environment, ProductDescriptionInfo^ product, ActionResultInfo^ actionResult);
-		
-		void Unload();
+	property PCalcManager^ Manager { PCalcManager^ get() { return m_Manager; }}
+	property PCalcFactory^ Factory { PCalcFactory^ get() { return m_Factory; }}
+	property NextActionProcessorFactory^ Processor { NextActionProcessorFactory^ get() { return m_Processor; }}
 
-	protected:
-		!PCalcProxy();
-		ExtendedErrorCode^ Initialize(EnvironmentInfo^ environment);
-		ExtendedErrorCode^ Initialize();
-		ExtendedErrorCode^ CalculateStart([System::Runtime::InteropServices::Out] INT32 %rNextAction);
-		ExtendedErrorCode^ CalculateNext([System::Runtime::InteropServices::Out] INT32 %rNextAction);
-		PCalcResultInfo^ ProcessResult(INT32 nextAction);
-		void SetEnvironment(EnvironmentInfo^ environment);
-		void SetWeight(WeightInfo^ weight);
+protected:
+	!PCalcProxy();
 
-	private:
-		PCalcFactory^ m_Factory;
+	void SetProductDescription(ProductDescriptionInfo^ product, ActionResultInfo^ actionResult);
+	void SetActionResult(ProductCalculation::ActionResultType &target, ActionResultInfo^ actionResult);
+	void SetEnvironment(EnvironmentInfo^ environment);
+	void SetWeight(WeightInfo^ weight);
 
-	};
+private:
+	PCalcFactory^ m_Factory;
+	PCalcManager^ m_Manager;
+	NextActionProcessorFactory^ m_Processor;
+};
 
 END_PCALC_LIB_NAMESPACE
+
+
+
+

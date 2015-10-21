@@ -9,3 +9,4 @@
 #define USING_PRODUCTCALCULATION_NAMESPACE using namespace ProductCalculation;
 
 #include "ProductCalculation/Windows/PCalcSimulation/PCalcManagedLib/PCalcManagedLib.h"
+
