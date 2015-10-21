@@ -74,10 +74,6 @@
       <Project>{7aa1f8d5-19b7-4546-b500-d70c931314e0}</Project>
       <Name>FP.Cloud.OnlineRateTable.Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\FP.Cloud.OnlineRateTable.PCalcLib\FP.Cloud.OnlineRateTable.PCalcLib.vcxproj">
-      <Project>{76a56159-98f6-40cc-9e75-7e641119b757}</Project>
-      <Name>FP.Cloud.OnlineRateTable.PCalcLib</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
