@@ -1,7 +1,6 @@
-﻿using System.Runtime.Serialization;
-
-namespace FP.Cloud.OnlineRateTable.Common.ProductCalculation
+﻿namespace FP.Cloud.OnlineRateTable.Common.ProductCalculation
 {
+    [Serializable]
     public class WeightInfo
     {
         public int WeightValue { get; set; }
