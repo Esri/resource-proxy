@@ -49,6 +49,10 @@ NOTE: as of v1.1.0, log levels and log file locations are specified in proxy con
 
 * ASP.NET 4.0 or greater (4.5 is required on Windows 8/Server 2012, see [this article] (http://www.iis.net/learn/get-started/whats-new-in-iis-8/iis-80-using-aspnet-35-and-aspnet-45) for more information)
 
+## Proxy configuration settings (.NET specific)
+* The serverUrl tag has the following additional attributes in the .NET version of resource-proxy:
+    * **httpBasicAuth**: If the service you are configuring requires HTTP Basic Authentication, you must set this attribute to *true*. In addition to this, the **domain** attribute must not be set in the proxy.config for the same serverUrl. **username** and **password** are used for credentials. An example of usage for this attribute is WMS services from 3rd party vendors.
+
 ## Issues
 
 Found a bug or want to request a new feature? Let us know by submitting an issue.
