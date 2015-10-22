@@ -7,7 +7,7 @@ FP::Cloud::OnlineRateTable::PCalcLib::NextActionProcessor::NextActionProcessor(P
 {
 }
 
-PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::NextActionProcessor::GetResult()
+PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::NextActionProcessor::Handle()
 {
 	PCalcResultInfo^ result = gcnew PCalcResultInfo();
 	ProductCalculation::IProductDescParameterPtr parameter = m_Factory->GetProdDesc()->AccessCurrProduct();

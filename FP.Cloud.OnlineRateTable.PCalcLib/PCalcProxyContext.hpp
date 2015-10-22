@@ -15,6 +15,10 @@ public:
 	{
 		IPCalcProxy^ get()
 		{
+			if(nullptr == m_Proxy)
+			{
+				this->Init();
+			}
 			return m_Proxy;
 		}
 	}
@@ -24,6 +28,11 @@ protected:
 	!PCalcProxyContext(void);
 
 private:
+	void Init();
+
+private:
+	System::String^ m_AmxPath;
+	System::String^ m_TablePath;
 	System::AppDomain^ m_Domain;
 	PCalcProxy^ m_Proxy;
 };

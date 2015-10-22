@@ -9,8 +9,29 @@ BEGIN_PCALC_LIB_NAMESPACE
 using namespace System;
 using namespace System::Runtime::Serialization;
 
-[Serializable]
 public ref class PCalcLibException : public Exception
+{
+public:
+	PCalcLibException() : Exception()
+	{		
+	}
+
+	PCalcLibException(String^ message) : Exception(message)
+	{
+	}
+
+	PCalcLibException(String^ message, Exception^ innerException) : Exception(message, innerException)
+	{
+	}
+
+protected:
+	PCalcLibException(SerializationInfo^ info, StreamingContext context) : Exception(info, context)
+	{		
+	}
+};
+
+[Serializable]
+public ref class PCalcLibErrorCodeException : public PCalcLibException
 {
 	
 private:
@@ -23,27 +44,27 @@ private:
 	static String^ SUB_CODE2 = "SUBCODE2";
 
 public:
-	PCalcLibException() : System::Exception()
+	PCalcLibErrorCodeException() : PCalcLibException()
 		, m_MainCode(0)
 		, m_Subcode1(0)
 		, m_Subcode2(0)
 	{}
 
-	PCalcLibException(const INT32 &mainCode, const INT32 &subCode1, const INT32 &subCode2 ) : Exception()
+	PCalcLibErrorCodeException(const INT32 &mainCode, const INT32 &subCode1, const INT32 &subCode2 ) : PCalcLibException()
 		, m_MainCode(mainCode)
 		, m_Subcode1(subCode1)
 		, m_Subcode2(subCode2)
 	{		
 	}
 
-	PCalcLibException(SerializationInfo^ info, StreamingContext context) : Exception(info, context)
+	PCalcLibErrorCodeException(System::String^ message, Exception^ innerException) : PCalcLibException(message, innerException)
+		, m_MainCode(0)
+		, m_Subcode1(0)
+		, m_Subcode2(0)
 	{
-		this->m_MainCode = info->GetInt32(MAIN_CODE);
-		this->m_Subcode1 = info->GetInt32(SUB_CODE1);
-		this->m_Subcode2 = info->GetInt32(SUB_CODE2);
 	}
 
-	PCalcLibException(const EXTENDED_ERROR_CODE &error) : Exception()
+	PCalcLibErrorCodeException(const EXTENDED_ERROR_CODE &error) : PCalcLibException()
 		, m_MainCode(error.m_MainCode)
 		, m_Subcode1(error.m_Subcode1)
 		, m_Subcode2(error.m_Subcode2)
@@ -60,13 +81,21 @@ public:
 		info->AddValue(SUB_CODE1, m_Subcode1);
 		info->AddValue(SUB_CODE2, m_Subcode2);
 
-		Exception::GetObjectData(info, context);
+		PCalcLibException::GetObjectData(info, context);
 	}
 
 
 	property INT32 MainCode { INT32 get() { return m_MainCode; } }
 	property INT32 Subcode1 { INT32 get() { return m_Subcode1; } }
 	property INT32 Subcode2 { INT32 get() { return m_Subcode2; } }
+
+protected:
+	PCalcLibErrorCodeException(SerializationInfo^ info, StreamingContext context) : PCalcLibException(info, context)
+	{
+		this->m_MainCode = info->GetInt32(MAIN_CODE);
+		this->m_Subcode1 = info->GetInt32(SUB_CODE1);
+		this->m_Subcode2 = info->GetInt32(SUB_CODE2);
+	}
 
 };
 

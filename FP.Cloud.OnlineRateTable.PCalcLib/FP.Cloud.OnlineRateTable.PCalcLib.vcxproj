@@ -172,11 +172,11 @@
     <ClInclude Include="PCalcFactory.hpp" />
     <ClInclude Include="PCalcFactoryCPP.hpp" />
     <ClInclude Include="PCalcLib.hpp" />
-    <ClInclude Include="PCalcLibException.hpp" />
+    <ClInclude Include="Exceptions.hpp" />
     <ClInclude Include="PCalcManager.hpp" />
     <ClInclude Include="PCalcProxy.hpp" />
     <ClInclude Include="PCalcProxyContext.hpp" />
-    <ClInclude Include="NextActionProcessorFactory.hpp" />
+    <ClInclude Include="NextActionProcessorProxy.hpp" />
     <ClInclude Include="NextActionShowMenuProcessor.hpp" />
     <ClInclude Include="NextActionProcessor.hpp" />
     <ClInclude Include="resource.h" />
@@ -191,7 +191,7 @@
     <ClCompile Include="PCalcManager.cpp" />
     <ClCompile Include="PCalcProxy.cpp" />
     <ClCompile Include="PCalcProxyContext.cpp" />
-    <ClCompile Include="NextActionProcessorFactory.cpp" />
+    <ClCompile Include="NextActionProcessorProxy.cpp" />
     <ClCompile Include="NextActionProcessor.cpp" />
     <ClCompile Include="NextActionShowMenuProcessor.cpp" />
     <ClCompile Include="ZipToZoneMap.cpp" />

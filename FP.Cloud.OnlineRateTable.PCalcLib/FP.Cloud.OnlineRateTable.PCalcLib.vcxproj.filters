@@ -45,9 +45,6 @@
     <ClInclude Include="Lock.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="PCalcLibException.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="PCalcManager.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -57,7 +54,10 @@
     <ClInclude Include="NextActionShowMenuProcessor.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="NextActionProcessorFactory.hpp">
+    <ClInclude Include="NextActionProcessorProxy.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Exceptions.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
@@ -95,7 +95,7 @@
     <ClCompile Include="NextActionShowMenuProcessor.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="NextActionProcessorFactory.cpp">
+    <ClCompile Include="NextActionProcessorProxy.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

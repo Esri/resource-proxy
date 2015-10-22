@@ -1,7 +1,7 @@
 #include "NextActionProcessor.hpp"
-#include "NextActionProcessorFactory.hpp"
+#include "NextActionProcessorProxy.hpp"
 #include "Lock.hpp"
-#include "PCalcLibException.hpp"
+#include "Exceptions.hpp"
 #include "PCalcProxy.hpp"
 
 USING_PRODUCTCALCULATION_NAMESPACE
@@ -12,7 +12,7 @@ using namespace PCalcManagedLib;
 FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::PCalcProxy()
 	: m_Factory(gcnew PCalcFactory())
 	, m_Manager(gcnew PCalcManager(m_Factory))
-	, m_Processor(gcnew NextActionProcessorFactory(m_Factory))
+	, m_NextActionProcessor(gcnew NextActionProcessorProxy(m_Factory))
 {
 }
 
@@ -23,8 +23,14 @@ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::~PCalcProxy()
 
 FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::!PCalcProxy()
 {
-	delete m_Manager;
-	delete m_Factory;
+	if (nullptr != m_NextActionProcessor)
+		delete m_NextActionProcessor;
+
+	if(nullptr != m_Manager)
+		delete m_Manager;
+
+	if(nullptr != m_Factory)
+		delete m_Factory;
 }
 
 PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(EnvironmentInfo^ environment, WeightInfo^ weight)
@@ -36,7 +42,7 @@ PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(Env
 	this->SetWeight(weight);
 	this->Manager->CalculateStart(nextAction);
 
-	return this->Processor->Process(nextAction);
+	return this->NextActionProcessor->Handle(nextAction);
 }
 
 PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(EnvironmentInfo^ environment, ProductDescriptionInfo^ product, ActionResultInfo^ actionResult)
@@ -48,7 +54,7 @@ PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(Env
 	this->SetProductDescription(product, actionResult);
 	this->Manager->CalculateNext(nextAction);
 
-	return this->Processor->Process(nextAction);
+	return this->NextActionProcessor->Handle(nextAction);
 }
 
 void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::SetEnvironment(EnvironmentInfo^ environment)
@@ -72,6 +78,12 @@ void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::SetWeight(WeightInfo^ wei
 
 void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::SetActionResult(ProductCalculation::ActionResultType &target, ActionResultInfo^ actionResult)
 {
+
+}
+
+void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::SetProductDescription(ProductDescriptionInfo^ product, ActionResultInfo^ actionResult)
+{
+	ProductCalculation::ActionResultType target;
 	ProductCalculation::ResultValueVectorType results;
 
 	for each(AnyInfo^ current in actionResult->Results)
@@ -89,16 +101,17 @@ void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::SetActionResult(ProductCa
 	target.ID = (int)actionResult->Action;
 	target.Label = actionResult->Label;
 	target.Result = results;
-}
-
-void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::SetProductDescription(ProductDescriptionInfo^ product, ActionResultInfo^ actionResult)
-{
-	ProductCalculation::ActionResultType target;
-	SetActionResult(target, actionResult);
 
 	ProductCalculation::IProductDescParameterPtr parameter = this->Factory->GetProdDesc()->AccessCurrProduct();
 	parameter->SetProductCode(product->ProductCode);
 	parameter->SetProductID(product->ProductId);
 	parameter->SetActionResult(target);
+}
+
+void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Init(String^ amxPath, String^ tablePath)
+{
+	m_Manager->Create();
+	m_Manager->LoadPawn(amxPath);
+	m_Manager->LoadProductTable(tablePath);
 }
 
