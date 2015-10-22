@@ -1,20 +1,22 @@
-﻿@model FP.Cloud.OnlineRateTable.Common.ProductCalculation.WeightInfo
-
-<div>
-    <h4>Weight</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayName("Metric Weight");
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.FormattedWeight)
-        </dd>
-        <dt>
-            @Html.DisplayName("Imperial Weight");
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.FormattedWeightImperial)
-        </dd>
-    </dl>
-</div>
+﻿
+@if (ViewData.ContainsKey("Weight"))
+{
+    var weight = ((FP.Cloud.OnlineRateTable.Common.ProductCalculation.WeightInfo)ViewData["Weight"]);
+    <div>
+        <h4>Weight</h4>
+        <dl>
+            <dt>
+                @Html.DisplayName("Metric Weight");
+            </dt>
+            <dd>
+                @weight.FormattedWeight
+            </dd>
+            <dt>
+                @Html.DisplayName("Imperial Weight");
+            </dt>
+            <dd>
+                @weight.FormattedWeightImperial
+            </dd>
+        </dl>
+    </div>
+}

@@ -26,6 +26,16 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
 
             return await Execute<PCalcResultInfo>(request, m_Api, string.Empty);
         }
+
+        public async Task<PCalcResultInfo> Calculate(CalculateRequest calculateRequest)
+        {
+            RestRequest request = GetNewRequest();
+            request.Resource = "Calculate";
+            request.Method = Method.POST;
+            request.AddBody(calculateRequest);
+
+            return await Execute<PCalcResultInfo>(request, m_Api, string.Empty);
+        }
         #endregion
 
         #region IDisposable Support
