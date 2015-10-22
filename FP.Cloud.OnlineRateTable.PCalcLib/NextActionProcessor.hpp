@@ -10,7 +10,7 @@ using namespace FP::Cloud::OnlineRateTable::Common::ProductCalculation;
 private ref class NextActionProcessor abstract
 {
 public:
-	PCalcResultInfo^ GetResult();
+	PCalcResultInfo^ Handle();
 
 protected:
 	NextActionProcessor(PCalcFactory^ factory);

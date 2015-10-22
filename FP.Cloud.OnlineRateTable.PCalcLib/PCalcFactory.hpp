@@ -8,8 +8,12 @@
 #include "ProductCalculation/IPCalcMemoryKeyManager.hpp"
 #include "ProductCalculation/IPCalcGeneralInfoManager.hpp"
 #include "ProductCalculation/IPCalcReportManager.hpp"
-#include "PCalcFactoryCPP.hpp"
 #include "PCalcLib.hpp"
+
+namespace ProductCalculation
+{
+	class PCalcFactory;
+}
 
 BEGIN_PCALC_LIB_NAMESPACE
 

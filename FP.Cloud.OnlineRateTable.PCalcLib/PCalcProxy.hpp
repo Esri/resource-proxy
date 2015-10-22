@@ -4,7 +4,7 @@
 #include "IPCalcProxy.hpp"
 #include "PCalcFactory.hpp"
 #include "PCalcManager.hpp"
-#include "NextActionProcessorFactory.hpp"
+#include "NextActionProcessorProxy.hpp"
 
 namespace ProductCalculation
 {
@@ -22,12 +22,14 @@ public:
 	virtual PCalcResultInfo^ Calculate(EnvironmentInfo^ environment, WeightInfo^ weight);
 	virtual PCalcResultInfo^ Calculate(EnvironmentInfo^ environment, ProductDescriptionInfo^ product, ActionResultInfo^ actionResult);
 
-	property PCalcManager^ Manager { PCalcManager^ get() { return m_Manager; }}
-	property PCalcFactory^ Factory { PCalcFactory^ get() { return m_Factory; }}
-	property NextActionProcessorFactory^ Processor { NextActionProcessorFactory^ get() { return m_Processor; }}
+	virtual void Init(System::String^ amxPath, System::String^ tablePath);
 
 protected:
 	!PCalcProxy();
+
+	property PCalcManager^ Manager { PCalcManager^ get() { return m_Manager; }}
+	property PCalcFactory^ Factory { PCalcFactory^ get() { return m_Factory; }}
+	property NextActionProcessorProxy^ NextActionProcessor { NextActionProcessorProxy^ get() { return m_NextActionProcessor; }}
 
 	void SetProductDescription(ProductDescriptionInfo^ product, ActionResultInfo^ actionResult);
 	void SetActionResult(ProductCalculation::ActionResultType &target, ActionResultInfo^ actionResult);
@@ -37,7 +39,7 @@ protected:
 private:
 	PCalcFactory^ m_Factory;
 	PCalcManager^ m_Manager;
-	NextActionProcessorFactory^ m_Processor;
+	NextActionProcessorProxy^ m_NextActionProcessor;
 };
 
 END_PCALC_LIB_NAMESPACE

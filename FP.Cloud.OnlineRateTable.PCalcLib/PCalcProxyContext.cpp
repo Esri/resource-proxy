@@ -1,9 +1,19 @@
 #include "PCalcManager.hpp"
 #include "PCalcProxyContext.hpp"
+#include "Exceptions.hpp"
 
 BEGIN_PCALC_LIB_NAMESPACE
 
 PCalcProxyContext::PCalcProxyContext(System::String^ amxPath, System::String^ tablePath)
+	: m_Proxy(nullptr)
+	, m_Domain(nullptr)
+	, m_AmxPath(amxPath)
+	, m_TablePath(tablePath)
+{
+
+}
+
+void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxyContext::Init()
 {
 	System::AppDomainSetup^ setup = gcnew System::AppDomainSetup();
 	setup->ApplicationBase = System::AppDomain::CurrentDomain->SetupInformation->ApplicationBase;
@@ -12,9 +22,14 @@ PCalcProxyContext::PCalcProxyContext(System::String^ amxPath, System::String^ ta
 	m_Domain = System::AppDomain::CreateDomain(System::Guid::NewGuid().ToString(), nullptr, setup);
 	m_Proxy = (PCalcProxy^)m_Domain->CreateInstanceAndUnwrap(System::Reflection::Assembly::GetExecutingAssembly()->FullName, PCalcProxy::typeid->FullName);
 
-	m_Proxy->Manager->Create();
-	m_Proxy->Manager->LoadPawn(amxPath);
-	m_Proxy->Manager->LoadProductTable(tablePath);
+	try
+	{
+		m_Proxy->Init(m_AmxPath, m_TablePath);
+	}
+	catch (System::Runtime::InteropServices::SEHException^ ex)
+	{
+		throw gcnew PCalcLibException(ex->Message, ex);
+	}
 }
 
 FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxyContext::~PCalcProxyContext(void)

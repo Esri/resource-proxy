@@ -1,5 +1,5 @@
 //#include "ProductCalculation/IPCalcManager.hpp"
-#include "PCalcLibException.hpp"
+#include "Exceptions.hpp"
 #include "ProductCalculation/ProdCalcException.hpp"
 #include "PCalcManager.hpp"
 
@@ -19,7 +19,7 @@ void FP::Cloud::OnlineRateTable::PCalcLib::PCalcManager::Create()
 	}
 	catch (ProdCalcException ex)
 	{
-		throw gcnew PCalcLibException(ex.GetErrorCode());
+		throw gcnew PCalcLibErrorCodeException(ex.GetErrorCode());
 	}
 }
 
@@ -31,7 +31,7 @@ void FP::Cloud::OnlineRateTable::PCalcLib::PCalcManager::Initialize()
 	}
 	catch (ProdCalcException ex)
 	{
-		throw gcnew PCalcLibException(ex.GetErrorCode());
+		throw gcnew PCalcLibErrorCodeException(ex.GetErrorCode());
 	}
 }
 
@@ -45,7 +45,7 @@ void FP::Cloud::OnlineRateTable::PCalcLib::PCalcManager::LoadPawn(System::String
 	}
 	catch (ProdCalcException ex)
 	{
-		throw gcnew PCalcLibException(ex.GetErrorCode());
+		throw gcnew PCalcLibErrorCodeException(ex.GetErrorCode());
 	}
 
 }
@@ -59,7 +59,7 @@ void FP::Cloud::OnlineRateTable::PCalcLib::PCalcManager::LoadProductTable(System
 	}
 	catch (ProdCalcException ex)
 	{
-		throw gcnew PCalcLibException(ex.GetErrorCode());
+		throw gcnew PCalcLibErrorCodeException(ex.GetErrorCode());
 	}
 }
 
@@ -77,7 +77,7 @@ void FP::Cloud::OnlineRateTable::PCalcLib::PCalcManager::CalculateStart([System:
 	}
 	catch (ProdCalcException ex)
 	{
-		throw gcnew PCalcLibException(ex.GetErrorCode());
+		throw gcnew PCalcLibErrorCodeException(ex.GetErrorCode());
 	}
 
 	rNextAction = nextAction;
@@ -92,7 +92,7 @@ void FP::Cloud::OnlineRateTable::PCalcLib::PCalcManager::CalculateNext([System::
 	}
 	catch (ProdCalcException ex)
 	{
-		throw gcnew PCalcLibException(ex.GetErrorCode());
+		throw gcnew PCalcLibErrorCodeException(ex.GetErrorCode());
 	}
 }
 

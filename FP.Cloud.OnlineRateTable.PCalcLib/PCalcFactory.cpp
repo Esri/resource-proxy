@@ -1,4 +1,5 @@
 #include "PCalcFactory.hpp"
+#include "PCalcFactoryCPP.hpp"
 
 
 USING_PCALC_LIB_NAMESPACE
@@ -16,7 +17,10 @@ PCalcFactory::~PCalcFactory(void)
 
 PCalcFactory::!PCalcFactory(void)
 {
-	delete m_pFactory;
+	if (NULL != m_pFactory)
+	{
+		delete m_pFactory;
+	}
 }
 
 ProductCalculation::IPCalcConfigurationPtr PCalcFactory::GetConfig(void)
