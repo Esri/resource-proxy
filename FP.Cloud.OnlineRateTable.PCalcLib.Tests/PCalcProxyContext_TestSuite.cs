@@ -5,7 +5,7 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
 {
     // ReSharper disable once InconsistentNaming
     [TestFixture]
-    public class PCalcLibContext_TestSuite
+    public class PCalcProxyContext_TestSuite
     {
         #region Public Methods and Operators
 

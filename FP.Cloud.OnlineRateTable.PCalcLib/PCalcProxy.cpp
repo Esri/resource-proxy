@@ -23,9 +23,14 @@ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::~PCalcProxy()
 
 FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::!PCalcProxy()
 {
-	delete m_NextActionProcessor;
-	delete m_Manager;
-	delete m_Factory;
+	if (nullptr != m_NextActionProcessor)
+		delete m_NextActionProcessor;
+
+	if(nullptr != m_Manager)
+		delete m_Manager;
+
+	if(nullptr != m_Factory)
+		delete m_Factory;
 }
 
 PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(EnvironmentInfo^ environment, WeightInfo^ weight)

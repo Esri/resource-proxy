@@ -42,12 +42,18 @@ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxyContext::!PCalcProxyContext(void
 	if (nullptr != m_Proxy)
 	{
 		delete m_Proxy;
+
 	}
 
 	if (nullptr != m_Domain)
 	{
 		System::AppDomain::Unload(m_Domain);
 	}
+
+	m_Proxy = nullptr;
+	m_Domain = nullptr;
+	m_AmxPath = nullptr;
+	m_TablePath = nullptr;
 }
 
 END_PCALC_LIB_NAMESPACE

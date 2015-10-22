@@ -71,6 +71,7 @@ void FP::Cloud::OnlineRateTable::PCalcLib::PCalcManager::Unload()
 void FP::Cloud::OnlineRateTable::PCalcLib::PCalcManager::CalculateStart([System::Runtime::InteropServices::Out] INT32 %rNextAction)
 {
 	int nextAction = 0;
+
 	try
 	{
 		m_Factory->GetPCalcMgr()->PCalcCalculateProductStart(nextAction);
@@ -94,6 +95,8 @@ void FP::Cloud::OnlineRateTable::PCalcLib::PCalcManager::CalculateNext([System::
 	{
 		throw gcnew PCalcLibErrorCodeException(ex.GetErrorCode());
 	}
+
+	rNextAction = nextAction;
 }
 
 
