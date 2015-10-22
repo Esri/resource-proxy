@@ -207,12 +207,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\BaseRequest.cs" />
-    <Compile Include="Models\CalculateRequest.cs" />
-    <Compile Include="Models\GetRateTableRequest.cs" />
-    <Compile Include="Models\StartCalculationRequest.cs" />
-    <Compile Include="Models\StepBackRequest.cs" />
-    <Compile Include="Models\UpdateWeightRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>

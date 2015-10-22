@@ -1,11 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace FP.Cloud.OnlineRateTable.Common.ProductCalculation
 {
+    [Serializable]
+    [DataContract]
     public class SelectValueDescriptionInfo : DescriptionInfo
     {
         #region properties
-        List<ValueEntryInfo> ValueEntries { get; set; }
+        [DataMember]
+        public List<ValueEntryInfo> ValueEntries { get; set; }
         #endregion
 
         #region constructor

@@ -21,6 +21,7 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                    <li>@Html.ActionLink("Product Calculation", "Index", "ProductCalculation")</li>
                     @if (User.Identity.IsAuthenticated && User.IsInRole("RateTableAdministrators"))
                     {
                         <li>@Html.ActionLink("Rate Tables", "Index", "RateTable")</li>

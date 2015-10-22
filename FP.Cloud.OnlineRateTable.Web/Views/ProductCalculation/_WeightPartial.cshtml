@@ -5,16 +5,16 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.WeightValue)
+            @Html.DisplayName("Metric Weight");
         </dt>
-
         <dd>
-            @Html.DisplayFor(model => model.WeightValue)
+            @Html.DisplayFor(model => model.FormattedWeight)
         </dd>
-
+        <dt>
+            @Html.DisplayName("Imperial Weight");
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FormattedWeightImperial)
+        </dd>
     </dl>
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>

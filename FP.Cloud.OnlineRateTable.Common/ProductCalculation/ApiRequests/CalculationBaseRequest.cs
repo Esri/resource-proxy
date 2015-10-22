@@ -4,11 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using FP.Cloud.OnlineRateTable.Common.ProductCalculation;
+using System.Runtime.Serialization;
 
-namespace FP.Cloud.OnlineRateTable.Models
+namespace FP.Cloud.OnlineRateTable.Common.ProductCalculation.ApiRequests
 {
-    public class BaseRequest
+    [Serializable]
+    [DataContract]
+    public class CalculationBaseRequest
     {
+        [DataMember]
         public EnvironmentInfo Environment { get; set; }
     }
 }

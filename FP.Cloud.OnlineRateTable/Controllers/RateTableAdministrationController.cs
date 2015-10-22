@@ -1,4 +1,4 @@
-﻿    using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -9,7 +9,7 @@ using System.Web.Http.Description;
 using FP.Cloud.OnlineRateTable.Common.Interfaces;
 using FP.Cloud.OnlineRateTable.Common.ProductCalculation;
 using FP.Cloud.OnlineRateTable.Common.RateTable;
-using FP.Cloud.OnlineRateTable.Models;
+using FP.Cloud.OnlineRateTable.Common.ProductCalculation.ApiRequests;
 
 namespace FP.Cloud.OnlineRateTable.Controllers
 {

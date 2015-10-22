@@ -1,0 +1,29 @@
+﻿@model FP.Cloud.OnlineRateTable.Common.ProductCalculation.PCalcResultInfo
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Product Calculation</title>
+</head>
+<body>
+    <h3>Product Calculation</h3>
+    <hr />
+    @if (Model == null)
+    {
+        @Html.ActionLink("Start Product Calculation", "Start")
+    }
+    else
+    {
+        <div class="text-right">
+            @Html.Partial("~/Views/ProductCalculation/_WeightPartial.cshtml", Model.ProductDescription.Weight)
+        </div>
+        if (Model.QueryType == FP.Cloud.OnlineRateTable.Common.ProductCalculation.EQueryType.ShowMenu)
+        {
+            @Html.Partial("~/Views/ProductCalculation/_ShowMenuPartial.cshtml", Model.QueryDescription)
+        }
+    }
+</body>
+</html>
+
