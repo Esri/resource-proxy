@@ -106,8 +106,8 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Base.lib;BoostLib.vs15.lib;PawnLib.lib;PCalcLib.vs15.lib;Persistence.vs15.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Projekte\ORT\FP.Cloud.OnlineRateTable.PCalcLib\Imports;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Projekte\FMLibs\boost\boost_1_59_0\lib32-msvc-14.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -166,6 +166,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ActionResultProcessor.hpp" />
     <ClInclude Include="ExtendedErrorCode.hpp" />
     <ClInclude Include="IPCalcProxy.hpp" />
     <ClInclude Include="Lock.hpp" />
@@ -184,6 +185,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\FMLibs\ProductCalculation\Windows\PCalcSimulation\PCalcManagedLib\PCalcManagedLib.cpp" />
+    <ClCompile Include="ActionResultProcessor.cpp" />
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="ExtendedErrorCode.cpp" />
     <ClCompile Include="PCalcFactory.cpp" />
@@ -206,8 +208,26 @@
     <Image Include="app.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\FMLibs\Base\windows\Base.vs15.vcxproj">
+      <Project>{bba7ee16-2b87-464b-abe2-2d3c23149713}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\FMLibs\boost\windows\BoostLib.vs15.vcxproj">
+      <Project>{577d012b-e3dd-4f7f-8989-d149b4212971}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\FMLibs\Pawn\Windows\PawnLib.vs15.vcxproj">
+      <Project>{94f04a44-fe1f-4ca4-9804-f2dc5ce563c3}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\FMLibs\Persistence\windows\Persistence.vs15.vcxproj">
+      <Project>{537314e7-8986-4838-8087-f26444a7f842}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\FMLibs\ProductCalculation\Windows\PCalcLib.vs15.vcxproj">
+      <Project>{a7a6e01b-d338-4aba-9b51-db9266dac915}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\FP.Cloud.OnlineRateTable.Common\FP.Cloud.OnlineRateTable.Common.csproj">
       <Project>{0dd4a6a3-1b46-474d-90ae-324cd5d7f8a0}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\FP.Cloud.OnlineRateTable.PCalcLib.ReImpl\FP.Cloud.OnlineRateTable.PCalcLib.ReImpl.vcxproj">
+      <Project>{016d415a-34f4-414c-ae4f-6caf3b361d1b}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

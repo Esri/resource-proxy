@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using FP.Cloud.OnlineRateTable.Common.ProductCalculation;
 using NUnit.Framework;
@@ -14,6 +16,8 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
         private PCalcProxyContext m_Context;
         private EnvironmentInfo m_Environment;
         private WeightInfo m_Weight;
+        private Stopwatch m_Watch = new Stopwatch();
+        private TimeSpan m_ExpectedMaximum;
 
         #endregion
 
@@ -28,14 +32,18 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
             Assert.IsTrue(amxFile.Exists);
             Assert.IsTrue(tableFile.Exists);
 
-            m_Context = new PCalcProxyContext(amxFile.FullName, tableFile.FullName);
-            m_Environment = new EnvironmentInfo { Culture = "de", SenderZipCode = "123" };
+            m_Environment = new EnvironmentInfo { Culture = "deDE", SenderZipCode = "121" };
             m_Weight = new WeightInfo { WeightUnit = EWeightUnit.TenthGram, WeightValue = 200 };
+
+            m_ExpectedMaximum = TimeSpan.FromMilliseconds(140);
+            m_Watch.Reset();
+            m_Watch.Start();
+            m_Context = new PCalcProxyContext(amxFile.FullName, tableFile.FullName);
         }
 
         [Test]
         public void ShouldCalculateFirstStep()
-        {
+        {                        
             Assert.IsNotNull(m_Context.Proxy);
             IPCalcProxy proxy = m_Context.Proxy;
 
@@ -60,13 +68,16 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
             result = proxy.Calculate(m_Environment, result.ProductDescription, actionResult);
             Assert.IsNotNull(result);
             Assert.IsTrue(result.QueryType == EQueryType.ShowMenu);
-        }
+        }      
 
         [TearDown]
         public void TearDown()
         {
-            m_Context.Dispose();
-            m_Context = null;
+            m_Context.Dispose();           
+            m_Context = null;   
+            
+            m_Watch.Stop();
+            Assert.IsTrue(m_ExpectedMaximum >= m_Watch.Elapsed, $"elapsed {m_Watch.Elapsed}, expected {m_ExpectedMaximum}");         
         }
 
         #endregion

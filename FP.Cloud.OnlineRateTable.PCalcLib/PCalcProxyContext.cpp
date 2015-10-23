@@ -4,7 +4,7 @@
 
 BEGIN_PCALC_LIB_NAMESPACE
 
-PCalcProxyContext::PCalcProxyContext(System::String^ amxPath, System::String^ tablePath)
+PCalcProxyContext::PCalcProxyContext(System::String^ amxPath, System::String^ tablePath, ... array<System::String^>^ additionalFiles)
 	: m_Proxy(nullptr)
 	, m_Domain(nullptr)
 	, m_AmxPath(amxPath)
