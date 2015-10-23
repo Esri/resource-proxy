@@ -2,6 +2,7 @@
 {
     public enum EQueryType
     {
+        None,
         RequestPostage,
         RequestValue,
         RequestString,

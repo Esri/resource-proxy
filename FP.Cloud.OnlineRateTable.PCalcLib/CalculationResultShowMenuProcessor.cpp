@@ -1,13 +1,13 @@
-#include "NextActionShowMenuProcessor.hpp"
+#include "CalculationResultShowMenuProcessor.hpp"
 
 using namespace FP::Cloud::OnlineRateTable::Common::ProductCalculation;
 
-FP::Cloud::OnlineRateTable::PCalcLib::NextActionShowMenuProcessor::NextActionShowMenuProcessor(PCalcFactory^ factory) : NextActionProcessor(factory)
+FP::Cloud::OnlineRateTable::PCalcLib::CalculationResultShowMenuProcessor::CalculationResultShowMenuProcessor(PCalcFactory^ factory) : CalculationResultProcessor(factory)
 {
 
 }
 
-void FP::Cloud::OnlineRateTable::PCalcLib::NextActionShowMenuProcessor::SetDescription(PCalcResultInfo^ resultInfo)
+void FP::Cloud::OnlineRateTable::PCalcLib::CalculationResultShowMenuProcessor::SetDescription(PCalcResultInfo^ resultInfo)
 {
 	ProductCalculation::MenuDescType showMenu = this->Factory->GetActionMgr()->GetActionShowMenu();
 
@@ -23,6 +23,6 @@ void FP::Cloud::OnlineRateTable::PCalcLib::NextActionShowMenuProcessor::SetDescr
 	}
 
 	resultInfo->QueryType = EQueryType::ShowMenu;
-	resultInfo->QueryDescription = info;
+	resultInfo->QueryDescription = info->ToTransferDescription();
 }
 

@@ -1,13 +1,13 @@
-#include "NextActionProcessor.hpp"
+#include "CalculationResultProcessor.hpp"
 
 using namespace FP::Cloud::OnlineRateTable::Common::ProductCalculation;
 
-FP::Cloud::OnlineRateTable::PCalcLib::NextActionProcessor::NextActionProcessor(PCalcFactory^ factory)
+FP::Cloud::OnlineRateTable::PCalcLib::CalculationResultProcessor::CalculationResultProcessor(PCalcFactory^ factory)
 	: m_Factory(factory)
 {
 }
 
-PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::NextActionProcessor::Handle()
+PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::CalculationResultProcessor::Handle()
 {
 	PCalcResultInfo^ result = gcnew PCalcResultInfo();
 	ProductCalculation::IProductDescParameterPtr parameter = m_Factory->GetProdDesc()->AccessCurrProduct();

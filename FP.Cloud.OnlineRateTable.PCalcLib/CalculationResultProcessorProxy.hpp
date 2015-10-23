@@ -5,19 +5,19 @@
 BEGIN_PCALC_LIB_NAMESPACE
 
 ref class PCalcFactory;
-ref class NextActionProcessor;
+ref class CalculationResultProcessor;
 
 using namespace FP::Cloud::OnlineRateTable::Common::ProductCalculation;
 
-private ref class NextActionProcessorProxy
+private ref class CalculationResultProcessorProxy
 {
 public:
-	NextActionProcessorProxy(PCalcFactory^ factory);
+	CalculationResultProcessorProxy(PCalcFactory^ factory);
 	PCalcResultInfo^ Handle(INT32 actionID);
 
 private:
 	PCalcFactory^ m_Factory;
-	System::Collections::Generic::IDictionary<INT32, NextActionProcessor^>^ m_Processors;
+	System::Collections::Generic::IDictionary<INT32, CalculationResultProcessor^>^ m_Processors;
 };
 
 END_PCALC_LIB_NAMESPACE
