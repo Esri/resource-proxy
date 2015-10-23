@@ -8,7 +8,7 @@ BEGIN_PCALC_LIB_NAMESPACE
 public ref class PCalcProxyContext
 {
 public:
-	PCalcProxyContext(System::String^ amxPath, System::String^ tablePath);
+	PCalcProxyContext(System::String^ amxPath, System::String^ tablePath, ... array<System::String^>^ additionalFiles);
 	~PCalcProxyContext(void);
 
 	property IPCalcProxy^ Proxy

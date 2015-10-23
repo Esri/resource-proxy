@@ -6,7 +6,8 @@
 
 #define USING_PCALC_LIB_NAMESPACE using namespace FP::Cloud::OnlineRateTable::PCalcLib;
 
-#define USING_PRODUCTCALCULATION_NAMESPACE using namespace ProductCalculation;
+#define USING_PRODUCTCALCULATION_NAMESPACE using namespace ProductCalculation; using namespace FP::Cloud::OnlineRateTable::Common::ProductCalculation;
+
 
 #include "ProductCalculation/Windows/PCalcSimulation/PCalcManagedLib/PCalcManagedLib.h"
 

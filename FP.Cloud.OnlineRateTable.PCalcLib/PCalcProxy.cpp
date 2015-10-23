@@ -13,6 +13,7 @@ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::PCalcProxy()
 	: m_Factory(gcnew PCalcFactory())
 	, m_Manager(gcnew PCalcManager(m_Factory))
 	, m_NextActionProcessor(gcnew NextActionProcessorProxy(m_Factory))
+	, m_ActionResultProcessor(gcnew ActionResultProcessor(m_Factory))
 {
 }
 
@@ -31,6 +32,9 @@ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::!PCalcProxy()
 
 	if(nullptr != m_Factory)
 		delete m_Factory;
+
+	if (nullptr != m_ActionResultProcessor)
+		delete m_ActionResultProcessor;
 }
 
 PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(EnvironmentInfo^ environment, WeightInfo^ weight)
@@ -39,10 +43,10 @@ PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(Env
 	int nextAction = 0;
 
 	this->SetEnvironment(environment);
-	this->SetWeight(weight);
-	this->Manager->CalculateStart(nextAction);
+	this->m_ActionResultProcessor->Handle(weight);
+	this->m_Manager->CalculateStart(nextAction);
 
-	return this->NextActionProcessor->Handle(nextAction);
+	return this->m_NextActionProcessor->Handle(nextAction);
 }
 
 PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(EnvironmentInfo^ environment, ProductDescriptionInfo^ product, ActionResultInfo^ actionResult)
@@ -50,62 +54,23 @@ PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(Env
 	Lock lock(this);
 	INT32 nextAction = 0;
 
-	this->Calculate(environment, product->Weight);
-	this->SetProductDescription(product, actionResult);
-	this->Manager->CalculateNext(nextAction);
+	this->SetEnvironment(environment);
+	this->m_ActionResultProcessor->Handle(product, actionResult);
+	this->m_Manager->CalculateNext(nextAction);
 
-	return this->NextActionProcessor->Handle(nextAction);
+	return this->m_NextActionProcessor->Handle(nextAction);
 }
 
 void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::SetEnvironment(EnvironmentInfo^ environment)
 {
-	IPCalcConfigurationPtr config = this->Factory->GetConfig();
+	IPCalcConfigurationPtr config = this->m_Factory->GetConfig();
 	IPropertiesPtr properties = config->AccessCurrentProperties();
 
 	properties->SetValue(EnvironmentProperty::REQUEST_ORIGIN_ZIP_CODE, PCalcManagedLib::ConvertToString(environment->SenderZipCode));
 	properties->SetValue(EnvironmentProperty::REQUEST_LANG, PCalcManagedLib::ConvertToString(environment->Culture));
 	config->ChangeProperties(properties);
 
-	this->Manager->Initialize();
-}
-
-void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::SetWeight(WeightInfo^ weight)
-{
-	ProductCalculation::IProductDescParameterPtr product = this->Factory->GetProdDesc()->AccessCurrProduct();
-	ProductCalculation::WeightType newWeight(weight->WeightValue, (BYTE)weight->WeightUnit);
-	product->SetWeight(newWeight);
-}
-
-void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::SetActionResult(ProductCalculation::ActionResultType &target, ActionResultInfo^ actionResult)
-{
-
-}
-
-void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::SetProductDescription(ProductDescriptionInfo^ product, ActionResultInfo^ actionResult)
-{
-	ProductCalculation::ActionResultType target;
-	ProductCalculation::ResultValueVectorType results;
-
-	for each(AnyInfo^ current in actionResult->Results)
-	{
-		switch (current->AnyType)
-		{
-			case EAnyType::INT32:
-				results.push_back(System::Convert::ToInt32(current->AnyValue));
-				break;
-			default:
-				break;
-		}
-	}
-
-	target.ID = (int)actionResult->Action;
-	target.Label = actionResult->Label;
-	target.Result = results;
-
-	ProductCalculation::IProductDescParameterPtr parameter = this->Factory->GetProdDesc()->AccessCurrProduct();
-	parameter->SetProductCode(product->ProductCode);
-	parameter->SetProductID(product->ProductId);
-	parameter->SetActionResult(target);
+	this->m_Manager->Initialize();
 }
 
 void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Init(String^ amxPath, String^ tablePath)
