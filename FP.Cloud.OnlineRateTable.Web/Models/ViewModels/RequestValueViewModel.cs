@@ -1,6 +1,7 @@
 ﻿using FP.Cloud.OnlineRateTable.Common.ProductCalculation;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
@@ -12,20 +13,21 @@ namespace FP.Cloud.OnlineRateTable.Web.Models.ViewModels
     {
         #region properties
         public int Label { get; set; }
-        public EQueryType QueryType { get; set; }
         public string FormatString { get; set; }
-
         public string EnteredStringValue { get; set; }
 
-        [DataType(DataType.Currency, ErrorMessage ="This is not a valid postage amount")]
-        [DisplayFormat(ApplyFormatInEditMode = false, DataFormatString = "{0:c}", ConvertEmptyStringToNull = true)]
+        //[Range(typeof(decimal), "0", "10000", ErrorMessage = "{0} must be a decimal number between {1} and {2}")]
+        [Required(ErrorMessage = "{0} is required.")]
+        [DataType(DataType.Currency, ErrorMessage = "This is not a valid postage amount")]
+        [DisplayName("Postage")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:C}", ConvertEmptyStringToNull = true)]
         public decimal EnteredPostageValue { get; set; }
         #endregion
 
         #region public
-        public string GetValueAsString(CultureInfo culture)
+        public string GetValueAsString(CultureInfo culture, EQueryType queryType)
         {
-            switch (QueryType)
+            switch (queryType)
             {
                 case EQueryType.RequestPostage:
                     return EnteredPostageValue.ToString(culture);

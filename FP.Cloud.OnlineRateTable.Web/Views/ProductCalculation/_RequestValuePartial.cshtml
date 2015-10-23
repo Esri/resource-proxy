@@ -1,10 +1,10 @@
-﻿@model FP.Cloud.OnlineRateTable.Web.Models.ViewModels.RequestValueViewModel
+﻿@model FP.Cloud.OnlineRateTable.Web.Models.ViewModels.ProductCalculationViewModel
 
 @if (ViewData.ContainsKey("Pcalc"))
 {
     var pcalc = ((FP.Cloud.OnlineRateTable.Common.ProductCalculation.RequestDescriptionInfo)ViewData["Pcalc"]);
-    Model.Label = pcalc.Label;
-    Model.FormatString = pcalc.DisplayFormat;
+    Model.RequestValueModel.Label = pcalc.Label;
+    Model.RequestValueModel.FormatString = pcalc.DisplayFormat;
     <div>
         <h4>Please enter a value</h4>
         <hr />
@@ -14,20 +14,22 @@
         @using (Html.BeginForm("RequestValue", "ProductCalculation", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
-            @Html.HiddenFor(model => model.Label);
+            @Html.HiddenFor(model => model.RequestValueModel.Label);
+            @Html.HiddenFor(model => model.RequestValueModel.FormatString);
             @Html.HiddenFor(model => model.QueryType);
-            @Html.HiddenFor(model => model.FormatString);
+
             if (Model.QueryType == FP.Cloud.OnlineRateTable.Common.ProductCalculation.EQueryType.RequestPostage)
             {
-                @Html.LabelFor(model => model.EnteredPostageValue, htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.LabelFor(model => model.RequestValueModel.EnteredPostageValue, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.EditorFor(model => model.EnteredPostageValue, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.EnteredPostageValue, "", new { @class = "text-danger" })
+
+                    @Html.EditorFor(model => model.RequestValueModel.EnteredPostageValue, new { htmlAttributes = new { @class = "form-control", @type = "number"} })
+                    @Html.ValidationMessageFor(model => model.RequestValueModel.EnteredPostageValue, "", new { @class = "text-danger" })
                 </div>
             }
             else
             {
-                @Html.EditorFor(model => model.EnteredStringValue);
+                @Html.EditorFor(model => model.RequestValueModel.EnteredStringValue);
             }
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-10">

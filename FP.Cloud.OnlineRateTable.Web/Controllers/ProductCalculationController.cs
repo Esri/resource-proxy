@@ -16,7 +16,6 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
     public class ProductCalculationController : BaseController
     {
         #region const
-        private const string PRODUCT_DESCRIPTION = "Product";
         private const string PCALC_RESULT = "PcalcResult";
         #endregion
 
@@ -43,9 +42,9 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
             request.Weight = new WeightInfo() { WeightUnit = EWeightUnit.Gram, WeightValue = 1537 };
             request.Environment = GetEnvironment();
             PCalcResultInfo result = await m_Repository.Start(request);
-            AddOrUpdateTempData(result.ProductDescription);
+            AddOrUpdateTempData(result);
             ViewData.Add(PCALC_RESULT, result);
-            return View("Index");
+            return View("Index", new ProductCalculationViewModel(result.QueryType));
 
         }
 
@@ -89,20 +88,20 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
         }
 
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> RequestValue([Bind(Include = "Label,EnteredStringValue,EnteredPostageValue,QueryType,FormatString")]RequestValueViewModel model)
+        public async Task<ActionResult> RequestValue(ProductCalculationViewModel model)
         {
             CultureInfo culture = new CultureInfo(GetEnvironment().Culture);
             char decimalSeperator = culture.NumberFormat.CurrencyDecimalSeparator.ToCharArray()[0];
 
             FormatStringAdapter adapter = new FormatStringAdapter(decimalSeperator);
-            adapter.SetFormatString(model.FormatString);
+            adapter.SetFormatString(model.RequestValueModel.FormatString);
 
             string formattedString;
-            adapter.Format(out formattedString, model.GetValueAsString(culture));
-            
+            adapter.Format(out formattedString, model.RequestValueModel.GetValueAsString(culture, model.QueryType));
+
             var actionResult = new ActionResultInfo()
             {
-                Action = model.QueryType == EQueryType.RequestValue ? EActionId.RequestValue : 
+                Action = model.QueryType == EQueryType.RequestValue ? EActionId.RequestValue :
                 model.QueryType == EQueryType.RequestPostage ? EActionId.ManualPostage : EActionId.RequestString,
                 Results = new List<AnyInfo>()
             };
@@ -120,7 +119,6 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
                     });
                 }
             }
-
             return await HandleCalculation(actionResult);
         }
 
@@ -140,36 +138,45 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
         #region private
         private async Task<ActionResult> HandleCalculation(ActionResultInfo actionResult)
         {
-            if(TempData.Keys.Contains(PRODUCT_DESCRIPTION))
-            { 
-                ProductDescriptionInfo info = (ProductDescriptionInfo)TempData[PRODUCT_DESCRIPTION];
-                if (null != info)
-                {
-                    CalculateRequest calc = new CalculateRequest();
-                    calc.Environment = GetEnvironment();
-                    calc.ProductDescription = info;
-                    calc.ActionResult = actionResult;
-                    PCalcResultInfo result = await m_Repository.Calculate(calc);
-                    //TODO: Error handling
+            ProductCalculationViewModel viewModel = new ProductCalculationViewModel();
+            PCalcResultInfo lastResult = GetLastPcalcResult();
+            if (null != lastResult)
+            {
+                CalculateRequest calc = new CalculateRequest();
+                calc.Environment = GetEnvironment();
+                calc.ProductDescription = lastResult.ProductDescription;
+                calc.ActionResult = actionResult;
+                PCalcResultInfo result = await m_Repository.Calculate(calc);
+                //TODO: Error handling
 
-                    AddOrUpdateTempData(result.ProductDescription);
-                    ViewData.Add(PCALC_RESULT, result);
-                    return View("Index", result);
-                }
+                viewModel.QueryType = result.QueryType;
+                AddOrUpdateTempData(result);
+                ViewData.Add(PCALC_RESULT, result);
+                return View("Index", viewModel);
             }
-            return View("Index");
+            ModelState.AddModelError("GeneralError", "Unspecified error during product calculation");
+            return View("Index", viewModel);
         }
 
-        private void AddOrUpdateTempData(ProductDescriptionInfo result)
+        private void AddOrUpdateTempData(PCalcResultInfo result)
         {
-            if (TempData.ContainsKey(PRODUCT_DESCRIPTION))
+            if (TempData.ContainsKey(PCALC_RESULT))
             {
-                TempData[PRODUCT_DESCRIPTION] = result;
+                TempData[PCALC_RESULT] = result;
             }
             else
             {
-                TempData.Add(PRODUCT_DESCRIPTION, result);
+                TempData.Add(PCALC_RESULT, result);
             }
+        }
+
+        private PCalcResultInfo GetLastPcalcResult()
+        {
+            if(TempData.Keys.Contains(PCALC_RESULT))
+            {
+                return (PCalcResultInfo)TempData[PCALC_RESULT];
+            }
+            return null;
         }
 
         private EnvironmentInfo GetEnvironment()
