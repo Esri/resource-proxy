@@ -1,9 +1,9 @@
 ﻿@if (ViewData.ContainsKey("Pcalc"))
 {
-    var pcalc = ((FP.Cloud.OnlineRateTable.Common.ProductCalculation.ShowMenuDescriptionInfo)ViewData["Pcalc"]);
+    var pcalc = ((FP.Cloud.OnlineRateTable.Common.ProductCalculation.SelectValueDescriptionInfo)ViewData["Pcalc"]);
 
     <div>
-        <h4>Please select a service</h4>
+        <h4>Please select an item</h4>
         <hr />
         <table class="table">
             <tr>
@@ -12,15 +12,13 @@
                 </th>
             </tr>
 
-            @{int i = 0; }
-            @foreach (var item in pcalc.MenuEntries)
+            @foreach (var item in pcalc.ValueEntries)
             {
                 <tr>
                     <td>
-                        @Html.ActionLink(item, "SelectMenuIndex", new { index = @i })
+                        @Html.ActionLink(item.EntryMessage, "SelectValue", new { entryValue = item.EntryValue })
                     </td>
                 </tr>
-                i++;
             }
 
         </table>

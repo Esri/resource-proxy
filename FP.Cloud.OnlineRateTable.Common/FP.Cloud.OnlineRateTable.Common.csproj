@@ -70,6 +70,7 @@
     <Compile Include="ProductCalculation\ApiRequests\StepBackRequest.cs" />
     <Compile Include="ProductCalculation\ApiRequests\UpdateWeightRequest.cs" />
     <Compile Include="ProductCalculation\AttributeInfo.cs" />
+    <Compile Include="ProductCalculation\EActionDisplayResult.cs" />
     <Compile Include="ProductCalculation\EActionId.cs" />
     <Compile Include="ProductCalculation\EAnyType.cs" />
     <Compile Include="ProductCalculation\EProductDescriptionState.cs" />
@@ -99,6 +100,7 @@
     </Compile>
     <Compile Include="ScenarioRunner\ScenarioResult.cs" />
     <Compile Include="ScenarioRunner\ScenarioRunner.cs" />
+    <Compile Include="ProductCalculation\TransferDescriptionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

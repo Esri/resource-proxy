@@ -5,11 +5,9 @@ using System.Runtime.Serialization;
 namespace FP.Cloud.OnlineRateTable.Common.ProductCalculation
 {
     [Serializable]
-    [DataContract]
     public class SelectIndexDescriptionInfo : DescriptionInfo
     {
         #region properties
-        [DataMember]
         public List<string> IndexEntries { get; set; }
         #endregion
 
@@ -17,6 +15,20 @@ namespace FP.Cloud.OnlineRateTable.Common.ProductCalculation
         public SelectIndexDescriptionInfo()
         {
             IndexEntries = new List<string>();
+        }
+
+        public SelectIndexDescriptionInfo(TransferDescriptionInfo transfer) : base(transfer)
+        {
+            IndexEntries = transfer.Entries;
+        }
+        #endregion
+
+        #region public
+        public override TransferDescriptionInfo ToTransferDescription()
+        {
+            TransferDescriptionInfo transfer = base.ToTransferDescription();
+            transfer.Entries = IndexEntries;
+            return transfer;
         }
         #endregion
     }

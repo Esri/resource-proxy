@@ -1,0 +1,15 @@
+﻿@if (ViewData.ContainsKey("Pcalc"))
+{
+    var pcalc = ((FP.Cloud.OnlineRateTable.Common.ProductCalculation.DescriptionInfo)ViewData["Pcalc"]);
+
+    <div>
+        <h4>Please acknowledge</h4>
+        <hr />
+        <div class="text-center">
+            @pcalc.DescriptionTitle
+        </div>
+        <div class="right">
+            @Html.ActionLink("OK", "Acknowledge")
+        </div>
+    </div>
+}

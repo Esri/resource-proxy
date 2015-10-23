@@ -1,6 +1,4 @@
-﻿@model FP.Cloud.OnlineRateTable.Common.ProductCalculation.PCalcResultInfo
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 
 <html>
 <head>
@@ -10,18 +8,41 @@
 <body>
     <h3>Product Calculation</h3>
     <hr />
-    @if (Model == null)
+    @if (ViewData.ContainsKey("PcalcResult") == false)
     {
         @Html.ActionLink("Start Product Calculation", "Start")
     }
     else
     {
+        var pcalcResult = ((FP.Cloud.OnlineRateTable.Common.ProductCalculation.PCalcResultInfo)ViewData["PcalcResult"]);
+        ViewDataDictionary weightDict = new ViewDataDictionary { { "Weight", pcalcResult.ProductDescription.Weight } };
+        ViewDataDictionary dict = new ViewDataDictionary { { "Pcalc", pcalcResult.DedicatedDescription } };
         <div class="text-right">
-            @Html.Partial("~/Views/ProductCalculation/_WeightPartial.cshtml", Model.ProductDescription.Weight)
+            @Html.Partial("~/Views/ProductCalculation/_WeightPartial.cshtml", weightDict)
         </div>
-        if (Model.QueryType == FP.Cloud.OnlineRateTable.Common.ProductCalculation.EQueryType.ShowMenu)
+        if (pcalcResult.QueryType == FP.Cloud.OnlineRateTable.Common.ProductCalculation.EQueryType.ShowMenu)
         {
-            @Html.Partial("~/Views/ProductCalculation/_ShowMenuPartial.cshtml", Model.QueryDescription)
+            @Html.Partial("~/Views/ProductCalculation/_ShowMenuPartial.cshtml", dict)
+        }
+        else if(pcalcResult.QueryType == FP.Cloud.OnlineRateTable.Common.ProductCalculation.EQueryType.ShowDisplay)
+        {
+            @Html.Partial("~/Views/ProductCalculation/_ShowDisplayPartial.cshtml", dict)
+        }
+        else if (pcalcResult.QueryType == FP.Cloud.OnlineRateTable.Common.ProductCalculation.EQueryType.SelectValue)
+        {
+            @Html.Partial("~/Views/ProductCalculation/_SelectValuePartial.cshtml", dict)
+        }
+        else if (pcalcResult.QueryType == FP.Cloud.OnlineRateTable.Common.ProductCalculation.EQueryType.SelectIndex)
+        {
+            @Html.Partial("~/Views/ProductCalculation/_SelectIndexPartial.cshtml", dict)
+        }
+        else if ((pcalcResult.QueryType == FP.Cloud.OnlineRateTable.Common.ProductCalculation.EQueryType.RequestValue) ||
+            (pcalcResult.QueryType == FP.Cloud.OnlineRateTable.Common.ProductCalculation.EQueryType.RequestString) ||
+            (pcalcResult.QueryType == FP.Cloud.OnlineRateTable.Common.ProductCalculation.EQueryType.RequestPostage))
+        {
+            var viewModel = new FP.Cloud.OnlineRateTable.Web.Models.ViewModels.RequestValueViewModel();
+            viewModel.QueryType = pcalcResult.QueryType;
+            @Html.Partial("~/Views/ProductCalculation/_RequestValuePartial.cshtml", viewModel, dict)
         }
     }
 </body>
