@@ -180,6 +180,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\ViewModels\ProductCalculationViewModel.cs" />
     <Compile Include="Models\ViewModels\RateTableViewModel.cs" />
     <Compile Include="Models\ViewModels\RequestValueViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
