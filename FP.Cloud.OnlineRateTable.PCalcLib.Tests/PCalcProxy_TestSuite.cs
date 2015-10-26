@@ -50,6 +50,7 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
 
         [TestCase(1000)]
         [TestCase(100)]
+        [TestCase(50)]
         [TestCase(10)]
         public void ShouldCalculateCompleteProduct(int milliseconds)
         {
@@ -88,6 +89,7 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
 
         [TestCase(1000)]
         [TestCase(100)]
+        [TestCase(50)]
         [TestCase(10)]
         public void ShouldCalculateFirstStep(int milliseconds)
         {
@@ -105,6 +107,7 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
 
         [TestCase(1000)]
         [TestCase(100)]
+        [TestCase(50)]
         [TestCase(10)]
         public void ShouldCalculateNextStep(int milliseconds)
         {
