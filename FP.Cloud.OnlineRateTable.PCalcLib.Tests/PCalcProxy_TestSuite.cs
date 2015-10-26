@@ -84,7 +84,12 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
             }
 
             Assert.IsTrue(steps < MAX_STEPS);
+            Assert.IsNotNull(result.ProductDescription);
+            Assert.IsNotNull(result.ProductDescription.Postage);
+
             Assert.IsTrue(result.ProductDescription.State == EProductDescriptionState.Complete);
+            Assert.IsTrue(result.ProductDescription.Postage.PostageValue > 0);
+
         }
 
         [TestCase(1000)]
