@@ -47,8 +47,11 @@ void FP::Cloud::OnlineRateTable::PCalcLib::ActionResultProcessor::SetActionResul
 			case EAnyType::INT32:
 				results.push_back(System::Convert::ToInt32(current->AnyValue));
 				break;
-			default:
+			case EAnyType::UINT32:
+				results.push_back(System::Convert::ToUInt32(current->AnyValue));
 				break;
+			default:
+				throw gcnew PCalcLibException(System::String::Format("Unexpected any type {0}", current->ToString()));
 		}
 	}
 

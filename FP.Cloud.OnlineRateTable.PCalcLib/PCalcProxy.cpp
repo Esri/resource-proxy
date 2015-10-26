@@ -50,10 +50,9 @@ PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(Env
 	this->m_EnvironmentProcessor->Handle(environment);
 	this->m_Manager->CalculateStart(nextAction);
 
-	// get result from start calculation without product description
 	PCalcResultInfo^ result = this->m_CalculationResultProcessor->Handle(nextAction, nullptr);
 
-	//first calc are finished. now we can set the requested weight
+	// set weight after first step
 	this->m_ActionResultProcessor->Handle(weight);
 	this->m_Manager->CalculateWeightChanged();
 
@@ -71,7 +70,10 @@ PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(Env
 	this->m_ActionResultProcessor->Handle(product, actionResult);
 	this->m_Manager->CalculateNext(nextAction);
 
-	return this->m_CalculationResultProcessor->Handle(nextAction, m_ProductDescriptionMapper);
+	PCalcResultInfo^ result = this->m_CalculationResultProcessor->Handle(nextAction, nullptr);
+
+	result->ProductDescription = this->m_ProductDescriptionMapper->Map();
+	return result;
 }
 
 void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Init(String^ amxPath, String^ tablePath)

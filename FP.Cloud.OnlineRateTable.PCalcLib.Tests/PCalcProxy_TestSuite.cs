@@ -32,7 +32,7 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
 
         [SetUp]
         public void SetUp()
-        {
+        {            
             FileInfo amxFile = new FileInfo("Pt2097152.amx");
             FileInfo tableFile = new FileInfo("Pt2097152.bin");
 
@@ -81,6 +81,9 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
                         Assert.Fail();
                         break;
                 }
+
+                Assert.IsNotNull(result.ProductDescription);
+                Assert.IsTrue(result.ProductDescription.ProductId > 0);
             }
 
             Assert.IsTrue(steps < MAX_STEPS);
@@ -89,6 +92,7 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
 
             Assert.IsTrue(result.ProductDescription.State == EProductDescriptionState.Complete);
             Assert.IsTrue(result.ProductDescription.Postage.PostageValue > 0);
+            Assert.IsTrue(result.ProductDescription.ProductCode > 0);
 
         }
 
