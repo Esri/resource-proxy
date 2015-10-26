@@ -193,6 +193,7 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Images\fp_logo.png" />
     <Content Include="Content\bootstrap-datepicker.css" />
     <Content Include="Content\bootstrap-datepicker.min.css" />
     <Content Include="Content\bootstrap-datepicker.standalone.css" />
@@ -314,10 +315,10 @@
     <Content Include="Views\ProductCalculation\_SelectValuePartial.cshtml" />
     <Content Include="Views\ProductCalculation\_SelectIndexPartial.cshtml" />
     <Content Include="Views\ProductCalculation\_RequestValuePartial.cshtml" />
+    <Content Include="Views\ProductCalculation\_PostagePartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\Base\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

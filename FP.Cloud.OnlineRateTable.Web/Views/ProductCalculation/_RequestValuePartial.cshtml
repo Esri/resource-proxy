@@ -15,27 +15,54 @@
         {
             @Html.AntiForgeryToken()
             @Html.HiddenFor(model => model.RequestValueModel.Label);
-            @Html.HiddenFor(model => model.RequestValueModel.FormatString);
+            @Html.HiddenFor(model => model.RequestValueModel.FormatString, new { @id = "FormatString" } );
             @Html.HiddenFor(model => model.QueryType);
 
             if (Model.QueryType == FP.Cloud.OnlineRateTable.Common.ProductCalculation.EQueryType.RequestPostage)
             {
-                @Html.LabelFor(model => model.RequestValueModel.EnteredPostageValue, htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.LabelFor(model => model.RequestValueModel.EnteredRawValue, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
 
-                    @Html.EditorFor(model => model.RequestValueModel.EnteredPostageValue, new { htmlAttributes = new { @class = "form-control", @type = "number"} })
-                    @Html.ValidationMessageFor(model => model.RequestValueModel.EnteredPostageValue, "", new { @class = "text-danger" })
+                    @Html.HiddenFor(model => model.RequestValueModel.EnteredRawValue, new { @id = "EnteredPostageRaw" } )
+                    @Html.Editor("Entered Postage", new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @id="EnteredPostage" } })
+                    @Html.ValidationMessageFor(model => model.RequestValueModel.EnteredRawValue, "", new { @class = "text-danger" })
+
+                    <table>
+                        <tr>
+                            <td><input type="button" class="number-pad btn btn-info btn-md" value="7"/></td>
+                            <td><input type="button" class="number-pad btn btn-info btn-md" value="8" /></td>
+                            <td><input type="button" class="number-pad btn btn-info btn-md" value="9" /></td>
+                            <td><input type="button" class="number-pad btn btn-info btn-md" value="CE" /></td>
+                        </tr>
+                        <tr>
+                            <td><input type="button" class="number-pad btn btn-info btn-md" value="4" /></td>
+                            <td><input type="button" class="number-pad btn btn-info btn-md" value="5" /></td>
+                            <td><input type="button" class="number-pad btn btn-info btn-md" value="6" /></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><input type="button" class="number-pad btn btn-info btn-md" value="1" /></td>
+                            <td><input type="button" class="number-pad btn btn-info btn-md" value="2" /></td>
+                            <td><input type="button" class="number-pad btn btn-info btn-md" value="3" /></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3"><input type="button" class="number-pad btn btn-info btn-md btn-block" value="0"/></td>
+                            <td><input type="submit" value="OK" class="btn btn-primary btn-md btn-block" /></td>
+                        </tr>
+                    </table>
+
                 </div>
             }
             else
             {
-                @Html.EditorFor(model => model.RequestValueModel.EnteredStringValue);
-            }
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="OK" class="btn btn-default" />
+                @Html.EditorFor(model => model.RequestValueModel.EnteredRawValue);
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="OK" class="btn btn-primary btn-lg" />
+                    </div>
                 </div>
-            </div>
+            }
         }
     </div>
 }

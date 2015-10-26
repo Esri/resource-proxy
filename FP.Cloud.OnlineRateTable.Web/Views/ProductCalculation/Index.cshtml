@@ -13,18 +13,126 @@
     @Html.ValidationMessage("GeneralError")
     @if (ViewData.ContainsKey("PcalcResult") == false)
     {
-        @Html.ActionLink("Start Product Calculation", "Start")
+        @Html.ActionLink("Start Product Calculation", "Start", null, new { @class = "btn btn-primary btn-md" })
     }
     else
     {
         var pcalcResult = ((FP.Cloud.OnlineRateTable.Common.ProductCalculation.PCalcResultInfo)ViewData["PcalcResult"]);
         ViewDataDictionary weightDict = new ViewDataDictionary { { "Weight", pcalcResult.ProductDescription.Weight } };
+        ViewDataDictionary postageDict = new ViewDataDictionary { { "Postage", pcalcResult.ProductDescription.Postage } };
         ViewDataDictionary dict = new ViewDataDictionary { { "Pcalc", pcalcResult.DedicatedDescription } };
-        <div class="text-right">
-            @Html.Partial("~/Views/ProductCalculation/_WeightPartial.cshtml", weightDict)
+        var finishButtonStyle = pcalcResult.ProductDescription.State != 
+            FP.Cloud.OnlineRateTable.Common.ProductCalculation.EProductDescriptionState.Complete ? "disabled" : string.Empty;
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <a class="img-thumbnail"><img src="@Url.Content("~/Content/images/fp_logo.png")" alt="logo" /></a>
+                </div>
+                <div class="col-md-4">
+                    @Html.Partial("~/Views/ProductCalculation/_PostagePartial.cshtml", postageDict)
+                </div>
+                <div class="col-md-4">
+                    @Html.Partial("~/Views/ProductCalculation/_WeightPartial.cshtml", weightDict)
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+
+                </div>
+                <div class="col-md-9">
+                    @Html.Partial(Model.PartialView, Model, dict)
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+
+                </div>
+                <div class="col-md-2">
+                    @Html.ActionLink("Step Back", "StepBack", null, new { @class = "btn btn-primary btn-md btn-block" })
+                </div>
+                <div class="col-md-2">
+                    @Html.ActionLink("Restart", "Start", null, new { @class = "btn btn-primary btn-md btn-block" })
+                </div>
+                <div class="col-md-2">
+                    @Html.ActionLink("Finish", "Finish", null, new { @class = "btn btn-primary btn-md btn-block " + finishButtonStyle })
+                </div>
+            </div>
         </div>
-        @Html.Partial(Model.PartialView,Model, dict)
     }
 </body>
 </html>
 
+@section scripts
+{
+    <script type="text/javascript">
+        function FormatPostageInput(currentString, formatString, revertOnError)
+        {
+            $.ajax(
+            {
+                url: "/ProductCalculation/FormatInput",
+                type: "POST",
+                data: JSON.stringify(
+                {
+                    'formatString': formatString,
+                    'inputString': currentString,
+                }),
+                dataType: "json",
+                traditional: true,
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    if (data.Success == true)
+                    {
+                        $("#EnteredPostage").val(data.DisplayString);
+                        $("#EnteredPostageRaw").val(currentString);
+                    }
+                    else
+                    {
+                        //Revert to default
+                        if (revertOnError == true)
+                        {
+                            FormatPostageInput("", formatString, false);
+                        }
+                        else
+                        {
+                            $("#EnteredPostage").val("");
+                            $("#EnteredPostageRaw").val("");
+                        }
+                    }
+                },
+                error: function () {
+                    $("#EnteredPostage").val("");
+                    $("#EnteredPostageRaw").val("");
+                }
+            });
+        }
+
+        $('.number-pad').click(function ()
+        {
+            var buttonValue = $(this).val();
+            var currentString = $("#EnteredPostageRaw").val();
+            var formatString = $("#FormatString").val();
+            if (buttonValue == "CE")
+            {
+                if (currentString.length > 0)
+                {
+                    currentString = currentString.substr(0, currentString.length - 1)
+                }
+            }
+            else
+            {
+                currentString = currentString + buttonValue;
+            }
+
+            FormatPostageInput(currentString, formatString, true);
+        });
+
+        $(document).ready(function ()
+        {
+            var formatString = $("#FormatString").val();
+            if (null != formatString)
+            {
+                FormatPostageInput("", formatString, true);
+            }
+        });
+    </script>
+}

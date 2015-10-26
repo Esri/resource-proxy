@@ -45,7 +45,35 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
             AddOrUpdateTempData(result);
             ViewData.Add(PCALC_RESULT, result);
             return View("Index", new ProductCalculationViewModel(result.QueryType));
+        }
 
+        public async Task<ActionResult> StepBack()
+        {
+            PCalcResultInfo lastResult = GetLastPcalcResult();
+            ProductCalculationViewModel viewModel = new ProductCalculationViewModel();
+            if (null != lastResult)
+            {
+                StepBackRequest request = new StepBackRequest();
+                request.Environment = GetEnvironment();
+                request.ProductDescription = lastResult.ProductDescription;
+                PCalcResultInfo result = await m_Repository.StepBack(request);
+
+                viewModel.QueryType = result.QueryType;
+                AddOrUpdateTempData(result);
+                ViewData.Add(PCALC_RESULT, result);
+                return View("Index", viewModel);
+            }
+            return View("Index", viewModel);
+        }
+
+        public async Task<ActionResult> Finish()
+        {
+            return null;
+        }
+
+        public async Task<ActionResult> UpdateWeight()
+        {
+            return null;
         }
 
         public async Task<ActionResult> SelectMenuIndex(int index)
@@ -97,7 +125,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
             adapter.SetFormatString(model.RequestValueModel.FormatString);
 
             string formattedString;
-            adapter.Format(out formattedString, model.RequestValueModel.GetValueAsString(culture, model.QueryType));
+            adapter.Format(out formattedString, model.RequestValueModel.EnteredRawValue);
 
             var actionResult = new ActionResultInfo()
             {
@@ -133,6 +161,21 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
                 }
             };
             return await HandleCalculation(actionResult);
+        }
+
+        [HttpPost]
+        public ActionResult FormatInput(string formatString, string inputString)
+        {
+            CultureInfo culture = new CultureInfo(GetEnvironment().Culture);
+            char decimalSeperator = culture.NumberFormat.CurrencyDecimalSeparator.ToCharArray()[0];
+
+            FormatStringAdapter adapter = new FormatStringAdapter(decimalSeperator);
+            adapter.SetFormatString(formatString);
+
+            string formattedString;
+            adapter.Format(out formattedString, inputString);
+
+            return Json(new { Success = !string.IsNullOrEmpty(formattedString), DisplayString = formattedString });
         }
 
         #region private
@@ -174,7 +217,9 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
         {
             if(TempData.Keys.Contains(PCALC_RESULT))
             {
-                return (PCalcResultInfo)TempData[PCALC_RESULT];
+                var result = (PCalcResultInfo)TempData[PCALC_RESULT];
+                TempData.Keys.Remove(PCALC_RESULT);
+                return result;
             }
             return null;
         }
