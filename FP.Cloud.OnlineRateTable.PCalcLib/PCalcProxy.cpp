@@ -66,6 +66,8 @@ PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(Env
 	Lock lock(this);
 	INT32 nextAction = 0;
 
+	this->Calculate(environment, product->Weight);
+
 	this->m_EnvironmentProcessor->Handle(environment);
 	this->m_ActionResultProcessor->Handle(product, actionResult);
 	this->m_Manager->CalculateNext(nextAction);
