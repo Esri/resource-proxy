@@ -12,9 +12,10 @@ using namespace PCalcManagedLib;
 FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::PCalcProxy()
 	: m_Factory(gcnew PCalcFactory())
 	, m_Manager(gcnew PCalcManager(m_Factory))
-	, m_NextActionProcessor(gcnew CalculationResultProcessorProxy(m_Factory))
+	, m_CalculationResultProcessor(gcnew CalculationResultProcessorProxy(m_Factory))
 	, m_ActionResultProcessor(gcnew ActionResultProcessor(m_Factory))
 	, m_EnvironmentProcessor(gcnew EnvironmentProcessor(m_Factory))
+	, m_ProductDescriptionMapper(gcnew ProductDescriptionMapper(m_Factory))
 {
 }
 
@@ -28,8 +29,8 @@ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::!PCalcProxy()
 	if (nullptr != m_EnvironmentProcessor)
 		delete m_EnvironmentProcessor;
 
-	if (nullptr != m_NextActionProcessor)
-		delete m_NextActionProcessor;
+	if (nullptr != m_CalculationResultProcessor)
+		delete m_CalculationResultProcessor;
 
 	if(nullptr != m_Manager)
 		delete m_Manager;
@@ -49,12 +50,15 @@ PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(Env
 	this->m_EnvironmentProcessor->Handle(environment);
 	this->m_Manager->CalculateStart(nextAction);
 
-	PCalcResultInfo^ result = this->m_NextActionProcessor->Handle(nextAction);
+	// get result from start calculation without product description
+	PCalcResultInfo^ result = this->m_CalculationResultProcessor->Handle(nextAction, nullptr);
 
+	//first calc are finished. now we can set the requested weight
 	this->m_ActionResultProcessor->Handle(weight);
-	this->m_Manager->WeightChanged();
+	this->m_Manager->CalculateWeightChanged();
 
-	result->ProductDescription->Weight = weight;
+	// now we can map the product description
+	result->ProductDescription = m_ProductDescriptionMapper->Map();
 	return result;
 }
 
@@ -67,7 +71,7 @@ PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(Env
 	this->m_ActionResultProcessor->Handle(product, actionResult);
 	this->m_Manager->CalculateNext(nextAction);
 
-	return this->m_NextActionProcessor->Handle(nextAction);
+	return this->m_CalculationResultProcessor->Handle(nextAction, m_ProductDescriptionMapper);
 }
 
 void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Init(String^ amxPath, String^ tablePath)

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PCalcFactory.hpp"
+#include "ProductDescriptionMapper.hpp"
 #include "PCalcLib.hpp"
 
 BEGIN_PCALC_LIB_NAMESPACE
@@ -10,7 +11,7 @@ using namespace FP::Cloud::OnlineRateTable::Common::ProductCalculation;
 private ref class CalculationResultProcessor abstract
 {
 public:
-	PCalcResultInfo^ Handle();
+	PCalcResultInfo^ Handle(ProductDescriptionMapper^ mapper);
 
 protected:
 	CalculationResultProcessor(PCalcFactory^ factory);

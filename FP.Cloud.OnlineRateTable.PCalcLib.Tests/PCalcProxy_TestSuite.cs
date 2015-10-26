@@ -11,6 +11,12 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
     // ReSharper disable once InconsistentNaming
     public class PCalcProxy_TestSuite
     {
+        #region Constants
+
+        private const int MAX_STEPS = 30;
+
+        #endregion
+
         #region Fields
 
         private readonly Stopwatch m_Watch = new Stopwatch();
@@ -54,12 +60,11 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
 
             PCalcResultInfo result = proxy.Calculate(m_Environment, m_Weight);
 
-            int maxSteps = 30;
             int steps = 0;
 
-            for (int i = 0; i < maxSteps; i++)
+            for (int i = 0; i < MAX_STEPS; i++)
             {
-                steps = i;
+                steps++;
                 switch (result.QueryType)
                 {
                     case EQueryType.ShowMenu:
@@ -68,7 +73,7 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
                         break;
 
                     case EQueryType.None:
-                        i = maxSteps - 1;
+                        i = MAX_STEPS - 1;
                         break;
 
                     default:
@@ -77,7 +82,7 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
                 }
             }
 
-            Assert.IsTrue(steps < maxSteps);
+            Assert.IsTrue(steps < MAX_STEPS);
             Assert.IsTrue(result.ProductDescription.State == EProductDescriptionState.Complete);
         }
 

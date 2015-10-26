@@ -2,14 +2,16 @@
 #include "CalculationResultShowMenuProcessor.hpp"
 #include "CalculationResultRequestValueProcessor.hpp"
 #include "CalculationResultFinishedProcessor.hpp"
+#include "CalculationResultProcessor.hpp"
+#include "ProductDescriptionMapper.hpp"
 #include "ProductCalculation/ActionDefs.hpp"
 #include "Exceptions.hpp"
 #include "PCalcFactory.hpp"
 
-BEGIN_PCALC_LIB_NAMESPACE
 USING_PRODUCTCALCULATION_NAMESPACE
+BEGIN_PCALC_LIB_NAMESPACE
 
-FP::Cloud::OnlineRateTable::PCalcLib::CalculationResultProcessorProxy::CalculationResultProcessorProxy(PCalcFactory^ factory)
+CalculationResultProcessorProxy::CalculationResultProcessorProxy(FP::Cloud::OnlineRateTable::PCalcLib::PCalcFactory^ factory)
 	: m_Factory(factory)
 	, m_Processors(gcnew System::Collections::Generic::Dictionary<INT32, CalculationResultProcessor^>())
 {
@@ -18,13 +20,13 @@ FP::Cloud::OnlineRateTable::PCalcLib::CalculationResultProcessorProxy::Calculati
 	m_Processors->Add(ACTION_TEST_IMPRINT, gcnew CalculationResultFinishedProcessor(m_Factory));
 }
 
-PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::CalculationResultProcessorProxy::Handle(INT32 actionID)
+PCalcResultInfo^ CalculationResultProcessorProxy::Handle(INT32 actionID, ProductDescriptionMapper^ mapper)
 {
 	CalculationResultProcessor^ processor;
 
-	if(m_Processors->TryGetValue(actionID, processor))
+	if (m_Processors->TryGetValue(actionID, processor))
 	{
-		return processor->Handle();
+		return processor->Handle(mapper);
 	}
 	else
 	{

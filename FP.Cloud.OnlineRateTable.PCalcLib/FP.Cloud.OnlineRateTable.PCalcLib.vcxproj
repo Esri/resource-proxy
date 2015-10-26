@@ -183,6 +183,7 @@
     <ClInclude Include="CalculationResultProcessorProxy.hpp" />
     <ClInclude Include="CalculationResultShowMenuProcessor.hpp" />
     <ClInclude Include="CalculationResultProcessor.hpp" />
+    <ClInclude Include="ProductDescriptionMapper.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Stdafx.h" />
   </ItemGroup>
@@ -202,6 +203,7 @@
     <ClCompile Include="CalculationResultProcessorProxy.cpp" />
     <ClCompile Include="CalculationResultProcessor.cpp" />
     <ClCompile Include="CalculationResultShowMenuProcessor.cpp" />
+    <ClCompile Include="ProductDescriptionMapper.cpp" />
     <ClCompile Include="ZipToZoneMap.cpp" />
   </ItemGroup>
   <ItemGroup>

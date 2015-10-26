@@ -1,28 +1,24 @@
 #include "CalculationResultProcessor.hpp"
 
-using namespace FP::Cloud::OnlineRateTable::Common::ProductCalculation;
+USING_PRODUCTCALCULATION_NAMESPACE
+BEGIN_PCALC_LIB_NAMESPACE
 
 FP::Cloud::OnlineRateTable::PCalcLib::CalculationResultProcessor::CalculationResultProcessor(PCalcFactory^ factory)
 	: m_Factory(factory)
 {
 }
 
-PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::CalculationResultProcessor::Handle()
+PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::CalculationResultProcessor::Handle(ProductDescriptionMapper^ productDescriptionProcessor)
 {
 	PCalcResultInfo^ result = gcnew PCalcResultInfo();
-	ProductCalculation::IProductDescParameterPtr parameter = m_Factory->GetProdDesc()->AccessCurrProduct();
-	ProductDescriptionInfo^ product = gcnew ProductDescriptionInfo();
 
-	WeightInfo^ weight = gcnew WeightInfo();
-	weight->WeightUnit = (EWeightUnit)parameter->GetWeight().Unit;
-	weight->WeightValue = parameter->GetWeight().Value;
-
-	product->ProductCode = parameter->GetProductCode();
-	product->ProductId = parameter->GetProductID();
-	product->Weight = weight;
-
-	result->ProductDescription = product;
+	if (nullptr != productDescriptionProcessor)
+	{
+		result->ProductDescription = productDescriptionProcessor->Map();
+	}
 	SetDescription(result);
 
 	return result;
 }
+
+END_PCALC_LIB_NAMESPACE

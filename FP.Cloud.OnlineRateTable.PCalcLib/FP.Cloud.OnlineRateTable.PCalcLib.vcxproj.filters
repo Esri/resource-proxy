@@ -72,6 +72,9 @@
     <ClInclude Include="CalculationResultFinishedProcessor.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="ProductDescriptionMapper.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp">
@@ -120,6 +123,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="CalculationResultFinishedProcessor.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="ProductDescriptionMapper.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

@@ -5,6 +5,7 @@
 #include "PCalcFactory.hpp"
 #include "PCalcManager.hpp"
 #include "CalculationResultProcessorProxy.hpp"
+#include "ProductDescriptionMapper.hpp"
 #include "ActionResultProcessor.hpp"
 #include "EnvironmentProcessor.hpp"
 #include <stdio.h>
@@ -32,9 +33,10 @@ protected:
 private:
 	PCalcFactory^ m_Factory;
 	PCalcManager^ m_Manager;
-	CalculationResultProcessorProxy^ m_NextActionProcessor;
+	CalculationResultProcessorProxy^ m_CalculationResultProcessor;
 	ActionResultProcessor^ m_ActionResultProcessor;
 	EnvironmentProcessor^ m_EnvironmentProcessor;
+	ProductDescriptionMapper^ m_ProductDescriptionMapper;
 };
 
 END_PCALC_LIB_NAMESPACE
