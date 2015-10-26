@@ -30,6 +30,13 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
             return includeFileData ? temp.Select(r => r.ToRateTableInfo()) : temp.Select(r => r.ToRateTableInfoShort());
         }
 
+        //public async Task<IEnumerable<RateTableInfo>> GetLatestForVariant(bool includeFileData)
+        //{
+        //    //List<RateTable> temp = await m_DbContext.RateTables.Cast<RateTableInfo>()
+        //    //    .OrderByDescending(r=>r.ValidFrom).
+        //    //return includeFileData ? temp.Select(r => r.ToRateTableInfo()) : temp.Select(r => r.ToRateTableInfoShort());
+        //}
+
         public async Task<RateTableInfo> GetById(int id)
         {
             RateTable table = await m_DbContext.RateTables.FirstOrDefaultAsync(r => r.Id == id);
@@ -44,10 +51,14 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
                     .Where(r => (string.IsNullOrEmpty(variant) || r.Variant == variant) &&
                                 (string.IsNullOrEmpty(version) || r.VersionNumber == version) &&
                                 (!carrier.HasValue || r.CarrierId == carrier.Value) &&
-                                (!validFrom.HasValue || r.ValidFrom.CompareTo(validFrom.Value) >= 0) &&
+                                (!validFrom.HasValue || r.ValidFrom.CompareTo(validFrom.Value) <= 0) &&
                                 (string.IsNullOrEmpty(culture) || r.Culture == culture)).ToListAsync();
 
-            var sorted = tables.OrderBy(t => t.Id).Skip(start).Take(count);
+            var sorted = tables.OrderBy(t => t.Id).Skip(start);
+            if(count > 0)
+            {
+                sorted = sorted.Take(count);
+            }
             return includeFileData ? sorted.Select(r => r.ToRateTableInfo()) : sorted.Select(r => r.ToRateTableInfoShort());
         }
 

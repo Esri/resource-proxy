@@ -6,28 +6,54 @@ using System.Text;
 using System.Threading.Tasks;
 using FP.Cloud.OnlineRateTable.Common;
 using FP.Cloud.OnlineRateTable.Common.ProductCalculation;
-using  FP.Cloud.OnlineRateTable.PCalcLib;
+using FP.Cloud.OnlineRateTable.PCalcLib;
+using FP.Cloud.OnlineRateTable.Common.RateTable;
+using System.IO;
 
 namespace FP.Cloud.OnlineRateTable.BusinessLogic
 {
     public class OnlineRateCalculation : IRateCalculation
     {
+        #region members
+        private RateCalculationFileHandler m_Handler;
+        #endregion
+
+        #region constructor
+        public OnlineRateCalculation(RateCalculationFileHandler handler)
+        {
+            m_Handler = handler;
+        }
+        #endregion
+
+        #region IRateCalculation
         public async Task<PCalcResultInfo> StartCalculation(EnvironmentInfo environment, WeightInfo weight)
         {
-            using (var context = new PCalcProxyContext(@"C:\Temp\Pt2097152.amx", @"C:\Temp\Pt2097152.bin"))
-            {
-                IPCalcProxy proxy = context.Proxy;
-                return proxy.Calculate(environment, weight);
+            //lookup correct entry
+            await m_Handler.Initialize(environment);
+            if(m_Handler.IsValid)
+            { 
+                using (var context = new PCalcProxyContext(m_Handler.PawnFile, m_Handler.RateTableFile, m_Handler.AdditionalFiles))
+                {
+                    IPCalcProxy proxy = context.Proxy;
+                    return proxy.Calculate(environment, weight);
+                }
             }
+            return null;
         }
 
         public async Task<PCalcResultInfo> Calculate(EnvironmentInfo environment, ProductDescriptionInfo productDescription, ActionResultInfo actionResult)
         {
-            using (var context = new PCalcProxyContext(@"C:\Temp\Pt2097152.amx", @"C:\Temp\Pt2097152.bin"))
+            //lookup correct entry
+            await m_Handler.Initialize(environment);
+            if (m_Handler.IsValid)
             {
-                IPCalcProxy proxy = context.Proxy;
-                return proxy.Calculate(environment, productDescription, actionResult);
+                using (var context = new PCalcProxyContext(m_Handler.PawnFile, m_Handler.RateTableFile, m_Handler.AdditionalFiles))
+                {
+                    IPCalcProxy proxy = context.Proxy;
+                    return proxy.Calculate(environment, productDescription, actionResult);
+                }
             }
+            return null;
         }
 
         public async Task<PCalcResultInfo>StepBack(EnvironmentInfo environment, ProductDescriptionInfo productDescription)
@@ -39,6 +65,6 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
         {
             throw new NotImplementedException();
         }
-      
+        #endregion
     }
 }

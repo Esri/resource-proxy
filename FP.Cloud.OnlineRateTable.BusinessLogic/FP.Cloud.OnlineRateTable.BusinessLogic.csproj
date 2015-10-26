@@ -68,6 +68,7 @@
     <Compile Include="OnlineRateCalculation.cs" />
     <Compile Include="OnlineRateCalculationMock.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RateCalculationFileHandler.cs" />
     <Compile Include="RateTableManager.cs" />
   </ItemGroup>
   <ItemGroup>

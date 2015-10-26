@@ -15,6 +15,7 @@ namespace FP.Cloud.OnlineRateTable.Bootstrapper
         {
             Bind<IRateCalculation>().To<OnlineRateCalculation>();
             Bind<IRateTableManager>().To<RateTableManager>();
+            Bind<RateCalculationFileHandler>().ToSelf();
         }
     }
 }

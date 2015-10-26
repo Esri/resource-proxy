@@ -217,9 +217,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
         {
             if(TempData.Keys.Contains(PCALC_RESULT))
             {
-                var result = (PCalcResultInfo)TempData[PCALC_RESULT];
-                //TempData.Keys.Remove(PCALC_RESULT);
-                return result;
+                return (PCalcResultInfo)TempData[PCALC_RESULT];
             }
             return null;
         }
