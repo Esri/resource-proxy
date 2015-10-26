@@ -17,6 +17,7 @@ public:
 	void Unload();
 	void CalculateStart([System::Runtime::InteropServices::Out] INT32 %rNextAction);
 	void CalculateNext([System::Runtime::InteropServices::Out] INT32 %rNextAction);
+	void CalculateWeightChanged();
 
 private:
 	PCalcFactory^ m_Factory;

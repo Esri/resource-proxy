@@ -4,8 +4,10 @@
 #include "IPCalcProxy.hpp"
 #include "PCalcFactory.hpp"
 #include "PCalcManager.hpp"
-#include "NextActionProcessorProxy.hpp"
+#include "CalculationResultProcessorProxy.hpp"
+#include "ProductDescriptionMapper.hpp"
 #include "ActionResultProcessor.hpp"
+#include "EnvironmentProcessor.hpp"
 #include <stdio.h>
 
 namespace ProductCalculation
@@ -23,18 +25,18 @@ public:
 
 	virtual PCalcResultInfo^ Calculate(EnvironmentInfo^ environment, WeightInfo^ weight);
 	virtual PCalcResultInfo^ Calculate(EnvironmentInfo^ environment, ProductDescriptionInfo^ product, ActionResultInfo^ actionResult);
-
 	virtual void Init(System::String^ amxPath, System::String^ tablePath);
 
 protected:
 	!PCalcProxy();
-	void SetEnvironment(EnvironmentInfo^ environment);
 
 private:
 	PCalcFactory^ m_Factory;
 	PCalcManager^ m_Manager;
-	NextActionProcessorProxy^ m_NextActionProcessor;
+	CalculationResultProcessorProxy^ m_CalculationResultProcessor;
 	ActionResultProcessor^ m_ActionResultProcessor;
+	EnvironmentProcessor^ m_EnvironmentProcessor;
+	ProductDescriptionMapper^ m_ProductDescriptionMapper;
 };
 
 END_PCALC_LIB_NAMESPACE

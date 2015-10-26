@@ -11,6 +11,26 @@ Assembly System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e0
 	hash=None, flags=None
 Assembly System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
 	hash=None, flags=None
+Class FP.Cloud.OnlineRateTable.PCalcLib.PCalcLibException: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
+  :System.Exception
+    Void .ctor(System.String, System.Exception): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+    Void .ctor(System.String): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+    Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+Class FP.Cloud.OnlineRateTable.PCalcLib.PCalcLibErrorCodeException: AutoLayout, AnsiClass, Class, Public, Serializable, BeforeFieldInit
+  :FP.Cloud.OnlineRateTable.PCalcLib.PCalcLibException
+    Void .ctor(EXTENDED_ERROR_CODE*): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+    Void .ctor(System.String, System.Exception): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+    Void .ctor(Int32*, Int32*, Int32*): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+    Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+  Properties:
+    Int32 Subcode2 'get ' : 
+    Int32 Subcode1 'get ' : 
+    Int32 MainCode 'get ' : 
+  Methods:
+    GetObjectData(SerializationInfo, StreamingContext): PrivateScope, Public, Virtual, HideBySig
+    get_MainCode(): PrivateScope, Public, HideBySig, SpecialName
+    get_Subcode1(): PrivateScope, Public, HideBySig, SpecialName
+    get_Subcode2(): PrivateScope, Public, HideBySig, SpecialName
 Class PawnErrors: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
   Fields:
@@ -27,7 +47,7 @@ Interface FP.Cloud.OnlineRateTable.PCalcLib.IPCalcProxy: AutoLayout, AnsiClass, 
     Calculate(EnvironmentInfo, ProductDescriptionInfo, ActionResultInfo): PrivateScope, Public, Virtual, HideBySig, VtableLayoutMask, Abstract
     Calculate(EnvironmentInfo, WeightInfo): PrivateScope, Public, Virtual, HideBySig, VtableLayoutMask, Abstract
 Class FP.Cloud.OnlineRateTable.PCalcLib.PCalcProxyContext: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
-    Void .ctor(System.String, System.String): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+    Void .ctor(System.String, System.String, System.String[]): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
   Interfaces:
     System.IDisposable
   Properties:

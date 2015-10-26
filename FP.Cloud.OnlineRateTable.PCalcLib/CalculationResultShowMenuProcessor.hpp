@@ -1,16 +1,16 @@
 #pragma once
 
-#include "NextActionProcessor.hpp"
+#include "CalculationResultProcessor.hpp"
 #include "PCalcLib.hpp"
 
 BEGIN_PCALC_LIB_NAMESPACE
 
 using namespace FP::Cloud::OnlineRateTable::Common::ProductCalculation;
 
-private ref class NextActionShowMenuProcessor : public NextActionProcessor
+private ref class CalculationResultShowMenuProcessor : public CalculationResultProcessor
 {
 public:
-	NextActionShowMenuProcessor(PCalcFactory^ factory);
+	CalculationResultShowMenuProcessor(PCalcFactory^ factory);
 	virtual void SetDescription(PCalcResultInfo^ resultInfo) override;
 };
 

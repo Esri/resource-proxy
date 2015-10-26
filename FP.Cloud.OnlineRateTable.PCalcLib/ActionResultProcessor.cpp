@@ -1,5 +1,6 @@
 #include "ActionResultProcessor.hpp"
 #include "ProductCalculation/IProductDescParameter.hpp"
+#include "Exceptions.hpp"
 
 USING_PRODUCTCALCULATION_NAMESPACE
 
@@ -60,8 +61,26 @@ void FP::Cloud::OnlineRateTable::PCalcLib::ActionResultProcessor::SetActionResul
 
 void FP::Cloud::OnlineRateTable::PCalcLib::ActionResultProcessor::SetWeight(IProductDescParameterPtr &parameter, WeightInfo^ changedWeight)
 {
-	//TODO wwaitz - in my mind, weight should be normalized
-	WeightType weight(changedWeight->WeightValue, (BYTE)changedWeight->WeightUnit);
-	parameter->SetWeight(weight);
+	BYTE unit;
+
+	switch (changedWeight->WeightUnit)
+	{
+		case EWeightUnit::TenthGram:
+			unit = UNIT_TENTH_GRAM;
+			break;
+		case EWeightUnit::Gram:
+			unit = UNIT_GRAM;
+			break;
+		case EWeightUnit::HoundrethOunce:
+			unit = UNIT_HUNDREDTH_OUNCE;
+			break;
+		case EWeightUnit::TenthOunce:
+			unit = UNIT_TENTH_OUNCE;
+			break;
+		default:
+			throw gcnew PCalcLibException("Unknown unit type");
+	}
+
+	parameter->SetWeight(WeightType(changedWeight->WeightValue, unit));
 }
 

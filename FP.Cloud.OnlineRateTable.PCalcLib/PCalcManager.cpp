@@ -99,5 +99,12 @@ void FP::Cloud::OnlineRateTable::PCalcLib::PCalcManager::CalculateNext([System::
 	rNextAction = nextAction;
 }
 
+void FP::Cloud::OnlineRateTable::PCalcLib::PCalcManager::CalculateWeightChanged()
+{
+	m_Factory->GetPCalcMgr()->SetInputOperation(IPCalcManager::WEIGHT_CHANGED);
+
+	int ignoreNextAction;
+	this->CalculateNext(ignoreNextAction);
+}
 
 

@@ -167,9 +167,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ActionResultProcessor.hpp" />
+    <ClInclude Include="CalculationResultFinishedProcessor.hpp" />
+    <ClInclude Include="EnvironmentProcessor.hpp" />
     <ClInclude Include="ExtendedErrorCode.hpp" />
     <ClInclude Include="IPCalcProxy.hpp" />
     <ClInclude Include="Lock.hpp" />
+    <ClInclude Include="CalculationResultRequestValueProcessor.hpp" />
     <ClInclude Include="PCalcFactory.hpp" />
     <ClInclude Include="PCalcFactoryCPP.hpp" />
     <ClInclude Include="PCalcLib.hpp" />
@@ -177,9 +180,10 @@
     <ClInclude Include="PCalcManager.hpp" />
     <ClInclude Include="PCalcProxy.hpp" />
     <ClInclude Include="PCalcProxyContext.hpp" />
-    <ClInclude Include="NextActionProcessorProxy.hpp" />
-    <ClInclude Include="NextActionShowMenuProcessor.hpp" />
-    <ClInclude Include="NextActionProcessor.hpp" />
+    <ClInclude Include="CalculationResultProcessorProxy.hpp" />
+    <ClInclude Include="CalculationResultShowMenuProcessor.hpp" />
+    <ClInclude Include="CalculationResultProcessor.hpp" />
+    <ClInclude Include="ProductDescriptionMapper.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Stdafx.h" />
   </ItemGroup>
@@ -187,15 +191,19 @@
     <ClCompile Include="..\..\FMLibs\ProductCalculation\Windows\PCalcSimulation\PCalcManagedLib\PCalcManagedLib.cpp" />
     <ClCompile Include="ActionResultProcessor.cpp" />
     <ClCompile Include="AssemblyInfo.cpp" />
+    <ClCompile Include="CalculationResultFinishedProcessor.cpp" />
+    <ClCompile Include="EnvironmentProcessor.cpp" />
     <ClCompile Include="ExtendedErrorCode.cpp" />
+    <ClCompile Include="CalculationResultRequestValueProcessor.cpp" />
     <ClCompile Include="PCalcFactory.cpp" />
     <ClCompile Include="PCalcFactoryCPP.cpp" />
     <ClCompile Include="PCalcManager.cpp" />
     <ClCompile Include="PCalcProxy.cpp" />
     <ClCompile Include="PCalcProxyContext.cpp" />
-    <ClCompile Include="NextActionProcessorProxy.cpp" />
-    <ClCompile Include="NextActionProcessor.cpp" />
-    <ClCompile Include="NextActionShowMenuProcessor.cpp" />
+    <ClCompile Include="CalculationResultProcessorProxy.cpp" />
+    <ClCompile Include="CalculationResultProcessor.cpp" />
+    <ClCompile Include="CalculationResultShowMenuProcessor.cpp" />
+    <ClCompile Include="ProductDescriptionMapper.cpp" />
     <ClCompile Include="ZipToZoneMap.cpp" />
   </ItemGroup>
   <ItemGroup>
