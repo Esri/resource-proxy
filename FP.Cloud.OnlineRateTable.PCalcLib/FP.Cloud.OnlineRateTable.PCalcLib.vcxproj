@@ -86,6 +86,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(ProjectDir)\Exports</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -236,6 +237,7 @@
     </ProjectReference>
     <ProjectReference Include="..\FP.Cloud.OnlineRateTable.Common\FP.Cloud.OnlineRateTable.Common.csproj">
       <Project>{0dd4a6a3-1b46-474d-90ae-324cd5d7f8a0}</Project>
+      <Private>false</Private>
     </ProjectReference>
     <ProjectReference Include="..\FP.Cloud.OnlineRateTable.PCalcLib.ReImpl\FP.Cloud.OnlineRateTable.PCalcLib.ReImpl.vcxproj">
       <Project>{016d415a-34f4-414c-ae4f-6caf3b361d1b}</Project>

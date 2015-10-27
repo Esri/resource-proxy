@@ -53,7 +53,7 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
         [TestCase(50)]
         [TestCase(10)]
         public void ShouldCalculateCompleteProduct(int milliseconds)
-        {
+        {            
             m_ExpectedMaximum = TimeSpan.FromMilliseconds(milliseconds);
 
             Assert.IsNotNull(m_Context.Proxy);
