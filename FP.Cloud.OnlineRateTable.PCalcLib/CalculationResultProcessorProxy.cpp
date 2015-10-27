@@ -15,18 +15,19 @@ CalculationResultProcessorProxy::CalculationResultProcessorProxy(FP::Cloud::Onli
 	: m_Factory(factory)
 	, m_Processors(gcnew System::Collections::Generic::Dictionary<INT32, CalculationResultProcessor^>())
 {
+	m_Processors->Add(ACTION_NONE, gcnew CalculationResultFinishedProcessor(m_Factory));
 	m_Processors->Add(ACTION_SHOW_MENU, gcnew CalculationResultShowMenuProcessor(m_Factory));
 	m_Processors->Add(ACTION_REQUEST_VALUE, gcnew CalculationResultRequestValueProcessor(m_Factory));
 	m_Processors->Add(ACTION_TEST_IMPRINT, gcnew CalculationResultFinishedProcessor(m_Factory));
 }
 
-PCalcResultInfo^ CalculationResultProcessorProxy::Handle(INT32 actionID, ProductDescriptionMapper^ mapper)
+PCalcResultInfo^ CalculationResultProcessorProxy::Handle(INT32 actionID)
 {
 	CalculationResultProcessor^ processor;
 
 	if (m_Processors->TryGetValue(actionID, processor))
 	{
-		return processor->Handle(mapper);
+		return processor->Handle();
 	}
 	else
 	{

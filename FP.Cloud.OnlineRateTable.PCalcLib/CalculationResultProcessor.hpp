@@ -11,7 +11,7 @@ using namespace FP::Cloud::OnlineRateTable::Common::ProductCalculation;
 private ref class CalculationResultProcessor abstract
 {
 public:
-	PCalcResultInfo^ Handle(ProductDescriptionMapper^ mapper);
+	PCalcResultInfo^ Handle();
 
 protected:
 	CalculationResultProcessor(PCalcFactory^ factory);

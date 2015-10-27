@@ -14,14 +14,10 @@ private ref class ActionResultProcessor
 {
 public:
 	ActionResultProcessor(PCalcFactory^ factory);
-
-	void Handle(ProductDescriptionInfo^ product, ActionResultInfo^ actionResult);
-	void Handle(WeightInfo^ weight);
+	void Handle(ActionResultInfo^ actionResult);
 
 private:
-	IProductDescParameterPtr SetProduct(ProductDescriptionInfo^ product);
 	void SetActionResult(IProductDescParameterPtr &parameter, ActionResultInfo^ actionResult);
-	void SetWeight(IProductDescParameterPtr &parameter, WeightInfo^ weight);
 
 private:
 	PCalcFactory^ m_Factory;

@@ -32,7 +32,7 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
 
         [SetUp]
         public void SetUp()
-        {            
+        {
             FileInfo amxFile = new FileInfo("Pt2097152.amx");
             FileInfo tableFile = new FileInfo("Pt2097152.bin");
 
@@ -65,6 +65,11 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
 
             for (int i = 0; i < MAX_STEPS; i++)
             {
+                if (result.ProductDescription.State == EProductDescriptionState.Complete)
+                {
+                    break;
+                }
+
                 steps++;
                 switch (result.QueryType)
                 {
@@ -93,7 +98,6 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
             Assert.IsTrue(result.ProductDescription.State == EProductDescriptionState.Complete);
             Assert.IsTrue(result.ProductDescription.Postage.PostageValue > 0);
             Assert.IsTrue(result.ProductDescription.ProductCode > 0);
-
         }
 
         [TestCase(1000)]
@@ -110,8 +114,8 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
             PCalcResultInfo result = proxy.Calculate(m_Environment, m_Weight);
 
             Assert.IsNotNull(result);
-            Assert.IsTrue(result.QueryType == EQueryType.ShowMenu);
-            Assert.IsTrue(result.ProductDescription.Weight.WeightValue != 0, "Product has no weight");
+            Assert.AreEqual(EQueryType.ShowMenu, result.QueryType);
+            Assert.Greater(result.ProductDescription.Weight.WeightValue, 0, "Product has no weight");
         }
 
         [TestCase(1000)]
@@ -125,18 +129,14 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
             Assert.IsNotNull(m_Context.Proxy);
             IPCalcProxy proxy = m_Context.Proxy;
 
-            //first step - we need an product description
-            PCalcResultInfo result = proxy.Calculate(m_Environment, m_Weight);
-            Assert.IsNotNull(result);
-            Assert.IsTrue(result.QueryType == EQueryType.ShowMenu);
+            ProductDescriptionInfo product = new ProductDescriptionInfo { ProductId = 1, WeightClass = 1, Weight = m_Weight };
 
-            // second step
             var actionResult = new ActionResultInfo { Action = EActionId.ShowMenu, Label = 0, Results = new List<AnyInfo> { new AnyInfo { AnyValue = "0", AnyType = EAnyType.UINT32 } } };
-            result = proxy.Calculate(m_Environment, result.ProductDescription, actionResult);
+            PCalcResultInfo result = proxy.Calculate(m_Environment, product, actionResult);
 
             Assert.IsNotNull(result);
-            Assert.IsTrue(result.QueryType == EQueryType.ShowMenu);
-            Assert.IsTrue(result.ProductDescription.Weight.WeightValue != 0, "Product has no weight");
+            Assert.AreEqual(EQueryType.ShowMenu, result.QueryType);
+            Assert.Greater(result.ProductDescription.Weight.WeightValue, 0, "Product has no weight");
         }
 
         [TearDown]

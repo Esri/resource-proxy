@@ -168,6 +168,9 @@
   <ItemGroup>
     <ClInclude Include="ActionResultProcessor.hpp" />
     <ClInclude Include="CalculationResultFinishedProcessor.hpp" />
+    <ClInclude Include="Convert.hpp" />
+    <ClInclude Include="DisplayObjectTypeVisitor.hpp" />
+    <ClInclude Include="DisplayTypeVisitor.hpp" />
     <ClInclude Include="EnvironmentProcessor.hpp" />
     <ClInclude Include="ExtendedErrorCode.hpp" />
     <ClInclude Include="IPCalcProxy.hpp" />

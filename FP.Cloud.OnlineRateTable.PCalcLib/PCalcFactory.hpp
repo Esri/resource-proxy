@@ -31,6 +31,14 @@ public:
 	ProductCalculation::IPCalcGeneralInfoManagerPtr GetPCalcGeneralInfoMgr(void);
 	ProductCalculation::IPCalcReportManagerPtr GetPCalcReportMgr(void);
 
+	property ProductCalculation::PCalcFactory* FactoryPtr
+	{
+		ProductCalculation::PCalcFactory* get()
+		{
+			return m_pFactory;
+		}
+	}
+
 protected:
 	!PCalcFactory(void);
 

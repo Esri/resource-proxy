@@ -10,29 +10,10 @@ FP::Cloud::OnlineRateTable::PCalcLib::ActionResultProcessor::ActionResultProcess
 
 }
 
-void FP::Cloud::OnlineRateTable::PCalcLib::ActionResultProcessor::Handle(ProductDescriptionInfo^ product, ActionResultInfo^ actionResult)
+void FP::Cloud::OnlineRateTable::PCalcLib::ActionResultProcessor::Handle(ActionResultInfo^ actionResult)
 {
-	IProductDescParameterPtr parameter = this->SetProduct(product);
+	IProductDescParameterPtr parameter = m_Factory->GetProdDesc()->AccessCurrProduct();
 	this->SetActionResult(parameter, actionResult);
-}
-
-void FP::Cloud::OnlineRateTable::PCalcLib::ActionResultProcessor::Handle(WeightInfo^ weight)
-{
-	IProductDescParameterPtr parameter = m_Factory->GetProdDesc()->AccessCurrProduct();
-	this->SetWeight(parameter, weight);
-}
-
-ProductCalculation::IProductDescParameterPtr FP::Cloud::OnlineRateTable::PCalcLib::ActionResultProcessor::SetProduct(ProductDescriptionInfo^ product)
-{
-
-	IProductDescParameterPtr parameter = m_Factory->GetProdDesc()->AccessCurrProduct();
-
-	parameter->SetProductCode(product->ProductCode);
-	parameter->SetProductID(product->ProductId);
-
-	this->SetWeight(parameter, product->Weight);
-
-	return parameter;
 }
 
 void FP::Cloud::OnlineRateTable::PCalcLib::ActionResultProcessor::SetActionResult(IProductDescParameterPtr &parameter, ActionResultInfo^ actionResult)
@@ -62,28 +43,4 @@ void FP::Cloud::OnlineRateTable::PCalcLib::ActionResultProcessor::SetActionResul
 	parameter->SetActionResult(target);
 }
 
-void FP::Cloud::OnlineRateTable::PCalcLib::ActionResultProcessor::SetWeight(IProductDescParameterPtr &parameter, WeightInfo^ changedWeight)
-{
-	BYTE unit;
-
-	switch (changedWeight->WeightUnit)
-	{
-		case EWeightUnit::TenthGram:
-			unit = UNIT_TENTH_GRAM;
-			break;
-		case EWeightUnit::Gram:
-			unit = UNIT_GRAM;
-			break;
-		case EWeightUnit::HoundrethOunce:
-			unit = UNIT_HUNDREDTH_OUNCE;
-			break;
-		case EWeightUnit::TenthOunce:
-			unit = UNIT_TENTH_OUNCE;
-			break;
-		default:
-			throw gcnew PCalcLibException("Unknown unit type");
-	}
-
-	parameter->SetWeight(WeightType(changedWeight->WeightValue, unit));
-}
 

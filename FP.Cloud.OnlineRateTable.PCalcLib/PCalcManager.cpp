@@ -99,12 +99,21 @@ void FP::Cloud::OnlineRateTable::PCalcLib::PCalcManager::CalculateNext([System::
 	rNextAction = nextAction;
 }
 
-void FP::Cloud::OnlineRateTable::PCalcLib::PCalcManager::CalculateWeightChanged()
+void FP::Cloud::OnlineRateTable::PCalcLib::PCalcManager::Calculate([System::Runtime::InteropServices::Out] INT32 %rNextAction)
 {
 	m_Factory->GetPCalcMgr()->SetInputOperation(IPCalcManager::WEIGHT_CHANGED);
 
-	int ignoreNextAction;
-	this->CalculateNext(ignoreNextAction);
+	int nextAction = 0;
+	try
+	{
+		m_Factory->GetPCalcMgr()->PCalcCalculateProduct(nextAction);
+	}
+	catch (ProdCalcException ex)
+	{
+		throw gcnew PCalcLibErrorCodeException(ex.GetErrorCode());
+	}
+
+	rNextAction = nextAction;
 }
 
 

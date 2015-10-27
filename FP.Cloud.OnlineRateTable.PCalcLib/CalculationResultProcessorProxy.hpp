@@ -13,7 +13,7 @@ private ref class CalculationResultProcessorProxy
 {
 public:
 	CalculationResultProcessorProxy(PCalcFactory^ factory);
-	PCalcResultInfo^ Handle(INT32 actionID, ProductDescriptionMapper^ mapper);
+	PCalcResultInfo^ Handle(INT32 actionID);
 
 private:
 	PCalcFactory^ m_Factory;
