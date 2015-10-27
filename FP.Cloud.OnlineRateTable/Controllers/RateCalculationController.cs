@@ -11,6 +11,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using FP.Cloud.OnlineRateTable.Common.ProductCalculation;
 using FP.Cloud.OnlineRateTable.Common.ProductCalculation.ApiRequests;
+using FP.Cloud.OnlineRateTable.Common.RateTable;
 
 namespace FP.Cloud.OnlineRateTable.Controllers
 {
@@ -19,14 +20,52 @@ namespace FP.Cloud.OnlineRateTable.Controllers
         
         #region members
         private IRateCalculation m_Calculator;
+        private IRateTableManager m_Manager;
         #endregion
 
-        public RateCalculationController(IRateCalculation calculator)
+        public RateCalculationController(IRateCalculation calculator, IRateTableManager manager)
         {
             m_Calculator = calculator;
+            m_Manager = manager;
         }
 
         #region public web API
+        [ResponseType(typeof(IEnumerable<RateTableInfo>))]
+        [HttpGet]
+        [ActionName("GetActiveTables")]
+        public async Task<IHttpActionResult> StartProductCalculation(DateTime clientUtcDate)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            IEnumerable<RateTableInfo> result = await m_Manager.GetLatestForVariant(false, clientUtcDate);
+            return Ok(result);
+        }
+
+        [ResponseType(typeof(EnvironmentInfo))]
+        [HttpGet]
+        [ActionName("CreateEnvironment")]
+        public async Task<IHttpActionResult> CreateEnvironment(int rateTableId)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            RateTableInfo info = await m_Manager.GetById(rateTableId);
+            if(null == info)
+            {
+                return NotFound();
+            }
+            return Ok(new EnvironmentInfo()
+            {
+                CarrierId = info.CarrierId,
+                Culture = info.Culture,
+                Iso3CountryCode = info.Variant.Length >= 3 ? info.Variant.Substring(0,3) : string.Empty,
+                UtcDate = DateTime.UtcNow
+            });
+        }
+
         [ResponseType(typeof(PCalcResultInfo))]
         [HttpPost]
         [ActionName("Start")]

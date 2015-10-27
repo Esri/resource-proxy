@@ -30,12 +30,13 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
             return includeFileData ? temp.Select(r => r.ToRateTableInfo()) : temp.Select(r => r.ToRateTableInfoShort());
         }
 
-        //public async Task<IEnumerable<RateTableInfo>> GetLatestForVariant(bool includeFileData)
-        //{
-        //    //List<RateTable> temp = await m_DbContext.RateTables.Cast<RateTableInfo>()
-        //    //    .OrderByDescending(r=>r.ValidFrom).
-        //    //return includeFileData ? temp.Select(r => r.ToRateTableInfo()) : temp.Select(r => r.ToRateTableInfoShort());
-        //}
+        public async Task<IEnumerable<RateTableInfo>> GetLatestForVariant(bool includeFileData, DateTime? currentUtc)
+        {
+            List<RateTable> temp = await m_DbContext.RateTables.Cast<RateTable>()
+                .Where(r=> !currentUtc.HasValue || r.ValidFrom.CompareTo(currentUtc.Value) <= 0)
+                .GroupBy(r => r.Variant).Select(grp => grp.OrderByDescending(ge => ge.ValidFrom).FirstOrDefault()).ToListAsync();
+            return includeFileData ? temp.Select(r => r.ToRateTableInfo()) : temp.Select(r => r.ToRateTableInfoShort());
+        }
 
         public async Task<RateTableInfo> GetById(int id)
         {
@@ -44,14 +45,15 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
         }
 
         public async Task<IEnumerable<RateTableInfo>> GetFiltered(string variant, string version, int? carrier, 
-            DateTime? validFrom, string culture, int start, int count, bool includeFileData)
+            DateTime? minValidFrom, DateTime? maxValidFrom, string culture, int start, int count, bool includeFileData)
         {
             IEnumerable<RateTable> tables =
                 await m_DbContext.RateTables.Cast<RateTable>()
                     .Where(r => (string.IsNullOrEmpty(variant) || r.Variant == variant) &&
                                 (string.IsNullOrEmpty(version) || r.VersionNumber == version) &&
                                 (!carrier.HasValue || r.CarrierId == carrier.Value) &&
-                                (!validFrom.HasValue || r.ValidFrom.CompareTo(validFrom.Value) <= 0) &&
+                                (!minValidFrom.HasValue || r.ValidFrom.CompareTo(minValidFrom.Value) >= 0) &&
+                                (!maxValidFrom.HasValue || r.ValidFrom.CompareTo(maxValidFrom.Value) <= 0) &&
                                 (string.IsNullOrEmpty(culture) || r.Culture == culture)).ToListAsync();
 
             var sorted = tables.OrderBy(t => t.Id).Skip(start);

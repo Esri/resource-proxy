@@ -2,15 +2,18 @@
 @if (ViewData.ContainsKey("Postage"))
 {
     var postage = ((FP.Cloud.OnlineRateTable.Common.ProductCalculation.PostageInfo)ViewData["Postage"]);
-    <div>
-        <h4>Postage</h4>
-        <dl class="dl-horizontal">
-            <dt>
-                @Html.DisplayName("Current Postage"):
-            </dt>
-            <dd>
-                @postage.GetFormattedPostage(new System.Globalization.CultureInfo("en-US"), true, false)
-            </dd>
-        </dl>
-    </div>
+    if (null != postage)
+    {
+        <div>
+            <h4>Postage</h4>
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayName("Current Postage"):
+                </dt>
+                <dd>
+                    @postage.GetFormattedPostage(new System.Globalization.CultureInfo("en-US"), true, false)
+                </dd>
+            </dl>
+        </div>
+    }
 }

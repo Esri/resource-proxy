@@ -1,5 +1,6 @@
 ﻿using FP.Cloud.OnlineRateTable.Common.ProductCalculation;
 using FP.Cloud.OnlineRateTable.Common.ProductCalculation.ApiRequests;
+using FP.Cloud.OnlineRateTable.Common.RateTable;
 using RestSharp;
 using System;
 using System.Collections.Generic;
@@ -45,6 +46,28 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
             request.AddBody(calculateRequest);
 
             return await Execute<PCalcResultInfo>(request, m_Api, string.Empty);
+        }
+
+        public async Task<IEnumerable<RateTableInfo>> GetActiveRateTables(DateTime clientDate)
+        {
+            DateTime clientUtcDate = clientDate.ToUniversalTime();
+
+            RestRequest request = GetNewRequest();
+            request.Resource = "GetActiveTables";
+            request.Method = Method.GET;
+            request.AddParameter("clientUtcDate", clientUtcDate, ParameterType.GetOrPost);
+
+            return await Execute<List<RateTableInfo>>(request, m_Api, string.Empty);
+        }
+
+        public async Task<EnvironmentInfo> CreateEnvironment(int rateTableId)
+        {
+            RestRequest request = GetNewRequest();
+            request.Resource = "CreateEnvironment";
+            request.Method = Method.GET;
+            request.AddParameter("rateTableId", rateTableId, ParameterType.GetOrPost);
+
+            return await Execute<EnvironmentInfo>(request, m_Api, string.Empty);
         }
         #endregion
 
