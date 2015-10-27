@@ -8,6 +8,7 @@
         {
             using (Html.BeginForm("Start", "ProductCalculation", FormMethod.Post))
             {
+                @Html.AntiForgeryToken()
                 @Html.HiddenFor(model => model.QueryType);
                 <div class="form-group">
                     @Html.LabelFor(model => model.SelectedRateTable, htmlAttributes: new { @class = "control-label col-md-2" })

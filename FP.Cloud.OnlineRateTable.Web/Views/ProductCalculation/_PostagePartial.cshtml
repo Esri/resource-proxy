@@ -1,7 +1,7 @@
 ﻿
-@if (ViewData.ContainsKey("Postage"))
+@if (ViewData.ContainsKey(FP.Cloud.OnlineRateTable.Web.Controllers.ProductCalculationController.POSTAGE))
 {
-    var postage = ((FP.Cloud.OnlineRateTable.Common.ProductCalculation.PostageInfo)ViewData["Postage"]);
+    var postage = ((FP.Cloud.OnlineRateTable.Common.ProductCalculation.PostageInfo)ViewData[FP.Cloud.OnlineRateTable.Web.Controllers.ProductCalculationController.POSTAGE]);
     if (null != postage)
     {
         <div>

@@ -1,6 +1,6 @@
-﻿@if (ViewData.ContainsKey("Pcalc"))
+﻿@if (ViewData.ContainsKey(FP.Cloud.OnlineRateTable.Web.Controllers.ProductCalculationController.REQUEST_DESCRIPTION))
 {
-    var pcalc = ((FP.Cloud.OnlineRateTable.Common.ProductCalculation.SelectValueDescriptionInfo)ViewData["Pcalc"]);
+    var pcalc = ((FP.Cloud.OnlineRateTable.Common.ProductCalculation.SelectValueDescriptionInfo)ViewData[FP.Cloud.OnlineRateTable.Web.Controllers.ProductCalculationController.REQUEST_DESCRIPTION]);
 
     <div>
         <h4>Please select an item</h4>

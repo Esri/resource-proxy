@@ -1,17 +1,17 @@
 ﻿@model FP.Cloud.OnlineRateTable.Web.Models.ViewModels.RequestValueViewModel
 
-@if (ViewData.ContainsKey(FP.Cloud.OnlineRateTable.Web.Controllers.ProductCalculationController.PCALC_RESULT))
+@if (ViewData.ContainsKey(FP.Cloud.OnlineRateTable.Web.Controllers.ProductCalculationController.REQUEST_DESCRIPTION))
 {
-    var pcalc = ((FP.Cloud.OnlineRateTable.Common.ProductCalculation.RequestDescriptionInfo)ViewData[FP.Cloud.OnlineRateTable.Web.Controllers.ProductCalculationController.PCALC_RESULT]);
-    if (null != pcalc)
+    var requestDescription = ((FP.Cloud.OnlineRateTable.Common.ProductCalculation.RequestDescriptionInfo)ViewData[FP.Cloud.OnlineRateTable.Web.Controllers.ProductCalculationController.REQUEST_DESCRIPTION]);
+    if (null != requestDescription)
     {
-        Model.Label = pcalc.Label;
-        Model.FormatString = pcalc.DisplayFormat;
+        Model.Label = requestDescription.Label;
+        Model.FormatString = requestDescription.DisplayFormat;
         <div>
             <h4>Please enter a value</h4>
             <hr />
             <div class="text-center">
-                @pcalc.DescriptionTitle
+                @requestDescription.DescriptionTitle
             </div>
             @using (Html.BeginForm("RequestValue", "ProductCalculation", FormMethod.Post))
             {

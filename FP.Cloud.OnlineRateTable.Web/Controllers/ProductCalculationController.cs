@@ -18,6 +18,9 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
     {
         #region const
         public static readonly string PCALC_RESULT = "PcalcResult";
+        public static readonly string REQUEST_DESCRIPTION = "RequestDescription";
+        public static readonly string POSTAGE = "Postage";
+        public static readonly string WEIGHT = "Weight";
         public static readonly string ENVIRONMENT = "Environment";
         public static readonly string GENERAL_ERROR = "GeneralError";
         #endregion
@@ -37,30 +40,39 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
         public async Task<ActionResult> Index()
         {
             IEnumerable<RateTableInfo> allActive = await m_Repository.GetActiveRateTables(DateTime.Now);
-            ViewData.Add(ENVIRONMENT, allActive);
-            return View(ProductCalculationViewModel.Create(EQueryType.None));
+            if (null != allActive && allActive.Count() > 0)
+            {
+                ViewData.Add(ENVIRONMENT, allActive);
+                return View(ProductCalculationViewModel.Create(EQueryType.None));
+            }
+            ModelState.AddModelError(GENERAL_ERROR, "Unable to retrieve active rate tables");
+            return View("Index", ProductCalculationViewModel.Create(EQueryType.None));
         }
 
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> Start(StartCalculationViewModel model)
         {
-            int rateTableId = 0;
-            int.TryParse(model.SelectedRateTable, out rateTableId);
-            EnvironmentInfo environment = await m_Repository.CreateEnvironment(rateTableId);
-            if (null != environment)
+            if (ModelState.IsValid)
             {
-                StartCalculationRequest request = new StartCalculationRequest();
-                request.Weight = new WeightInfo() { WeightUnit = EWeightUnit.Gram, WeightValue = 1537 };
-                environment.SenderZipCode = model.SenderZip;
-                request.Environment = environment;
-                PCalcResultInfo result = await m_Repository.Start(request);
-                if (null != result)
+                int rateTableId = 0;
+                int.TryParse(model.SelectedRateTable, out rateTableId);
+                EnvironmentInfo environment = await m_Repository.CreateEnvironment(rateTableId);
+                if (null != environment)
                 {
-                    AddOrUpdateTempData(result, request.Environment);
-                    ViewData.Add(PCALC_RESULT, result);
-                    return View("Index", ProductCalculationViewModel.Create(result.QueryType));
+                    StartCalculationRequest request = new StartCalculationRequest();
+                    request.Weight = new WeightInfo() { WeightUnit = EWeightUnit.Gram, WeightValue = 0 };
+                    environment.SenderZipCode = model.SenderZip;
+                    request.Environment = environment;
+                    PCalcResultInfo result = await m_Repository.Start(request);
+                    if (null != result)
+                    {
+                        AddOrUpdateTempData(result, request.Environment);
+                        AddViewData(result);
+                        return View("Index", ProductCalculationViewModel.Create(result.QueryType));
+                    }
+                    ModelState.AddModelError(GENERAL_ERROR, "Unable to initialize product calculation");
+                    return View("Index", ProductCalculationViewModel.Create(EQueryType.None));
                 }
-                ModelState.AddModelError(GENERAL_ERROR, "Unable to initialie product calculation");
-                return View("Index", ProductCalculationViewModel.Create(EQueryType.None));
             }
             ModelState.AddModelError(GENERAL_ERROR, "Unable to create environment");
             return View("Index", ProductCalculationViewModel.Create(EQueryType.None));
@@ -73,7 +85,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
             request.Environment = GetEnvironment();
             PCalcResultInfo result = await m_Repository.Start(request);
             AddOrUpdateTempData(result, request.Environment);
-            ViewData.Add(PCALC_RESULT, result);
+            AddViewData(result);
             return View("Index", ProductCalculationViewModel.Create(result.QueryType));
         }
 
@@ -86,11 +98,16 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
                 request.Environment = GetEnvironment();
                 request.ProductDescription = lastResult.ProductDescription;
                 PCalcResultInfo result = await m_Repository.StepBack(request);
-
-                AddOrUpdateTempData(result, request.Environment);
-                ViewData.Add(PCALC_RESULT, result);
-                return View("Index", ProductCalculationViewModel.Create(result.QueryType));
+                if (null != result)
+                {
+                    AddOrUpdateTempData(result, request.Environment);
+                    AddViewData(result);
+                    return View("Index", ProductCalculationViewModel.Create(result.QueryType));
+                }
+                ModelState.AddModelError(GENERAL_ERROR, "Unable to contact product calculation API");
+                return View("Index", ProductCalculationViewModel.Create(EQueryType.None));
             }
+            ModelState.AddModelError(GENERAL_ERROR, "Unable to retrieve last result");
             return View("Index", ProductCalculationViewModel.Create(EQueryType.None));
         }
 
@@ -114,7 +131,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
                     new AnyInfo() { AnyType = EAnyType.INT32, AnyValue=index.ToString()}
                 }
             };
-            return await HandleCalculation(actionResult);
+            return await HandleCalculation(actionResult, GetEnvironment());
         }
 
         public async Task<ActionResult> SelectIndex(int index)
@@ -127,7 +144,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
                     new AnyInfo() { AnyType = EAnyType.INT32, AnyValue=index.ToString()}
                 }
             };
-            return await HandleCalculation(actionResult);
+            return await HandleCalculation(actionResult, GetEnvironment());
         }
 
         public async Task<ActionResult> SelectValue(int entryValue)
@@ -140,42 +157,53 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
                     new AnyInfo() { AnyType = EAnyType.INT32, AnyValue=entryValue.ToString()}
                 }
             };
-            return await HandleCalculation(actionResult);
+            return await HandleCalculation(actionResult, GetEnvironment());
         }
 
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> RequestValue(RequestValueViewModel model)
         {
-            CultureInfo culture = new CultureInfo(GetEnvironment().Culture);
-            char decimalSeperator = culture.NumberFormat.CurrencyDecimalSeparator.ToCharArray()[0];
-
-            FormatStringAdapter adapter = new FormatStringAdapter(decimalSeperator);
-            adapter.SetFormatString(model.FormatString);
-
-            string formattedString;
-            adapter.Format(out formattedString, model.EnteredRawValue);
-
-            var actionResult = new ActionResultInfo()
+            if (ModelState.IsValid)
             {
-                Action = model.QueryType == EQueryType.RequestValue ? EActionId.RequestValue :
-                model.QueryType == EQueryType.RequestPostage ? EActionId.ManualPostage : EActionId.RequestString,
-                Results = new List<AnyInfo>()
-            };
-
-            uint numberOfEntries = adapter.GetValueNumber();
-            for (uint i = 0; i < numberOfEntries; ++i)
-            {
-                object valuePart = adapter.GetValue(formattedString, i);
-                if (valuePart != null)
+                EnvironmentInfo environment = GetEnvironment();
+                if (null != environment)
                 {
-                    actionResult.Results.Add(new AnyInfo()
+                    CultureInfo culture = new CultureInfo(environment.Culture);
+                    char decimalSeperator = culture.NumberFormat.CurrencyDecimalSeparator.ToCharArray()[0];
+
+                    FormatStringAdapter adapter = new FormatStringAdapter(decimalSeperator);
+                    adapter.SetFormatString(model.FormatString);
+
+                    string formattedString;
+                    adapter.Format(out formattedString, model.EnteredRawValue);
+
+                    var actionResult = new ActionResultInfo()
                     {
-                        AnyType = model.QueryType == EQueryType.RequestString ? EAnyType.STRING : EAnyType.UINT32,
-                        AnyValue = valuePart.ToString()
-                    });
+                        Action = model.QueryType == EQueryType.RequestValue ? EActionId.RequestValue :
+                        model.QueryType == EQueryType.RequestPostage ? EActionId.ManualPostage : EActionId.RequestString,
+                        Results = new List<AnyInfo>()
+                    };
+
+                    uint numberOfEntries = adapter.GetValueNumber();
+                    for (uint i = 0; i < numberOfEntries; ++i)
+                    {
+                        object valuePart = adapter.GetValue(formattedString, i);
+                        if (valuePart != null)
+                        {
+                            actionResult.Results.Add(new AnyInfo()
+                            {
+                                AnyType = model.QueryType == EQueryType.RequestString ? EAnyType.STRING : EAnyType.UINT32,
+                                AnyValue = valuePart.ToString()
+                            });
+                        }
+                    }
+                    return await HandleCalculation(actionResult, environment);
                 }
+                ModelState.AddModelError(GENERAL_ERROR, "Unable to retrieve environment informationr");
+                return View("Index", ProductCalculationViewModel.Create(EQueryType.None));
             }
-            return await HandleCalculation(actionResult);
+            ModelState.AddModelError(GENERAL_ERROR, "Product Calculation Error");
+            return View("Index", ProductCalculationViewModel.Create(EQueryType.None));
         }
 
         public async Task<ActionResult> Acknowledge()
@@ -188,7 +216,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
                     new AnyInfo() { AnyType = EAnyType.INT32, AnyValue = ((int)EActionDisplayResult.DISPLAYED).ToString()}
                 }
             };
-            return await HandleCalculation(actionResult);
+            return await HandleCalculation(actionResult, GetEnvironment());
         }
 
         [HttpPost]
@@ -207,23 +235,28 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
         }
 
         #region private
-        private async Task<ActionResult> HandleCalculation(ActionResultInfo actionResult)
+        private async Task<ActionResult> HandleCalculation(ActionResultInfo actionResult, EnvironmentInfo environment)
         {
             PCalcResultInfo lastResult = GetLastPcalcResult();
             if (null != lastResult)
             {
-                CalculateRequest calc = new CalculateRequest();
-                calc.Environment = GetEnvironment();
-                calc.ProductDescription = lastResult.ProductDescription;
-                calc.ActionResult = actionResult;
-                PCalcResultInfo result = await m_Repository.Calculate(calc);
-                //TODO: Error handling
-                
-                AddOrUpdateTempData(result, calc.Environment);
-                ViewData.Add(PCALC_RESULT, result);
-                return View("Index", ProductCalculationViewModel.Create(result.QueryType));
+                if (null != environment)
+                {
+                    CalculateRequest calc = new CalculateRequest();
+                    calc.Environment = environment;
+                    calc.ProductDescription = lastResult.ProductDescription;
+                    calc.ActionResult = actionResult;
+                    PCalcResultInfo result = await m_Repository.Calculate(calc);
+                    //TODO: Error handling
+
+                    AddOrUpdateTempData(result, calc.Environment);
+                    AddViewData(result);
+                    return View("Index", ProductCalculationViewModel.Create(result.QueryType));
+                }
+                ModelState.AddModelError(GENERAL_ERROR, "Unable to retrieve environment informationr");
+                return View("Index", ProductCalculationViewModel.Create(EQueryType.None));
             }
-            ModelState.AddModelError(GENERAL_ERROR, "Unspecified error during product calculation");
+            ModelState.AddModelError(GENERAL_ERROR, "Unable to retrieve last product");
             return View("Index", ProductCalculationViewModel.Create(EQueryType.None));
         }
 
@@ -263,6 +296,14 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
                 return (EnvironmentInfo)TempData[ENVIRONMENT];
             }
             return null;
+        }
+
+        private void AddViewData(PCalcResultInfo result)
+        {
+            ViewData.Add(PCALC_RESULT, result);
+            ViewData.Add(WEIGHT, result?.ProductDescription?.Weight);
+            ViewData.Add(POSTAGE, result?.ProductDescription?.Postage);
+            ViewData.Add(REQUEST_DESCRIPTION, result?.DedicatedDescription);
         }
         #endregion
 

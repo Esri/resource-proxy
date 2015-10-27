@@ -10,26 +10,23 @@
 <body>
     <h3>Product Calculation</h3>
     <hr />
-    @Html.ValidationMessage(FP.Cloud.OnlineRateTable.Web.Controllers.ProductCalculationController.GENERAL_ERROR)
+    @Html.ValidationMessage(FP.Cloud.OnlineRateTable.Web.Controllers.ProductCalculationController.GENERAL_ERROR, new { @class = "text-danger" })
     @{
         var pcalcResult = ViewData.ContainsKey(FP.Cloud.OnlineRateTable.Web.Controllers.ProductCalculationController.PCALC_RESULT) ? 
             ((FP.Cloud.OnlineRateTable.Common.ProductCalculation.PCalcResultInfo)ViewData[FP.Cloud.OnlineRateTable.Web.Controllers.ProductCalculationController.PCALC_RESULT]) : null;
-
-        ViewDataDictionary weightDict = new ViewDataDictionary { { "Weight", pcalcResult != null ? pcalcResult.ProductDescription.Weight : null } };
-        ViewDataDictionary postageDict = new ViewDataDictionary { { "Postage", pcalcResult != null ? pcalcResult.ProductDescription.Postage : null } };
-        ViewDataDictionary dict = new ViewDataDictionary { { "Pcalc", pcalcResult != null ? pcalcResult.DedicatedDescription : null } };
-        var finishButtonStyle = pcalcResult == null || pcalcResult.ProductDescription.State !=
+        
+        var finishButtonStyle = pcalcResult == null || pcalcResult.ProductDescription == null || pcalcResult.ProductDescription.State !=
             FP.Cloud.OnlineRateTable.Common.ProductCalculation.EProductDescriptionState.Complete ? "disabled" : string.Empty;
         <div class="container">
             <div class="row">
                 <div class="col-md-4">
-                    <a class="img-thumbnail"><img src="@Url.Content("~/Content/images/fp_logo.png")" alt="logo" /></a>
+                    <a class="img-thumbnail"><img src="@Url.Content("~/Content/images/fp_logo.png")" alt="logo" height="75" /></a>
                 </div>
                 <div class="col-md-4">
-                    @Html.Partial("~/Views/ProductCalculation/_PostagePartial.cshtml", postageDict)
+                    @Html.Partial("~/Views/ProductCalculation/_PostagePartial.cshtml", ViewData)
                 </div>
                 <div class="col-md-4">
-                    @Html.Partial("~/Views/ProductCalculation/_WeightPartial.cshtml", weightDict)
+                    @Html.Partial("~/Views/ProductCalculation/_WeightPartial.cshtml", ViewData)
                 </div>
             </div>
             <div class="row">
@@ -43,7 +40,7 @@
                     }
                     else
                     {
-                        @Html.Partial(Model.PartialView, Model, dict)
+                        @Html.Partial(Model.PartialView, Model, ViewData)
                     }
                 </div>
             </div>
