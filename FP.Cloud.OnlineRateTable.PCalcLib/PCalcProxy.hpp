@@ -25,12 +25,15 @@ public:
 
 	virtual PCalcResultInfo^ Calculate(EnvironmentInfo^ environment, WeightInfo^ weight);
 	virtual PCalcResultInfo^ Calculate(EnvironmentInfo^ environment, ProductDescriptionInfo^ product, ActionResultInfo^ actionResult);
+	virtual PCalcResultInfo^ Calculate(EnvironmentInfo^ environment, ProductDescriptionInfo^ product);
+
 	virtual void Init(System::String^ amxPath, System::String^ tablePath);
 
 protected:
 	!PCalcProxy();
 
 private:
+	static System::Object^ m_SyncLock = gcnew System::Object();
 	PCalcFactory^ m_Factory;
 	PCalcManager^ m_Manager;
 	CalculationResultProcessorProxy^ m_CalculationResultProcessor;

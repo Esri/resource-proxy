@@ -9,6 +9,8 @@ USING_PCALC_LIB_NAMESPACE
 
 using namespace PCalcManagedLib;
 
+//System::Object^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::m_SyncLock = gcnew System::Object();
+
 FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::PCalcProxy()
 	: m_Factory(gcnew PCalcFactory())
 	, m_Manager(gcnew PCalcManager(m_Factory))
@@ -32,11 +34,14 @@ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::!PCalcProxy()
 	if (nullptr != m_CalculationResultProcessor)
 		delete m_CalculationResultProcessor;
 
-	if(nullptr != m_Manager)
+	if (nullptr != m_Manager)
 		delete m_Manager;
 
 	if (nullptr != m_ActionResultProcessor)
 		delete m_ActionResultProcessor;
+
+	if (nullptr != m_ProductDescriptionMapper)
+		delete m_ProductDescriptionMapper;
 
 	if (nullptr != m_Factory)
 		delete m_Factory;
@@ -44,38 +49,69 @@ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::!PCalcProxy()
 
 PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(EnvironmentInfo^ environment, WeightInfo^ weight)
 {
-	Lock lock(this);
+	Lock lock(m_SyncLock);
 	int nextAction = 0;
 
 	this->m_EnvironmentProcessor->Handle(environment);
 	this->m_Manager->CalculateStart(nextAction);
 
-	PCalcResultInfo^ result = this->m_CalculationResultProcessor->Handle(nextAction, nullptr);
+	// update weight after valid product is available
+	PCalcResultInfo^ result = this->m_CalculationResultProcessor->Handle(nextAction);
 
-	// set weight after first step
-	this->m_ActionResultProcessor->Handle(weight);
-	this->m_Manager->CalculateWeightChanged();
+	// recalculate with changed weight
+	this->m_ProductDescriptionMapper->SetWeight(weight);
+	this->Calculate(nullptr, (ProductDescriptionInfo^)nullptr);
 
-	// now we can map the product description
-	result->ProductDescription = m_ProductDescriptionMapper->Map();
+	// set product description
+	result->ProductDescription = this->m_ProductDescriptionMapper->GetProduct();
+
 	return result;
 }
 
 PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(EnvironmentInfo^ environment, ProductDescriptionInfo^ product, ActionResultInfo^ actionResult)
 {
-	Lock lock(this);
+	Lock lock(m_SyncLock);
 	INT32 nextAction = 0;
 
-	this->Calculate(environment, product->Weight);
-
 	this->m_EnvironmentProcessor->Handle(environment);
-	this->m_ActionResultProcessor->Handle(product, actionResult);
+
+	//TODO: must be run without start calculation
+	this->Calculate(nullptr, product->Weight);
+
+	this->m_ProductDescriptionMapper->SetProduct(product);
+	this->m_ActionResultProcessor->Handle(actionResult);
+
+	// calculate
 	this->m_Manager->CalculateNext(nextAction);
 
-	PCalcResultInfo^ result = this->m_CalculationResultProcessor->Handle(nextAction, nullptr);
+	//get result;
+	PCalcResultInfo^ result = this->m_CalculationResultProcessor->Handle(nextAction);
 
-	result->ProductDescription = this->m_ProductDescriptionMapper->Map();
+	// set product description
+	result->ProductDescription = this->m_ProductDescriptionMapper->GetProduct();
+
 	return result;
+}
+
+PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(EnvironmentInfo^ environment, ProductDescriptionInfo^ product)
+{
+	Lock lock(m_SyncLock);
+	INT32 nextAction = 0;
+
+	this->m_EnvironmentProcessor->Handle(environment);
+	this->m_ProductDescriptionMapper->SetProduct(product);
+
+	// calculate
+	this->m_Manager->Calculate(nextAction);
+
+	// get result
+	PCalcResultInfo^ result = this->m_CalculationResultProcessor->Handle(nextAction);
+
+	//set product description
+	result->ProductDescription = this->m_ProductDescriptionMapper->GetProduct();
+
+	return result;
+
 }
 
 void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Init(String^ amxPath, String^ tablePath)
@@ -84,4 +120,5 @@ void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Init(String^ amxPath, Str
 	m_Manager->LoadPawn(amxPath);
 	m_Manager->LoadProductTable(tablePath);
 }
+
 

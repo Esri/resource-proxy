@@ -11,8 +11,17 @@ private ref class ProductDescriptionMapper
 {
 public:
 	ProductDescriptionMapper(PCalcFactory^ factory);
-	ProductDescriptionInfo^ Map();
-	IProductDescParameterPtr Map(ProductDescriptionInfo^ product);
+
+	ProductDescriptionInfo^ GetProduct();
+	void SetProduct(ProductDescriptionInfo^ product);
+	void SetWeight(WeightInfo^ weight);
+
+private:
+	void SetWeight(ProductDescriptionInfo^ target, const WeightType &source);
+	void SetWeight(IProductDescParameterPtr &target, WeightInfo^ source);
+	void SetPostage(ProductDescriptionInfo^ target, const PostageValueType &source);
+	void SetReadyModeSelection(ProductDescriptionInfo^ target, const RmProdSelectType &source);
+	void SetAttributes(ProductDescriptionInfo^ targetl, const AttributeListType &source);
 
 private:
 	PCalcFactory^ m_Factory;

@@ -14,6 +14,9 @@ END_PCALC_LIB_NAMESPACE
 
 void FP::Cloud::OnlineRateTable::PCalcLib::EnvironmentProcessor::Handle(EnvironmentInfo^ environment)
 {
+	if (nullptr == environment)
+		return;
+
 	IPCalcConfigurationPtr config = this->m_Factory->GetConfig();
 	IPropertiesPtr properties = config->AccessCurrentProperties();
 

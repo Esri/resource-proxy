@@ -8,16 +8,10 @@ FP::Cloud::OnlineRateTable::PCalcLib::CalculationResultProcessor::CalculationRes
 {
 }
 
-PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::CalculationResultProcessor::Handle(ProductDescriptionMapper^ productDescriptionProcessor)
+PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::CalculationResultProcessor::Handle()
 {
 	PCalcResultInfo^ result = gcnew PCalcResultInfo();
-
-	if (nullptr != productDescriptionProcessor)
-	{
-		result->ProductDescription = productDescriptionProcessor->Map();
-	}
 	SetDescription(result);
-
 	return result;
 }
 
