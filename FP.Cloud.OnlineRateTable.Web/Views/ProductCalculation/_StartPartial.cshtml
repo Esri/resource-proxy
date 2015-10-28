@@ -5,9 +5,9 @@
 <div>
     @{
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        var environments = ViewData.ContainsKey(ProductCalculationController.ENVIRONMENT) ?
-        ((IEnumerable<RateTableInfo>)ViewData[ProductCalculationController.ENVIRONMENT]) : null;
-        if (null != environments)
+        var rateTables = ViewData.ContainsKey(ProductCalculationController.ACTIVE_RATE_TABLES) ?
+        ((IEnumerable<RateTableInfo>)ViewData[ProductCalculationController.ACTIVE_RATE_TABLES]) : null;
+        if (null != rateTables)
         {
             using (Html.BeginForm("Start", "ProductCalculation", FormMethod.Post))
             {
@@ -16,7 +16,7 @@
                 <div class="form-group">
                     @Html.LabelFor(model => model.SelectedRateTable, htmlAttributes: new { @class = "control-label col-md-2" })
                     <div>
-                        @Html.DropDownListFor(model => model.SelectedRateTable, environments.Select(e => new SelectListItem { Text = e.Culture, Value = e.Id.ToString() }), new { htmlAttributes = new { @class = "form-control" } } )
+                        @Html.DropDownListFor(model => model.SelectedRateTable, rateTables.Select(e => new SelectListItem { Text = e.Culture, Value = e.Id.ToString() }), new {  @class = "form-control" }  )
                         @Html.ValidationMessageFor(model => model.SelectedRateTable, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -27,8 +27,19 @@
                         @Html.ValidationMessageFor(model => model.SenderZip, "", new { @class = "text-danger" })
                     </div>
                 </div>
-                <input type="submit" value="Start Product Calculation" class="btn btn-primary btn-md btn-block" />
+                <div class="form-group">
+                    @Html.Label(" ", new { @class = "control-label col-md-2" })
+                    <div>
+                        <input type="submit" value="Start Product Calculation" class="btn btn-primary btn-md btn-block" />
+                    </div>
+                </div>
             }
         }
-      }
+        else
+        {
+            <div class="text-center">
+                @Html.ActionLink("Restart Product Calculation", "Index", null, new { @class = "btn btn-primary btn-md" })
+            </div>
+        }
+    }
 </div>

@@ -12,7 +12,6 @@
 <body>
     <h3>Product Calculation</h3>
     <hr />
-    @Html.ValidationMessage(BaseController.GENERAL_ERROR, new { @class = "text-danger" })
     @{
         var productDescription = ViewData.ContainsKey(ProductCalculationController.PRODUCT_DESCRIPTION) ?
             ((ProductDescriptionInfo)ViewData[ProductCalculationController.PRODUCT_DESCRIPTION]) : null;
@@ -21,14 +20,14 @@
             EProductDescriptionState.Complete ? "disabled" : string.Empty;
         <div class="container">
             <div class="row">
-                <div class="col-md-4">
-                    <a class="img-thumbnail"><img src="@Url.Content("~/Content/images/fp_logo.png")" alt="logo" height="75" /></a>
+                <div class="col-md-3">
+                    <a><img src="@Url.Content("~/Content/images/fp_logo.png")" alt="logo" height="75" class="img-rounded" /></a>
                 </div>
                 <div class="col-md-4">
                     @Html.Partial("~/Views/ProductCalculation/_PostagePartial.cshtml", ViewData)
                 </div>
-                <div class="col-md-4">
-                    @Html.Partial("~/Views/ProductCalculation/_WeightPartial.cshtml", ViewData)
+                <div class="col-md-5">
+                    @Html.Partial("~/Views/ProductCalculation/_WeightPartial.cshtml", Model.UpdateWeightModel, ViewData)
                 </div>
             </div>
             <div class="row">
@@ -36,6 +35,12 @@
                     @Html.Partial("~/Views/ProductCalculation/_HistoryPartial.cshtml", ViewData)
                 </div>
                 <div class="col-md-9">
+                    @if (ViewData.ModelState.Values.Any(v => v.Errors.Count > 0))
+                    {
+                        <div class="text-center alert alert-danger">
+                            @Html.ValidationMessage(BaseController.GENERAL_ERROR, new { @class = "text-danger" })
+                        </div>
+                    }
                     @if (null == productDescription)
                     {
                         @Html.Partial("~/Views/ProductCalculation/_StartPartial.cshtml", ViewData)
@@ -133,11 +138,18 @@
 
         $(document).ready(function ()
         {
+            $('#ValueInput').hide();
             var formatString = $("#FormatString").val();
             if (null != formatString)
             {
                 FormatPostageInput("", formatString, true);
             }
+        });
+
+        $('#ChangeValue').click(function ()
+        {
+            $('#ValueDisplay').hide();
+            $('#ValueInput').show();
         });
     </script>
 }

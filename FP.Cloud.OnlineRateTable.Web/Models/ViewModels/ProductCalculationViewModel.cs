@@ -9,6 +9,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Models.ViewModels
     public class ProductCalculationViewModel
     {
         #region properties
+        public UpdateWeightViewModel UpdateWeightModel { get; set; }
         public EQueryType QueryType { get; set; }
         public string PartialView
         {
@@ -17,7 +18,10 @@ namespace FP.Cloud.OnlineRateTable.Web.Models.ViewModels
         #endregion
 
         #region constructor
-        protected ProductCalculationViewModel() { }
+        protected ProductCalculationViewModel()
+        {
+            UpdateWeightModel = new UpdateWeightViewModel();
+        }
         #endregion
 
         #region public

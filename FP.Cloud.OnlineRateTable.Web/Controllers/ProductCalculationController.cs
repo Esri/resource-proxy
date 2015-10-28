@@ -22,6 +22,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
         public static readonly string REQUEST_DESCRIPTION = "RequestDescription";
         public static readonly string POSTAGE = "Postage";
         public static readonly string WEIGHT = "Weight";
+        public static readonly string ACTIVE_RATE_TABLES = "ActiveRateTables";
         public static readonly string ENVIRONMENT = "Environment";
         #endregion
 
@@ -42,7 +43,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
             IEnumerable<RateTableInfo> allActive = await m_Repository.GetActiveRateTables(DateTime.Now);
             if (null != allActive && allActive.Count() > 0)
             {
-                ViewData.Add(ENVIRONMENT, allActive);
+                ViewData.Add(ACTIVE_RATE_TABLES, allActive);
                 return View(ProductCalculationViewModel.Create(EQueryType.None));
             }
             return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to retrieve active rate tables");
@@ -66,7 +67,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
                     if (PcalcResultIsValid(result))
                     {
                         AddOrUpdateTempData(result, request.Environment);
-                        AddViewData(result);
+                        AddViewData(result, environment);
                         return View("Index", ProductCalculationViewModel.Create(result.QueryType));
                     }
                     return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to initialize product calculation");
@@ -88,7 +89,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
                 if (PcalcResultIsValid(result))
                 {
                     AddOrUpdateTempData(result, request.Environment);
-                    AddViewData(result);
+                    AddViewData(result, environment);
                     return View("Index", ProductCalculationViewModel.Create(result.QueryType));
                 }
                 return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to contact product calculation API");
@@ -102,16 +103,21 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
             if (null != lastResult)
             {
                 UpdateRequest request = new UpdateRequest();
-                request.Environment = GetEnvironment();
-                request.ProductDescription = lastResult.ProductDescription;
-                PCalcResultInfo result = await m_Repository.StepBack(request);
-                if (PcalcResultIsValid(result))
+                EnvironmentInfo environment = GetEnvironment();
+                if (null != environment)
                 {
-                    AddOrUpdateTempData(result, request.Environment);
-                    AddViewData(result);
-                    return View("Index", ProductCalculationViewModel.Create(result.QueryType));
+                    request.Environment = environment;
+                    request.ProductDescription = lastResult.ProductDescription;
+                    PCalcResultInfo result = await m_Repository.StepBack(request);
+                    if (PcalcResultIsValid(result))
+                    {
+                        AddOrUpdateTempData(result, request.Environment);
+                        AddViewData(result, environment);
+                        return View("Index", ProductCalculationViewModel.Create(result.QueryType));
+                    }
+                    return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to contact product calculation API");
                 }
-                return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to contact product calculation API");
+                return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to create environment");
             }
             return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to retrieve last result");
         }
@@ -121,6 +127,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
             return null;
         }
 
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> UpdateWeight()
         {
             return null;
@@ -254,7 +261,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
                     if (PcalcResultIsValid(result))
                     {
                         AddOrUpdateTempData(result, calc.Environment);
-                        AddViewData(result);
+                        AddViewData(result, environment);
                         return View("Index", ProductCalculationViewModel.Create(result.QueryType));
                     }
                     return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to contact product calculation API");
@@ -302,12 +309,13 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
             return null;
         }
 
-        private void AddViewData(PCalcResultInfo result)
+        private void AddViewData(PCalcResultInfo result, EnvironmentInfo environment)
         {
             ViewData.Add(PRODUCT_DESCRIPTION, result?.ProductDescription);
             ViewData.Add(WEIGHT, result?.ProductDescription?.Weight);
             ViewData.Add(POSTAGE, result?.ProductDescription?.Postage);
             ViewData.Add(REQUEST_DESCRIPTION, result?.DedicatedDescription);
+            ViewData.Add(ENVIRONMENT, environment);
         }
 
         private bool PcalcResultIsValid(PCalcResultInfo info)

@@ -2,9 +2,9 @@
 {
     public enum EWeightUnit
     {
-        Gram,
-        TenthGram,
-        TenthOunce,
-        HoundrethOunce
+        TenthGram = 0,
+        Gram = 1,
+        TenthOunce = 2,
+        HoundrethOunce = 3
     }
 }

@@ -15,13 +15,19 @@ namespace FP.Cloud.OnlineRateTable.Common.ProductCalculation
         public ushort PostageDecimals { get; set; }
         [DataMember]
         public string CurrencySymbol { get; set; }
+        [DataMember]
+        public string CurrencyDecimalSeparator { get; set; }
         #endregion
 
         #region public
-        public string GetFormattedPostage(CultureInfo culture, bool includeCurrency, bool threeDigit)
+        public string GetFormattedPostage(bool includeCurrency, bool threeDigit)
         {
-            decimal postage = (decimal)PostageValue / (decimal)Math.Pow(10, PostageDecimals);
-            string postageString = threeDigit ? postage.ToString("0.000", culture) : postage.ToString("0.00", culture);
+            ulong major = (ulong)(PostageValue / Math.Pow(10, PostageDecimals));
+            ulong minor = (ulong)(PostageValue % Math.Pow(10, PostageDecimals));
+            string separator = string.IsNullOrEmpty(CurrencyDecimalSeparator) ? "." : CurrencyDecimalSeparator;
+
+            string postageString = threeDigit ? string.Format("{0}{1}{2}", major, separator, minor.ToString("000")) :
+                                                string.Format("{0}{1}{2}", major, separator, minor.ToString("00"));
             if (includeCurrency)
             {
                 return string.Format("{0}{1}", CurrencySymbol, postageString);
