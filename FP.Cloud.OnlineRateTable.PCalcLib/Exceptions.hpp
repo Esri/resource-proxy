@@ -44,30 +44,30 @@ private:
 	static String^ SUB_CODE2 = "SUBCODE2";
 
 public:
-	PCalcLibErrorCodeException() : PCalcLibException()
-		, m_MainCode(0)
-		, m_Subcode1(0)
-		, m_Subcode2(0)
-	{}
+	//PCalcLibErrorCodeException() : PCalcLibException()
+	//	, m_MainCode(0)
+	//	, m_Subcode1(0)
+	//	, m_Subcode2(0)
+	//{}
 
-	PCalcLibErrorCodeException(const INT32 &mainCode, const INT32 &subCode1, const INT32 &subCode2 ) : PCalcLibException()
+	PCalcLibErrorCodeException(const INT32 &mainCode, const INT32 &subCode1, const INT32 &subCode2 ) 
+		: PCalcLibException(System::String::Format("MainCode: 0x{0:X}, SubCode1: 0x{1:X}, SubCode2: 0x{2:X}", mainCode, subCode1, subCode2))
 		, m_MainCode(mainCode)
 		, m_Subcode1(subCode1)
 		, m_Subcode2(subCode2)
 	{		
 	}
 
-	PCalcLibErrorCodeException(System::String^ message, Exception^ innerException) : PCalcLibException(message, innerException)
-		, m_MainCode(0)
-		, m_Subcode1(0)
-		, m_Subcode2(0)
-	{
-	}
+	//PCalcLibErrorCodeException(System::String^ message, Exception^ innerException) : PCalcLibException(message, innerException)
+	//	, m_MainCode(0)
+	//	, m_Subcode1(0)
+	//	, m_Subcode2(0)
+	//{
+	//}
 
-	PCalcLibErrorCodeException(const EXTENDED_ERROR_CODE &error) : PCalcLibException()
-		, m_MainCode(error.m_MainCode)
-		, m_Subcode1(error.m_Subcode1)
-		, m_Subcode2(error.m_Subcode2)
+	PCalcLibErrorCodeException(const EXTENDED_ERROR_CODE &error) 
+		: PCalcLibErrorCodeException(error.m_MainCode, error.m_Subcode1, error.m_Subcode2)
+
 	{}
 
 	virtual void GetObjectData(SerializationInfo^ info, StreamingContext context) override

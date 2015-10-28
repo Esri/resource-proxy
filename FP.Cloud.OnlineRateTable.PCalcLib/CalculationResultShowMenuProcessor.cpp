@@ -1,4 +1,5 @@
 #include "CalculationResultShowMenuProcessor.hpp"
+#include "DisplayTypeVisitor.hpp"
 
 using namespace FP::Cloud::OnlineRateTable::Common::ProductCalculation;
 
@@ -12,15 +13,21 @@ void FP::Cloud::OnlineRateTable::PCalcLib::CalculationResultShowMenuProcessor::S
 	ProductCalculation::MenuDescType showMenu = this->Factory->GetActionMgr()->GetActionShowMenu();
 
 	ShowMenuDescriptionInfo^ info = gcnew ShowMenuDescriptionInfo();
-	info->DescriptionTitle = PCalcManagedLib::ConvertWStringToNetString(boost::get<std::wstring>(showMenu.m_Title));
-	info->AdditionalInfo = PCalcManagedLib::ConvertWStringToNetString(boost::get<std::wstring>(showMenu.m_AdditionalInfo));
+	info->DescriptionTitle = boost::apply_visitor(DisplayTypeVisitor(), showMenu.m_Title);
+	info->AdditionalInfo = boost::apply_visitor(DisplayTypeVisitor(), showMenu.m_AdditionalInfo);
 
-	std::vector<ProductCalculation::SoftKeyType>::const_iterator pos;
-	for (pos = showMenu.m_SoftKeyList.begin(); pos != showMenu.m_SoftKeyList.end(); ++pos)
+	for (auto const &softkey : showMenu.m_SoftKeyList)
 	{
-		System::String^ description = PCalcManagedLib::ConvertWStringToNetString(boost::get<std::wstring>((*pos).m_SoftkeyDescription));
-		info->MenuEntries->Add(description);
+		System::String^ description = boost::apply_visitor(DisplayTypeVisitor(), softkey.m_SoftkeyDescription);
+		BYTE attr(softkey.m_Attribute);
+		info->MenuEntries->Add(description);		
 	}
+	//std::vector<ProductCalculation::SoftKeyType>::const_iterator pos;
+	//for (pos = showMenu.m_SoftKeyList.begin(); pos != showMenu.m_SoftKeyList.end(); ++pos)
+	//{
+	//	System::String^ description = boost::apply_visitor(DisplayTypeVisitor(), (*pos).m_SoftkeyDescription);
+	//	info->MenuEntries->Add(description);
+	//}
 
 	resultInfo->QueryType = EQueryType::ShowMenu;
 	resultInfo->QueryDescription = info->ToTransferDescription();

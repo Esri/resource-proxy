@@ -25,6 +25,8 @@ void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetProduct(
 	parameter->SetState(boost::numeric_cast<BYTE>((int)product->State));
 
 	this->SetWeight(parameter, product->Weight);
+	this->SetPostage(parameter, product->Postage);
+	this->SetAttributes(parameter, product->Attributes);
 }
 
 void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetWeight(WeightInfo^ weight)
@@ -37,7 +39,7 @@ ProductDescriptionInfo^ FP::Cloud::OnlineRateTable::PCalcLib::ProductDescription
 {
 	IProductDescParameterPtr parameter = m_Factory->GetProdDesc()->AccessCurrProduct();
 	ProductDescriptionInfo^ product = gcnew ProductDescriptionInfo();
-
+	
 	product->ProductCode = parameter->GetProductCode();
 	product->ProductId = parameter->GetProductID();
 	product->RateVersion = parameter->GetRateVersion();
@@ -119,6 +121,18 @@ void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetPostage(
 	target->Postage = postage;
 }
 
+void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetPostage(IProductDescParameterPtr &target, PostageInfo^ source)
+{
+	PostageValueType postageValueType;
+
+	if (nullptr != source)
+	{
+		std::make_pair(boost::numeric_cast<INT32>(source->PostageValue), boost::numeric_cast<BYTE>(source->PostageDecimals));
+	}
+
+	target->SetPostageValue(postageValueType);
+}
+
 void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetReadyModeSelection(ProductDescriptionInfo^ target, const ProductCalculation::RmProdSelectType &source)
 {	
 	List<System::String^>^ selections = gcnew List<System::String^>();
@@ -142,14 +156,38 @@ void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetAttribut
 		info->Key = current.first;
 		info->Values = gcnew List<int>();
 
-		for (auto const &second : current.second)
+		for (auto const &value : current.second)
 		{
-			info->Values->Add(second);
+			info->Values->Add(value);
 		}
 
 		attributes->Add(info);
 	}
 
-	target->Attributes = attributes;
+	target->Attributes = attributes;	
+}
+
+void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetAttributes(IProductDescParameterPtr &target, System::Collections::Generic::List<AttributeInfo^>^ source)
+{
+	
+	AttributeListType attributes;
+
+	if(nullptr != source)
+	{
+		for each (AttributeInfo^ attribute in source)
+		{
+			INT32 id(attribute->Key);
+			std::vector<INT32> values;
+	
+			for each (INT32 value in attribute->Values)
+			{
+				values.push_back(value);
+			}
+	
+			attributes.insert(std::make_pair(id, values));
+		}
+	}
+	
+	target->SetAttributes(attributes);
 }
 

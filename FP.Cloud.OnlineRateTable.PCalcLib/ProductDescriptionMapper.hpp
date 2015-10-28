@@ -20,8 +20,10 @@ private:
 	void SetWeight(ProductDescriptionInfo^ target, const WeightType &source);
 	void SetWeight(IProductDescParameterPtr &target, WeightInfo^ source);
 	void SetPostage(ProductDescriptionInfo^ target, const PostageValueType &source);
+	void SetPostage(IProductDescParameterPtr &target, PostageInfo^ source);
 	void SetReadyModeSelection(ProductDescriptionInfo^ target, const RmProdSelectType &source);
-	void SetAttributes(ProductDescriptionInfo^ targetl, const AttributeListType &source);
+	void SetAttributes(ProductDescriptionInfo^ target, const AttributeListType &source);
+	void SetAttributes(IProductDescParameterPtr &target, System::Collections::Generic::List<AttributeInfo^>^ source);
 
 private:
 	PCalcFactory^ m_Factory;

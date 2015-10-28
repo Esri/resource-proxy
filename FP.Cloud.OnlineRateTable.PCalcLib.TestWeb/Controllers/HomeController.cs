@@ -33,7 +33,7 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.TestWeb.Controllers
                 EnvironmentInfo env = new EnvironmentInfo() { Culture = "de", SenderZipCode = "123" };
                 PCalcResultInfo result = null;
 
-                result = proxy.Calculate(env, new WeightInfo() { WeightUnit = EWeightUnit.Gram, WeightValue = 20 });
+                result = proxy.Start(env, new WeightInfo() { WeightUnit = EWeightUnit.Gram, WeightValue = 20 });
                 result = proxy.Calculate(env, result.ProductDescription, new ActionResultInfo() { Action = EActionId.ShowMenu, Label = 0, Results = new List<AnyInfo> { new AnyInfo() { AnyType = EAnyType.INT32, AnyValue = "0" } } });
                 result = proxy.Calculate(env, result.ProductDescription, new ActionResultInfo() { Action = EActionId.ShowMenu, Label = 0, Results = new List<AnyInfo> { new AnyInfo() { AnyType = EAnyType.INT32, AnyValue = "0" } } });
             }

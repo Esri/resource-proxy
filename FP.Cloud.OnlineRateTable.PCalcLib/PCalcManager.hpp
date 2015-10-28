@@ -18,6 +18,7 @@ public:
 	void CalculateStart([System::Runtime::InteropServices::Out] INT32 %rNextAction);
 	void CalculateNext([System::Runtime::InteropServices::Out] INT32 %rNextAction);
 	void Calculate([System::Runtime::InteropServices::Out] INT32 %rNextAction);
+	void CalculateBack([System::Runtime::InteropServices::Out] INT32 %rNextAction);
 
 private:
 	PCalcFactory^ m_Factory;

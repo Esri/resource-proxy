@@ -1,4 +1,6 @@
 #include "CalculationResultRequestValueProcessor.hpp"
+#include "DisplayTypeVisitor.hpp"
+#include "Convert.hpp"
 
 USING_PRODUCTCALCULATION_NAMESPACE
 
@@ -13,10 +15,10 @@ void FP::Cloud::OnlineRateTable::PCalcLib::CalculationResultRequestValueProcesso
 	RequestValueDescType requestValue = this->Factory->GetActionMgr()->GetActionRequestValue();
 	RequestDescriptionInfo^ result = gcnew RequestDescriptionInfo();
 
-	result->DescriptionTitle = PCalcManagedLib::ConvertWStringToNetString(boost::get<std::wstring>(requestValue.m_Title));
+	result->DescriptionTitle = boost::apply_visitor(DisplayTypeVisitor(), requestValue.m_Title);;
 	result->Label = requestValue.m_LabelID;
-	result->StatusMessage = PCalcManagedLib::ConvertWStringToNetString(boost::get<std::wstring>(requestValue.m_Message));
-	result->DisplayFormat = PCalcManagedLib::ConvertWStringToNetString(requestValue.m_DisplayFormat);
+	result->StatusMessage = boost::apply_visitor(DisplayTypeVisitor(), requestValue.m_Message);
+	result->DisplayFormat = Convert::ToString(requestValue.m_DisplayFormat);
 
 	resultInfo->QueryDescription = result->ToTransferDescription();
 	resultInfo->QueryType = EQueryType::RequestValue;

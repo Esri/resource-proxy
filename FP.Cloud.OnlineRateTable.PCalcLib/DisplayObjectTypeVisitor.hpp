@@ -6,6 +6,7 @@
 #include "ProductCalculation/ProductDescriptionDefs.hpp"
 #include "DisplayTypeVisitor.hpp"
 #include "PCalcFactoryCPP.hpp"
+#include "Convert.hpp"
 
 BEGIN_PCALC_LIB_NAMESPACE
 
@@ -21,12 +22,12 @@ public:
 	{
 		std::wostringstream stream;
 		stream << value;
-		return PCalcManagedLib::ConvertWStringToNetString(stream.str());
+		return Convert::ToString(stream.str());
 	}
 
 	System::String^ operator()(std::wstring value) const
 	{
-		return PCalcManagedLib::ConvertWStringToNetString(value);
+		return Convert::ToString(value);
 	}
 
 	System::String^ operator()(ProductCalculation::TextGraphicIdType value) const
