@@ -1,7 +1,9 @@
-﻿
-@if (ViewData.ContainsKey(FP.Cloud.OnlineRateTable.Web.Controllers.ProductCalculationController.WEIGHT))
+﻿@using FP.Cloud.OnlineRateTable.Web.Controllers
+@using FP.Cloud.OnlineRateTable.Common.ProductCalculation
+
+@if (ViewData.ContainsKey(ProductCalculationController.WEIGHT))
 {
-    var weight = ((FP.Cloud.OnlineRateTable.Common.ProductCalculation.WeightInfo)ViewData[FP.Cloud.OnlineRateTable.Web.Controllers.ProductCalculationController.WEIGHT]);
+    var weight = ((WeightInfo)ViewData[ProductCalculationController.WEIGHT]);
     if (null != weight)
     {
         <div>

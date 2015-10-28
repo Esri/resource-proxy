@@ -1,4 +1,6 @@
 ﻿@model FP.Cloud.OnlineRateTable.Web.Models.ViewModels.ProductCalculationViewModel
+@using FP.Cloud.OnlineRateTable.Web.Controllers
+@using FP.Cloud.OnlineRateTable.Common.ProductCalculation
 
 <!DOCTYPE html>
 
@@ -10,13 +12,13 @@
 <body>
     <h3>Product Calculation</h3>
     <hr />
-    @Html.ValidationMessage(FP.Cloud.OnlineRateTable.Web.Controllers.ProductCalculationController.GENERAL_ERROR, new { @class = "text-danger" })
+    @Html.ValidationMessage(BaseController.GENERAL_ERROR, new { @class = "text-danger" })
     @{
-        var pcalcResult = ViewData.ContainsKey(FP.Cloud.OnlineRateTable.Web.Controllers.ProductCalculationController.PCALC_RESULT) ? 
-            ((FP.Cloud.OnlineRateTable.Common.ProductCalculation.PCalcResultInfo)ViewData[FP.Cloud.OnlineRateTable.Web.Controllers.ProductCalculationController.PCALC_RESULT]) : null;
-        
-        var finishButtonStyle = pcalcResult == null || pcalcResult.ProductDescription == null || pcalcResult.ProductDescription.State !=
-            FP.Cloud.OnlineRateTable.Common.ProductCalculation.EProductDescriptionState.Complete ? "disabled" : string.Empty;
+        var productDescription = ViewData.ContainsKey(ProductCalculationController.PRODUCT_DESCRIPTION) ?
+            ((ProductDescriptionInfo)ViewData[ProductCalculationController.PRODUCT_DESCRIPTION]) : null;
+
+        var finishButtonStyle = productDescription == null || productDescription.State !=
+            EProductDescriptionState.Complete ? "disabled" : string.Empty;
         <div class="container">
             <div class="row">
                 <div class="col-md-4">
@@ -31,10 +33,10 @@
             </div>
             <div class="row">
                 <div class="col-md-3">
-
+                    @Html.Partial("~/Views/ProductCalculation/_HistoryPartial.cshtml", ViewData)
                 </div>
                 <div class="col-md-9">
-                    @if (null == pcalcResult)
+                    @if (null == productDescription)
                     {
                         @Html.Partial("~/Views/ProductCalculation/_StartPartial.cshtml", ViewData)
                     }
@@ -44,11 +46,10 @@
                     }
                 </div>
             </div>
-            @if (null != pcalcResult)
+            @if (null != productDescription)
             {
                 <div class="row">
                     <div class="col-md-6">
-
                     </div>
                     <div class="col-md-2">
                         @Html.ActionLink("Step Back", "StepBack", null, new { @class = "btn btn-primary btn-md btn-block" })

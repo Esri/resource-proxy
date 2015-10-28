@@ -1,9 +1,12 @@
 ﻿@model FP.Cloud.OnlineRateTable.Web.Models.ViewModels.StartCalculationViewModel
+@using FP.Cloud.OnlineRateTable.Web.Controllers
+@using FP.Cloud.OnlineRateTable.Common.RateTable
+
 <div>
     @{
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        var environments = ViewData.ContainsKey(FP.Cloud.OnlineRateTable.Web.Controllers.ProductCalculationController.ENVIRONMENT) ?
-        ((IEnumerable<FP.Cloud.OnlineRateTable.Common.RateTable.RateTableInfo>)ViewData[FP.Cloud.OnlineRateTable.Web.Controllers.ProductCalculationController.ENVIRONMENT]) : null;
+        var environments = ViewData.ContainsKey(ProductCalculationController.ENVIRONMENT) ?
+        ((IEnumerable<RateTableInfo>)ViewData[ProductCalculationController.ENVIRONMENT]) : null;
         if (null != environments)
         {
             using (Html.BeginForm("Start", "ProductCalculation", FormMethod.Post))

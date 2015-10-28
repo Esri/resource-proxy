@@ -1,18 +1,22 @@
 ﻿@model FP.Cloud.OnlineRateTable.Web.Models.ViewModels.RequestValueViewModel
+@using FP.Cloud.OnlineRateTable.Web.Controllers
+@using FP.Cloud.OnlineRateTable.Common.ProductCalculation
 
-@if (ViewData.ContainsKey(FP.Cloud.OnlineRateTable.Web.Controllers.ProductCalculationController.REQUEST_DESCRIPTION))
+@if (ViewData.ContainsKey(ProductCalculationController.REQUEST_DESCRIPTION))
 {
-    var requestDescription = ((FP.Cloud.OnlineRateTable.Common.ProductCalculation.RequestDescriptionInfo)ViewData[FP.Cloud.OnlineRateTable.Web.Controllers.ProductCalculationController.REQUEST_DESCRIPTION]);
+    var requestDescription = ((RequestDescriptionInfo)ViewData[ProductCalculationController.REQUEST_DESCRIPTION]);
     if (null != requestDescription)
     {
         Model.Label = requestDescription.Label;
         Model.FormatString = requestDescription.DisplayFormat;
         <div>
-            <h4>Please enter a value</h4>
-            <hr />
-            <div class="text-center">
-                @requestDescription.DescriptionTitle
-            </div>
+            <table class="table-condensed" style="width:100%">
+                <tr>
+                    <th>
+                        @requestDescription.DescriptionTitle
+                    </th>
+                </tr>
+            </table>
             @using (Html.BeginForm("RequestValue", "ProductCalculation", FormMethod.Post))
             {
                 @Html.AntiForgeryToken()
@@ -20,7 +24,7 @@
                 @Html.HiddenFor(model => model.FormatString, new { @id = "FormatString" });
                 @Html.HiddenFor(model => model.QueryType);
 
-                if (Model.QueryType == FP.Cloud.OnlineRateTable.Common.ProductCalculation.EQueryType.RequestPostage)
+                if (Model.QueryType == EQueryType.RequestPostage)
                 {
                     @Html.LabelFor(model => model.EnteredRawValue, htmlAttributes: new { @class = "control-label col-md-2" })
                     <div class="col-md-10">
@@ -31,7 +35,7 @@
 
                         <table>
                             <tr>
-                                <td><input type="button" class="number-pad btn btn-info btn-md" value="7"/></td>
+                                <td><input type="button" class="number-pad btn btn-info btn-md" value="7" /></td>
                                 <td><input type="button" class="number-pad btn btn-info btn-md" value="8" /></td>
                                 <td><input type="button" class="number-pad btn btn-info btn-md" value="9" /></td>
                                 <td><input type="button" class="number-pad btn btn-info btn-md" value="CE" /></td>
@@ -49,7 +53,7 @@
                                 <td></td>
                             </tr>
                             <tr>
-                                <td colspan="3"><input type="button" class="number-pad btn btn-info btn-md btn-block" value="0"/></td>
+                                <td colspan="3"><input type="button" class="number-pad btn btn-info btn-md btn-block" value="0" /></td>
                                 <td><input type="submit" value="OK" class="btn btn-primary btn-md btn-block" /></td>
                             </tr>
                         </table>
@@ -61,7 +65,7 @@
                     @Html.EditorFor(model => model.EnteredRawValue);
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-10">
-                            <input type="submit" value="OK" class="btn btn-primary btn-lg" />
+                            <input type="submit" value="OK" class="btn btn-primary btn-md" />
                         </div>
                     </div>
                 }

@@ -318,6 +318,7 @@
     <Content Include="Views\ProductCalculation\_RequestValuePartial.cshtml" />
     <Content Include="Views\ProductCalculation\_PostagePartial.cshtml" />
     <Content Include="Views\ProductCalculation\_StartPartial.cshtml" />
+    <Content Include="Views\ProductCalculation\_HistoryPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

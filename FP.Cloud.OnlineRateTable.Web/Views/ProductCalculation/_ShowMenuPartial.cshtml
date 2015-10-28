@@ -1,11 +1,12 @@
-﻿@if (ViewData.ContainsKey(FP.Cloud.OnlineRateTable.Web.Controllers.ProductCalculationController.REQUEST_DESCRIPTION))
+﻿@using FP.Cloud.OnlineRateTable.Web.Controllers
+@using FP.Cloud.OnlineRateTable.Common.ProductCalculation
+
+@if (ViewData.ContainsKey(ProductCalculationController.REQUEST_DESCRIPTION))
 {
-    var pcalc = ((FP.Cloud.OnlineRateTable.Common.ProductCalculation.ShowMenuDescriptionInfo)ViewData[FP.Cloud.OnlineRateTable.Web.Controllers.ProductCalculationController.REQUEST_DESCRIPTION]);
+    var pcalc = ((ShowMenuDescriptionInfo)ViewData[ProductCalculationController.REQUEST_DESCRIPTION]);
 
     <div>
-        <h4>Please select a service</h4>
-        <hr />
-        <table class="table">
+        <table class="table-condensed" style="width:100%">
             <tr>
                 <th>
                     @pcalc.DescriptionTitle
@@ -17,7 +18,7 @@
             {
                 <tr>
                     <td>
-                        @Html.ActionLink(item, "SelectMenuIndex", new { index = @i }, new { @class = "btn btn-primary btn-lg btn-block" })
+                        @Html.ActionLink(item, "SelectMenuIndex", new { index = @i }, new { @class = "btn btn-primary btn-md btn-block" })
                     </td>
                 </tr>
                 i++;
