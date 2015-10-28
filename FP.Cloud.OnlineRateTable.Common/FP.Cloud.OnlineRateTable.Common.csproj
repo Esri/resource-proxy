@@ -68,8 +68,7 @@
     <Compile Include="ProductCalculation\ApiRequests\CalculateRequest.cs" />
     <Compile Include="RateTable\ApiRequests\GetRateTableRequest.cs" />
     <Compile Include="ProductCalculation\ApiRequests\StartCalculationRequest.cs" />
-    <Compile Include="ProductCalculation\ApiRequests\StepBackRequest.cs" />
-    <Compile Include="ProductCalculation\ApiRequests\UpdateWeightRequest.cs" />
+    <Compile Include="ProductCalculation\ApiRequests\UpdateRequest.cs" />
     <Compile Include="ProductCalculation\AttributeInfo.cs" />
     <Compile Include="ProductCalculation\EActionDisplayResult.cs" />
     <Compile Include="ProductCalculation\EActionId.cs" />

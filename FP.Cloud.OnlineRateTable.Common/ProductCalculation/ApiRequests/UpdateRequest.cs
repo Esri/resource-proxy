@@ -10,7 +10,7 @@ namespace FP.Cloud.OnlineRateTable.Common.ProductCalculation.ApiRequests
 {
     [Serializable]
     [DataContract]
-    public class StepBackRequest : CalculationBaseRequest
+    public class UpdateRequest : CalculationBaseRequest
     {
         [DataMember]
         public ProductDescriptionInfo ProductDescription { get; set; }

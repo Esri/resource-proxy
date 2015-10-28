@@ -45,7 +45,7 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
             throw new NotImplementedException();
         }
 
-        public async Task<PCalcResultInfo> UpdateWeight(EnvironmentInfo environment, ProductDescriptionInfo productDescription, WeightInfo newWeight)
+        public async Task<PCalcResultInfo> UpdateWeight(EnvironmentInfo environment, ProductDescriptionInfo productDescription)
         {
             throw new NotImplementedException();
         }

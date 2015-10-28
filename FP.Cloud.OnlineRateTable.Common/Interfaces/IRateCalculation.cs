@@ -12,6 +12,6 @@ namespace FP.Cloud.OnlineRateTable.Common.Interfaces
         Task<PCalcResultInfo> StartCalculation(EnvironmentInfo environment, WeightInfo weight);
         Task<PCalcResultInfo> Calculate(EnvironmentInfo environment, ProductDescriptionInfo productDescription, ActionResultInfo actionResult);
         Task<PCalcResultInfo> StepBack(EnvironmentInfo environment, ProductDescriptionInfo productDescription);
-        Task<PCalcResultInfo> UpdateWeight(EnvironmentInfo environment, ProductDescriptionInfo productDescription, WeightInfo newWeight);
+        Task<PCalcResultInfo> UpdateWeight(EnvironmentInfo environment, ProductDescriptionInfo productDescription);
     }
 }

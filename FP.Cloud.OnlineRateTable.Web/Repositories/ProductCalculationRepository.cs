@@ -28,7 +28,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
             return await Execute<PCalcResultInfo>(request, m_Api, string.Empty);
         }
 
-        public async Task<PCalcResultInfo> StepBack(StepBackRequest stepBackRequest)
+        public async Task<PCalcResultInfo> StepBack(UpdateRequest stepBackRequest)
         {
             RestRequest request = GetNewRequest();
             request.Resource = "Back";

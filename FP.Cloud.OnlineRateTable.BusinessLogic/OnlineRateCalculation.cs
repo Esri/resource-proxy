@@ -35,7 +35,7 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
                 using (var context = new PCalcProxyContext(m_Handler.PawnFile, m_Handler.RateTableFile, m_Handler.AdditionalFiles))
                 {
                     IPCalcProxy proxy = context.Proxy;
-                    return proxy.Calculate(environment, weight);
+                    return proxy.Start(environment, weight);
                 }
             }
             return null;
@@ -61,9 +61,19 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
             throw new NotImplementedException();
         }
 
-        public async Task<PCalcResultInfo> UpdateWeight(EnvironmentInfo environment, ProductDescriptionInfo productDescription, WeightInfo newWeight)
+        public async Task<PCalcResultInfo> UpdateWeight(EnvironmentInfo environment, ProductDescriptionInfo productDescription)
         {
-            throw new NotImplementedException();
+            //lookup correct entry
+            await m_Handler.Initialize(environment);
+            if (m_Handler.IsValid)
+            {
+                using (var context = new PCalcProxyContext(m_Handler.PawnFile, m_Handler.RateTableFile, m_Handler.AdditionalFiles))
+                {
+                    IPCalcProxy proxy = context.Proxy;
+                    return proxy.Calculate(environment, productDescription);
+                }
+            }
+            return null;
         }
         #endregion
     }

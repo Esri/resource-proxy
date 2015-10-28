@@ -91,7 +91,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
             PCalcResultInfo lastResult = GetLastPcalcResult();
             if (null != lastResult)
             {
-                StepBackRequest request = new StepBackRequest();
+                UpdateRequest request = new UpdateRequest();
                 request.Environment = GetEnvironment();
                 request.ProductDescription = lastResult.ProductDescription;
                 PCalcResultInfo result = await m_Repository.StepBack(request);

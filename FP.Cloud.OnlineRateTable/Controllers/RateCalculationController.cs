@@ -95,7 +95,7 @@ namespace FP.Cloud.OnlineRateTable.Controllers
         [ResponseType(typeof(PCalcResultInfo))]
         [HttpPost]
         [ActionName("Back")]
-        public async Task<IHttpActionResult> StepBack(StepBackRequest backRequest)
+        public async Task<IHttpActionResult> StepBack(UpdateRequest backRequest)
         {
             if (!ModelState.IsValid)
             {
@@ -108,13 +108,13 @@ namespace FP.Cloud.OnlineRateTable.Controllers
         [ResponseType(typeof(PCalcResultInfo))]
         [HttpPost]
         [ActionName("UpdateWeight")]
-        public async Task<IHttpActionResult> UpdateWeight(UpdateWeightRequest updateRequest)
+        public async Task<IHttpActionResult> UpdateWeight(UpdateRequest updateRequest)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            PCalcResultInfo result = await m_Calculator.UpdateWeight(updateRequest.Environment, updateRequest.ProductDescription, updateRequest.NewWeight);
+            PCalcResultInfo result = await m_Calculator.UpdateWeight(updateRequest.Environment, updateRequest.ProductDescription);
             return Ok(result);
         }
         #endregion
