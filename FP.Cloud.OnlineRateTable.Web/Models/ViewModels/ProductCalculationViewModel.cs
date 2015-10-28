@@ -9,7 +9,6 @@ namespace FP.Cloud.OnlineRateTable.Web.Models.ViewModels
     public class ProductCalculationViewModel
     {
         #region properties
-        public RequestValueViewModel RequestValueModel {get; set;}
         public EQueryType QueryType { get; set; }
         public string PartialView
         {
@@ -18,15 +17,27 @@ namespace FP.Cloud.OnlineRateTable.Web.Models.ViewModels
         #endregion
 
         #region constructor
-        public ProductCalculationViewModel(EQueryType type)
-        {
-            RequestValueModel = new RequestValueViewModel();
-            QueryType = type;
-        }
+        protected ProductCalculationViewModel() { }
+        #endregion
 
-        public ProductCalculationViewModel()
+        #region public
+        public static ProductCalculationViewModel Create(EQueryType type)
         {
-            RequestValueModel = new RequestValueViewModel();
+            switch (type)
+            {
+                case EQueryType.None:
+                    return new StartCalculationViewModel() { QueryType = type } ;
+                case EQueryType.RequestPostage:
+                case EQueryType.RequestValue:
+                case EQueryType.RequestString:
+                    return new RequestValueViewModel() { QueryType = type };
+                case EQueryType.SelectIndex:
+                case EQueryType.ShowMenu:
+                case EQueryType.ShowDisplay:
+                case EQueryType.SelectValue:
+                default:
+                    return new ProductCalculationViewModel() { QueryType = type };
+            }
         }
         #endregion
 

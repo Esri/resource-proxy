@@ -27,15 +27,26 @@ namespace FP.Cloud.OnlineRateTable.Controllers
         #endregion
 
         #region public web API
+        /// <summary>
+        /// Returns all RateTables from the database
+        /// </summary>
+        /// <param name="includeFileData">if set to true the Package file data is appended (long transmission time)</param>
+        /// <returns></returns>
         [ResponseType(typeof(IEnumerable<RateTableInfo>))]
         [HttpGet]
         [ActionName("GetAll")]
         [Authorize(Roles = "RateTableAdministrators")]
         public async Task<IEnumerable<RateTableInfo>> GetAllRateTables(bool includeFileData)
         {
+            IEnumerable<RateTableInfo> t = await m_Manager.GetLatestForVariant(true, DateTime.UtcNow);
             return await m_Manager.GetAll(includeFileData);
         }
 
+        /// <summary>
+        /// returns a rate table specified by database id
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         [ResponseType(typeof(RateTableInfo))]
         [HttpGet]
         [ActionName("GetById")]
@@ -45,6 +56,11 @@ namespace FP.Cloud.OnlineRateTable.Controllers
             return await m_Manager.GetById(id);
         }
 
+        /// <summary>
+        /// returns rate tables from the database using the filters provided. this method also includes paging mechanisms
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
         [ResponseType(typeof(IEnumerable<RateTableInfo>))]
         [HttpPost]
         [ActionName("GetFiltered")]
@@ -52,9 +68,13 @@ namespace FP.Cloud.OnlineRateTable.Controllers
         public async Task<IEnumerable<RateTableInfo>> GetRateTables(GetRateTableRequest request)
         {
             return await m_Manager.GetFiltered(request.Variant, request.Version, request.Carrier, 
-                request.ValidFrom, request.Culture, request.StartValue, request.ItemCount, request.IncludeFileData);
+                request.MinValidFrom, request.MaxValidFrom, request.Culture, request.StartValue, request.ItemCount, request.IncludeFileData);
         }
 
+        /// <summary>
+        /// Adds a new RateTable to the database
+        /// </summary>
+        /// <param name="info">The new information.</param>
         [ResponseType(typeof(RateTableInfo))]
         [HttpPost]
         [ActionName("AddNew")]
@@ -69,6 +89,11 @@ namespace FP.Cloud.OnlineRateTable.Controllers
             return Ok(resultEntry);
         }
 
+        /// <summary>
+        /// updates an existing rate table info in the database
+        /// </summary>
+        /// <param name="info">The updated information.</param>
+        /// <returns></returns>
         [ResponseType(typeof(RateTableInfo))]
         [HttpPost]
         [ActionName("Update")]
@@ -87,6 +112,11 @@ namespace FP.Cloud.OnlineRateTable.Controllers
             return Ok(resultEntry);
         }
 
+        /// <summary>
+        /// deletes an rate table database entry
+        /// </summary>
+        /// <param name="id">id of the rate table to be deleted</param>
+        /// <returns></returns>
         [ResponseType(typeof(bool))]
         [HttpDelete]
         [ActionName("Delete")]

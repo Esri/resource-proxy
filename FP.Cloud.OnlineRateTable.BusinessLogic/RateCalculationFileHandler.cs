@@ -53,7 +53,8 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
         #region public
         public async Task Initialize(EnvironmentInfo environment)
         {
-            IEnumerable<RateTableInfo> rateTables = await m_Manager.GetFiltered(string.Empty, string.Empty, environment.CarrierId, environment.UtcDate, environment.Culture, 0, 0, true);
+            IEnumerable<RateTableInfo> rateTables = await m_Manager.GetFiltered(string.Empty, string.Empty, 
+                environment.CarrierId, DateTime.MinValue, environment.UtcDate, environment.Culture, 0, 0, true);
             RateTableInfo currentTable = rateTables.OrderByDescending(t => t.ValidFrom).FirstOrDefault();
             if (null != currentTable)
             {

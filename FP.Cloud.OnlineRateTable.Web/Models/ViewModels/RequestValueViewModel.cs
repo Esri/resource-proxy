@@ -9,7 +9,7 @@ using System.Web;
 
 namespace FP.Cloud.OnlineRateTable.Web.Models.ViewModels
 {
-    public class RequestValueViewModel
+    public class RequestValueViewModel : ProductCalculationViewModel
     {
         #region properties
         public int Label { get; set; }

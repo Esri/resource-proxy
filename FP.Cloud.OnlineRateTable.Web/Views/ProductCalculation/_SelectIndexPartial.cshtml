@@ -1,18 +1,18 @@
-﻿@if (ViewData.ContainsKey("Pcalc"))
+﻿@if (ViewData.ContainsKey(FP.Cloud.OnlineRateTable.Web.Controllers.ProductCalculationController.REQUEST_DESCRIPTION))
 {
-    var pcalc = ((FP.Cloud.OnlineRateTable.Common.ProductCalculation.SelectIndexDescriptionInfo)ViewData["Pcalc"]);
+    var requestDescription = ((FP.Cloud.OnlineRateTable.Common.ProductCalculation.SelectIndexDescriptionInfo)ViewData[FP.Cloud.OnlineRateTable.Web.Controllers.ProductCalculationController.REQUEST_DESCRIPTION]);
     <div>
         <h4>Please select an item</h4>
         <hr />
         <table class="table">
             <tr>
                 <th>
-                    @pcalc.DescriptionTitle
+                    @requestDescription.DescriptionTitle
                 </th>
             </tr>
 
             @{int i = 0; }
-            @foreach (var item in pcalc.IndexEntries)
+            @foreach (var item in requestDescription.IndexEntries)
             {
                 <tr>
                     <td>
