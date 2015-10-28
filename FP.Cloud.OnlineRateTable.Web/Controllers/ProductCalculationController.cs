@@ -63,7 +63,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
                     environment.SenderZipCode = model.SenderZip;
                     request.Environment = environment;
                     PCalcResultInfo result = await m_Repository.Start(request);
-                    if (null != result)
+                    if (PcalcResultIsValid(result))
                     {
                         AddOrUpdateTempData(result, request.Environment);
                         AddViewData(result);
@@ -79,11 +79,21 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
         {
             StartCalculationRequest request = new StartCalculationRequest();
             request.Weight = new WeightInfo() { WeightUnit = EWeightUnit.Gram, WeightValue = 1537 };
-            request.Environment = GetEnvironment();
-            PCalcResultInfo result = await m_Repository.Start(request);
-            AddOrUpdateTempData(result, request.Environment);
-            AddViewData(result);
-            return View("Index", ProductCalculationViewModel.Create(result.QueryType));
+
+            EnvironmentInfo environment = GetEnvironment();
+            if (null != environment)
+            {
+                request.Environment = environment;
+                PCalcResultInfo result = await m_Repository.Start(request);
+                if (PcalcResultIsValid(result))
+                {
+                    AddOrUpdateTempData(result, request.Environment);
+                    AddViewData(result);
+                    return View("Index", ProductCalculationViewModel.Create(result.QueryType));
+                }
+                return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to contact product calculation API");
+            }
+            return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to create environment");
         }
 
         public async Task<ActionResult> StepBack()
@@ -95,7 +105,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
                 request.Environment = GetEnvironment();
                 request.ProductDescription = lastResult.ProductDescription;
                 PCalcResultInfo result = await m_Repository.StepBack(request);
-                if (null != result)
+                if (PcalcResultIsValid(result))
                 {
                     AddOrUpdateTempData(result, request.Environment);
                     AddViewData(result);
@@ -241,10 +251,13 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
                     calc.ActionResult = actionResult;
                     PCalcResultInfo result = await m_Repository.Calculate(calc);
                     //TODO: Error handling
-
-                    AddOrUpdateTempData(result, calc.Environment);
-                    AddViewData(result);
-                    return View("Index", ProductCalculationViewModel.Create(result.QueryType));
+                    if (PcalcResultIsValid(result))
+                    {
+                        AddOrUpdateTempData(result, calc.Environment);
+                        AddViewData(result);
+                        return View("Index", ProductCalculationViewModel.Create(result.QueryType));
+                    }
+                    return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to contact product calculation API");
                 }
                 return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to retrieve environment information");
             }
@@ -295,6 +308,13 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
             ViewData.Add(WEIGHT, result?.ProductDescription?.Weight);
             ViewData.Add(POSTAGE, result?.ProductDescription?.Postage);
             ViewData.Add(REQUEST_DESCRIPTION, result?.DedicatedDescription);
+        }
+
+        private bool PcalcResultIsValid(PCalcResultInfo info)
+        {
+            return null != info && 
+                null != info.QueryDescription && 
+                null != info.ProductDescription;
         }
         #endregion
 
