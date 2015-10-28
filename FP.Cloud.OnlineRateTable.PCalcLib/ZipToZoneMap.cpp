@@ -3,12 +3,11 @@
 
 #include "Base/misc/std_def.h"
 #include "Base/misc/ConvertType.hpp"
-#include "ProductCalculation/Windows/PCalcSimulation/PCalcManagedLib/PCalcManagedLib.h"
-
 #include "boost/cast.hpp"
+#include "Convert.hpp"
 
 using namespace System::Collections::Generic;
-using namespace System;
+using namespace FP::Cloud::OnlineRateTable::PCalcLib;
 
 namespace VariantSpecific
 {
@@ -25,7 +24,7 @@ namespace VariantSpecific
 			return m_Instance;
 		}
 
-		virtual IEnumerable<INT32>^ GetZones(String^ currentZipCode, String^ targetZipCode) = 0;
+		virtual IEnumerable<INT32>^ GetZones(System::String^ currentZipCode, System::String^ targetZipCode) = 0;
 
 	private:
 		static MyZip2ZoneConverter^ m_Instance;
@@ -33,8 +32,8 @@ namespace VariantSpecific
 
 	bool MapZip2Zone(const std::string& currentLocation, const std::string& targetLocation, std::vector<INT32>& zoneList)
 	{
-		String^ currentZipCode = PCalcManagedLib::ConvertToNetString(currentLocation);
-		String^ targetZipCode = PCalcManagedLib::ConvertToNetString(targetLocation);
+		System::String^ currentZipCode = Convert::ToString(currentLocation);
+		System::String^ targetZipCode = Convert::ToString(targetLocation);
 
 		MyZip2ZoneConverter^ converter = MyZip2ZoneConverter::GetInstance();
 		if (nullptr == converter)
@@ -47,7 +46,7 @@ namespace VariantSpecific
 		{
 			result = converter->GetZones(currentZipCode, targetZipCode);
 		}
-		catch (Exception^)
+		catch (System::Exception^)
 		{
 			return false;
 		}

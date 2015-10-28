@@ -89,9 +89,6 @@
     <ClCompile Include="AssemblyInfo.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\FMLibs\ProductCalculation\Windows\PCalcSimulation\PCalcManagedLib\PCalcManagedLib.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="ZipToZoneMap.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
@@ -135,6 +132,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="ProductDescriptionMapper.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Convert.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

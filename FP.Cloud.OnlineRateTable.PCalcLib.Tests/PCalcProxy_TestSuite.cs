@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using FP.Cloud.OnlineRateTable.Common.ProductCalculation;
 using NUnit.Framework;
 
@@ -59,7 +60,7 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
             Assert.IsNotNull(m_Context.Proxy);
             IPCalcProxy proxy = m_Context.Proxy;
 
-            PCalcResultInfo result = proxy.Calculate(m_Environment, m_Weight);
+            PCalcResultInfo result = proxy.Start(m_Environment, m_Weight);
 
             int steps = 0;
 
@@ -111,7 +112,7 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
             Assert.IsNotNull(m_Context.Proxy);
             IPCalcProxy proxy = m_Context.Proxy;
 
-            PCalcResultInfo result = proxy.Calculate(m_Environment, m_Weight);
+            PCalcResultInfo result = proxy.Start(m_Environment, m_Weight);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(EQueryType.ShowMenu, result.QueryType);
@@ -137,6 +138,48 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
             Assert.IsNotNull(result);
             Assert.AreEqual(EQueryType.ShowMenu, result.QueryType);
             Assert.Greater(result.ProductDescription.Weight.WeightValue, 0, "Product has no weight");
+        }
+
+        [Test]
+        public void ShouldHandleRequestValue()
+        {
+            Assert.IsNotNull(m_Context.Proxy);
+            IPCalcProxy proxy = m_Context.Proxy;
+
+            var actionResult = new ActionResultInfo { Action = EActionId.ShowMenu, Label = 0, Results = new List<AnyInfo> { new AnyInfo { AnyValue = "0", AnyType = EAnyType.UINT32 } } };
+            PCalcResultInfo result = proxy.Start(m_Environment, new WeightInfo());
+
+            result = proxy.Calculate(m_Environment, result.ProductDescription, actionResult);
+            result = proxy.Calculate(m_Environment, result.ProductDescription, actionResult);
+            result = proxy.Calculate(m_Environment, result.ProductDescription, actionResult);
+
+            actionResult.Results.Single().AnyValue = "5";
+            actionResult.Action = EActionId.ShowMenu;
+            actionResult.Label = 1;
+
+            result = proxy.Calculate(m_Environment, result.ProductDescription, actionResult);
+        }
+
+        [Test]
+        public void ShouldHandleStepBackToPreviousProduct()
+        {
+            Assert.IsNotNull(m_Context.Proxy);
+            IPCalcProxy proxy = m_Context.Proxy;
+
+            var actionResult = new ActionResultInfo { Action = EActionId.ShowMenu, Label = 0, Results = new List<AnyInfo> { new AnyInfo { AnyValue = "0", AnyType = EAnyType.UINT32 } } };
+            PCalcResultInfo result = proxy.Start(m_Environment, new WeightInfo());
+
+            result = proxy.Calculate(m_Environment, result.ProductDescription, actionResult);
+            result = proxy.Calculate(m_Environment, result.ProductDescription, actionResult);
+
+            int productID = result.ProductDescription.ProductId;
+            result = proxy.Calculate(m_Environment, result.ProductDescription, actionResult);
+
+            Assert.AreNotEqual(productID, result.ProductDescription.ProductId);
+
+            result = proxy.Back(m_Environment, result.ProductDescription);
+
+            Assert.AreEqual(productID, result.ProductDescription.ProductId);
         }
 
         [TearDown]

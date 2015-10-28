@@ -23,9 +23,10 @@ public:
 	PCalcProxy();
 	~PCalcProxy();
 
-	virtual PCalcResultInfo^ Calculate(EnvironmentInfo^ environment, WeightInfo^ weight);
+	virtual PCalcResultInfo^ Start(EnvironmentInfo^ environment, WeightInfo^ weight);
 	virtual PCalcResultInfo^ Calculate(EnvironmentInfo^ environment, ProductDescriptionInfo^ product, ActionResultInfo^ actionResult);
 	virtual PCalcResultInfo^ Calculate(EnvironmentInfo^ environment, ProductDescriptionInfo^ product);
+	virtual PCalcResultInfo^ Back(EnvironmentInfo^ environment, ProductDescriptionInfo^ product);
 
 	virtual void Init(System::String^ amxPath, System::String^ tablePath);
 

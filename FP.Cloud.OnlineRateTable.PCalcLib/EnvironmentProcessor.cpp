@@ -1,16 +1,14 @@
 #include "ProductCalculation/IPCalcConfiguration.hpp"
 #include "EnvironmentProcessor.hpp"
+#include "Convert.hpp"
 
 USING_PRODUCTCALCULATION_NAMESPACE
-BEGIN_PCALC_LIB_NAMESPACE
 
-EnvironmentProcessor::EnvironmentProcessor(PCalcFactory^ factory)
+FP::Cloud::OnlineRateTable::PCalcLib::EnvironmentProcessor::EnvironmentProcessor(PCalcFactory^ factory)
 	:m_Factory(factory)
 {
 
 }
-
-END_PCALC_LIB_NAMESPACE
 
 void FP::Cloud::OnlineRateTable::PCalcLib::EnvironmentProcessor::Handle(EnvironmentInfo^ environment)
 {
@@ -20,8 +18,8 @@ void FP::Cloud::OnlineRateTable::PCalcLib::EnvironmentProcessor::Handle(Environm
 	IPCalcConfigurationPtr config = this->m_Factory->GetConfig();
 	IPropertiesPtr properties = config->AccessCurrentProperties();
 
-	properties->SetValue(EnvironmentProperty::REQUEST_ORIGIN_ZIP_CODE, PCalcManagedLib::ConvertToString(environment->SenderZipCode));
-	properties->SetValue(EnvironmentProperty::REQUEST_LANG, PCalcManagedLib::ConvertToString(environment->Culture));
+	properties->SetValue(EnvironmentProperty::REQUEST_ORIGIN_ZIP_CODE, Convert::ToString(environment->SenderZipCode));
+	properties->SetValue(EnvironmentProperty::REQUEST_LANG, Convert::ToString(environment->Culture));
 	properties->SetValue(EnvironmentProperty::REQUEST_GRAPHIC_FORMAT, 0);
 	properties->SetValue(EnvironmentProperty::REQUEST_DYNAMIC_SCALE, 0);
 	properties->SetValue(EnvironmentProperty::REQUEST_STATIC_SCALE, 1);

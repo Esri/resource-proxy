@@ -192,10 +192,10 @@
     <ClInclude Include="Stdafx.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\FMLibs\ProductCalculation\Windows\PCalcSimulation\PCalcManagedLib\PCalcManagedLib.cpp" />
     <ClCompile Include="ActionResultProcessor.cpp" />
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="CalculationResultFinishedProcessor.cpp" />
+    <ClCompile Include="Convert.cpp" />
     <ClCompile Include="EnvironmentProcessor.cpp" />
     <ClCompile Include="ExtendedErrorCode.cpp" />
     <ClCompile Include="CalculationResultRequestValueProcessor.cpp" />
