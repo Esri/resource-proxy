@@ -3,11 +3,13 @@
 #include "Lock.hpp"
 #include "Exceptions.hpp"
 #include "PCalcProxy.hpp"
+#include "ActionResultProcessor.hpp"
+#include "EnvironmentProcessor.hpp"
+#include "ProductDescriptionMapper.hpp"
+#include "PCalcFactory.hpp"
+#include "PCalcManager.hpp"
 
-USING_PRODUCTCALCULATION_NAMESPACE
-USING_PCALC_LIB_NAMESPACE
-
-//System::Object^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::m_SyncLock = gcnew System::Object();
+using namespace System;
 
 FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::PCalcProxy()
 	: m_Factory(gcnew PCalcFactory())
@@ -45,7 +47,7 @@ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::!PCalcProxy()
 		delete m_Factory;
 }
 
-PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Start(EnvironmentInfo^ environment, WeightInfo^ weight)
+Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Start(Shared::EnvironmentInfo^ environment, Shared::WeightInfo^ weight)
 {
 	Lock lock(m_SyncLock);
 	int nextAction = 0;
@@ -54,11 +56,11 @@ PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Start(Environ
 	this->m_Manager->CalculateStart(nextAction);
 
 	// update weight after valid product is available
-	PCalcResultInfo^ result = this->m_CalculationResultProcessor->Handle(nextAction);
+	Shared::PCalcResultInfo^ result = this->m_CalculationResultProcessor->Handle(nextAction);
 
 	// recalculate with changed weight
 	this->m_ProductDescriptionMapper->SetWeight(weight);
-	this->Calculate(nullptr, (ProductDescriptionInfo^)nullptr);
+	this->Calculate(nullptr, (Shared::ProductDescriptionInfo^)nullptr);
 
 	// set product description
 	result->ProductDescription = this->m_ProductDescriptionMapper->GetProduct();
@@ -66,7 +68,7 @@ PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Start(Environ
 	return result;
 }
 
-PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(EnvironmentInfo^ environment, ProductDescriptionInfo^ product, ActionResultInfo^ actionResult)
+Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(Shared::EnvironmentInfo^ environment, Shared::ProductDescriptionInfo^ product, Shared::ActionResultInfo^ actionResult)
 {
 	Lock lock(m_SyncLock);
 	INT32 nextAction = 0;
@@ -83,13 +85,13 @@ PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(Env
 	this->m_Manager->CalculateNext(nextAction);
 
 	//get result;
-	PCalcResultInfo^ result = this->m_CalculationResultProcessor->Handle(nextAction);
+	Shared::PCalcResultInfo^ result = this->m_CalculationResultProcessor->Handle(nextAction);
 	result->ProductDescription = this->m_ProductDescriptionMapper->GetProduct();
 
 	return result;
 }
 
-PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(EnvironmentInfo^ environment, ProductDescriptionInfo^ product)
+Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(Shared::EnvironmentInfo^ environment, Shared::ProductDescriptionInfo^ product)
 {
 	Lock lock(m_SyncLock);
 	INT32 nextAction = 0;
@@ -101,14 +103,14 @@ PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(Env
 	this->m_Manager->Calculate(nextAction);
 
 	// get result
-	PCalcResultInfo^ result = this->m_CalculationResultProcessor->Handle(nextAction);
+	Shared::PCalcResultInfo^ result = this->m_CalculationResultProcessor->Handle(nextAction);
 	result->ProductDescription = this->m_ProductDescriptionMapper->GetProduct();
 
 	return result;
 
 }
 
-PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Back(EnvironmentInfo^ environment, ProductDescriptionInfo^ product)
+Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Back(Shared::EnvironmentInfo^ environment, Shared::ProductDescriptionInfo^ product)
 {
 	Lock lock(m_SyncLock);
 	INT32 nextAction = 0;
@@ -121,7 +123,7 @@ PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Back(Environm
 	this->m_Manager->CalculateBack(nextAction);
 
 	// get result
-	PCalcResultInfo^ result = this->m_CalculationResultProcessor->Handle(nextAction);
+	Shared::PCalcResultInfo^ result = this->m_CalculationResultProcessor->Handle(nextAction);
 	result->ProductDescription = this->m_ProductDescriptionMapper->GetProduct();
 
 	return result;

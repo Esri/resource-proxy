@@ -1,6 +1,8 @@
 #include "CalculationResultRequestValueProcessor.hpp"
 #include "DisplayTypeVisitor.hpp"
 #include "Convert.hpp"
+#include "PCalcFactory.hpp"
+#include "ProductCalculation/ProductDescriptionDefs.hpp"
 
 USING_PRODUCTCALCULATION_NAMESPACE
 
@@ -10,10 +12,10 @@ FP::Cloud::OnlineRateTable::PCalcLib::CalculationResultRequestValueProcessor::Ca
 
 }
 
-void FP::Cloud::OnlineRateTable::PCalcLib::CalculationResultRequestValueProcessor::SetDescription(PCalcResultInfo^ resultInfo)
+void FP::Cloud::OnlineRateTable::PCalcLib::CalculationResultRequestValueProcessor::SetDescription(Shared::PCalcResultInfo^ resultInfo)
 {
-	RequestValueDescType requestValue = this->Factory->GetActionMgr()->GetActionRequestValue();
-	RequestDescriptionInfo^ result = gcnew RequestDescriptionInfo();
+	PT::RequestValueDescType requestValue = this->Factory->GetActionMgr()->GetActionRequestValue();
+	Shared::RequestDescriptionInfo^ result = gcnew Shared::RequestDescriptionInfo();
 
 	result->DescriptionTitle = boost::apply_visitor(DisplayTypeVisitor(), requestValue.m_Title);;
 	result->Label = requestValue.m_LabelID;

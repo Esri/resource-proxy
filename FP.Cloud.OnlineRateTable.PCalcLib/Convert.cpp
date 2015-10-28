@@ -1,8 +1,5 @@
 #include "Convert.hpp"
 
-#include <windows.h>
-#include <string>
-
 using namespace System;
 using namespace System::Runtime::InteropServices;
 

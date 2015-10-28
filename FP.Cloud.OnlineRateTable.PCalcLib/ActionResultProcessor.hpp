@@ -1,23 +1,20 @@
 #pragma once
 
-#include "PCalcFactory.hpp"
 #include "PCalcLib.hpp"
+#include "ProductCalculation/IProductDescParameter.hpp"
 
 BEGIN_PCALC_LIB_NAMESPACE
-USING_PRODUCTCALCULATION_NAMESPACE
 
-
-
-using namespace FP::Cloud::OnlineRateTable::Common::ProductCalculation;
+ref class PCalcFactory;
 
 private ref class ActionResultProcessor
 {
 public:
 	ActionResultProcessor(PCalcFactory^ factory);
-	void Handle(ActionResultInfo^ actionResult);
+	void Handle(Shared::ActionResultInfo^ actionResult);
 
 private:
-	void SetActionResult(IProductDescParameterPtr &parameter, ActionResultInfo^ actionResult);
+	void SetActionResult(PT::IProductDescParameterPtr &parameter, Shared::ActionResultInfo^ actionResult);
 
 private:
 	PCalcFactory^ m_Factory;

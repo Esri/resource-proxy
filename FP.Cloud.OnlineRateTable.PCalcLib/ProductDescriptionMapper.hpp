@@ -1,29 +1,29 @@
 #pragma once
 
 #include "PCalcLib.hpp"
-#include "PCalcFactory.hpp"
 #include "ProductCalculation/IProductDescParameter.hpp"
 
-USING_PRODUCTCALCULATION_NAMESPACE
 BEGIN_PCALC_LIB_NAMESPACE
+
+ref class PCalcFactory;
 
 private ref class ProductDescriptionMapper
 {
 public:
 	ProductDescriptionMapper(PCalcFactory^ factory);
 
-	ProductDescriptionInfo^ GetProduct();
-	void SetProduct(ProductDescriptionInfo^ product);
-	void SetWeight(WeightInfo^ weight);
+	Shared::ProductDescriptionInfo^ GetProduct();
+	void SetProduct(Shared::ProductDescriptionInfo^ product);
+	void SetWeight(Shared::WeightInfo^ weight);
 
 private:
-	void SetWeight(ProductDescriptionInfo^ target, const WeightType &source);
-	void SetWeight(IProductDescParameterPtr &target, WeightInfo^ source);
-	void SetPostage(ProductDescriptionInfo^ target, const PostageValueType &source);
-	void SetPostage(IProductDescParameterPtr &target, PostageInfo^ source);
-	void SetReadyModeSelection(ProductDescriptionInfo^ target, const RmProdSelectType &source);
-	void SetAttributes(ProductDescriptionInfo^ target, const AttributeListType &source);
-	void SetAttributes(IProductDescParameterPtr &target, System::Collections::Generic::List<AttributeInfo^>^ source);
+	void SetWeight(Shared::ProductDescriptionInfo^ target, const PT::WeightType &source);
+	void SetWeight(PT::IProductDescParameterPtr &target, Shared::WeightInfo^ source);
+	void SetPostage(Shared::ProductDescriptionInfo^ target, const PT::PostageValueType &source);
+	void SetPostage(PT::IProductDescParameterPtr &target, Shared::PostageInfo^ source);
+	void SetReadyModeSelection(Shared::ProductDescriptionInfo^ target, const PT::RmProdSelectType &source);
+	void SetAttributes(Shared::ProductDescriptionInfo^ target, const PT::AttributeListType &source);
+	void SetAttributes(PT::IProductDescParameterPtr &target, System::Collections::Generic::List<Shared::AttributeInfo^>^ source);
 
 private:
 	PCalcFactory^ m_Factory;

@@ -1,9 +1,11 @@
 #pragma once
 
-#include "PCalcFactory.hpp"
 #include "PCalcLib.hpp"
+#include "Base/misc/std_def.h"
 
 BEGIN_PCALC_LIB_NAMESPACE
+
+ref class PCalcFactory;
 
 private ref class PCalcManager
 {

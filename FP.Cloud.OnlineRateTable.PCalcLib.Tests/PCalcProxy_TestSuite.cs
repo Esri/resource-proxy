@@ -54,7 +54,7 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
         [TestCase(50)]
         [TestCase(10)]
         public void ShouldCalculateCompleteProduct(int milliseconds)
-        {            
+        {
             m_ExpectedMaximum = TimeSpan.FromMilliseconds(milliseconds);
 
             Assert.IsNotNull(m_Context.Proxy);
@@ -146,18 +146,19 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
             Assert.IsNotNull(m_Context.Proxy);
             IPCalcProxy proxy = m_Context.Proxy;
 
-            var actionResult = new ActionResultInfo { Action = EActionId.ShowMenu, Label = 0, Results = new List<AnyInfo> { new AnyInfo { AnyValue = "0", AnyType = EAnyType.UINT32 } } };
+            var actionResult = new ActionResultInfo { Action = EActionId.ShowMenu, Label = 0, Results = new List<AnyInfo> { new AnyInfo { AnyValue = "0", AnyType = EAnyType.INT32 } } };
             PCalcResultInfo result = proxy.Start(m_Environment, new WeightInfo());
 
             result = proxy.Calculate(m_Environment, result.ProductDescription, actionResult);
             result = proxy.Calculate(m_Environment, result.ProductDescription, actionResult);
             result = proxy.Calculate(m_Environment, result.ProductDescription, actionResult);
 
-            actionResult.Results.Single().AnyValue = "5";
+            actionResult.Results.Single().AnyValue = "4";
             actionResult.Action = EActionId.ShowMenu;
             actionResult.Label = 1;
 
-            result = proxy.Calculate(m_Environment, result.ProductDescription, actionResult);
+            Assert.DoesNotThrow( () => result = proxy.Calculate(m_Environment, result.ProductDescription, actionResult));
+            Assert.AreEqual(EQueryType.RequestValue, result.QueryType);
         }
 
         [Test]
@@ -173,12 +174,11 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
             result = proxy.Calculate(m_Environment, result.ProductDescription, actionResult);
 
             int productID = result.ProductDescription.ProductId;
-            result = proxy.Calculate(m_Environment, result.ProductDescription, actionResult);
 
+            result = proxy.Calculate(m_Environment, result.ProductDescription, actionResult);
             Assert.AreNotEqual(productID, result.ProductDescription.ProductId);
 
             result = proxy.Back(m_Environment, result.ProductDescription);
-
             Assert.AreEqual(productID, result.ProductDescription.ProductId);
         }
 

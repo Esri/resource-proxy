@@ -1,6 +1,6 @@
 #include "CalculationResultProcessor.hpp"
+#include "PCalcFactory.hpp"
 
-USING_PRODUCTCALCULATION_NAMESPACE
 BEGIN_PCALC_LIB_NAMESPACE
 
 FP::Cloud::OnlineRateTable::PCalcLib::CalculationResultProcessor::CalculationResultProcessor(PCalcFactory^ factory)
@@ -8,9 +8,9 @@ FP::Cloud::OnlineRateTable::PCalcLib::CalculationResultProcessor::CalculationRes
 {
 }
 
-PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::CalculationResultProcessor::Handle()
+Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::CalculationResultProcessor::Handle()
 {
-	PCalcResultInfo^ result = gcnew PCalcResultInfo();
+	Shared::PCalcResultInfo^ result = gcnew Shared::PCalcResultInfo();
 	SetDescription(result);
 	return result;
 }

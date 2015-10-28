@@ -9,7 +9,7 @@ private ref class CalculationResultFinishedProcessor : public CalculationResultP
 {
 public:
 	CalculationResultFinishedProcessor(PCalcFactory^ factory);
-	virtual void SetDescription(PCalcResultInfo^ resultInfo) override;
+	virtual void SetDescription(Shared::PCalcResultInfo^ resultInfo) override;
 };
 
 END_PCALC_LIB_NAMESPACE

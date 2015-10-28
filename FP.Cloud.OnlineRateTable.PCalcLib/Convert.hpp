@@ -1,7 +1,7 @@
 #pragma once
 
+#include <string>
 #include "PCalcLib.hpp"
-#include "boost/variant.hpp"
 
 BEGIN_PCALC_LIB_NAMESPACE
 

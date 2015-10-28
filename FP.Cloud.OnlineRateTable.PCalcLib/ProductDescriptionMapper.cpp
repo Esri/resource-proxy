@@ -1,8 +1,8 @@
 #include "Exceptions.hpp"
 #include "ProductDescriptionMapper.hpp"
 #include "DisplayObjectTypeVisitor.hpp"
+#include "PCalcFactory.hpp"
 
-USING_PRODUCTCALCULATION_NAMESPACE
 using namespace System;
 using namespace System::Collections::Generic;
 
@@ -11,12 +11,12 @@ FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::ProductDescripti
 {
 }
 
-void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetProduct(ProductDescriptionInfo^ product)
+void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetProduct(Shared::ProductDescriptionInfo^ product)
 {
 	if (nullptr == product)
 		return;
 
-	IProductDescParameterPtr parameter = m_Factory->GetProdDesc()->AccessCurrProduct();
+	PT::IProductDescParameterPtr parameter = m_Factory->GetProdDesc()->AccessCurrProduct();
 
 	parameter->SetProductID(product->ProductId);
 	parameter->SetProductCode(product->ProductCode);
@@ -27,103 +27,105 @@ void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetProduct(
 	this->SetWeight(parameter, product->Weight);
 	this->SetPostage(parameter, product->Postage);
 	this->SetAttributes(parameter, product->Attributes);
+
+	parameter->ResetWeightChanged();
 }
 
-void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetWeight(WeightInfo^ weight)
+void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetWeight(Shared::WeightInfo^ weight)
 {
-	IProductDescParameterPtr parameter = m_Factory->GetProdDesc()->AccessCurrProduct();
+	PT::IProductDescParameterPtr parameter = m_Factory->GetProdDesc()->AccessCurrProduct();
 	this->SetWeight(parameter, weight);
 }
 
-ProductDescriptionInfo^ FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::GetProduct()
+Shared::ProductDescriptionInfo^ FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::GetProduct()
 {
-	IProductDescParameterPtr parameter = m_Factory->GetProdDesc()->AccessCurrProduct();
-	ProductDescriptionInfo^ product = gcnew ProductDescriptionInfo();
+	PT::IProductDescParameterPtr parameter = m_Factory->GetProdDesc()->AccessCurrProduct();
+	Shared::ProductDescriptionInfo^ product = gcnew Shared::ProductDescriptionInfo();
 	
 	product->ProductCode = parameter->GetProductCode();
 	product->ProductId = parameter->GetProductID();
 	product->RateVersion = parameter->GetRateVersion();
 	product->WeightClass = parameter->GetWeightClass();	
-	product->State  = (EProductDescriptionState)parameter->GetState();		
+	product->State  = (Shared::EProductDescriptionState)parameter->GetState();
 	
 	this->SetWeight(product, parameter->GetWeight());
 	this->SetPostage(product, parameter->GetPostageValue());
 	this->SetReadyModeSelection(product, parameter->GetRMProductSelection());
-	this->SetAttributes(product, parameter->GetAttributes());
+	this->SetAttributes(product, parameter->GetAttributes());	
 
 	return product;
 }
 
-void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetWeight(ProductDescriptionInfo^ target, const WeightType &source)
+void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetWeight(Shared::ProductDescriptionInfo^ target, const PT::WeightType &source)
 {
 
-	EWeightUnit unit;
+	Shared::EWeightUnit unit;
 	INT32 value = source.Value;
 
 	switch (source.Unit)
 	{
-		case UNIT_TENTH_GRAM:
-			unit = EWeightUnit::TenthGram;
+		case PT::UNIT_TENTH_GRAM:
+			unit = Shared::EWeightUnit::TenthGram;
 			break;
-		case UNIT_GRAM:
-			unit = EWeightUnit::Gram;
+		case PT::UNIT_GRAM:
+			unit = Shared::EWeightUnit::Gram;
 			break;
-		case UNIT_HUNDREDTH_OUNCE:
-			unit = EWeightUnit::HoundrethOunce;
+		case PT::UNIT_HUNDREDTH_OUNCE:
+			unit = Shared::EWeightUnit::HoundrethOunce;
 			break;
-		case UNIT_TENTH_OUNCE:
-			unit = EWeightUnit::HoundrethOunce;
+		case PT::UNIT_TENTH_OUNCE:
+			unit = Shared::EWeightUnit::HoundrethOunce;
 			break;
 		default:
 			throw gcnew FP::Cloud::OnlineRateTable::PCalcLib::PCalcLibException("Unknown unit type");
 	}
 
-	WeightInfo^ weight = gcnew WeightInfo();
+	Shared::WeightInfo^ weight = gcnew Shared::WeightInfo();
 	weight->WeightUnit = unit;
 	weight->WeightValue = value;
 
 	target->Weight = weight;
 }
 
-void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetWeight(IProductDescParameterPtr &target, WeightInfo^ source)
+void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetWeight(PT::IProductDescParameterPtr &target, Shared::WeightInfo^ source)
 {
 	BYTE unit;
 	INT32 value = source->WeightValue;
 
 	switch (source->WeightUnit)
 	{
-		case EWeightUnit::TenthGram:
-			unit = UNIT_TENTH_GRAM;
+		case Shared::EWeightUnit::TenthGram:
+			unit = PT::UNIT_TENTH_GRAM;
 			break;
-		case EWeightUnit::Gram:
-			unit = UNIT_GRAM;
+		case Shared::EWeightUnit::Gram:
+			unit = PT::UNIT_GRAM;
 			break;
-		case EWeightUnit::HoundrethOunce:
-			unit = UNIT_HUNDREDTH_OUNCE;
+		case Shared::EWeightUnit::HoundrethOunce:
+			unit = PT::UNIT_HUNDREDTH_OUNCE;
 			break;
-		case EWeightUnit::TenthOunce:
-			unit = UNIT_TENTH_OUNCE;
+		case Shared::EWeightUnit::TenthOunce:
+			unit = PT::UNIT_TENTH_OUNCE;
 			break;
 		default:
 			throw gcnew PCalcLibException("Unknown unit type");
 	}
 
-	WeightType weightType(value, unit);
+	PT::WeightType weightType(value, unit);
 	target->SetWeight(weightType);
 }
 
-void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetPostage(ProductDescriptionInfo^ target, const PostageValueType &source)
+void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetPostage(Shared::ProductDescriptionInfo^ target, const PT::PostageValueType &source)
 {
-	PostageInfo^ postage = gcnew PostageInfo();
+	Shared::PostageInfo^ postage = gcnew Shared::PostageInfo();
 	postage->PostageValue = source.first;
 	postage->PostageDecimals = source.second;
 
 	target->Postage = postage;
 }
 
-void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetPostage(IProductDescParameterPtr &target, PostageInfo^ source)
+void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetPostage(PT::IProductDescParameterPtr &target, Shared::PostageInfo^ source)
 {
-	PostageValueType postageValueType;
+	PT::PostageValueType postageValueType;
 
 	if (nullptr != source)
 	{
@@ -133,7 +135,7 @@ void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetPostage(
 	target->SetPostageValue(postageValueType);
 }
 
-void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetReadyModeSelection(ProductDescriptionInfo^ target, const ProductCalculation::RmProdSelectType &source)
+void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetReadyModeSelection(Shared::ProductDescriptionInfo^ target, const PT::RmProdSelectType &source)
 {	
 	List<System::String^>^ selections = gcnew List<System::String^>();
 
@@ -146,13 +148,13 @@ void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetReadyMod
 	target->ReadyModeSelection = selections;	
 }
 
-void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetAttributes(ProductDescriptionInfo^ target, const AttributeListType &source)
+void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetAttributes(Shared::ProductDescriptionInfo^ target, const PT::AttributeListType &source)
 {
-	List<AttributeInfo^>^ attributes = gcnew List<AttributeInfo^>();
+	List<Shared::AttributeInfo^>^ attributes = gcnew List<Shared::AttributeInfo^>();
 
 	for (auto const &current : source)
 	{
-		AttributeInfo^ info = gcnew AttributeInfo();
+		Shared::AttributeInfo^ info = gcnew Shared::AttributeInfo();
 		info->Key = current.first;
 		info->Values = gcnew List<int>();
 
@@ -167,14 +169,14 @@ void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetAttribut
 	target->Attributes = attributes;	
 }
 
-void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetAttributes(IProductDescParameterPtr &target, System::Collections::Generic::List<AttributeInfo^>^ source)
+void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetAttributes(PT::IProductDescParameterPtr &target, System::Collections::Generic::List<Shared::AttributeInfo^>^ source)
 {
 	
-	AttributeListType attributes;
+	PT::AttributeListType attributes;
 
 	if(nullptr != source)
 	{
-		for each (AttributeInfo^ attribute in source)
+		for each (Shared::AttributeInfo^ attribute in source)
 		{
 			INT32 id(attribute->Key);
 			std::vector<INT32> values;

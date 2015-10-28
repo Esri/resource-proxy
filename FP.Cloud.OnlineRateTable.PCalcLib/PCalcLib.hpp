@@ -8,10 +8,22 @@
 
 #define USING_PRODUCTCALCULATION_NAMESPACE using namespace ProductCalculation; using namespace FP::Cloud::OnlineRateTable::Common::ProductCalculation;
 
-//USING_PCALC_LIB_NAMESPACE
-//
-//ref class CalculationResultProcessor;
-//ref class CalculationResultProcessorProxy;
-//ref class 
-//
-//END_PCALC_LIB_NAMESPACE
+namespace FP
+{
+	namespace Cloud
+	{
+		namespace OnlineRateTable
+		{
+			namespace PCalcLib {}
+			namespace ProductCalculation {}
+		}
+	}
+}
+
+namespace ProductCalculation
+{
+}
+
+namespace PT = ProductCalculation;
+namespace Lib = FP::Cloud::OnlineRateTable::PCalcLib;
+namespace Shared = FP::Cloud::OnlineRateTable::Common::ProductCalculation;

@@ -1,7 +1,8 @@
 #pragma once
 
-#include "PCalcProxy.hpp"
 #include "PCalcLib.hpp"
+#include "PCalcProxy.hpp"
+#include "IPCalcProxy.hpp"
 
 BEGIN_PCALC_LIB_NAMESPACE
 

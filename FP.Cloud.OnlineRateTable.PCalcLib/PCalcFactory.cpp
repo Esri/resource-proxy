@@ -2,20 +2,18 @@
 #include "PCalcFactoryCPP.hpp"
 
 
-USING_PCALC_LIB_NAMESPACE
-
-PCalcFactory::PCalcFactory(void)
-	: m_pFactory(new ProductCalculation::PCalcFactory())
+FP::Cloud::OnlineRateTable::PCalcLib::PCalcFactory::PCalcFactory(void)
+	: m_pFactory(new PT::PCalcFactory())
 {
 
 }
 
-PCalcFactory::~PCalcFactory(void)
+FP::Cloud::OnlineRateTable::PCalcLib::PCalcFactory::~PCalcFactory(void)
 {
 	this->!PCalcFactory();
 }
 
-PCalcFactory::!PCalcFactory(void)
+FP::Cloud::OnlineRateTable::PCalcLib::PCalcFactory::!PCalcFactory(void)
 {
 	if (NULL != m_pFactory)
 	{
@@ -23,42 +21,42 @@ PCalcFactory::!PCalcFactory(void)
 	}
 }
 
-ProductCalculation::IPCalcConfigurationPtr PCalcFactory::GetConfig(void)
+ProductCalculation::IPCalcConfigurationPtr FP::Cloud::OnlineRateTable::PCalcLib::PCalcFactory::GetConfig(void)
 {
 	return m_pFactory->GetPCalcConfig();
 }
 
-ProductCalculation::IPCalcManagerPtr PCalcFactory::GetPCalcMgr(void)
+ProductCalculation::IPCalcManagerPtr FP::Cloud::OnlineRateTable::PCalcLib::PCalcFactory::GetPCalcMgr(void)
 {
 	return m_pFactory->GetPCalcMgr();
 }
 
-ProductCalculation::IProductDescriptionPtr PCalcFactory::GetProdDesc(void)
+ProductCalculation::IProductDescriptionPtr FP::Cloud::OnlineRateTable::PCalcLib::PCalcFactory::GetProdDesc(void)
 {
 	return m_pFactory->GetProdDesc();
 }
 
-ProductCalculation::IPCalcActionManagerPtr PCalcFactory::GetActionMgr(void)
+ProductCalculation::IPCalcActionManagerPtr FP::Cloud::OnlineRateTable::PCalcLib::PCalcFactory::GetActionMgr(void)
 {
 	return m_pFactory->GetPCalcActionMgr();
 }
 
-ProductCalculation::IPTMgrPtr PCalcFactory::GetPTMgr(void)
+ProductCalculation::IPTMgrPtr FP::Cloud::OnlineRateTable::PCalcLib::PCalcFactory::GetPTMgr(void)
 {
 	return m_pFactory->GetPTMgr();
 }
 
-ProductCalculation::IPCalcMemoryKeyManagerPtr PCalcFactory::GetPCalcMemoryKeyMgr(void)
+ProductCalculation::IPCalcMemoryKeyManagerPtr FP::Cloud::OnlineRateTable::PCalcLib::PCalcFactory::GetPCalcMemoryKeyMgr(void)
 {
 	return m_pFactory->GetPCalcMemoryKeyMgr();
 }
 
-ProductCalculation::IPCalcGeneralInfoManagerPtr PCalcFactory::GetPCalcGeneralInfoMgr(void)
+ProductCalculation::IPCalcGeneralInfoManagerPtr FP::Cloud::OnlineRateTable::PCalcLib::PCalcFactory::GetPCalcGeneralInfoMgr(void)
 {
 	return m_pFactory->GetPCalcGeneralInfoMgr();
 }
 
-ProductCalculation::IPCalcReportManagerPtr PCalcFactory::GetPCalcReportMgr(void)
+ProductCalculation::IPCalcReportManagerPtr FP::Cloud::OnlineRateTable::PCalcLib::PCalcFactory::GetPCalcReportMgr(void)
 {
 	return m_pFactory->GetPCalcReportMgr();
 }

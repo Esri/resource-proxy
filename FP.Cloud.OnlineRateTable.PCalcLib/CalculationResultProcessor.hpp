@@ -1,21 +1,19 @@
 #pragma once
 
-#include "PCalcFactory.hpp"
-#include "ProductDescriptionMapper.hpp"
 #include "PCalcLib.hpp"
 
 BEGIN_PCALC_LIB_NAMESPACE
 
-using namespace FP::Cloud::OnlineRateTable::Common::ProductCalculation;
+ref class PCalcFactory;
 
 private ref class CalculationResultProcessor abstract
 {
 public:
-	PCalcResultInfo^ Handle();
+	Shared::PCalcResultInfo^ Handle();
 
 protected:
 	CalculationResultProcessor(PCalcFactory^ factory);
-	virtual void SetDescription(PCalcResultInfo^ resultInfo) abstract;
+	virtual void SetDescription(Shared::PCalcResultInfo^ resultInfo) abstract;
 
 	property PCalcFactory^ Factory { PCalcFactory^ get() { return m_Factory; } }
 

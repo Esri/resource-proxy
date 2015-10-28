@@ -1,8 +1,7 @@
 #include "ActionResultProcessor.hpp"
 #include "ProductCalculation/IProductDescParameter.hpp"
 #include "Exceptions.hpp"
-
-USING_PRODUCTCALCULATION_NAMESPACE
+#include "PCalcFactory.hpp"
 
 FP::Cloud::OnlineRateTable::PCalcLib::ActionResultProcessor::ActionResultProcessor(PCalcFactory^ factory)
 	: m_Factory(factory)
@@ -10,25 +9,25 @@ FP::Cloud::OnlineRateTable::PCalcLib::ActionResultProcessor::ActionResultProcess
 
 }
 
-void FP::Cloud::OnlineRateTable::PCalcLib::ActionResultProcessor::Handle(ActionResultInfo^ actionResult)
+void FP::Cloud::OnlineRateTable::PCalcLib::ActionResultProcessor::Handle(Shared::ActionResultInfo^ actionResult)
 {
-	IProductDescParameterPtr parameter = m_Factory->GetProdDesc()->AccessCurrProduct();
+	PT::IProductDescParameterPtr parameter = m_Factory->GetProdDesc()->AccessCurrProduct();
 	this->SetActionResult(parameter, actionResult);
 }
 
-void FP::Cloud::OnlineRateTable::PCalcLib::ActionResultProcessor::SetActionResult(IProductDescParameterPtr &parameter, ActionResultInfo^ actionResult)
+void FP::Cloud::OnlineRateTable::PCalcLib::ActionResultProcessor::SetActionResult(PT::IProductDescParameterPtr &parameter, Shared::ActionResultInfo^ actionResult)
 {
-	ProductCalculation::ActionResultType target;
-	ProductCalculation::ResultValueVectorType results;
+	PT::ActionResultType target;
+	PT::ResultValueVectorType results;
 
-	for each(AnyInfo^ current in actionResult->Results)
+	for each(Shared::AnyInfo^ current in actionResult->Results)
 	{
 		switch (current->AnyType)
 		{
-			case EAnyType::INT32:
+			case Shared::EAnyType::INT32:
 				results.push_back(System::Convert::ToInt32(current->AnyValue));
 				break;
-			case EAnyType::UINT32:
+			case Shared::EAnyType::UINT32:
 				results.push_back(System::Convert::ToUInt32(current->AnyValue));
 				break;
 			default:
