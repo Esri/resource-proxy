@@ -2,13 +2,6 @@
 
 #include "PCalcLib.hpp"
 #include "IPCalcProxy.hpp"
-#include "PCalcFactory.hpp"
-#include "PCalcManager.hpp"
-#include "CalculationResultProcessorProxy.hpp"
-#include "ProductDescriptionMapper.hpp"
-#include "ActionResultProcessor.hpp"
-#include "EnvironmentProcessor.hpp"
-#include <stdio.h>
 
 namespace ProductCalculation
 {
@@ -17,16 +10,23 @@ namespace ProductCalculation
 
 BEGIN_PCALC_LIB_NAMESPACE
 
+ref	class CalculationResultProcessorProxy;
+ref class ActionResultProcessor;
+ref class EnvironmentProcessor;
+ref class ProductDescriptionMapper;
+ref class PCalcManager;
+ref class PCalcFactory;
+
 private ref class PCalcProxy : System::MarshalByRefObject, public IPCalcProxy
 {
 public:
 	PCalcProxy();
 	~PCalcProxy();
 
-	virtual PCalcResultInfo^ Start(EnvironmentInfo^ environment, WeightInfo^ weight);
-	virtual PCalcResultInfo^ Calculate(EnvironmentInfo^ environment, ProductDescriptionInfo^ product, ActionResultInfo^ actionResult);
-	virtual PCalcResultInfo^ Calculate(EnvironmentInfo^ environment, ProductDescriptionInfo^ product);
-	virtual PCalcResultInfo^ Back(EnvironmentInfo^ environment, ProductDescriptionInfo^ product);
+	virtual Shared::PCalcResultInfo^ Start(Shared::EnvironmentInfo^ environment, Shared::WeightInfo^ weight);
+	virtual Shared::PCalcResultInfo^ Calculate(Shared::EnvironmentInfo^ environment, Shared::ProductDescriptionInfo^ product, Shared::ActionResultInfo^ actionResult);
+	virtual Shared::PCalcResultInfo^ Calculate(Shared::EnvironmentInfo^ environment, Shared::ProductDescriptionInfo^ product);
+	virtual Shared::PCalcResultInfo^ Back(Shared::EnvironmentInfo^ environment, Shared::ProductDescriptionInfo^ product);
 
 	virtual void Init(System::String^ amxPath, System::String^ tablePath);
 

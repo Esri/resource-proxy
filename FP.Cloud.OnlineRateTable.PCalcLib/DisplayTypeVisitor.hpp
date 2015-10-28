@@ -3,6 +3,7 @@
 #include "boost/variant.hpp"
 #include "PCalcLib.hpp"
 #include "Convert.hpp"
+#include "ProductCalculation/src/PlainProdTableDefs.hpp"
 
 BEGIN_PCALC_LIB_NAMESPACE
 
@@ -14,7 +15,7 @@ public:
 		return Convert::ToString(value);
 	}
 
-	System::String^ operator()(ProductCalculation::PTGraphicPtr pGraphic) const
+	System::String^ operator()(PT::PTGraphicPtr pGraphic) const
 	{
 		return nullptr;
 	}

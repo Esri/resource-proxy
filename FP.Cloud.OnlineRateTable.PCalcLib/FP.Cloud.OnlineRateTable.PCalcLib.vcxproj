@@ -168,6 +168,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ActionResultProcessor.hpp" />
+    <ClInclude Include="CalculationResultDisplayProcessor.hpp" />
     <ClInclude Include="CalculationResultFinishedProcessor.hpp" />
     <ClInclude Include="Convert.hpp" />
     <ClInclude Include="DisplayObjectTypeVisitor.hpp" />

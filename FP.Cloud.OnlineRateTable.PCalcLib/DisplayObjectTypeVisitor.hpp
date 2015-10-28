@@ -13,7 +13,7 @@ BEGIN_PCALC_LIB_NAMESPACE
 class DisplayObjectTypeVisitor : public boost::static_visitor<System::String^>
 {
 public:
-	DisplayObjectTypeVisitor(ProductCalculation::PCalcFactory *factory)
+	DisplayObjectTypeVisitor(PT::PCalcFactory *factory)
 		: m_Factory(factory)
 	{
 	}
@@ -30,15 +30,15 @@ public:
 		return Convert::ToString(value);
 	}
 
-	System::String^ operator()(ProductCalculation::TextGraphicIdType value) const
+	System::String^ operator()(PT::TextGraphicIdType value) const
 	{
-		ProductCalculation::IPTMgrPtr pPTMgr(m_Factory->GetPTMgr());
-		ProductCalculation::DisplayType displayType(pPTMgr->GetDisplayObject(value.IsAscii, value.ID));
+		PT::IPTMgrPtr pPTMgr(m_Factory->GetPTMgr());
+		PT::DisplayType displayType(pPTMgr->GetDisplayObject(value.IsAscii, value.ID));
 		return boost::apply_visitor(DisplayTypeVisitor(), displayType);
 	}
 
 private:
-	ProductCalculation::PCalcFactory *m_Factory;
+	PT::PCalcFactory *m_Factory;
 };
 
 END_PCALC_LIB_NAMESPACE

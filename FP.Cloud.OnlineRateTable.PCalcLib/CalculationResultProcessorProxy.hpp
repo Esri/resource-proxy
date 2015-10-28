@@ -1,7 +1,8 @@
 #pragma once
 
 #include "PCalcLib.hpp"
-#include "ProductDescriptionMapper.hpp"
+#include "Base/misc/std_def.h"
+
 
 BEGIN_PCALC_LIB_NAMESPACE
 
@@ -13,7 +14,7 @@ private ref class CalculationResultProcessorProxy
 {
 public:
 	CalculationResultProcessorProxy(PCalcFactory^ factory);
-	PCalcResultInfo^ Handle(INT32 actionID);
+	Shared::PCalcResultInfo^ Handle(INT32 actionID);
 
 private:
 	PCalcFactory^ m_Factory;
