@@ -53,7 +53,7 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
         [TestCase(100)]
         [TestCase(50)]
         [TestCase(10)]
-        public void ShouldCalculateCompleteProduct(int milliseconds)
+        public void ShouldHandleCalculateCompleteProduct(int milliseconds)
         {
             m_ExpectedMaximum = TimeSpan.FromMilliseconds(milliseconds);
 
@@ -75,7 +75,7 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
                 switch (result.QueryType)
                 {
                     case EQueryType.ShowMenu:
-                        var actionResult = new ActionResultInfo { Action = EActionId.ShowMenu, Label = 0, Results = new List<AnyInfo> { new AnyInfo { AnyValue = "0", AnyType = EAnyType.UINT32 } } };
+                        var actionResult = new ActionResultInfo { Action = EActionId.ShowMenu, Label = 0, Results = new List<AnyInfo> { new AnyInfo { AnyValue = (result.QueryDescription.Entries.Count -1).ToString(), AnyType = EAnyType.UINT32 } } };
                         result = proxy.Calculate(m_Environment, result.ProductDescription, actionResult);
                         break;
 
@@ -99,6 +99,8 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
             Assert.IsTrue(result.ProductDescription.State == EProductDescriptionState.Complete);
             Assert.IsTrue(result.ProductDescription.Postage.PostageValue > 0);
             Assert.IsTrue(result.ProductDescription.ProductCode > 0);
+
+            Pass(result);
         }
 
         [TestCase(1000)]
@@ -117,6 +119,8 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
             Assert.IsNotNull(result);
             Assert.AreEqual(EQueryType.ShowMenu, result.QueryType);
             Assert.Greater(result.ProductDescription.Weight.WeightValue, 0, "Product has no weight");
+
+            Pass(result);
         }
 
         [TestCase(1000)]
@@ -138,6 +142,8 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
             Assert.IsNotNull(result);
             Assert.AreEqual(EQueryType.ShowMenu, result.QueryType);
             Assert.Greater(result.ProductDescription.Weight.WeightValue, 0, "Product has no weight");
+
+            Pass(result);
         }
 
         [Test]
@@ -159,6 +165,60 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
 
             Assert.DoesNotThrow( () => result = proxy.Calculate(m_Environment, result.ProductDescription, actionResult));
             Assert.AreEqual(EQueryType.RequestValue, result.QueryType);
+
+            actionResult.Results.Clear();
+            actionResult.Results.Add(new AnyInfo {AnyType = EAnyType.UINT32, AnyValue = "123456"});
+            actionResult.Action = EActionId.RequestValue;
+            actionResult.Label = result.QueryDescription.Label;
+
+            Assert.DoesNotThrow(() => result = proxy.Calculate(m_Environment, result.ProductDescription, actionResult));
+
+            Pass(result);
+        }
+
+        [Test]
+        public void ShouldHandleDisplay()
+        {
+            Assert.IsNotNull(m_Context.Proxy);
+            IPCalcProxy proxy = m_Context.Proxy;
+
+            var actionResult = new ActionResultInfo { Action = EActionId.ShowMenu, Label = 0, Results = new List<AnyInfo> { new AnyInfo { AnyValue = "0", AnyType = EAnyType.INT32 } } };
+            PCalcResultInfo result = proxy.Start(m_Environment, m_Weight);
+
+            result = proxy.Calculate(m_Environment, result.ProductDescription, actionResult);
+            result = proxy.Calculate(m_Environment, result.ProductDescription, actionResult);
+            result = proxy.Calculate(m_Environment, result.ProductDescription, actionResult);
+
+            actionResult.Results.Single().AnyValue = "4";
+            actionResult.Action = EActionId.ShowMenu;
+            actionResult.Label = 1;
+
+            Assert.DoesNotThrow(() => result = proxy.Calculate(m_Environment, result.ProductDescription, actionResult));
+            Assert.AreEqual(EQueryType.RequestValue, result.QueryType);
+
+            actionResult.Results.Clear();
+            actionResult.Results.Add(new AnyInfo { AnyType = EAnyType.UINT32, AnyValue = "123456" });
+            actionResult.Action = EActionId.RequestValue;
+            actionResult.Label = result.QueryDescription.Label;
+
+            Assert.DoesNotThrow(() => result = proxy.Calculate(m_Environment, result.ProductDescription, actionResult));
+            Assert.AreEqual(EQueryType.ShowDisplay, result.QueryType);
+
+            actionResult.Results.Clear();
+            actionResult.Results = new List<AnyInfo>();
+            actionResult.Label = 1;
+            actionResult.Action = EActionId.Display;            
+
+            Assert.DoesNotThrow(() => result = proxy.Calculate(m_Environment, result.ProductDescription, actionResult));
+
+            actionResult.Results.Clear();
+            actionResult.Results.Add(new AnyInfo { AnyType = EAnyType.UINT32, AnyValue = "15528" });
+            actionResult.Action = EActionId.RequestValue;
+            actionResult.Label = result.QueryDescription.Label;
+
+            Assert.DoesNotThrow(() => result = proxy.Calculate(m_Environment, result.ProductDescription, actionResult));
+
+            Pass(result);
         }
 
         [Test]
@@ -180,6 +240,8 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
 
             result = proxy.Back(m_Environment, result.ProductDescription);
             Assert.AreEqual(productID, result.ProductDescription.ProductId);
+
+            Pass(result);
         }
 
         [TearDown]
@@ -187,15 +249,16 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
         {
             m_Context.Dispose();
             m_Context = null;
+        }
 
+        private void Pass(PCalcResultInfo info)
+        {
             m_Watch.Stop();
             var context = TestContext.CurrentContext;
-            if (context.Result.State == TestState.Success)
+            if (context.Result.State == TestState.Inconclusive)
             {
-                if (m_Watch.Elapsed > m_ExpectedMaximum)
-                {
-                    Assert.Ignore($"Elapsed runtime {m_Watch.Elapsed.TotalMilliseconds} ms, Max expected runtime {m_ExpectedMaximum.TotalMilliseconds} ms");
-                }
+                Assert.Pass($"{m_Watch.Elapsed.TotalMilliseconds} ms");
+                //Assert.Pass($"Elapsed runtime {m_Watch.Elapsed.TotalMilliseconds} ms, Max expected runtime {m_ExpectedMaximum.TotalMilliseconds} ms. Product: { string.Join(", ",info.ProductDescription.ReadyModeSelection)}");
             }
         }
 
