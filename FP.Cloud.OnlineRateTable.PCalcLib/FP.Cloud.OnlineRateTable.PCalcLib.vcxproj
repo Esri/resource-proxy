@@ -104,12 +104,16 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile />
+      <GenerateXMLDocumentationFiles>true</GenerateXMLDocumentationFiles>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Projekte\FMLibs\boost\boost_1_59_0\lib32-msvc-14.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>xdcmake FP.Cloud.OnlineRateTable.PCalcLib.dll</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -170,6 +174,9 @@
     <ClInclude Include="ActionResultProcessor.hpp" />
     <ClInclude Include="CalculationResultDisplayProcessor.hpp" />
     <ClInclude Include="CalculationResultFinishedProcessor.hpp" />
+    <ClInclude Include="CalculationResultRequestPostageProcessor.hpp" />
+    <ClInclude Include="CalculationResultSelectIndexProcessor.hpp" />
+    <ClInclude Include="CalculationResultSelectValueProcessor.hpp" />
     <ClInclude Include="Convert.hpp" />
     <ClInclude Include="DisplayObjectTypeVisitor.hpp" />
     <ClInclude Include="DisplayTypeVisitor.hpp" />
@@ -195,7 +202,11 @@
   <ItemGroup>
     <ClCompile Include="ActionResultProcessor.cpp" />
     <ClCompile Include="AssemblyInfo.cpp" />
+    <ClCompile Include="CalculationResultDisplayProcessor.cpp" />
     <ClCompile Include="CalculationResultFinishedProcessor.cpp" />
+    <ClCompile Include="CalculationResultRequestPostageProcessor.cpp" />
+    <ClCompile Include="CalculationResultSelectIndexProcessor.cpp" />
+    <ClCompile Include="CalculationResultSelectValueProcessor.cpp" />
     <ClCompile Include="Convert.cpp" />
     <ClCompile Include="EnvironmentProcessor.cpp" />
     <ClCompile Include="ExtendedErrorCode.cpp" />

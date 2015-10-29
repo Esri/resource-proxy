@@ -87,6 +87,15 @@
     <ClInclude Include="CalculationResultDisplayProcessor.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="CalculationResultSelectIndexProcessor.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="CalculationResultSelectValueProcessor.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="CalculationResultRequestPostageProcessor.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp">
@@ -138,6 +147,18 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Convert.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="CalculationResultDisplayProcessor.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="CalculationResultSelectIndexProcessor.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="CalculationResultSelectValueProcessor.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="CalculationResultRequestPostageProcessor.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

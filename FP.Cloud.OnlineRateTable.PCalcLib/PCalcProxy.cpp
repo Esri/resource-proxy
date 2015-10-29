@@ -45,6 +45,13 @@ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::!PCalcProxy()
 
 	if (nullptr != m_Factory)
 		delete m_Factory;
+
+	m_EnvironmentProcessor = nullptr;
+	m_CalculationResultProcessor = nullptr;
+	m_Manager = nullptr;
+	m_ActionResultProcessor = nullptr;
+	m_ProductDescriptionMapper = nullptr;
+	m_Factory = nullptr;
 }
 
 Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Start(Shared::EnvironmentInfo^ environment, Shared::WeightInfo^ weight)
@@ -52,13 +59,17 @@ Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Start
 	Lock lock(m_SyncLock);
 	int nextAction = 0;
 
+	// set state
 	this->m_EnvironmentProcessor->Handle(environment);
+
+	// calculate first step
 	this->m_Manager->CalculateStart(nextAction);
 
-	// update weight after valid product is available
+	// get the result from first calculation step.	
 	Shared::PCalcResultInfo^ result = this->m_CalculationResultProcessor->Handle(nextAction);
 
-	// recalculate with changed weight
+	// at start, the lib will discard the product desc parameter and we lost all changes.
+	// this behavior makes it necessary to recalculate the product with changed weight.	
 	this->m_ProductDescriptionMapper->SetWeight(weight);
 	this->Calculate(nullptr, (Shared::ProductDescriptionInfo^)nullptr);
 
@@ -96,6 +107,7 @@ Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calcu
 	Lock lock(m_SyncLock);
 	INT32 nextAction = 0;
 
+	// set state
 	this->m_EnvironmentProcessor->Handle(environment);
 	this->m_ProductDescriptionMapper->SetProduct(product);
 
@@ -109,6 +121,7 @@ Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calcu
 	return result;
 
 }
+
 
 Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Back(Shared::EnvironmentInfo^ environment, Shared::ProductDescriptionInfo^ product)
 {
