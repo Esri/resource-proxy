@@ -12,7 +12,6 @@
 <body>
     <h3>Product Calculation</h3>
     <hr />
-    @Html.ValidationMessage(BaseController.GENERAL_ERROR, new { @class = "text-danger" })
     @{
         var productDescription = ViewData.ContainsKey(ProductCalculationController.PRODUCT_DESCRIPTION) ?
             ((ProductDescriptionInfo)ViewData[ProductCalculationController.PRODUCT_DESCRIPTION]) : null;
@@ -21,14 +20,14 @@
             EProductDescriptionState.Complete ? "disabled" : string.Empty;
         <div class="container">
             <div class="row">
-                <div class="col-md-4">
-                    <a class="img-thumbnail"><img src="@Url.Content("~/Content/images/fp_logo.png")" alt="logo" height="75" /></a>
+                <div class="col-md-3">
+                    <a><img src="@Url.Content("~/Content/images/fp_logo.png")" alt="logo" height="80" class="img-rounded" /></a>
                 </div>
                 <div class="col-md-4">
                     @Html.Partial("~/Views/ProductCalculation/_PostagePartial.cshtml", ViewData)
                 </div>
-                <div class="col-md-4">
-                    @Html.Partial("~/Views/ProductCalculation/_WeightPartial.cshtml", ViewData)
+                <div class="col-md-5">
+                    @Html.Partial("~/Views/ProductCalculation/_WeightPartial.cshtml", Model.UpdateWeightModel, ViewData)
                 </div>
             </div>
             <div class="row">
@@ -36,6 +35,12 @@
                     @Html.Partial("~/Views/ProductCalculation/_HistoryPartial.cshtml", ViewData)
                 </div>
                 <div class="col-md-9">
+                    @if (ViewData.ModelState.Values.Any(v => v.Errors.Count > 0))
+                    {
+                        <div class="text-center alert alert-danger">
+                            @Html.ValidationMessage(BaseController.GENERAL_ERROR, new { @class = "text-danger" })
+                        </div>
+                    }
                     @if (null == productDescription)
                     {
                         @Html.Partial("~/Views/ProductCalculation/_StartPartial.cshtml", ViewData)
@@ -70,7 +75,7 @@
 @section scripts
 {
     <script type="text/javascript">
-        function FormatPostageInput(currentString, formatString, revertOnError)
+        function FormatPostageInput(currentString, formatString, cultureString, revertOnError)
         {
             $.ajax(
             {
@@ -80,6 +85,7 @@
                 {
                     'formatString': formatString,
                     'inputString': currentString,
+                    'cultureString': cultureString,
                 }),
                 dataType: "json",
                 traditional: true,
@@ -95,7 +101,7 @@
                         //Revert to default
                         if (revertOnError == true)
                         {
-                            FormatPostageInput("", formatString, false);
+                            FormatPostageInput("", formatString, cultureString, false);
                         }
                         else
                         {
@@ -116,6 +122,7 @@
             var buttonValue = $(this).val();
             var currentString = $("#EnteredPostageRaw").val();
             var formatString = $("#FormatString").val();
+            var cultureString = $("#CultureString").val();
             if (buttonValue == "CE")
             {
                 if (currentString.length > 0)
@@ -128,16 +135,24 @@
                 currentString = currentString + buttonValue;
             }
 
-            FormatPostageInput(currentString, formatString, true);
+            FormatPostageInput(currentString, formatString, cultureString, true);
         });
 
         $(document).ready(function ()
         {
+            $('#ValueInput').hide();
             var formatString = $("#FormatString").val();
+            var cultureString = $("#CultureString").val();
             if (null != formatString)
             {
-                FormatPostageInput("", formatString, true);
+                FormatPostageInput("", formatString, cultureString, true);
             }
+        });
+
+        $('#ChangeValue').click(function ()
+        {
+            $('#ValueDisplay').hide();
+            $('#ValueInput').show();
         });
     </script>
 }

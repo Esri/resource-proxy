@@ -1,27 +1,60 @@
-﻿@using FP.Cloud.OnlineRateTable.Web.Controllers
+﻿@model FP.Cloud.OnlineRateTable.Web.Models.ViewModels.UpdateWeightViewModel
+@using FP.Cloud.OnlineRateTable.Web.Controllers
 @using FP.Cloud.OnlineRateTable.Common.ProductCalculation
+@using System.Globalization
 
-@if (ViewData.ContainsKey(ProductCalculationController.WEIGHT))
+@if (ViewData.ContainsKey(ProductCalculationController.WEIGHT) && ViewData.ContainsKey(ProductCalculationController.ENVIRONMENT))
 {
     var weight = ((WeightInfo)ViewData[ProductCalculationController.WEIGHT]);
-    if (null != weight)
+    var environment = ((EnvironmentInfo)ViewData[ProductCalculationController.ENVIRONMENT]);
+    if (null != weight && null != environment)
     {
-        <div>
-            <h4>Weight</h4>
-            <dl class="dl-horizontal">
-                <dt>
-                    @Html.DisplayName("Metric Weight"):
-                </dt>
-                <dd>
+        var region = new RegionInfo(new CultureInfo(environment.Culture).LCID);
+        bool regionIsMetric = null == region || region.IsMetric;
+        Model.CultureIsMetric = regionIsMetric;
+        Model.WeightValueInOunces = Model.WeightValueInGram = 0;
+        string weightUnit = regionIsMetric ? "g" : "lb";
+
+        <div class="alert-info alert" style="min-height:80px">
+            <div id="ValueDisplay" class="h3">
+                <strong>Weight: </strong>
+                @if (regionIsMetric)
+                {
                     @weight.FormattedWeight
-                </dd>
-                <dt>
-                    @Html.DisplayName("Imperial Weight"):
-                </dt>
-                <dd>
+                }
+                else
+                {
                     @weight.FormattedWeightImperial
-                </dd>
-            </dl>
+                }
+                <div class="pull-right">
+                    <input type="button" class="btn btn-primary btn-sm" id="ChangeValue" value="Change" />
+                </div>
+            </div>
+            <div id="ValueInput">
+                @using (Html.BeginForm("UpdateWeight", "ProductCalculation", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.CultureIsMetric);
+                    <strong>Weight: </strong>
+                    if (regionIsMetric)
+                    {
+                        @Html.HiddenFor(model => model.WeightValueInOunces);
+                        @Html.EditorFor(model => model.WeightValueInGram, new { @class = "form-control" })
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(model => model.WeightValueInGram);
+                        @Html.EditorFor(model => model.WeightValueInOunces, new { @class = "form-control" })
+                    }
+                    <label>@weightUnit</label>
+                    <div class="pull-right">
+                        <input type="submit" value="Ok" class="btn btn-primary btn-sm" />
+                    </div>
+                    <div>
+                        @Html.ValidationMessageFor(model => model.WeightValue, "", new { @class = "text-danger" })
+                    </div>
+                }
+            </div>
         </div>
     }
 }

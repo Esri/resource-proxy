@@ -184,6 +184,7 @@
     <Compile Include="Models\ViewModels\RateTableViewModel.cs" />
     <Compile Include="Models\ViewModels\RequestValueViewModel.cs" />
     <Compile Include="Models\ViewModels\StartCalculationViewModel.cs" />
+    <Compile Include="Models\ViewModels\UpdateWeightViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\ProductCalculationRepository.cs" />
     <Compile Include="Repositories\RateTableApi.cs" />

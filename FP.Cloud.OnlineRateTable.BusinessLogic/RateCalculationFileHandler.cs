@@ -12,6 +12,10 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
 {
     public class RateCalculationFileHandler
     {
+        #region constants
+        private const string RT_FOLDER = "RateTables";
+        #endregion
+
         #region members
         private IRateTableManager m_Manager;
         private string m_PawnFile = string.Empty;
@@ -59,10 +63,15 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
             if (null != currentTable)
             {
                 List<string> otherRateCalculationFiles = new List<string>();
-                string storagePath = Path.GetTempPath();
+                string storagePath = Path.Combine(Path.GetTempPath(), RT_FOLDER);
+                if(Directory.Exists(storagePath) == false)
+                {
+                    Directory.CreateDirectory(storagePath);
+                }
                 foreach (var file in currentTable.PackageFiles)
                 {
-                    string filePath = Path.Combine(storagePath, file.FileName);
+                    string filePath = Path.Combine(storagePath, 
+                        string.Format("{0}_{1}_{2}",currentTable.Variant, currentTable.VersionNumber, file.FileName));
                     if (File.Exists(filePath) == false)
                     {
                         using (FileStream fs = File.Create(filePath))

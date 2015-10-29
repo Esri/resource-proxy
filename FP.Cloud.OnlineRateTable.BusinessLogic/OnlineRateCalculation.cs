@@ -9,6 +9,7 @@ using FP.Cloud.OnlineRateTable.Common.ProductCalculation;
 using FP.Cloud.OnlineRateTable.PCalcLib;
 using FP.Cloud.OnlineRateTable.Common.RateTable;
 using System.IO;
+using System.Globalization;
 
 namespace FP.Cloud.OnlineRateTable.BusinessLogic
 {
@@ -35,7 +36,9 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
                 using (var context = new PCalcProxyContext(m_Handler.PawnFile, m_Handler.RateTableFile, m_Handler.AdditionalFiles))
                 {
                     IPCalcProxy proxy = context.Proxy;
-                    return proxy.Start(environment, weight);
+                    PCalcResultInfo result = proxy.Start(environment, weight);
+                    HandleCurrencySymbol(result, environment);
+                    return result;
                 }
             }
             return null;
@@ -50,7 +53,9 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
                 using (var context = new PCalcProxyContext(m_Handler.PawnFile, m_Handler.RateTableFile, m_Handler.AdditionalFiles))
                 {
                     IPCalcProxy proxy = context.Proxy;
-                    return proxy.Calculate(environment, productDescription, actionResult);
+                    PCalcResultInfo result = proxy.Calculate(environment, productDescription, actionResult);
+                    HandleCurrencySymbol(result, environment);
+                    return result;
                 }
             }
             return null;
@@ -65,7 +70,9 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
                 using (var context = new PCalcProxyContext(m_Handler.PawnFile, m_Handler.RateTableFile, m_Handler.AdditionalFiles))
                 {
                     IPCalcProxy proxy = context.Proxy;
-                    return proxy.Back(environment, productDescription);
+                    PCalcResultInfo result = proxy.Back(environment, productDescription);
+                    HandleCurrencySymbol(result, environment);
+                    return result;
                 }
             }
             return null;
@@ -80,10 +87,30 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
                 using (var context = new PCalcProxyContext(m_Handler.PawnFile, m_Handler.RateTableFile, m_Handler.AdditionalFiles))
                 {
                     IPCalcProxy proxy = context.Proxy;
-                    return proxy.Calculate(environment, productDescription);
+                    PCalcResultInfo result = proxy.Calculate(environment, productDescription);
+                    HandleCurrencySymbol(result, environment);
+                    return result;
                 }
             }
             return null;
+        }
+        #endregion
+
+        #region private
+        private void HandleCurrencySymbol(PCalcResultInfo result, EnvironmentInfo environment)
+        {
+            if(null != result && null != result.ProductDescription && 
+                null != result.ProductDescription.Postage && null != environment )
+            {
+                try
+                {
+                    CultureInfo info = new CultureInfo(environment.Culture);
+                    result.ProductDescription.Postage.CurrencySymbol = info.NumberFormat.CurrencySymbol;
+                    result.ProductDescription.Postage.CurrencyDecimalSeparator = info.NumberFormat.CurrencyDecimalSeparator;
+                }
+                catch(Exception)
+                { }
+            }
         }
         #endregion
     }

@@ -38,6 +38,16 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
             return await Execute<PCalcResultInfo>(request, m_Api, string.Empty);
         }
 
+        public async Task<PCalcResultInfo> UpdateWeight(UpdateRequest updateWeightRequest)
+        {
+            RestRequest request = GetNewRequest();
+            request.Resource = "UpdateWeight";
+            request.Method = Method.POST;
+            request.AddBody(updateWeightRequest);
+
+            return await Execute<PCalcResultInfo>(request, m_Api, string.Empty);
+        }
+
         public async Task<PCalcResultInfo> Calculate(CalculateRequest calculateRequest)
         {
             RestRequest request = GetNewRequest();
