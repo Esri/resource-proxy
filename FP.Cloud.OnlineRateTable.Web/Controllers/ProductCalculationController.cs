@@ -128,9 +128,43 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
         }
 
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> UpdateWeight()
+        public async Task<ActionResult> UpdateWeight([Bind(Include = "WeightValueInGram,WeightValueInOunces,CultureIsMetric")]UpdateWeightViewModel model)
         {
-            return null;
+            if(ModelState.IsValid)
+            {
+                PCalcResultInfo lastResult = GetLastPcalcResult();
+                if (null != lastResult)
+                {
+                    UpdateRequest request = new UpdateRequest();
+                    EnvironmentInfo environment = GetEnvironment();
+                    if (null != environment)
+                    {
+                        request.Environment = environment;
+                        request.ProductDescription = lastResult.ProductDescription;
+                        int weightValue = (int)model.WeightValue * 10;
+                        request.ProductDescription.Weight = new WeightInfo()
+                        {
+                            WeightValue = weightValue,
+                            WeightUnit = model.CultureIsMetric ? EWeightUnit.TenthGram : EWeightUnit.TenthOunce
+                        };
+
+                        //update weight will only update the product description
+                        PCalcResultInfo result = await m_Repository.UpdateWeight(request);
+                        result.QueryDescription = lastResult.QueryDescription;
+                        result.QueryType = lastResult.QueryType;
+                        if (PcalcResultIsValid(result))
+                        {
+                            AddOrUpdateTempData(result, request.Environment);
+                            AddViewData(result, environment);
+                            return View("Index", ProductCalculationViewModel.Create(result.QueryType));
+                        }
+                        return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to contact product calculation API");
+                    }
+                    return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to create environment");
+                }
+                return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to retrieve last result");
+            }
+            return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unspecified error");
         }
 
         public async Task<ActionResult> SelectMenuIndex(int index)
@@ -230,9 +264,9 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult FormatInput(string formatString, string inputString)
+        public ActionResult FormatInput(string formatString, string inputString, string cultureString)
         {
-            CultureInfo culture = new CultureInfo(GetEnvironment().Culture);
+            CultureInfo culture = new CultureInfo(cultureString);
             char decimalSeperator = culture.NumberFormat.CurrencyDecimalSeparator.ToCharArray()[0];
 
             FormatStringAdapter adapter = new FormatStringAdapter(decimalSeperator);

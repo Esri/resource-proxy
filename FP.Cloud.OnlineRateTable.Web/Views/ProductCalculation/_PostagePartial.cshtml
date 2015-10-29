@@ -6,11 +6,9 @@
     var postage = ((PostageInfo)ViewData[ProductCalculationController.POSTAGE]);
     if (null != postage)
     {
-        <div>
-            <div class="alert alert-info">
+        <div class="alert alert-info h3" style="min-height:80px">
                 <strong>Postage: </strong>
                 @postage.GetFormattedPostage(true, false)
-            </div>
         </div>
     }
 }

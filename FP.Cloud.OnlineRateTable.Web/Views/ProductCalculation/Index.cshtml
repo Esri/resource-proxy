@@ -21,7 +21,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-3">
-                    <a><img src="@Url.Content("~/Content/images/fp_logo.png")" alt="logo" height="75" class="img-rounded" /></a>
+                    <a><img src="@Url.Content("~/Content/images/fp_logo.png")" alt="logo" height="80" class="img-rounded" /></a>
                 </div>
                 <div class="col-md-4">
                     @Html.Partial("~/Views/ProductCalculation/_PostagePartial.cshtml", ViewData)
@@ -75,7 +75,7 @@
 @section scripts
 {
     <script type="text/javascript">
-        function FormatPostageInput(currentString, formatString, revertOnError)
+        function FormatPostageInput(currentString, formatString, cultureString, revertOnError)
         {
             $.ajax(
             {
@@ -85,6 +85,7 @@
                 {
                     'formatString': formatString,
                     'inputString': currentString,
+                    'cultureString': cultureString,
                 }),
                 dataType: "json",
                 traditional: true,
@@ -100,7 +101,7 @@
                         //Revert to default
                         if (revertOnError == true)
                         {
-                            FormatPostageInput("", formatString, false);
+                            FormatPostageInput("", formatString, cultureString, false);
                         }
                         else
                         {
@@ -121,6 +122,7 @@
             var buttonValue = $(this).val();
             var currentString = $("#EnteredPostageRaw").val();
             var formatString = $("#FormatString").val();
+            var cultureString = $("#CultureString").val();
             if (buttonValue == "CE")
             {
                 if (currentString.length > 0)
@@ -133,16 +135,17 @@
                 currentString = currentString + buttonValue;
             }
 
-            FormatPostageInput(currentString, formatString, true);
+            FormatPostageInput(currentString, formatString, cultureString, true);
         });
 
         $(document).ready(function ()
         {
             $('#ValueInput').hide();
             var formatString = $("#FormatString").val();
+            var cultureString = $("#CultureString").val();
             if (null != formatString)
             {
-                FormatPostageInput("", formatString, true);
+                FormatPostageInput("", formatString, cultureString, true);
             }
         });
 

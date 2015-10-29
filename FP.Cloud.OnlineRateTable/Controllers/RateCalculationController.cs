@@ -33,7 +33,7 @@ namespace FP.Cloud.OnlineRateTable.Controllers
         [ResponseType(typeof(IEnumerable<RateTableInfo>))]
         [HttpGet]
         [ActionName("GetActiveTables")]
-        public async Task<IHttpActionResult> StartProductCalculation(DateTime clientUtcDate)
+        public async Task<IHttpActionResult> GetActiveTables(DateTime clientUtcDate)
         {
             if (!ModelState.IsValid)
             {
