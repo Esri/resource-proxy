@@ -5,7 +5,7 @@ namespace FP.Cloud.OnlineRateTable.Common.ProductCalculation
 {
     [Serializable]
     [DataContract]
-    public class PCalcResultInfo
+    public class PCalcResultInfo : ApiResponse
     {
         #region properties
         [DataMember]

@@ -1,4 +1,5 @@
-﻿using Microsoft.Owin.Security;
+﻿using FP.Cloud.OnlineRateTable.Common.ProductCalculation;
+using Microsoft.Owin.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +33,16 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
         protected ViewResult HandleGeneralError(string viewName, object model, string errorMessage)
         {
             ModelState.AddModelError(GENERAL_ERROR, errorMessage);
+            return View(viewName, model);
+        }
+
+        protected ViewResult HandleGeneralError(string viewName, object model, PCalcResultInfo result)
+        {
+            if(null == result || string.IsNullOrEmpty(result.ErrorMessage))
+            {
+                return HandleGeneralError(viewName, model, "Error contacting product calculation");
+            }
+            ModelState.AddModelError(GENERAL_ERROR, result.ErrorMessage);
             return View(viewName, model);
         }
         #endregion

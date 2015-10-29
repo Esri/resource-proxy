@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApiResponse.cs" />
     <Compile Include="Authorization\AccessToken.cs" />
     <Compile Include="Authorization\AddExternalLoginBindingModel.cs" />
     <Compile Include="Authorization\ChangePasswordBindingModel.cs" />

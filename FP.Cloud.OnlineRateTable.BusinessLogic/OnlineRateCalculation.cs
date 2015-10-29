@@ -10,6 +10,7 @@ using FP.Cloud.OnlineRateTable.PCalcLib;
 using FP.Cloud.OnlineRateTable.Common.RateTable;
 using System.IO;
 using System.Globalization;
+using FP.Cloud.OnlineRateTable.Common.ScenarioRunner;
 
 namespace FP.Cloud.OnlineRateTable.BusinessLogic
 {
@@ -17,12 +18,14 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
     {
         #region members
         private RateCalculationFileHandler m_Handler;
+        private ScenarioRunner m_ScenarioRunner;
         #endregion
 
         #region constructor
-        public OnlineRateCalculation(RateCalculationFileHandler handler)
+        public OnlineRateCalculation(RateCalculationFileHandler handler, ScenarioRunner runner)
         {
             m_Handler = handler;
+            m_ScenarioRunner = runner;
         }
         #endregion
 
@@ -30,69 +33,65 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
         public async Task<PCalcResultInfo> StartCalculation(EnvironmentInfo environment, WeightInfo weight)
         {
             //lookup correct entry
-            await m_Handler.Initialize(environment);
-            if(m_Handler.IsValid)
-            { 
-                using (var context = new PCalcProxyContext(m_Handler.PawnFile, m_Handler.RateTableFile, m_Handler.AdditionalFiles))
-                {
-                    IPCalcProxy proxy = context.Proxy;
-                    PCalcResultInfo result = proxy.Start(environment, weight);
-                    HandleCurrencySymbol(result, environment);
-                    return result;
-                }
+            ScenarioResult initResult = await m_ScenarioRunner.RunAsync(InitFileHandler(environment));
+            if (initResult.Success == false || m_Handler.IsValid == false)
+            {
+                return ReturnErrorResult(initResult);
             }
-            return null;
+            ScenarioResult<PCalcResultInfo> startResult = m_ScenarioRunner.Run(() => Start(environment, weight, m_Handler));
+            if(startResult.Success == false)
+            {
+                return ReturnErrorResult(startResult);
+            }
+            return startResult.Value;
         }
 
         public async Task<PCalcResultInfo> Calculate(EnvironmentInfo environment, ProductDescriptionInfo productDescription, ActionResultInfo actionResult)
         {
-            //lookup correct entry
-            await m_Handler.Initialize(environment);
-            if (m_Handler.IsValid)
+            //lookup correct entry            
+            ScenarioResult initResult = await m_ScenarioRunner.RunAsync(InitFileHandler(environment));
+            if (initResult.Success == false || m_Handler.IsValid == false)
             {
-                using (var context = new PCalcProxyContext(m_Handler.PawnFile, m_Handler.RateTableFile, m_Handler.AdditionalFiles))
-                {
-                    IPCalcProxy proxy = context.Proxy;
-                    PCalcResultInfo result = proxy.Calculate(environment, productDescription, actionResult);
-                    HandleCurrencySymbol(result, environment);
-                    return result;
-                }
+                return ReturnErrorResult(initResult);
             }
-            return null;
+            ScenarioResult<PCalcResultInfo> calcResult = m_ScenarioRunner.Run(() => Calculate(environment, productDescription, actionResult, m_Handler));
+            if (calcResult.Success == false)
+            {
+                return ReturnErrorResult(calcResult);
+            }
+            return calcResult.Value;
         }
 
         public async Task<PCalcResultInfo>StepBack(EnvironmentInfo environment, ProductDescriptionInfo productDescription)
         {
             //lookup correct entry
-            await m_Handler.Initialize(environment);
-            if (m_Handler.IsValid)
+            ScenarioResult initResult = await m_ScenarioRunner.RunAsync(InitFileHandler(environment));
+            if (initResult.Success == false || m_Handler.IsValid == false)
             {
-                using (var context = new PCalcProxyContext(m_Handler.PawnFile, m_Handler.RateTableFile, m_Handler.AdditionalFiles))
-                {
-                    IPCalcProxy proxy = context.Proxy;
-                    PCalcResultInfo result = proxy.Back(environment, productDescription);
-                    HandleCurrencySymbol(result, environment);
-                    return result;
-                }
+                return ReturnErrorResult(initResult);
             }
-            return null;
+            ScenarioResult<PCalcResultInfo> backResult = m_ScenarioRunner.Run(() => Back(environment, productDescription, m_Handler));
+            if (backResult.Success == false)
+            {
+                return ReturnErrorResult(backResult);
+            }
+            return backResult.Value;
         }
 
         public async Task<PCalcResultInfo> UpdateWeight(EnvironmentInfo environment, ProductDescriptionInfo productDescription)
         {
             //lookup correct entry
-            await m_Handler.Initialize(environment);
-            if (m_Handler.IsValid)
+            ScenarioResult initResult = await m_ScenarioRunner.RunAsync(InitFileHandler(environment));
+            if (initResult.Success == false || m_Handler.IsValid == false)
             {
-                using (var context = new PCalcProxyContext(m_Handler.PawnFile, m_Handler.RateTableFile, m_Handler.AdditionalFiles))
-                {
-                    IPCalcProxy proxy = context.Proxy;
-                    PCalcResultInfo result = proxy.Calculate(environment, productDescription);
-                    HandleCurrencySymbol(result, environment);
-                    return result;
-                }
+                return ReturnErrorResult(initResult);
             }
-            return null;
+            ScenarioResult<PCalcResultInfo> updateWeightResult = m_ScenarioRunner.Run(() => UpdateWeight(environment, productDescription, m_Handler));
+            if (updateWeightResult.Success == false)
+            {
+                return ReturnErrorResult(updateWeightResult);
+            }
+            return updateWeightResult.Value;
         }
         #endregion
 
@@ -110,6 +109,65 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
                 }
                 catch(Exception)
                 { }
+            }
+        }
+
+        private PCalcResultInfo ReturnErrorResult(ScenarioResult scenarioResult)
+        {
+            return new PCalcResultInfo()
+            {
+                ApiRequestSucceeded = false,
+                ErrorMessage = scenarioResult.Error != null ? scenarioResult.Error.Message : "Unknown Error"
+            };
+        }
+
+        private async Task<ScenarioResult<RateCalculationFileHandler>> InitFileHandler(EnvironmentInfo info)
+        {
+            await m_Handler.Initialize(info);
+            return new ScenarioResult<RateCalculationFileHandler>() { Success = true, Value = m_Handler };
+        }
+
+        private ScenarioResult<PCalcResultInfo> Start(EnvironmentInfo environment, WeightInfo weight, RateCalculationFileHandler handler)
+        {
+            using (var context = new PCalcProxyContext(handler.PawnFile, handler.RateTableFile, handler.AdditionalFiles))
+            {
+                IPCalcProxy proxy = context.Proxy;
+                PCalcResultInfo result = proxy.Start(environment, weight);
+                HandleCurrencySymbol(result, environment);
+                return new ScenarioResult<PCalcResultInfo>() { Value = result };
+            }
+        }
+
+        private ScenarioResult<PCalcResultInfo> Calculate(EnvironmentInfo environment, ProductDescriptionInfo description, ActionResultInfo actionResult, RateCalculationFileHandler handler)
+        {
+            using (var context = new PCalcProxyContext(handler.PawnFile, handler.RateTableFile, handler.AdditionalFiles))
+            {
+                IPCalcProxy proxy = context.Proxy;
+                PCalcResultInfo result = proxy.Calculate(environment, description, actionResult);
+                HandleCurrencySymbol(result, environment);
+                return new ScenarioResult<PCalcResultInfo>() { Value = result };
+            }
+        }
+
+        private ScenarioResult<PCalcResultInfo> Back(EnvironmentInfo environment, ProductDescriptionInfo description, RateCalculationFileHandler handler)
+        {
+            using (var context = new PCalcProxyContext(handler.PawnFile, handler.RateTableFile, handler.AdditionalFiles))
+            {
+                IPCalcProxy proxy = context.Proxy;
+                PCalcResultInfo result = proxy.Back(environment, description);
+                HandleCurrencySymbol(result, environment);
+                return new ScenarioResult<PCalcResultInfo>() { Value = result };
+            }
+        }
+
+        private ScenarioResult<PCalcResultInfo> UpdateWeight(EnvironmentInfo environment, ProductDescriptionInfo description, RateCalculationFileHandler handler)
+        {
+            using (var context = new PCalcProxyContext(handler.PawnFile, handler.RateTableFile, handler.AdditionalFiles))
+            {
+                IPCalcProxy proxy = context.Proxy;
+                PCalcResultInfo result = proxy.Calculate(environment, description);
+                HandleCurrencySymbol(result, environment);
+                return new ScenarioResult<PCalcResultInfo>() { Value = result };
             }
         }
         #endregion

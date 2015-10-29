@@ -28,7 +28,7 @@
 
                 <div class="form-group">
                     @Html.LabelFor(model => model.EnteredRawValue, htmlAttributes: new { @class = "control-label col-md-2" })
-                    @if (Model.QueryType == EQueryType.RequestPostage && Model.QueryType == EQueryType.RequestValue)
+                    @if (Model.QueryType == EQueryType.RequestPostage || Model.QueryType == EQueryType.RequestValue)
                     {
                         <div>
                             @Html.HiddenFor(model => model.EnteredRawValue, new { @id = "EnteredPostageRaw" })

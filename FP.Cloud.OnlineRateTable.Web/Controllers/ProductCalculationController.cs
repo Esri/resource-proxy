@@ -70,7 +70,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
                         AddViewData(result, environment);
                         return View("Index", ProductCalculationViewModel.Create(result.QueryType));
                     }
-                    return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to initialize product calculation");
+                    return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), result);
                 }
             }
             return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to create environment");
@@ -92,7 +92,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
                     AddViewData(result, environment);
                     return View("Index", ProductCalculationViewModel.Create(result.QueryType));
                 }
-                return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to contact product calculation API");
+                return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), result);
             }
             return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to create environment");
         }
@@ -115,7 +115,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
                         AddViewData(result, environment);
                         return View("Index", ProductCalculationViewModel.Create(result.QueryType));
                     }
-                    return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to contact product calculation API");
+                    return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), result);
                 }
                 return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to create environment");
             }
@@ -158,7 +158,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
                             AddViewData(result, environment);
                             return View("Index", ProductCalculationViewModel.Create(result.QueryType));
                         }
-                        return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to contact product calculation API");
+                        return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), result);
                     }
                     return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to create environment");
                 }
@@ -298,7 +298,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
                         AddViewData(result, environment);
                         return View("Index", ProductCalculationViewModel.Create(result.QueryType));
                     }
-                    return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to contact product calculation API");
+                    return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), result);
                 }
                 return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to retrieve environment information");
             }
