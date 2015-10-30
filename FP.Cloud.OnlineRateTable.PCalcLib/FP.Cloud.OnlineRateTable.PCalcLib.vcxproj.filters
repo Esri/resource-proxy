@@ -96,6 +96,12 @@
     <ClInclude Include="CalculationResultRequestPostageProcessor.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="PCalcLibNinjectModule.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="CalculationResultProcessors.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp">
@@ -159,6 +165,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="CalculationResultRequestPostageProcessor.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="PCalcLibNinjectModule.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

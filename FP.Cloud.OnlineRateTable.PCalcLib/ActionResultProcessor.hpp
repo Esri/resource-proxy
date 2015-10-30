@@ -7,11 +7,16 @@ BEGIN_PCALC_LIB_NAMESPACE
 
 ref class PCalcFactory;
 
-private ref class ActionResultProcessor
+public interface class IActionResultProcessor
+{
+	void Handle(Shared::ActionResultInfo^ actionResult);
+};
+
+private ref class ActionResultProcessor : public IActionResultProcessor
 {
 public:
 	ActionResultProcessor(PCalcFactory^ factory);
-	void Handle(Shared::ActionResultInfo^ actionResult);
+	virtual void Handle(Shared::ActionResultInfo^ actionResult);
 
 private:
 	void SetActionResult(PT::IProductDescParameterPtr &parameter, Shared::ActionResultInfo^ actionResult);

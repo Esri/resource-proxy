@@ -16,9 +16,8 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
         public void ShouldReleaseAllResources()
         {
             CreateContext();
-            CreateContext();
-            CreateContext();
           
+            GC.Collect();
             dotMemory.Check(memory => { Assert.That(memory.GetObjects(x => x.Type.Is<PCalcProxyContext>()).SizeInBytes, Is.EqualTo(0)); });
             dotMemory.Check(memory => { Assert.That(memory.GetObjects(x => x.Interface.Is<IPCalcProxy>()).SizeInBytes, Is.EqualTo(0)); });
         }

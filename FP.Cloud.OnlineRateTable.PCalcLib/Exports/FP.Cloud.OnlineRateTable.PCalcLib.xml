@@ -4,6 +4,16 @@
         "FP.Cloud.OnlineRateTable.PCalcLib"
     </assembly>
     <members>
+        <member name="M:FP.Cloud.OnlineRateTable.PCalcLib.PCalcProxyContext.#ctor(FP.Cloud.OnlineRateTable.PCalcLib.IPCalcManager,FP.Cloud.OnlineRateTable.PCalcLib.IEnvironmentProcessor,FP.Cloud.OnlineRateTable.PCalcLib.IActionResultProcessor,FP.Cloud.OnlineRateTable.PCalcLib.ICalculationResultProcessorProxy,FP.Cloud.OnlineRateTable.PCalcLib.IProductDescriptionMapper,System.String,System.String,System.String[])">
+            <summary>
+Creates a instance of type PCalcProxyContext
+</summary>
+        </member>
+        <member name="M:FP.Cloud.OnlineRateTable.PCalcLib.PCalcProxyContext.#ctor(System.String,System.String,System.String[])">
+            <summary>
+Creates a instance of type PCalcProxyContext
+</summary>
+        </member>
         <member name="M:FP.Cloud.OnlineRateTable.PCalcLib.IPCalcProxy.Back(FP.Cloud.OnlineRateTable.Common.ProductCalculation.EnvironmentInfo,FP.Cloud.OnlineRateTable.Common.ProductCalculation.ProductDescriptionInfo)">
             <summary>
 Calculate the previous product

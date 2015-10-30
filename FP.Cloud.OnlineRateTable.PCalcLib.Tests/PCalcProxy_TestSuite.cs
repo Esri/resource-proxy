@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using FP.Cloud.OnlineRateTable.Common.ProductCalculation;
+using Ninject;
 using NUnit.Framework;
 
 namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests

@@ -24,7 +24,6 @@ CalculationResultProcessorProxy::CalculationResultProcessorProxy(FP::Cloud::Onli
 	m_Processors->Add(ACTION_SELECT_INDEX, gcnew CalculationResultSelectIndexProcessor(m_Factory));
 	m_Processors->Add(ACTION_SELECT_VALUE, gcnew CalculationResultSelectValueProcessor(m_Factory));
 	m_Processors->Add(ACTION_REQUEST_VALUE, gcnew CalculationResultRequestValueProcessor(m_Factory));
-
 	m_Processors->Add(ACTION_TEST_IMPRINT, gcnew CalculationResultFinishedProcessor(m_Factory));
 }
 
