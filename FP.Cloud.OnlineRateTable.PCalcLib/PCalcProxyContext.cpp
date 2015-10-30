@@ -1,7 +1,11 @@
 #include "PCalcManager.hpp"
 #include "PCalcProxyContext.hpp"
 #include "Exceptions.hpp"
-#include "PCalcLibNinjectModule.hpp"
+#include "PCalcFactory.hpp"
+#include "ActionResultProcessor.hpp"
+#include "EnvironmentProcessor.hpp"
+#include "CalculationResultProcessorProxy.hpp"
+#include "ProductDescriptionMapper.hpp"
 
 BEGIN_PCALC_LIB_NAMESPACE
 
@@ -10,9 +14,15 @@ PCalcProxyContext::PCalcProxyContext(System::String^ amxPath, System::String^ ta
 	, m_Factory(nullptr)
 	, m_AmxPath(amxPath)
 	, m_TablePath(tablePath)
-	, m_Kernel(gcnew Ninject::StandardKernel(gcnew PCalcLibNinjectModule()))
+	, m_IsInitialized(false)
 {
-	m_Kernel->Bind<Lib::PCalcFactory^>()->ToSelf()->InScope(gcnew System::Func<Ninject::Activation::IContext^, System::Object^>(this, &PCalcProxyContext::GetScope));
+	m_Factory = gcnew PCalcFactory();
+	m_Proxy = gcnew PCalcProxy(
+		gcnew PCalcManager(m_Factory), 
+		gcnew ActionResultProcessor(m_Factory), 
+		gcnew EnvironmentProcessor(m_Factory), 
+		gcnew CalculationResultProcessorProxy(m_Factory), 
+		gcnew ProductDescriptionMapper(m_Factory));	
 }
 
 PCalcProxyContext::PCalcProxyContext(IPCalcManager^ manager, IEnvironmentProcessor^ envProcessor, IActionResultProcessor^ actionProcessor, ICalculationResultProcessor^ calcProcessor, IProductDescriptionMapper^ mapper, System::String^ amxPath, System::String^ tablePath, ... array<System::String^>^ additionalFiles)
@@ -20,24 +30,15 @@ PCalcProxyContext::PCalcProxyContext(IPCalcManager^ manager, IEnvironmentProcess
 	, m_Factory(nullptr)
 	, m_AmxPath(amxPath)
 	, m_TablePath(tablePath)
-	, m_Kernel(gcnew Ninject::StandardKernel(gcnew PCalcLibNinjectModule()))
+	, m_IsInitialized(false)
 {
-	m_Kernel->Rebind<IPCalcManager^>()->ToConstant(manager);
-	m_Kernel->Rebind<IEnvironmentProcessor^>()->ToConstant(envProcessor);
-	m_Kernel->Rebind<IActionResultProcessor^>()->ToConstant(actionProcessor);
-	m_Kernel->Rebind<ICalculationResultProcessor^>()->ToConstant(calcProcessor);
-	m_Kernel->Rebind<IProductDescriptionMapper^>()->ToConstant(mapper);
-}
-
-System::Object^ PCalcProxyContext::GetScope(Ninject::Activation::IContext^ context)
-{
-	return this;
+	m_Proxy = gcnew PCalcProxy(manager, actionProcessor, envProcessor, calcProcessor, mapper);
 }
 
 void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxyContext::Init()
 {
-	m_Factory = Ninject::ResolutionExtensions::Get<Lib::PCalcFactory^>(m_Kernel);
-	m_Proxy = Ninject::ResolutionExtensions::Get<Lib::IPCalcProxy^>(m_Kernel);
+	if (m_IsInitialized)
+		return;
 
 	PCalcProxy^ proxy = dynamic_cast<PCalcProxy^>(m_Proxy);
 
@@ -52,6 +53,8 @@ void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxyContext::Init()
 			throw gcnew PCalcLibException(ex->Message, ex);
 		}
 	}
+
+	m_IsInitialized = true;
 }
 
 FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxyContext::~PCalcProxyContext(void)
@@ -69,13 +72,12 @@ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxyContext::!PCalcProxyContext(void
 
 	if (nullptr != m_Factory)
 	{
-		m_Kernel->Release(m_Factory);
+		delete m_Factory;
 		m_Factory = nullptr;
 	}
 
 	m_AmxPath = nullptr;
 	m_TablePath = nullptr;
-	m_Kernel = nullptr;
 }
 
 END_PCALC_LIB_NAMESPACE

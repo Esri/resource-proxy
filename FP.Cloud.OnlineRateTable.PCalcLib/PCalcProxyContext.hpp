@@ -27,10 +27,8 @@ public:
 		IPCalcProxy^ get()
 		{
 			Lock lock(PCalcProxy::SyncLock);
-			if(nullptr == m_Proxy)
-			{
+			if (m_IsInitialized == false)
 				this->Init();
-			}
 			return m_Proxy;
 		}
 	}
@@ -41,7 +39,6 @@ protected:
 
 
 private:
-	System::Object^ GetScope(Ninject::Activation::IContext^ context);
 	void Init();
 
 private:
@@ -49,7 +46,7 @@ private:
 	PCalcFactory^ m_Factory;
 	System::String^ m_AmxPath;
 	System::String^ m_TablePath;
-	Ninject::IKernel^ m_Kernel;
+	bool m_IsInitialized;
 };
 
 END_PCALC_LIB_NAMESPACE

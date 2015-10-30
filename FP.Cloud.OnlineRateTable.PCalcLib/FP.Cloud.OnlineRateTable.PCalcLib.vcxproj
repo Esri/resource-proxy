@@ -166,11 +166,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Reference Include="Ninject">
-      <HintPath>..\packages\Ninject.3.2.0.0\lib\net45-full\Ninject.dll</HintPath>
-      <Private>false</Private>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -195,7 +190,6 @@
     <ClInclude Include="PCalcFactoryCPP.hpp" />
     <ClInclude Include="PCalcLib.hpp" />
     <ClInclude Include="Exceptions.hpp" />
-    <ClInclude Include="PCalcLibNinjectModule.hpp" />
     <ClInclude Include="PCalcManager.hpp" />
     <ClInclude Include="PCalcProxy.hpp" />
     <ClInclude Include="PCalcProxyContext.hpp" />
@@ -220,7 +214,6 @@
     <ClCompile Include="CalculationResultRequestValueProcessor.cpp" />
     <ClCompile Include="PCalcFactory.cpp" />
     <ClCompile Include="PCalcFactoryCPP.cpp" />
-    <ClCompile Include="PCalcLibNinjectModule.cpp" />
     <ClCompile Include="PCalcManager.cpp" />
     <ClCompile Include="PCalcProxy.cpp" />
     <ClCompile Include="PCalcProxyContext.cpp" />
