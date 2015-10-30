@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -22,7 +23,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
             return request;
         }
 
-        protected async Task<T> Execute<T>(RestRequest request, string uri, string authToken) where T : new()
+        protected async Task<ApiResponse<T>> Execute<T>(RestRequest request, string uri, string authToken) where T : new()
         {
             var client = new RestClient();
             client.BaseUrl = new Uri(uri);
@@ -37,10 +38,15 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
 
             if (response.ErrorException != null)
             {
-                const string message = "Error retrieving response.  Check inner details for more info.";
-                throw new ApplicationException(message, response.ErrorException);
+                return new ApiResponse<T>("Error retrieving response.  Check inner details for more info.", response.ErrorException.Message);
             }
-            return response.Data;
+
+            if((int)response.StatusCode >= (int)HttpStatusCode.BadRequest)
+            {
+                return new ApiResponse<T>(response.StatusCode, "Error processing request");
+            }
+
+            return new ApiResponse<T>(response.Data);
         }
         #endregion
     }

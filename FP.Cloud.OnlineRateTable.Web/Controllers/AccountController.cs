@@ -8,6 +8,7 @@ using Ninject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
@@ -49,8 +50,8 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
                 return View(model);
             }
 
-            await m_UserRepository.Register(model);
-            return View("Registered");
+            ApiResponse<object> response = await m_UserRepository.Register(model);
+            return HandleApiResponse(response, View("Registered"), new HttpStatusCodeResult(HttpStatusCode.BadRequest));
         }
 
         // GET: Account/SignIn
@@ -71,15 +72,22 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
             {
                 return View(model);
             }
-            AccessToken result = await m_UserRepository.Login(model.Email, model.Password);
-            if ((null != result) && (string.IsNullOrEmpty(result.TokenValue) == false))
+            ApiResponse<AccessToken> signInResponse = await m_UserRepository.Login(model.Email, model.Password);
+            if(IsApiError(signInResponse))
             {
-                List<UserClaim> userClaims = await m_UserRepository.GetUserClaims(result.TokenValue);
+                return HandleApiError(signInResponse, new HttpStatusCodeResult(HttpStatusCode.BadRequest));
+            }
+            if (string.IsNullOrEmpty(signInResponse.ApiResult.TokenValue) == false)
+            {
+                ApiResponse<List<UserClaim>> userClaimResponse = await m_UserRepository.GetUserClaims(signInResponse.ApiResult.TokenValue);
+                if(IsApiError(userClaimResponse))
+                {
+                    return HandleApiError(userClaimResponse, new HttpStatusCodeResult(HttpStatusCode.BadRequest));
+                }
 
-                List<Claim> claimList = userClaims.Select(c => new Claim(c.ClaimType, c.ClaimValue)).ToList();
-                claimList.Add(new Claim(TOKEN_CLAIM, result.TokenValue));
-                var id = new ClaimsIdentity(claimList, DefaultAuthenticationTypes.ApplicationCookie);
- 
+                List<Claim> claimList = userClaimResponse.ApiResult.Select(c => new Claim(c.ClaimType, c.ClaimValue)).ToList();
+                claimList.Add(new Claim(TOKEN_CLAIM, signInResponse.ApiResult.TokenValue));
+                var id = new ClaimsIdentity(claimList, DefaultAuthenticationTypes.ApplicationCookie); 
                 AuthenticationManager.SignIn(id);
             }
 

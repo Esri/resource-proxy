@@ -1,6 +1,7 @@
 ﻿using FP.Cloud.OnlineRateTable.Common.ProductCalculation;
 using FP.Cloud.OnlineRateTable.Common.ProductCalculation.ApiRequests;
 using FP.Cloud.OnlineRateTable.Common.RateTable;
+using FP.Cloud.OnlineRateTable.Web.CustomAttributes;
 using FP.Cloud.OnlineRateTable.Web.Formatter;
 using FP.Cloud.OnlineRateTable.Web.Models.ViewModels;
 using FP.Cloud.OnlineRateTable.Web.Repositories;
@@ -14,6 +15,7 @@ using System.Web.Mvc;
 
 namespace FP.Cloud.OnlineRateTable.Web.Controllers
 {
+    [CustomErrorHandler(View = "Error")]
     public class ProductCalculationController : BaseController
     {
         #region const
@@ -40,86 +42,97 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
         // GET: ProductCalculation
         public async Task<ActionResult> Index()
         {
-            IEnumerable<RateTableInfo> allActive = await m_Repository.GetActiveRateTables(DateTime.Now);
-            if (null != allActive && allActive.Count() > 0)
+            ApiResponse<List<RateTableInfo>> allActive = await m_Repository.GetActiveRateTables(DateTime.Now);
+            if(IsApiError(allActive) || null == allActive.ApiResult || allActive.ApiResult.Count == 0)
             {
-                ViewData.Add(ACTIVE_RATE_TABLES, allActive);
-                return View(ProductCalculationViewModel.Create(EQueryType.None));
+                return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to retrieve active rate tables");
             }
-            return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to retrieve active rate tables");
+            ViewData.Add(ACTIVE_RATE_TABLES, allActive.ApiResult);
+            return View(ProductCalculationViewModel.Create(EQueryType.None));
         }
 
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Start(StartCalculationViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                int rateTableId = 0;
-                int.TryParse(model.SelectedRateTable, out rateTableId);
-                EnvironmentInfo environment = await m_Repository.CreateEnvironment(rateTableId);
-                if (null != environment)
-                {
-                    StartCalculationRequest request = new StartCalculationRequest();
-                    request.Weight = new WeightInfo() { WeightUnit = EWeightUnit.Gram, WeightValue = 0 };
-                    environment.SenderZipCode = model.SenderZip;
-                    request.Environment = environment;
-                    PCalcResultInfo result = await m_Repository.Start(request);
-                    if (PcalcResultIsValid(result))
-                    {
-                        AddOrUpdateTempData(result, request.Environment);
-                        AddViewData(result, environment);
-                        return View("Index", ProductCalculationViewModel.Create(result.QueryType));
-                    }
-                    return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), result);
-                }
+                return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to create environment");
             }
-            return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to create environment");
+            int rateTableId = 0;
+            int.TryParse(model.SelectedRateTable, out rateTableId);
+            ApiResponse<EnvironmentInfo> environmentResponse = await m_Repository.CreateEnvironment(rateTableId);
+            if(IsApiError(environmentResponse) || environmentResponse.ApiResult == null)
+            {
+                return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to create environment");
+            }
+
+            StartCalculationRequest request = new StartCalculationRequest();
+            request.Weight = new WeightInfo() { WeightUnit = EWeightUnit.Gram, WeightValue = 0 };
+            environmentResponse.ApiResult.SenderZipCode = model.SenderZip;
+            request.Environment = environmentResponse.ApiResult;
+
+            ApiResponse<PCalcResultInfo> startResponse = await m_Repository.Start(request);
+            if(IsApiError(startResponse) || PcalcResultIsValid(startResponse.ApiResult) == false)
+            {
+                return HandleGeneralPcalcError("Index", ProductCalculationViewModel.Create(EQueryType.None), startResponse.ApiResult);
+            }
+
+            AddOrUpdateTempData(startResponse.ApiResult, request.Environment);
+            AddViewData(startResponse.ApiResult, environmentResponse.ApiResult);
+            return View("Index", ProductCalculationViewModel.Create(startResponse.ApiResult.QueryType));
         }
 
         public async Task<ActionResult> Restart()
         {
             StartCalculationRequest request = new StartCalculationRequest();
-            request.Weight = new WeightInfo() { WeightUnit = EWeightUnit.Gram, WeightValue = 1537 };
+            PCalcResultInfo lastInfo = GetLastPcalcResult();
+            //try to re-use the weight
+            request.Weight = null != lastInfo?.ProductDescription ? lastInfo?.ProductDescription.Weight : 
+                new WeightInfo() { WeightUnit = EWeightUnit.Gram, WeightValue = 0 };
 
             EnvironmentInfo environment = GetEnvironment();
-            if (null != environment)
+            if (null == environment)
             {
-                request.Environment = environment;
-                PCalcResultInfo result = await m_Repository.Start(request);
-                if (PcalcResultIsValid(result))
-                {
-                    AddOrUpdateTempData(result, request.Environment);
-                    AddViewData(result, environment);
-                    return View("Index", ProductCalculationViewModel.Create(result.QueryType));
-                }
-                return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), result);
+                return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to create environment");
             }
-            return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to create environment");
+
+            request.Environment = environment;
+            ApiResponse<PCalcResultInfo> restartResult = await m_Repository.Start(request);
+            if(IsApiError(restartResult) || PcalcResultIsValid(restartResult.ApiResult) == false)
+            {
+                return HandleGeneralPcalcError("Index", ProductCalculationViewModel.Create(EQueryType.None), restartResult.ApiResult);
+            }
+
+            AddOrUpdateTempData(restartResult.ApiResult, request.Environment);
+            AddViewData(restartResult.ApiResult, environment);
+            return View("Index", ProductCalculationViewModel.Create(restartResult.ApiResult.QueryType));
+
         }
 
         public async Task<ActionResult> StepBack()
         {
             PCalcResultInfo lastResult = GetLastPcalcResult();
-            if (null != lastResult)
+            if (null == lastResult)
             {
-                UpdateRequest request = new UpdateRequest();
-                EnvironmentInfo environment = GetEnvironment();
-                if (null != environment)
-                {
-                    request.Environment = environment;
-                    request.ProductDescription = lastResult.ProductDescription;
-                    PCalcResultInfo result = await m_Repository.StepBack(request);
-                    if (PcalcResultIsValid(result))
-                    {
-                        AddOrUpdateTempData(result, request.Environment);
-                        AddViewData(result, environment);
-                        return View("Index", ProductCalculationViewModel.Create(result.QueryType));
-                    }
-                    return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), result);
-                }
+                return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to retrieve last result");
+            }
+            UpdateRequest request = new UpdateRequest();
+            EnvironmentInfo environment = GetEnvironment();
+            if (null == environment)
+            {
                 return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to create environment");
             }
-            return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to retrieve last result");
+            request.Environment = environment;
+            request.ProductDescription = lastResult.ProductDescription;
+            ApiResponse<PCalcResultInfo> response = await m_Repository.StepBack(request);
+            if (IsApiError(response) || PcalcResultIsValid(response.ApiResult) == false)
+            {
+                return HandleGeneralPcalcError("Index", ProductCalculationViewModel.Create(EQueryType.None), response.ApiResult);
+            }
+
+            AddOrUpdateTempData(response.ApiResult, request.Environment);
+            AddViewData(response.ApiResult, environment);
+            return View("Index", ProductCalculationViewModel.Create(response.ApiResult.QueryType));
         }
 
         public async Task<ActionResult> Finish()
@@ -130,41 +143,45 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> UpdateWeight([Bind(Include = "WeightValueInGram,WeightValueInOunces,CultureIsMetric")]UpdateWeightViewModel model)
         {
-            if(ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                PCalcResultInfo lastResult = GetLastPcalcResult();
-                if (null != lastResult)
-                {
-                    UpdateRequest request = new UpdateRequest();
-                    EnvironmentInfo environment = GetEnvironment();
-                    if (null != environment)
-                    {
-                        request.Environment = environment;
-                        request.ProductDescription = lastResult.ProductDescription;
-                        int weightValue = (int)model.WeightValue * 10;
-                        request.ProductDescription.Weight = new WeightInfo()
-                        {
-                            WeightValue = weightValue,
-                            WeightUnit = model.CultureIsMetric ? EWeightUnit.TenthGram : EWeightUnit.TenthOunce
-                        };
-
-                        //update weight will only update the product description
-                        PCalcResultInfo result = await m_Repository.UpdateWeight(request);
-                        result.QueryDescription = lastResult.QueryDescription;
-                        result.QueryType = lastResult.QueryType;
-                        if (PcalcResultIsValid(result))
-                        {
-                            AddOrUpdateTempData(result, request.Environment);
-                            AddViewData(result, environment);
-                            return View("Index", ProductCalculationViewModel.Create(result.QueryType));
-                        }
-                        return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), result);
-                    }
-                    return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to create environment");
-                }
+                return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unspecified error");
+            }
+            PCalcResultInfo lastResult = GetLastPcalcResult();
+            if (null == lastResult)
+            {
                 return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to retrieve last result");
             }
-            return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unspecified error");
+            UpdateRequest request = new UpdateRequest();
+            EnvironmentInfo environment = GetEnvironment();
+            if (null == environment)
+            {
+                return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to create environment");
+            }
+            request.Environment = environment;
+            request.ProductDescription = lastResult.ProductDescription;
+            int weightValue = (int)model.WeightValue * 10;
+            request.ProductDescription.Weight = new WeightInfo()
+            {
+                WeightValue = weightValue,
+                WeightUnit = model.CultureIsMetric ? EWeightUnit.TenthGram : EWeightUnit.TenthOunce
+            };
+
+            //update weight will only update the product description
+            ApiResponse<PCalcResultInfo> response = await m_Repository.UpdateWeight(request);
+            if(IsApiError(response))
+            {
+                return HandleGeneralPcalcError("Index", ProductCalculationViewModel.Create(EQueryType.None), response.ApiResult);
+            }
+            response.ApiResult.QueryDescription = lastResult.QueryDescription;
+            response.ApiResult.QueryType = lastResult.QueryType;
+            if (PcalcResultIsValid(response.ApiResult) == false)
+            {
+                return HandleGeneralPcalcError("Index", ProductCalculationViewModel.Create(EQueryType.None), response.ApiResult);
+            }
+            AddOrUpdateTempData(response.ApiResult, request.Environment);
+            AddViewData(response.ApiResult, environment);
+            return View("Index", ProductCalculationViewModel.Create(response.ApiResult.QueryType));            
         }
 
         public async Task<ActionResult> SelectMenuIndex(int index)
@@ -209,45 +226,45 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> RequestValue(RequestValueViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                EnvironmentInfo environment = GetEnvironment();
-                if (null != environment)
-                {
-                    CultureInfo culture = new CultureInfo(environment.Culture);
-                    char decimalSeperator = culture.NumberFormat.CurrencyDecimalSeparator.ToCharArray()[0];
-
-                    FormatStringAdapter adapter = new FormatStringAdapter(decimalSeperator);
-                    adapter.SetFormatString(model.FormatString);
-
-                    string formattedString;
-                    adapter.Format(out formattedString, model.EnteredRawValue);
-
-                    var actionResult = new ActionResultInfo()
-                    {
-                        Action = model.QueryType == EQueryType.RequestValue ? EActionId.RequestValue :
-                        model.QueryType == EQueryType.RequestPostage ? EActionId.ManualPostage : EActionId.RequestString,
-                        Results = new List<AnyInfo>()
-                    };
-
-                    uint numberOfEntries = adapter.GetValueNumber();
-                    for (uint i = 0; i < numberOfEntries; ++i)
-                    {
-                        object valuePart = adapter.GetValue(formattedString, i);
-                        if (valuePart != null)
-                        {
-                            actionResult.Results.Add(new AnyInfo()
-                            {
-                                AnyType = model.QueryType == EQueryType.RequestString ? EAnyType.STRING : EAnyType.UINT32,
-                                AnyValue = valuePart.ToString()
-                            });
-                        }
-                    }
-                    return await HandleCalculation(actionResult, environment);
-                }
+                return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Product Calculation Error");
+            }
+            EnvironmentInfo environment = GetEnvironment();
+            if (null == environment)
+            {
                 return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to retrieve environment information");
             }
-            return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Product Calculation Error");
+            CultureInfo culture = new CultureInfo(environment.Culture);
+            char decimalSeperator = culture.NumberFormat.CurrencyDecimalSeparator.ToCharArray()[0];
+
+            FormatStringAdapter adapter = new FormatStringAdapter(decimalSeperator);
+            adapter.SetFormatString(model.FormatString);
+
+            string formattedString;
+            adapter.Format(out formattedString, model.EnteredRawValue);
+
+            var actionResult = new ActionResultInfo()
+            {
+                Action = model.QueryType == EQueryType.RequestValue ? EActionId.RequestValue :
+                model.QueryType == EQueryType.RequestPostage ? EActionId.ManualPostage : EActionId.RequestString,
+                Results = new List<AnyInfo>()
+            };
+
+            uint numberOfEntries = adapter.GetValueNumber();
+            for (uint i = 0; i < numberOfEntries; ++i)
+            {
+                object valuePart = adapter.GetValue(formattedString, i);
+                if (valuePart != null)
+                {
+                    actionResult.Results.Add(new AnyInfo()
+                    {
+                        AnyType = model.QueryType == EQueryType.RequestString ? EAnyType.STRING : EAnyType.UINT32,
+                        AnyValue = valuePart.ToString()
+                    });
+                }
+            }
+            return await HandleCalculation(actionResult, environment);
         }
 
         public async Task<ActionResult> Acknowledge()
@@ -282,27 +299,27 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
         private async Task<ActionResult> HandleCalculation(ActionResultInfo actionResult, EnvironmentInfo environment)
         {
             PCalcResultInfo lastResult = GetLastPcalcResult();
-            if (null != lastResult)
+            if (null == lastResult)
             {
-                if (null != environment)
-                {
-                    CalculateRequest calc = new CalculateRequest();
-                    calc.Environment = environment;
-                    calc.ProductDescription = lastResult.ProductDescription;
-                    calc.ActionResult = actionResult;
-                    PCalcResultInfo result = await m_Repository.Calculate(calc);
-                    //TODO: Error handling
-                    if (PcalcResultIsValid(result))
-                    {
-                        AddOrUpdateTempData(result, calc.Environment);
-                        AddViewData(result, environment);
-                        return View("Index", ProductCalculationViewModel.Create(result.QueryType));
-                    }
-                    return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), result);
-                }
+                return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to retrieve last product");
+            }
+            if (null == environment)
+            {
                 return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to retrieve environment information");
             }
-            return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to retrieve last product");
+
+            CalculateRequest calc = new CalculateRequest();
+            calc.Environment = environment;
+            calc.ProductDescription = lastResult.ProductDescription;
+            calc.ActionResult = actionResult;
+            ApiResponse<PCalcResultInfo> response = await m_Repository.Calculate(calc);
+            if (IsApiError(response) || PcalcResultIsValid(response.ApiResult) == false)
+            {
+                return HandleGeneralPcalcError("Index", ProductCalculationViewModel.Create(EQueryType.None), response.ApiResult);
+            }
+            AddOrUpdateTempData(response.ApiResult, calc.Environment);
+            AddViewData(response.ApiResult, environment);
+            return View("Index", ProductCalculationViewModel.Create(response.ApiResult.QueryType));            
         }
 
         private void AddOrUpdateTempData(PCalcResultInfo result, EnvironmentInfo environment)

@@ -9,11 +9,12 @@ namespace FP.Cloud.OnlineRateTable.Common.Authorization
 {
     public class RegisterBindingModel
     {
-        [Required]
+        [Required(ErrorMessage = "Please provide a valid e-mail address")]
         [Display(Name = "Email")]
+        [DataType(DataType.EmailAddress, ErrorMessage = "Please provide a valid e-mail address")]
         public string Email { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Please provide a secure password")]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
