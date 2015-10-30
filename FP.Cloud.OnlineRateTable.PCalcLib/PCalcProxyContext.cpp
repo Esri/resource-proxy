@@ -15,7 +15,7 @@ PCalcProxyContext::PCalcProxyContext(System::String^ amxPath, System::String^ ta
 	m_Kernel->Bind<Lib::PCalcFactory^>()->ToSelf()->InScope(gcnew System::Func<Ninject::Activation::IContext^, System::Object^>(this, &PCalcProxyContext::GetScope));
 }
 
-PCalcProxyContext::PCalcProxyContext(IPCalcManager^ manager, IEnvironmentProcessor^ envProcessor, IActionResultProcessor^ actionProcessor, ICalculationResultProcessorProxy^ calcProcessor, IProductDescriptionMapper^ mapper, System::String^ amxPath, System::String^ tablePath, ... array<System::String^>^ additionalFiles)
+PCalcProxyContext::PCalcProxyContext(IPCalcManager^ manager, IEnvironmentProcessor^ envProcessor, IActionResultProcessor^ actionProcessor, ICalculationResultProcessor^ calcProcessor, IProductDescriptionMapper^ mapper, System::String^ amxPath, System::String^ tablePath, ... array<System::String^>^ additionalFiles)
 	: m_Proxy(nullptr)
 	, m_Factory(nullptr)
 	, m_AmxPath(amxPath)
@@ -25,7 +25,7 @@ PCalcProxyContext::PCalcProxyContext(IPCalcManager^ manager, IEnvironmentProcess
 	m_Kernel->Rebind<IPCalcManager^>()->ToConstant(manager);
 	m_Kernel->Rebind<IEnvironmentProcessor^>()->ToConstant(envProcessor);
 	m_Kernel->Rebind<IActionResultProcessor^>()->ToConstant(actionProcessor);
-	m_Kernel->Rebind<ICalculationResultProcessorProxy^>()->ToConstant(calcProcessor);
+	m_Kernel->Rebind<ICalculationResultProcessor^>()->ToConstant(calcProcessor);
 	m_Kernel->Rebind<IProductDescriptionMapper^>()->ToConstant(mapper);
 }
 

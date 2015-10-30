@@ -5,7 +5,7 @@
 
 BEGIN_PCALC_LIB_NAMESPACE
 
-interface class ICalculationResultProcessorProxy;
+interface class ICalculationResultProcessor;
 interface class IActionResultProcessor;
 interface class IEnvironmentProcessor;
 interface class IProductDescriptionMapper;
@@ -16,7 +16,7 @@ private ref class PCalcProxy : System::MarshalByRefObject, public IPCalcProxy
 {
 public:
 	//PCalcProxy();
-	PCalcProxy(IPCalcManager^ manager, IActionResultProcessor^ actionResultProcessor, IEnvironmentProcessor^ environmentProcessor, ICalculationResultProcessorProxy^ calculationResultProcessor, IProductDescriptionMapper^ mapper);
+	PCalcProxy(IPCalcManager^ manager, IActionResultProcessor^ actionResultProcessor, IEnvironmentProcessor^ environmentProcessor, ICalculationResultProcessor^ calculationResultProcessor, IProductDescriptionMapper^ mapper);
 
 	~PCalcProxy();
 
@@ -34,7 +34,7 @@ protected:
 private:
 	static System::Object^ m_SyncLock = gcnew System::Object();
 	IPCalcManager^ m_Manager;
-	ICalculationResultProcessorProxy^ m_CalculationResultProcessor;
+	ICalculationResultProcessor^ m_CalculationResultProcessor;
 	IActionResultProcessor^ m_ActionResultProcessor;
 	IEnvironmentProcessor^ m_EnvironmentProcessor;
 	IProductDescriptionMapper^ m_ProductDescriptionMapper;

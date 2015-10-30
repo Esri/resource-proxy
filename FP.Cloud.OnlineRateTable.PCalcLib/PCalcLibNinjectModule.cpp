@@ -12,7 +12,7 @@
 void PCalcLibNinjectModule::Load()
 {
 	this->Bind<Lib::IActionResultProcessor^>()->To<Lib::ActionResultProcessor^>();
-	this->Bind<Lib::ICalculationResultProcessorProxy^>()->To<Lib::CalculationResultProcessorProxy^>();
+	this->Bind<Lib::ICalculationResultProcessor^>()->To<Lib::CalculationResultProcessorProxy^>();
 	this->Bind<Lib::IProductDescriptionMapper^>()->To<Lib::ProductDescriptionMapper^>();
 	this->Bind<Lib::IPCalcProxy^>()->To<Lib::PCalcProxy^>();
 	this->Bind<Lib::IPCalcManager^>()->To<Lib::PCalcManager^>();

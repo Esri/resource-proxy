@@ -18,7 +18,7 @@ public:
 	/// <summary>
 	/// Creates a instance of type PCalcProxyContext
 	/// </summary>
-	PCalcProxyContext(IPCalcManager^ manager, IEnvironmentProcessor^ envProcessor, IActionResultProcessor^ actionProcessor,	ICalculationResultProcessorProxy^ calcProcessor, IProductDescriptionMapper^ mapper,	System::String^ amxPath, System::String^ tablePath,	... array<System::String^>^ additionalFiles);
+	PCalcProxyContext(IPCalcManager^ manager, IEnvironmentProcessor^ envProcessor, IActionResultProcessor^ actionProcessor,	ICalculationResultProcessor^ calcProcessor, IProductDescriptionMapper^ mapper,	System::String^ amxPath, System::String^ tablePath,	... array<System::String^>^ additionalFiles);
 
 	~PCalcProxyContext(void);
 

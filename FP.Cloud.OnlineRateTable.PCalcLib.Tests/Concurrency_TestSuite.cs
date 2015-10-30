@@ -13,8 +13,6 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
         [Test]
         public void ShouldBlockCalculationFromOtherThreads()
         {
-            IKernel kernel = new StandardKernel();
-            FP.Cloud.OnlineRateTable.PCalcLib.ICalculationResultProcessorProxy calcResult;
         }
 
         #endregion

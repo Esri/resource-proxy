@@ -11,7 +11,7 @@
 
 using namespace System;
 
-FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::PCalcProxy(IPCalcManager^ manager, IActionResultProcessor^ actionResultProcessor, IEnvironmentProcessor^ environmentProcessor, ICalculationResultProcessorProxy^ calculationResultProcessor, IProductDescriptionMapper^ mapper)
+FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::PCalcProxy(IPCalcManager^ manager, IActionResultProcessor^ actionResultProcessor, IEnvironmentProcessor^ environmentProcessor, ICalculationResultProcessor^ calculationResultProcessor, IProductDescriptionMapper^ mapper)
 	: m_Manager(manager)
 	, m_CalculationResultProcessor(calculationResultProcessor)
 	, m_ActionResultProcessor(actionResultProcessor)

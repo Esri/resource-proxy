@@ -6,12 +6,12 @@ BEGIN_PCALC_LIB_NAMESPACE
 
 ref class PCalcFactory;
 
-public interface class ICalculationResultProcessor
-{
-	Shared::PCalcResultInfo^ Handle();
-};
+//public interface class ICalculationResultProcessor
+//{
+//	Shared::PCalcResultInfo^ Handle();
+//};
 
-private ref class CalculationResultProcessor abstract : public ICalculationResultProcessor
+private ref class CalculationResultProcessor abstract
 {
 public:
 	virtual Shared::PCalcResultInfo^ Handle();

@@ -7,7 +7,7 @@ BEGIN_PCALC_LIB_NAMESPACE
 
 ref class PCalcFactory;
 
-private interface class IPCalcManager
+public interface class IPCalcManager
 {
 	void Create();
 	void Initialize();

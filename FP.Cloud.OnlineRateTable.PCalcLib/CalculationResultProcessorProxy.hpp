@@ -9,13 +9,13 @@ BEGIN_PCALC_LIB_NAMESPACE
 ref class PCalcFactory;
 ref class CalculationResultProcessor;
 
-public interface class ICalculationResultProcessorProxy
+public interface class ICalculationResultProcessor
 {
 	Shared::PCalcResultInfo^ Handle(INT32 actionID);
 };
 
 
-private ref class CalculationResultProcessorProxy : public ICalculationResultProcessorProxy
+private ref class CalculationResultProcessorProxy : public ICalculationResultProcessor
 {
 public:
 	CalculationResultProcessorProxy(PCalcFactory^ factory);
