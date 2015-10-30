@@ -210,3 +210,5 @@ FakesAssemblies/
 GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
+/FP.Cloud.OnlineRateTable.PCalcLib.Tests/Concurrency_TestSuite.cs
+/FP.Cloud.OnlineRateTable.PCalcLib/CalculationResultProcessors.hpp

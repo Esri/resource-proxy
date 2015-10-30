@@ -160,7 +160,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
             }
             request.Environment = environment;
             request.ProductDescription = lastResult.ProductDescription;
-            int weightValue = (int)model.WeightValue * 10;
+            int weightValue = (int)(model.WeightValue * 10);
             request.ProductDescription.Weight = new WeightInfo()
             {
                 WeightValue = weightValue,
