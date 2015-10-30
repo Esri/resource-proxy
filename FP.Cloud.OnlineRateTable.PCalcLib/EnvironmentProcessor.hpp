@@ -6,11 +6,16 @@ BEGIN_PCALC_LIB_NAMESPACE
 
 ref class PCalcFactory;
 
-private ref class EnvironmentProcessor
+public interface class IEnvironmentProcessor
+{
+	void Handle(Shared::EnvironmentInfo^ environment);
+};
+
+private ref class EnvironmentProcessor : public IEnvironmentProcessor
 {
 public:
 	EnvironmentProcessor(PCalcFactory^ factory);
-	void Handle(Shared::EnvironmentInfo^ environment);
+	virtual void Handle(Shared::EnvironmentInfo^ environment);
 
 private:
 	PCalcFactory^ m_Factory;

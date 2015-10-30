@@ -7,14 +7,21 @@ BEGIN_PCALC_LIB_NAMESPACE
 
 ref class PCalcFactory;
 
-private ref class ProductDescriptionMapper
+public interface class IProductDescriptionMapper
+{
+	Shared::ProductDescriptionInfo^ GetProduct();
+	void SetProduct(Shared::ProductDescriptionInfo^ product);
+	void SetWeight(Shared::WeightInfo^ weight);
+};
+
+private ref class ProductDescriptionMapper : public IProductDescriptionMapper
 {
 public:
 	ProductDescriptionMapper(PCalcFactory^ factory);
 
-	Shared::ProductDescriptionInfo^ GetProduct();
-	void SetProduct(Shared::ProductDescriptionInfo^ product);
-	void SetWeight(Shared::WeightInfo^ weight);
+	virtual Shared::ProductDescriptionInfo^ GetProduct();
+	virtual void SetProduct(Shared::ProductDescriptionInfo^ product);
+	virtual void SetWeight(Shared::WeightInfo^ weight);
 
 private:
 	void SetWeight(Shared::ProductDescriptionInfo^ target, const PT::WeightType &source);

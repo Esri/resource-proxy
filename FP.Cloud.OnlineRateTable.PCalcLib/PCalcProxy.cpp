@@ -11,13 +11,12 @@
 
 using namespace System;
 
-FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::PCalcProxy()
-	: m_Factory(gcnew PCalcFactory())
-	, m_Manager(gcnew PCalcManager(m_Factory))
-	, m_CalculationResultProcessor(gcnew CalculationResultProcessorProxy(m_Factory))
-	, m_ActionResultProcessor(gcnew ActionResultProcessor(m_Factory))
-	, m_EnvironmentProcessor(gcnew EnvironmentProcessor(m_Factory))
-	, m_ProductDescriptionMapper(gcnew ProductDescriptionMapper(m_Factory))
+FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::PCalcProxy(IPCalcManager^ manager, IActionResultProcessor^ actionResultProcessor, IEnvironmentProcessor^ environmentProcessor, ICalculationResultProcessor^ calculationResultProcessor, IProductDescriptionMapper^ mapper)
+	: m_Manager(manager)
+	, m_CalculationResultProcessor(calculationResultProcessor)
+	, m_ActionResultProcessor(actionResultProcessor)
+	, m_EnvironmentProcessor(environmentProcessor)
+	, m_ProductDescriptionMapper(mapper)
 {
 }
 
@@ -43,15 +42,11 @@ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::!PCalcProxy()
 	if (nullptr != m_ProductDescriptionMapper)
 		delete m_ProductDescriptionMapper;
 
-	if (nullptr != m_Factory)
-		delete m_Factory;
-
 	m_EnvironmentProcessor = nullptr;
 	m_CalculationResultProcessor = nullptr;
 	m_Manager = nullptr;
 	m_ActionResultProcessor = nullptr;
 	m_ProductDescriptionMapper = nullptr;
-	m_Factory = nullptr;
 }
 
 Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Start(Shared::EnvironmentInfo^ environment, Shared::WeightInfo^ weight)
@@ -119,9 +114,7 @@ Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calcu
 	result->ProductDescription = this->m_ProductDescriptionMapper->GetProduct();
 
 	return result;
-
 }
-
 
 Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Back(Shared::EnvironmentInfo^ environment, Shared::ProductDescriptionInfo^ product)
 {

@@ -75,6 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CheckMemory_TestSuite.cs" />
+    <Compile Include="Concurrency_TestSuite.cs" />
     <Compile Include="PCalcProxyContext_TestSuite.cs" />
     <Compile Include="PCalcProxy_TestSuite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

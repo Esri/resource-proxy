@@ -16,8 +16,9 @@ FP::Cloud::OnlineRateTable::PCalcLib::PCalcFactory::~PCalcFactory(void)
 FP::Cloud::OnlineRateTable::PCalcLib::PCalcFactory::!PCalcFactory(void)
 {
 	if (NULL != m_pFactory)
-	{
+	{		
 		delete m_pFactory;
+		m_pFactory = NULL;
 	}
 }
 
