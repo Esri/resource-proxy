@@ -76,7 +76,7 @@ namespace FP.Cloud.OnlineRateTable.Controllers
                 return BadRequest(ModelState);
             }
             PCalcResultInfo result = await m_Calculator.StartCalculation(startRequest.Environment, startRequest.Weight);
-            return Ok(result);
+            return CreateProductCalculationResponse(result);
         }
 
         [ResponseType(typeof(PCalcResultInfo))]
@@ -89,7 +89,7 @@ namespace FP.Cloud.OnlineRateTable.Controllers
                 return BadRequest(ModelState);
             }
             PCalcResultInfo result = await m_Calculator.Calculate(calculationRequest.Environment, calculationRequest.ProductDescription, calculationRequest.ActionResult);
-            return Ok(result);
+            return CreateProductCalculationResponse(result);
         }
 
         [ResponseType(typeof(PCalcResultInfo))]
@@ -102,7 +102,7 @@ namespace FP.Cloud.OnlineRateTable.Controllers
                 return BadRequest(ModelState);
             }
             PCalcResultInfo result = await m_Calculator.StepBack(backRequest.Environment, backRequest.ProductDescription);
-            return Ok(result);
+            return CreateProductCalculationResponse(result);
         }
 
         [ResponseType(typeof(PCalcResultInfo))]
@@ -115,6 +115,17 @@ namespace FP.Cloud.OnlineRateTable.Controllers
                 return BadRequest(ModelState);
             }
             PCalcResultInfo result = await m_Calculator.UpdateWeight(updateRequest.Environment, updateRequest.ProductDescription);
+            return CreateProductCalculationResponse(result);
+        }
+        #endregion
+
+        #region private
+        private IHttpActionResult CreateProductCalculationResponse(PCalcResultInfo result)
+        {
+            if (null == result)
+            {
+                return BadRequest("Error in product calculation module");
+            }
             return Ok(result);
         }
         #endregion

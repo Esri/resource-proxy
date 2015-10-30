@@ -38,11 +38,13 @@
                     <strong>Weight: </strong>
                     if (regionIsMetric)
                     {
+                        Model.WeightValueInGram = weight.WeightInGram;
                         @Html.HiddenFor(model => model.WeightValueInOunces);
                         @Html.EditorFor(model => model.WeightValueInGram, new { @class = "form-control" })
                     }
                     else
                     {
+                        Model.WeightValueInOunces = weight.WeightInOunces;
                         @Html.HiddenFor(model => model.WeightValueInGram);
                         @Html.EditorFor(model => model.WeightValueInOunces, new { @class = "form-control" })
                     }
@@ -50,9 +52,18 @@
                     <div class="pull-right">
                         <input type="submit" value="Ok" class="btn btn-primary btn-sm" />
                     </div>
-                    <div>
-                        @Html.ValidationMessageFor(model => model.WeightValue, "", new { @class = "text-danger" })
-                    </div>
+                    if (regionIsMetric)
+                    {
+                        <div>
+                            @Html.ValidationMessageFor(model => model.WeightValueInGram, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    else
+                    {
+                        <div>
+                            @Html.ValidationMessageFor(model => model.WeightValueInOunces, "", new { @class = "text-danger" })
+                        </div>
+                    }
                 }
             </div>
         </div>

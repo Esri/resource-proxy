@@ -10,10 +10,16 @@ namespace FP.Cloud.OnlineRateTable.Common.ProductCalculation
         #region properties
         [DataMember]
         public ProductDescriptionInfo ProductDescription { get; set; }
+
         [DataMember]
         public TransferDescriptionInfo QueryDescription { get; set; }
+
         [DataMember]
         public EQueryType QueryType { get; set; }
+
+        [DataMember]
+        public ApiError CalculationError { get; set; }
+
         [IgnoreDataMember]
         public DescriptionInfo DedicatedDescription
         {
