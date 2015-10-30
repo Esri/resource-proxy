@@ -9,11 +9,9 @@ namespace FP.Cloud.OnlineRateTable.Common
 {
     [Serializable]
     [DataContract]
-    public class ApiResponse
+    public class ApiError
     {
         #region properties
-        [DataMember]
-        public bool ApiRequestSucceeded { get; set; }
 
         [DataMember]
         public string ErrorMessage { get; set; }
@@ -29,22 +27,19 @@ namespace FP.Cloud.OnlineRateTable.Common
         #endregion
 
         #region constructor
-        public ApiResponse()
+        public ApiError()
         {
-            ApiRequestSucceeded = true;
         }
 
-        public ApiResponse(string errorMessage, int errorCode, int errorSubCode1, int errorSubcode2)
+        public ApiError(string errorMessage, int errorCode, int errorSubCode1, int errorSubcode2)
         {
-            ApiRequestSucceeded = false;
             ErrorMessage = errorMessage;
             ErrorSubCode1 = errorSubCode1;
             ErrorSubCode2 = errorSubcode2;
         }
 
-        public ApiResponse(Exception ex)
+        public ApiError(Exception ex)
         {
-            ApiRequestSucceeded = false;
             ErrorMessage = ex.Message;
         }
         #endregion

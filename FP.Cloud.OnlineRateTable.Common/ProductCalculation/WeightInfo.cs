@@ -25,6 +25,18 @@ namespace FP.Cloud.OnlineRateTable.Common.ProductCalculation
         public EWeightUnit WeightUnit { get; set; }
 
         [IgnoreDataMember]
+        public decimal WeightInGram
+        {
+            get { return GetWeightInGram(); }
+        }
+
+        [IgnoreDataMember]
+        public decimal WeightInOunces
+        {
+            get { return GetWeightInOunces(); }
+        }
+
+        [IgnoreDataMember]
         public string FormattedWeight
         {
             get { return GetFormattedtWeight(); }
@@ -38,36 +50,46 @@ namespace FP.Cloud.OnlineRateTable.Common.ProductCalculation
         #endregion
 
         #region private
-        private string GetFormattedtWeight()
-        {
-            switch(WeightUnit)
-            {
-                case EWeightUnit.Gram:
-                    return GetMetricWeightInfo(WeightValue);
-                case EWeightUnit.TenthGram:
-                    return GetMetricWeightInfo((decimal)WeightValue/10);
-                case EWeightUnit.TenthOunce:
-                    return GetMetricWeightInfo(OuncesToGram((decimal)WeightValue / 10));
-                case EWeightUnit.HoundrethOunce:
-                    return GetMetricWeightInfo(OuncesToGram((decimal)WeightValue / 100));
-            }
-            return string.Empty;
-        }
-
-        private string GetFormattedtWeightImperial()
+        private decimal GetWeightInGram()
         {
             switch (WeightUnit)
             {
                 case EWeightUnit.Gram:
-                    return GetImperialWeightInfo(GramToOunces(WeightValue));
+                    return WeightValue;
                 case EWeightUnit.TenthGram:
-                    return GetImperialWeightInfo(GramToOunces((decimal)WeightValue / 10));
+                    return (decimal)WeightValue / 10;
                 case EWeightUnit.TenthOunce:
-                    return GetImperialWeightInfo((decimal)WeightValue / 10);
+                    return OuncesToGram((decimal)WeightValue / 10);
                 case EWeightUnit.HoundrethOunce:
-                    return GetImperialWeightInfo((decimal)WeightValue / 100);
+                    return OuncesToGram((decimal)WeightValue / 100);
             }
-            return string.Empty;
+            return 0;
+        }
+
+        private decimal GetWeightInOunces()
+        {
+            switch (WeightUnit)
+            {
+                case EWeightUnit.Gram:
+                    return GramToOunces(WeightValue);
+                case EWeightUnit.TenthGram:
+                    return GramToOunces((decimal)WeightValue / 10);
+                case EWeightUnit.TenthOunce:
+                    return (decimal)WeightValue / 10;
+                case EWeightUnit.HoundrethOunce:
+                    return (decimal)WeightValue / 100;
+            }
+            return 0;
+        }
+
+        private string GetFormattedtWeight()
+        {
+            return GetMetricWeightInfo(GetWeightInGram());
+        }
+
+        private string GetFormattedtWeightImperial()
+        {
+            return GetImperialWeightInfo(GetWeightInOunces());
         }
 
         private string GetMetricWeightInfo(decimal weightInGram)

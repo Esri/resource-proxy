@@ -101,24 +101,36 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
             if(null != result && null != result.ProductDescription && 
                 null != result.ProductDescription.Postage && null != environment )
             {
-                try
+                m_ScenarioRunner.Run(() =>
                 {
                     CultureInfo info = new CultureInfo(environment.Culture);
                     result.ProductDescription.Postage.CurrencySymbol = info.NumberFormat.CurrencySymbol;
                     result.ProductDescription.Postage.CurrencyDecimalSeparator = info.NumberFormat.CurrencyDecimalSeparator;
-                }
-                catch(Exception)
-                { }
+                });
             }
         }
 
         private PCalcResultInfo ReturnErrorResult(ScenarioResult scenarioResult)
         {
-            return new PCalcResultInfo()
+            //if there was an error from the product calculation itself (i.e. weight exceeded) we would like to 
+            //return it to the calling instance
+            if(null != scenarioResult.Error && scenarioResult.Error is PCalcLibErrorCodeException)
             {
-                ApiRequestSucceeded = false,
-                ErrorMessage = scenarioResult.Error != null ? scenarioResult.Error.Message : "Unknown Error"
-            };
+                var ex = scenarioResult.Error as PCalcLibErrorCodeException;
+                return new PCalcResultInfo()
+                {
+                    CalculationError = new ApiError
+                    {
+                        ErrorMessage = ex.Message,
+                        ErrorCode = ex.MainCode,
+                        ErrorSubCode1 = ex.Subcode1,
+                        ErrorSubCode2 = ex.Subcode2
+                    }
+                };
+            }
+            //these are errors that should not be returned to the user interface (i.e. file not found)
+            //simply return nothing here - this is mapped in the controller to a httpstatuscode
+            return null;
         }
 
         private async Task<ScenarioResult<RateCalculationFileHandler>> InitFileHandler(EnvironmentInfo info)
