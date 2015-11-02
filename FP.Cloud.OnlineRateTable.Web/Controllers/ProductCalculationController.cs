@@ -38,7 +38,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
             m_Repository = repository;
         }
         #endregion
-
+        
         // GET: ProductCalculation
         public async Task<ActionResult> Index()
         {
@@ -66,8 +66,9 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
                 return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to create environment");
             }
 
+            SetUiCulture(environmentResponse.ApiResult.Culture);
             StartCalculationRequest request = new StartCalculationRequest();
-            request.Weight = new WeightInfo() { WeightUnit = EWeightUnit.Gram, WeightValue = 0 };
+            request.Weight = GetInitialWeight(environmentResponse.ApiResult.Culture);
             environmentResponse.ApiResult.SenderZipCode = model.SenderZip;
             request.Environment = environmentResponse.ApiResult;
 
@@ -137,11 +138,27 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
 
         public async Task<ActionResult> Finish()
         {
-            return null;
+            PCalcResultInfo lastResult = GetLastPcalcResult();
+            if (null == lastResult)
+            {
+                return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to retrieve last result");
+            }
+            EnvironmentInfo environment = GetEnvironment();
+            if (null == environment)
+            {
+                return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to create environment");
+            }
+
+            //stupid read once temp data...
+            AddOrUpdateTempData(lastResult, environment);
+            AddViewData(lastResult, environment);
+            ProductCalculationViewModel model = ProductCalculationViewModel.Create(lastResult.QueryType);
+            model.ProductCalculationFinished = true;
+            return View("Index", model);
         }
 
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> UpdateWeight([Bind(Include = "WeightValueInGram,WeightValueInOunces,CultureIsMetric")]UpdateWeightViewModel model)
+        public async Task<ActionResult> UpdateWeight([Bind(Include = "WeightValueInGram,WeightValueInOunces,CultureIsMetric,ProductCalculationFinished")]UpdateWeightViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -167,21 +184,26 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
                 WeightUnit = model.CultureIsMetric ? EWeightUnit.TenthGram : EWeightUnit.TenthOunce
             };
 
-            //update weight will only update the product description
             ApiResponse<PCalcResultInfo> response = await m_Repository.UpdateWeight(request);
             if(IsApiError(response))
             {
                 return HandleGeneralPcalcError("Index", ProductCalculationViewModel.Create(EQueryType.None), response.ApiResult);
             }
-            response.ApiResult.QueryDescription = lastResult.QueryDescription;
-            response.ApiResult.QueryType = lastResult.QueryType;
+
+            //update weight will only update the product description if the weight is valid
+            response.ApiResult.QueryDescription = response.ApiResult.QueryDescription == null ? 
+                lastResult.QueryDescription : response.ApiResult.QueryDescription;
+            response.ApiResult.QueryType = response.ApiResult.QueryType == EQueryType.None ? 
+                lastResult.QueryType : response.ApiResult.QueryType;
             if (PcalcResultIsValid(response.ApiResult) == false)
             {
                 return HandleGeneralPcalcError("Index", ProductCalculationViewModel.Create(EQueryType.None), response.ApiResult);
             }
             AddOrUpdateTempData(response.ApiResult, request.Environment);
             AddViewData(response.ApiResult, environment);
-            return View("Index", ProductCalculationViewModel.Create(response.ApiResult.QueryType));            
+            ProductCalculationViewModel newModel = ProductCalculationViewModel.Create(response.ApiResult.QueryType);
+            newModel.ProductCalculationFinished = model.ProductCalculationFinished;
+            return View("Index", newModel);            
         }
 
         public async Task<ActionResult> SelectMenuIndex(int index)
@@ -358,6 +380,19 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
                 return (EnvironmentInfo)TempData[ENVIRONMENT];
             }
             return null;
+        }
+
+        private WeightInfo GetInitialWeight(string culture)
+        {
+            CultureInfo cultureInfo = new CultureInfo(culture);
+            RegionInfo region = new RegionInfo(cultureInfo.LCID);
+            EWeightUnit unit = region.IsMetric ? EWeightUnit.Gram : EWeightUnit.TenthOunce;
+            return new WeightInfo() { WeightUnit = unit, WeightValue = 1 };
+        }
+
+        private void SetUiCulture(string culture)
+        {
+            Session["Language"] = culture;
         }
 
         private void AddViewData(PCalcResultInfo result, EnvironmentInfo environment)

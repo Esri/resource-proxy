@@ -35,6 +35,7 @@
                 {
                     @Html.AntiForgeryToken()
                     @Html.HiddenFor(model => model.CultureIsMetric);
+                    @Html.HiddenFor(model => model.ProductCalculationFinished);
                     <strong>Weight: </strong>
                     if (regionIsMetric)
                     {

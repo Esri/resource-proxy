@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Web;
@@ -20,6 +21,17 @@ namespace FP.Cloud.OnlineRateTable.Web
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.NameIdentifier;
+        }
+
+        private void SetCulture()
+        {
+            string culture = (string)Session["Language"];
+            if(string.IsNullOrEmpty(culture) == false)
+            {
+                CultureInfo info = new CultureInfo(culture);
+                System.Threading.Thread.CurrentThread.CurrentCulture = info;
+                System.Threading.Thread.CurrentThread.CurrentUICulture = info;
+            }
         }
     }
 }
