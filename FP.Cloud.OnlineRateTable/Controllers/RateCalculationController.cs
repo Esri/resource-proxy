@@ -15,6 +15,10 @@ using FP.Cloud.OnlineRateTable.Common.RateTable;
 
 namespace FP.Cloud.OnlineRateTable.Controllers
 {
+    /// <summary>
+    /// This controller provides all necessary functions to implement an FP style
+    /// product calculation
+    /// </summary>
     public class RateCalculationController : ApiController
     {
         
@@ -30,6 +34,11 @@ namespace FP.Cloud.OnlineRateTable.Controllers
         }
 
         #region public web API
+        /// <summary>
+        /// returns a list of rate tables from the database with only the currently active table for each variant
+        /// </summary>
+        /// <param name="clientUtcDate">if a value is specified only rate tables with a valid from
+        /// date lower than the specified one are returned</param>
         [ResponseType(typeof(IEnumerable<RateTableInfo>))]
         [HttpGet]
         [ActionName("GetActiveTables")]
@@ -43,6 +52,11 @@ namespace FP.Cloud.OnlineRateTable.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Creates a basic product table environment.
+        /// </summary>
+        /// <param name="rateTableId">The rate table identifier.</param>
+        /// <returns></returns>
         [ResponseType(typeof(EnvironmentInfo))]
         [HttpGet]
         [ActionName("CreateEnvironment")]
@@ -66,6 +80,11 @@ namespace FP.Cloud.OnlineRateTable.Controllers
             });
         }
 
+        /// <summary>
+        /// Starts the rate calculation process.
+        /// </summary>
+        /// <param name="startRequest">Parameter container storing initial weight and product table environment.</param>
+        /// <returns></returns>
         [ResponseType(typeof(PCalcResultInfo))]
         [HttpPost]
         [ActionName("Start")]
@@ -79,6 +98,12 @@ namespace FP.Cloud.OnlineRateTable.Controllers
             return CreateProductCalculationResponse(result);
         }
 
+        /// <summary>
+        /// Performs a calculation step in the product calculation process
+        /// </summary>
+        /// <param name="calculationRequest">The calculation request storing the product table environment, 
+        /// the description of the product prior to the calculation step and the step to be performed with the next calculation .</param>
+        /// <returns></returns>
         [ResponseType(typeof(PCalcResultInfo))]
         [HttpPost]
         [ActionName("Calculate")]
@@ -92,6 +117,12 @@ namespace FP.Cloud.OnlineRateTable.Controllers
             return CreateProductCalculationResponse(result);
         }
 
+        /// <summary>
+        /// Performs one step back in the product calculation wizard
+        /// </summary>
+        /// <param name="backRequest">The step back request storing the product table environment 
+        /// and the description of the product prior to the step back.</param>
+        /// <returns></returns>
         [ResponseType(typeof(PCalcResultInfo))]
         [HttpPost]
         [ActionName("Back")]
@@ -105,6 +136,12 @@ namespace FP.Cloud.OnlineRateTable.Controllers
             return CreateProductCalculationResponse(result);
         }
 
+        /// <summary>
+        /// Updates the weight for the current product.
+        /// </summary>
+        /// <param name="updateRequest">The update request storing the product table environment and
+        /// the description of the product prior to the update weight.</param>
+        /// <returns></returns>
         [ResponseType(typeof(PCalcResultInfo))]
         [HttpPost]
         [ActionName("UpdateWeight")]
