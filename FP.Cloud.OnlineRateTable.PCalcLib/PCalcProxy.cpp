@@ -51,7 +51,7 @@ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::!PCalcProxy()
 
 Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Start(Shared::EnvironmentInfo^ environment, Shared::WeightInfo^ weight)
 {
-	Lock lock(m_SyncLock);
+	//Lock lock(m_SyncLock);
 	int nextAction = 0;
 
 	// set state
@@ -76,7 +76,7 @@ Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Start
 
 Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(Shared::EnvironmentInfo^ environment, Shared::ProductDescriptionInfo^ product, Shared::ActionResultInfo^ actionResult)
 {
-	Lock lock(m_SyncLock);
+	//Lock lock(m_SyncLock);
 	INT32 nextAction = 0;
 
 	this->m_EnvironmentProcessor->Handle(environment);
@@ -99,7 +99,7 @@ Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calcu
 
 Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(Shared::EnvironmentInfo^ environment, Shared::ProductDescriptionInfo^ product)
 {
-	Lock lock(m_SyncLock);
+	//Lock lock(m_SyncLock);
 	INT32 nextAction = 0;
 
 	// set state
@@ -118,7 +118,7 @@ Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calcu
 
 Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Back(Shared::EnvironmentInfo^ environment, Shared::ProductDescriptionInfo^ product)
 {
-	Lock lock(m_SyncLock);
+	//Lock lock(m_SyncLock);
 	INT32 nextAction = 0;
 
 	// set state

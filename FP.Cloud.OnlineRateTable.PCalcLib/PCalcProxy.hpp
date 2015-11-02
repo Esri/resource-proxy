@@ -26,13 +26,10 @@ public:
 	virtual Shared::PCalcResultInfo^ Back(Shared::EnvironmentInfo^ environment, Shared::ProductDescriptionInfo^ product);
 	virtual void Init(System::String^ amxPath, System::String^ tablePath);
 
-	static property System::Object^ SyncLock { System::Object^ get() { return m_SyncLock; }	}
-
 protected:
 	!PCalcProxy();
 
 private:
-	static System::Object^ m_SyncLock = gcnew System::Object();
 	IPCalcManager^ m_Manager;
 	ICalculationResultProcessor^ m_CalculationResultProcessor;
 	IActionResultProcessor^ m_ActionResultProcessor;

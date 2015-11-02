@@ -13,6 +13,11 @@ public:
 		System::Threading::Monitor::Enter(m_SyncLock);
 	}
 
+	bool TryEnter()
+	{
+		return System::Threading::Monitor::TryEnter(m_SyncLock);
+	}
+
 	~Lock()
 	{
 		System::Threading::Monitor::Exit(m_SyncLock);

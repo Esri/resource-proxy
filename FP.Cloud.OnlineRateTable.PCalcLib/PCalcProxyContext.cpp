@@ -15,6 +15,7 @@ PCalcProxyContext::PCalcProxyContext(System::String^ amxPath, System::String^ ta
 	, m_AmxPath(amxPath)
 	, m_TablePath(tablePath)
 	, m_IsInitialized(false)
+	, m_Lock(nullptr)
 {
 	m_Factory = gcnew PCalcFactory();
 	m_Proxy = gcnew PCalcProxy(
@@ -31,6 +32,7 @@ PCalcProxyContext::PCalcProxyContext(IPCalcManager^ manager, IEnvironmentProcess
 	, m_AmxPath(amxPath)
 	, m_TablePath(tablePath)
 	, m_IsInitialized(false)
+	, m_Lock(nullptr)
 {
 	m_Proxy = gcnew PCalcProxy(manager, actionProcessor, envProcessor, calcProcessor, mapper);
 }
@@ -74,6 +76,12 @@ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxyContext::!PCalcProxyContext(void
 	{
 		delete m_Factory;
 		m_Factory = nullptr;
+	}
+
+	if (nullptr != m_Lock)
+	{
+		delete m_Lock;
+		m_Lock = nullptr;
 	}
 
 	m_AmxPath = nullptr;

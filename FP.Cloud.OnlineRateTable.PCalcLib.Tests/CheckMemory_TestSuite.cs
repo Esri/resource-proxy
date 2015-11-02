@@ -25,7 +25,6 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
         [TestCase(1)]
         [TestCase(10)]
         [TestCase(100)]
-        [TestCase(1000)]
         [DotMemoryUnit(FailIfRunWithoutSupport = false)]
         public void ShouldReleaseAllResources(int iterations)
         {

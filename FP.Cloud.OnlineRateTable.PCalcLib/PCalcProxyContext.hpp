@@ -18,7 +18,7 @@ public:
 	/// <summary>
 	/// Creates a instance of type PCalcProxyContext
 	/// </summary>
-	PCalcProxyContext(IPCalcManager^ manager, IEnvironmentProcessor^ envProcessor, IActionResultProcessor^ actionProcessor,	ICalculationResultProcessor^ calcProcessor, IProductDescriptionMapper^ mapper,	System::String^ amxPath, System::String^ tablePath,	... array<System::String^>^ additionalFiles);
+	PCalcProxyContext(IPCalcManager^ manager, IEnvironmentProcessor^ envProcessor, IActionResultProcessor^ actionProcessor, ICalculationResultProcessor^ calcProcessor, IProductDescriptionMapper^ mapper, System::String^ amxPath, System::String^ tablePath, ... array<System::String^>^ additionalFiles);
 
 	~PCalcProxyContext(void);
 
@@ -26,9 +26,12 @@ public:
 	{
 		IPCalcProxy^ get()
 		{
-			Lock lock(PCalcProxy::SyncLock);
+			if (nullptr == m_Lock)
+				m_Lock = gcnew Lock(m_SyncLock);
+
 			if (m_IsInitialized == false)
 				this->Init();
+
 			return m_Proxy;
 		}
 	}
@@ -47,6 +50,8 @@ private:
 	System::String^ m_AmxPath;
 	System::String^ m_TablePath;
 	bool m_IsInitialized;
+	Lock^ m_Lock;
+	static System::Object^ m_SyncLock = gcnew System::Object();
 };
 
 END_PCALC_LIB_NAMESPACE
