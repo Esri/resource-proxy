@@ -19,8 +19,8 @@
         var finishButtonStyle = productDescription == null || productDescription.State !=
             EProductDescriptionState.Complete || Model.ProductCalculationFinished ? "disabled" : string.Empty;
 
-        var stepBackButtonStyle = productDescription == null || Model.IsFirstStep ||
-            Model.ProductCalculationFinished ? "disabled" : string.Empty;
+        var stepBackButtonStyle = productDescription == null || null == productDescription.ReadyModeSelection ||
+            productDescription.ReadyModeSelection.Count == 0 || Model.ProductCalculationFinished ? "disabled" : string.Empty;
         <div class="container">
             <div class="row">
                 <div class="col-md-3">
@@ -98,6 +98,7 @@
                     {
                         $("#EnteredPostage").val(data.DisplayString);
                         $("#EnteredPostageRaw").val(currentString);
+                        UpdateOkButton(currentString > 0);
                     }
                     else
                     {
@@ -110,14 +111,21 @@
                         {
                             $("#EnteredPostage").val("");
                             $("#EnteredPostageRaw").val("");
+                            UpdateOkButton(false);
                         }
                     }
                 },
                 error: function () {
                     $("#EnteredPostage").val("");
                     $("#EnteredPostageRaw").val("");
+                    UpdateOkButton(false);
                 }
             });
+        }
+
+        function UpdateOkButton(enabled)
+        {
+            $("#OkButton").prop("disabled", !enabled);
         }
 
         $('.number-pad').click(function ()

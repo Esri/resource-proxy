@@ -15,7 +15,6 @@ namespace FP.Cloud.OnlineRateTable.Web.Models.ViewModels
         #region properties
         public UpdateWeightViewModel UpdateWeightModel { get; set; }
         public EQueryType QueryType { get; set; }
-        public bool IsFirstStep { get; set; }
         public bool ProductCalculationFinished
         {
             get { return m_ProductCalculationFinished; }

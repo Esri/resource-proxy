@@ -10,8 +10,8 @@ namespace FP.Cloud.OnlineRateTable.Web.Models.ViewModels
     {
         [Required(ErrorMessage = "Please enter a valid weight in gram")]
         [Display(Name ="Weight")]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:#0.0}")]
-        [Range(0.0, 70000.0, ErrorMessage ="Please enter a weight between {1}g and {2}g")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:#0}")]
+        [Range(0, 70000, ErrorMessage ="Please enter a weight between {1}g and {2}g")]
         public decimal WeightValueInGram { get; set; }
 
         [Required(ErrorMessage = "Please enter a valid weight in ounces")]

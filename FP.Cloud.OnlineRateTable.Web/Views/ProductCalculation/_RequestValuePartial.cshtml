@@ -27,38 +27,38 @@
                 @Html.HiddenFor(model => model.QueryType);
 
                 <div class="form-group">
-                    @Html.LabelFor(model => model.EnteredRawValue, htmlAttributes: new { @class = "control-label col-md-2" })
+                    @Html.LabelFor(model => model.EnteredRawValue, htmlAttributes: new { @class = "control-label col-md-4" })
                     @if (Model.QueryType == EQueryType.RequestPostage || Model.QueryType == EQueryType.RequestValue)
                     {
                         <div>
-                            @Html.HiddenFor(model => model.EnteredRawValue, new { @id = "EnteredPostageRaw" })
+                            @Html.HiddenFor(model => model.EnteredRawValue, new { @id = "EnteredPostageRaw", @class="IncludeHidden" })
                             @Html.Editor("Entered Postage", new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @id = "EnteredPostage" } })
                             @Html.ValidationMessageFor(model => model.EnteredRawValue, "", new { @class = "text-danger" })
                         </div>
 
-                        <div class="col-md-offset-2">
+                        <div class="col-md-offset-4">
                             <table>
                                 <tr>
-                                    <td><input type="button" class="number-pad btn btn-info btn-md" value="7" /></td>
-                                    <td><input type="button" class="number-pad btn btn-info btn-md" value="8" /></td>
-                                    <td><input type="button" class="number-pad btn btn-info btn-md" value="9" /></td>
-                                    <td><input type="button" class="number-pad btn btn-info btn-md" value="CE" /></td>
+                                    <td><input type="button" class="number-pad btn btn-info btn-lg" value="7" /></td>
+                                    <td><input type="button" class="number-pad btn btn-info btn-lg" value="8" /></td>
+                                    <td><input type="button" class="number-pad btn btn-info btn-lg" value="9" /></td>
+                                    <td><input type="button" class="number-pad btn btn-info btn-lg" value="CE" /></td>
                                 </tr>
                                 <tr>
-                                    <td><input type="button" class="number-pad btn btn-info btn-md" value="4" /></td>
-                                    <td><input type="button" class="number-pad btn btn-info btn-md" value="5" /></td>
-                                    <td><input type="button" class="number-pad btn btn-info btn-md" value="6" /></td>
+                                    <td><input type="button" class="number-pad btn btn-info btn-lg" value="4" /></td>
+                                    <td><input type="button" class="number-pad btn btn-info btn-lg" value="5" /></td>
+                                    <td><input type="button" class="number-pad btn btn-info btn-lg" value="6" /></td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td><input type="button" class="number-pad btn btn-info btn-md" value="1" /></td>
-                                    <td><input type="button" class="number-pad btn btn-info btn-md" value="2" /></td>
-                                    <td><input type="button" class="number-pad btn btn-info btn-md" value="3" /></td>
+                                    <td><input type="button" class="number-pad btn btn-info btn-lg" value="1" /></td>
+                                    <td><input type="button" class="number-pad btn btn-info btn-lg" value="2" /></td>
+                                    <td><input type="button" class="number-pad btn btn-info btn-lg" value="3" /></td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td colspan="3"><input type="button" class="number-pad btn btn-info btn-md btn-block" value="0" /></td>
-                                    <td><input type="submit" value="OK" class="btn btn-primary btn-md btn-block" /></td>
+                                    <td colspan="3"><input type="button" class="number-pad btn btn-info btn-lg btn-block" value="0" /></td>
+                                    <td><input type="submit" value="OK" id="OkButton" class="btn btn-primary btn-lg btn-block" /></td>
                                 </tr>
                             </table>
                         </div>
