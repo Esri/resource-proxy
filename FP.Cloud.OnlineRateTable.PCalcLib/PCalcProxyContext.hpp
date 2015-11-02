@@ -26,12 +26,7 @@ public:
 	{
 		IPCalcProxy^ get()
 		{
-			if (nullptr == m_Lock)
-				m_Lock = gcnew Lock(m_SyncLock);
-
-			if (m_IsInitialized == false)
-				this->Init();
-
+			this->Init();
 			return m_Proxy;
 		}
 	}
@@ -45,8 +40,8 @@ private:
 	void Init();
 
 private:
-	IPCalcProxy^ m_Proxy;
 	PCalcFactory^ m_Factory;
+	IPCalcProxy^ m_Proxy;
 	System::String^ m_AmxPath;
 	System::String^ m_TablePath;
 	bool m_IsInitialized;

@@ -55,6 +55,7 @@ PCalcFactory::PCalcFactory()
 
 PCalcFactory::~PCalcFactory()
 {
+	m_pPCalcMgr.reset();
 }
 
 

@@ -14,10 +14,17 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
     public class Concurrency_TestSuite
     {
         private readonly Stopwatch m_Watch = new Stopwatch();
+        private readonly EnvironmentInfo m_Environment = new EnvironmentInfo { Culture = "deDE", SenderZipCode = "121" };
+        private readonly WeightInfo m_Weight = new WeightInfo { WeightUnit = EWeightUnit.TenthGram, WeightValue = 200 };
+        private readonly FileInfo m_AmxFile = new FileInfo("Pt2097152.amx");
+        private readonly FileInfo m_TableFile = new FileInfo("Pt2097152.bin");
 
         [SetUp]
         public void SetUp()
         {
+            Assert.That(m_AmxFile.Exists, Is.True);
+            Assert.That(m_TableFile.Exists, Is.True);
+
             m_Watch.Reset();
             m_Watch.Start();
         }
@@ -44,17 +51,12 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
 
         private void RunStart()
         {
-            EnvironmentInfo environment = new EnvironmentInfo { Culture = "deDE", SenderZipCode = "121" };
-            WeightInfo weight = new WeightInfo { WeightUnit = EWeightUnit.TenthGram, WeightValue = 200 };
-            Assert.That(new FileInfo("Pt2097152.amx").Exists, Is.True);
-            Assert.That(new FileInfo("Pt2097152.bin").Exists, Is.True);
-
-            using (var context = new PCalcProxyContext(new FileInfo("Pt2097152.amx").FullName, new FileInfo("Pt2097152.bin").FullName))
+            using (var context = new PCalcProxyContext(m_AmxFile.FullName, m_TableFile.FullName))
             {
                 Assert.That(context.Proxy, Is.Not.Null);
 
                 IPCalcProxy proxy = context.Proxy;
-                proxy.Start(environment, weight);
+                proxy.Start(m_Environment, m_Weight);
             }
         }
 
