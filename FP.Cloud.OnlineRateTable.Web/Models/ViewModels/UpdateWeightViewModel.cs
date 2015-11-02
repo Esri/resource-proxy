@@ -25,5 +25,6 @@ namespace FP.Cloud.OnlineRateTable.Web.Models.ViewModels
             get { return CultureIsMetric ? WeightValueInGram : WeightValueInOunces; }
         }
         public bool CultureIsMetric { get; set; }
+        public bool ProductCalculationFinished { get; set; }
     }
 }

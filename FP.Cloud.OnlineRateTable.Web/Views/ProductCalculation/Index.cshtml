@@ -17,7 +17,10 @@
             ((ProductDescriptionInfo)ViewData[ProductCalculationController.PRODUCT_DESCRIPTION]) : null;
 
         var finishButtonStyle = productDescription == null || productDescription.State !=
-            EProductDescriptionState.Complete ? "disabled" : string.Empty;
+            EProductDescriptionState.Complete || Model.ProductCalculationFinished ? "disabled" : string.Empty;
+
+        var stepBackButtonStyle = productDescription == null || Model.IsFirstStep ||
+            Model.ProductCalculationFinished ? "disabled" : string.Empty;
         <div class="container">
             <div class="row">
                 <div class="col-md-3">
@@ -57,7 +60,7 @@
                     <div class="col-md-6">
                     </div>
                     <div class="col-md-2">
-                        @Html.ActionLink("Step Back", "StepBack", null, new { @class = "btn btn-primary btn-md btn-block" })
+                        @Html.ActionLink("Step Back", "StepBack", null, new { @class = "btn btn-primary btn-md btn-block " +stepBackButtonStyle })
                     </div>
                     <div class="col-md-2">
                         @Html.ActionLink("Restart", "Restart", null, new { @class = "btn btn-primary btn-md btn-block" })

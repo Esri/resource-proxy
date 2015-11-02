@@ -79,7 +79,9 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
 
             AddOrUpdateTempData(startResponse.ApiResult, request.Environment);
             AddViewData(startResponse.ApiResult, environmentResponse.ApiResult);
-            return View("Index", ProductCalculationViewModel.Create(startResponse.ApiResult.QueryType));
+            ProductCalculationViewModel newModel = ProductCalculationViewModel.Create(startResponse.ApiResult.QueryType);
+            newModel.IsFirstStep = true;
+            return View("Index", newModel);
         }
 
         public async Task<ActionResult> Restart()
@@ -137,11 +139,27 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
 
         public async Task<ActionResult> Finish()
         {
-            return null;
+            PCalcResultInfo lastResult = GetLastPcalcResult();
+            if (null == lastResult)
+            {
+                return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to retrieve last result");
+            }
+            EnvironmentInfo environment = GetEnvironment();
+            if (null == environment)
+            {
+                return HandleGeneralError("Index", ProductCalculationViewModel.Create(EQueryType.None), "Unable to create environment");
+            }
+
+            //stupid read once temp data...
+            AddOrUpdateTempData(lastResult, environment);
+            AddViewData(lastResult, environment);
+            ProductCalculationViewModel model = ProductCalculationViewModel.Create(lastResult.QueryType);
+            model.ProductCalculationFinished = true;
+            return View("Index", model);
         }
 
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> UpdateWeight([Bind(Include = "WeightValueInGram,WeightValueInOunces,CultureIsMetric")]UpdateWeightViewModel model)
+        public async Task<ActionResult> UpdateWeight([Bind(Include = "WeightValueInGram,WeightValueInOunces,CultureIsMetric,ProductCalculationFinished")]UpdateWeightViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -181,7 +199,9 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
             }
             AddOrUpdateTempData(response.ApiResult, request.Environment);
             AddViewData(response.ApiResult, environment);
-            return View("Index", ProductCalculationViewModel.Create(response.ApiResult.QueryType));            
+            ProductCalculationViewModel newModel = ProductCalculationViewModel.Create(response.ApiResult.QueryType);
+            newModel.ProductCalculationFinished = model.ProductCalculationFinished;
+            return View("Index", newModel);            
         }
 
         public async Task<ActionResult> SelectMenuIndex(int index)
