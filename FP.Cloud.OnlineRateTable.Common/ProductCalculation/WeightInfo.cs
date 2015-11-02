@@ -11,7 +11,6 @@ namespace FP.Cloud.OnlineRateTable.Common.ProductCalculation
     {
         #region Constants
         private const decimal OUNCE_TO_GRAMS = 28.349523125M;
-        private const decimal POUND_TO_GRAMS = 453.59237M;
 
         //conversion factor pound to oune
         private const int POUND_TO_OUNCE = 16;
