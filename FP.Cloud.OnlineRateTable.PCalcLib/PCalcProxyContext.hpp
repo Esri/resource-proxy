@@ -13,12 +13,12 @@ public:
 	/// <summary>
 	/// Creates a instance of type PCalcProxyContext
 	/// </summary>
-	PCalcProxyContext(System::String^ amxPath, System::String^ tablePath, ... array<System::String^>^ additionalFiles);
+	PCalcProxyContext(Shared::EnvironmentInfo^ environment, System::String^ amxPath, System::String^ tablePath, ... array<System::String^>^ additionalFiles);
 
 	/// <summary>
 	/// Creates a instance of type PCalcProxyContext
 	/// </summary>
-	PCalcProxyContext(IPCalcManager^ manager, IEnvironmentProcessor^ envProcessor, IActionResultProcessor^ actionProcessor, ICalculationResultProcessor^ calcProcessor, IProductDescriptionMapper^ mapper, System::String^ amxPath, System::String^ tablePath, ... array<System::String^>^ additionalFiles);
+	PCalcProxyContext(Shared::EnvironmentInfo^ environment, IPCalcManager^ manager, IEnvironmentProcessor^ envProcessor, IActionResultProcessor^ actionProcessor, ICalculationResultProcessor^ calcProcessor, IProductDescriptionMapper^ mapper, System::String^ amxPath, System::String^ tablePath, ... array<System::String^>^ additionalFiles);
 
 	~PCalcProxyContext(void);
 
@@ -40,8 +40,8 @@ private:
 	void Init();
 
 private:
-	PCalcFactory^ m_Factory;
-	IPCalcProxy^ m_Proxy;
+	Shared::EnvironmentInfo^ m_Environment;
+	PCalcProxy^ m_Proxy;
 	System::String^ m_AmxPath;
 	System::String^ m_TablePath;
 	bool m_IsInitialized;

@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using FP.Cloud.OnlineRateTable.Common.ProductCalculation;
 using NUnit.Framework;
 
 namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
@@ -7,6 +9,14 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
     [TestFixture]
     public class PCalcProxyContext_TestSuite
     {
+        private EnvironmentInfo m_Environment;
+
+        [SetUp]
+        public void SetUp()
+        {
+            m_Environment = new EnvironmentInfo() { Culture = "de", UtcDate = DateTime.Now, SenderZipCode = "123" };
+        }
+
         #region Public Methods and Operators
 
         [Test]
@@ -18,7 +28,7 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
             Assert.IsTrue(amxFile.Exists);
             Assert.IsTrue(tableFile.Exists);
 
-            using (var context = new PCalcProxyContext(amxFile.FullName, tableFile.FullName))
+            using (var context = new PCalcProxyContext(m_Environment, amxFile.FullName, tableFile.FullName))
             {
                 Assert.IsNotNull(context.Proxy);
             }
@@ -33,7 +43,7 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
             Assert.IsTrue(amxFile.Exists);
             Assert.IsTrue(tableFile.Exists);
 
-            using (var context = new PCalcProxyContext(amxFile.FullName, tableFile.FullName))
+            using (var context = new PCalcProxyContext(m_Environment, amxFile.FullName, tableFile.FullName))
             {
                 Assert.Throws<PCalcLibErrorCodeException>(() => { var proxy = context.Proxy; });
             }
@@ -45,7 +55,7 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
             FileInfo amxFile = new FileInfo("Pt2097152.amx2");
             FileInfo tableFile = new FileInfo("Pt2097152.bin2");
 
-            using (var context = new PCalcProxyContext(amxFile.FullName, tableFile.FullName))
+            using (var context = new PCalcProxyContext(m_Environment, amxFile.FullName, tableFile.FullName))
             {
                 Assert.Throws<PCalcLibErrorCodeException>(() => { var proxy = context.Proxy; });
             }
@@ -54,7 +64,7 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
         [Test]
         public void ShouldThrowPCalcLibErrorCodeExceptionIfEmptyContentFile()
         {
-            using (var context = new PCalcProxyContext(string.Empty, string.Empty))
+            using (var context = new PCalcProxyContext(m_Environment, string.Empty, string.Empty))
             {
                 Assert.Throws<PCalcLibErrorCodeException>(() => { var proxy = context.Proxy; });
             }
@@ -63,7 +73,7 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
         [Test]
         public void ShouldThrowPCalcLibErrorCodeExceptionIfNullContentFile()
         {
-            using (var context = new PCalcProxyContext(null, null))
+            using (var context = new PCalcProxyContext(m_Environment, null, null))
             {
                 Assert.Throws<PCalcLibErrorCodeException>(() => { var proxy = context.Proxy; });
             }
@@ -78,7 +88,7 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
             Assert.IsTrue(amxFile.Exists);
             Assert.IsTrue(tableFile.Exists);
 
-            using (var context = new PCalcProxyContext(amxFile.FullName, tableFile.FullName))
+            using (var context = new PCalcProxyContext(m_Environment, amxFile.FullName, tableFile.FullName))
             {
                 Assert.Throws<PCalcLibException>(() => { var proxy = context.Proxy; });
             }

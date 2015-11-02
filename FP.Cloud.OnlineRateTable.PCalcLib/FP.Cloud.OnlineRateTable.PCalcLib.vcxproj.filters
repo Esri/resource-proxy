@@ -99,6 +99,9 @@
     <ClInclude Include="CalculationResultProcessors.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="PCalcProxyPool.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp">
@@ -162,6 +165,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="CalculationResultRequestPostageProcessor.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="PCalcProxyPool.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

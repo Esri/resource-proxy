@@ -20,6 +20,17 @@ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::PCalcProxy(IPCalcManager^ mana
 {
 }
 
+FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::PCalcProxy()
+	: m_Factory(gcnew PCalcFactory())
+	, m_Manager(gcnew PCalcManager(m_Factory))
+	, m_CalculationResultProcessor(gcnew CalculationResultProcessorProxy(m_Factory))
+	, m_ActionResultProcessor(gcnew ActionResultProcessor(m_Factory))
+	, m_EnvironmentProcessor(gcnew EnvironmentProcessor(m_Factory))
+	, m_ProductDescriptionMapper(gcnew ProductDescriptionMapper(m_Factory))
+{
+
+}
+
 FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::~PCalcProxy()
 {
 	this->!PCalcProxy();
@@ -42,6 +53,10 @@ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::!PCalcProxy()
 	if (nullptr != m_ProductDescriptionMapper)
 		delete m_ProductDescriptionMapper;
 
+	if (nullptr != m_Factory)
+		delete m_Factory;
+
+	m_Factory = nullptr;
 	m_EnvironmentProcessor = nullptr;
 	m_CalculationResultProcessor = nullptr;
 	m_Manager = nullptr;
@@ -137,9 +152,16 @@ Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Back(
 
 void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Init(String^ amxPath, String^ tablePath)
 {
-	m_Manager->Create();
-	m_Manager->LoadPawn(amxPath);
-	m_Manager->LoadProductTable(tablePath);
+	try
+	{
+		m_Manager->Create();
+		m_Manager->LoadPawn(amxPath);
+		m_Manager->LoadProductTable(tablePath);
+	}
+	catch (System::Runtime::InteropServices::SEHException^ ex)
+	{
+		throw gcnew PCalcLibException(ex->Message, ex);
+	}
 }
 
 

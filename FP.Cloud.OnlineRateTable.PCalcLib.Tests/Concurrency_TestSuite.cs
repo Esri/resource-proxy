@@ -34,6 +34,7 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
         [TestCase(1)]
         [TestCase(10)]
         [TestCase(100)]
+        [TestCase(1000)]
         [DotMemoryUnit(FailIfRunWithoutSupport = false)]
         public void ShouldRunConcurrencyWithoutErrors(int iterations)
         {                                    
@@ -51,7 +52,7 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
 
         private void RunStart()
         {
-            using (var context = new PCalcProxyContext(m_AmxFile.FullName, m_TableFile.FullName))
+            using (var context = new PCalcProxyContext(m_Environment, m_AmxFile.FullName, m_TableFile.FullName))
             {
                 Assert.That(context.Proxy, Is.Not.Null);
 

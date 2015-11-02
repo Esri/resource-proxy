@@ -15,7 +15,7 @@ ref class PCalcFactory;
 private ref class PCalcProxy : System::MarshalByRefObject, public IPCalcProxy
 {
 public:
-	//PCalcProxy();
+	PCalcProxy();
 	PCalcProxy(IPCalcManager^ manager, IActionResultProcessor^ actionResultProcessor, IEnvironmentProcessor^ environmentProcessor, ICalculationResultProcessor^ calculationResultProcessor, IProductDescriptionMapper^ mapper);
 
 	~PCalcProxy();
@@ -30,6 +30,7 @@ protected:
 	!PCalcProxy();
 
 private:
+	PCalcFactory^ m_Factory;
 	IPCalcManager^ m_Manager;
 	ICalculationResultProcessor^ m_CalculationResultProcessor;
 	IActionResultProcessor^ m_ActionResultProcessor;

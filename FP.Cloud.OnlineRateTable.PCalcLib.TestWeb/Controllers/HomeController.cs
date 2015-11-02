@@ -26,11 +26,12 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.TestWeb.Controllers
         {
             string pawnFile = HttpContext.Server.MapPath("~/App_Data/Pt2097152.amx");
             string tableFile = HttpContext.Server.MapPath("~/App_Data/Pt2097152.bin");
+            EnvironmentInfo env = new EnvironmentInfo() { Culture = "de", SenderZipCode = "123" };
 
-            using (var context = new PCalcProxyContext(pawnFile, tableFile))
+            using (var context = new PCalcProxyContext(env, pawnFile, tableFile))
             {
                 IPCalcProxy proxy = context.Proxy;
-                EnvironmentInfo env = new EnvironmentInfo() { Culture = "de", SenderZipCode = "123" };
+
                 PCalcResultInfo result = null;
 
                 result = proxy.Start(env, new WeightInfo() { WeightUnit = EWeightUnit.Gram, WeightValue = 20 });

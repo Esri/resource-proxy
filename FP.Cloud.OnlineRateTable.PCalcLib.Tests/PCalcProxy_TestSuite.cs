@@ -240,18 +240,18 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
 
         private PCalcResultInfo Calculate(EnvironmentInfo info, ProductDescriptionInfo product, ActionResultInfo actionResult)
         {
-            using (var context = new PCalcProxyContext(m_AmxFile.FullName, m_TableFile.FullName))
+            using (var context = new PCalcProxyContext(info, m_AmxFile.FullName, m_TableFile.FullName))
             {
                 IPCalcProxy proxy = context.Proxy;
                 Assert.That(proxy, Is.Not.Null);
 
-                return proxy.Calculate(m_Environment, product, actionResult);
+                return proxy.Calculate(info, product, actionResult);
             }
         }
 
         private PCalcResultInfo Start(EnvironmentInfo info, WeightInfo weight)
         {
-            using (var context = new PCalcProxyContext(m_AmxFile.FullName, m_TableFile.FullName))
+            using (var context = new PCalcProxyContext(info, m_AmxFile.FullName, m_TableFile.FullName))
             {
                 IPCalcProxy proxy = context.Proxy;
                 Assert.That(proxy, Is.Not.Null);
@@ -262,12 +262,12 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
 
         private PCalcResultInfo Back(EnvironmentInfo info, ProductDescriptionInfo product)
         {
-            using (var context = new PCalcProxyContext(m_AmxFile.FullName, m_TableFile.FullName))
+            using (var context = new PCalcProxyContext(info, m_AmxFile.FullName, m_TableFile.FullName))
             {
                 IPCalcProxy proxy = context.Proxy;
                 Assert.That(proxy, Is.Not.Null);
 
-                return proxy.Back(m_Environment, product);
+                return proxy.Back(info, product);
             }
         }
 

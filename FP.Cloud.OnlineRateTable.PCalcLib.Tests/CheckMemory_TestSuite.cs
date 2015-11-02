@@ -25,6 +25,7 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
         [TestCase(1)]
         [TestCase(10)]
         [TestCase(100)]
+        [TestCase(1000)]
         [DotMemoryUnit(FailIfRunWithoutSupport = false)]
         public void ShouldReleaseAllResources(int iterations)
         {
@@ -46,7 +47,7 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
             Assert.That(new FileInfo("Pt2097152.amx").Exists, Is.True);
             Assert.That(new FileInfo("Pt2097152.bin").Exists, Is.True);
 
-            using (var context = new PCalcProxyContext(new FileInfo("Pt2097152.amx").FullName, new FileInfo("Pt2097152.bin").FullName))
+            using (var context = new PCalcProxyContext(environment, new FileInfo("Pt2097152.amx").FullName, new FileInfo("Pt2097152.bin").FullName))
             {
                 Assert.That(context.Proxy, Is.Not.Null);
 
@@ -61,8 +62,7 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
             var context = TestContext.CurrentContext;
             if (context.Result.State == TestState.Inconclusive)
             {
-                Assert.Pass($"{m_Watch.Elapsed.TotalMilliseconds} ms");
-                //Assert.Pass($"Elapsed runtime {m_Watch.Elapsed.TotalMilliseconds} ms, Max expected runtime {m_ExpectedMaximum.TotalMilliseconds} ms. Product: { string.Join(", ",info.ProductDescription.ReadyModeSelection)}");
+                Assert.Pass($"{m_Watch.Elapsed.TotalMilliseconds} ms");                
             }
         }
 
