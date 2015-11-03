@@ -141,7 +141,7 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
 
         private ScenarioResult<PCalcResultInfo> Start(EnvironmentInfo environment, WeightInfo weight, RateCalculationFileHandler handler)
         {
-            using (var context = new PCalcProxyContext(handler.PawnFile, handler.RateTableFile, handler.AdditionalFiles))
+            using (var context = new PCalcProxyContext(environment, handler.PawnFile, handler.RateTableFile, handler.AdditionalFiles))
             {
                 IPCalcProxy proxy = context.Proxy;
                 PCalcResultInfo result = proxy.Start(environment, weight);
@@ -152,7 +152,7 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
 
         private ScenarioResult<PCalcResultInfo> Calculate(EnvironmentInfo environment, ProductDescriptionInfo description, ActionResultInfo actionResult, RateCalculationFileHandler handler)
         {
-            using (var context = new PCalcProxyContext(handler.PawnFile, handler.RateTableFile, handler.AdditionalFiles))
+            using (var context = new PCalcProxyContext(environment, handler.PawnFile, handler.RateTableFile, handler.AdditionalFiles))
             {
                 IPCalcProxy proxy = context.Proxy;
                 PCalcResultInfo result = proxy.Calculate(environment, description, actionResult);
@@ -163,7 +163,7 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
 
         private ScenarioResult<PCalcResultInfo> Back(EnvironmentInfo environment, ProductDescriptionInfo description, RateCalculationFileHandler handler)
         {
-            using (var context = new PCalcProxyContext(handler.PawnFile, handler.RateTableFile, handler.AdditionalFiles))
+            using (var context = new PCalcProxyContext(environment, handler.PawnFile, handler.RateTableFile, handler.AdditionalFiles))
             {
                 IPCalcProxy proxy = context.Proxy;
                 PCalcResultInfo result = proxy.Back(environment, description);
@@ -174,7 +174,7 @@ namespace FP.Cloud.OnlineRateTable.BusinessLogic
 
         private ScenarioResult<PCalcResultInfo> UpdateWeight(EnvironmentInfo environment, ProductDescriptionInfo description, RateCalculationFileHandler handler)
         {
-            using (var context = new PCalcProxyContext(handler.PawnFile, handler.RateTableFile, handler.AdditionalFiles))
+            using (var context = new PCalcProxyContext(environment, handler.PawnFile, handler.RateTableFile, handler.AdditionalFiles))
             {
                 IPCalcProxy proxy = context.Proxy;
                 PCalcResultInfo result = proxy.Calculate(environment, description);

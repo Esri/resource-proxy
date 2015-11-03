@@ -50,7 +50,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
                 return View(model);
             }
 
-            ApiResponse<object> response = await m_UserRepository.Register(model);
+            ApiResponse<EmptyObject> response = await m_UserRepository.Register(model);
             return HandleApiResponse(response, View("Registered"), new HttpStatusCodeResult(HttpStatusCode.BadRequest));
         }
 

@@ -1,4 +1,6 @@
-﻿using RestSharp;
+﻿using FP.Cloud.OnlineRateTable.Common.RateTable;
+using FP.Cloud.OnlineRateTable.Web.Repositories;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -44,6 +46,11 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
             if((int)response.StatusCode >= (int)HttpStatusCode.BadRequest)
             {
                 return new ApiResponse<T>(response.StatusCode, "Error processing request");
+            }
+
+            if(typeof(T) == typeof(EmptyObject))
+            {
+                response.Data = (T)Convert.ChangeType(EmptyObject.Create, typeof(T));
             }
 
             return new ApiResponse<T>(response.Data);

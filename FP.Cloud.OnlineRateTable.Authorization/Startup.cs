@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.Owin;
 using Owin;
 
-[assembly: OwinStartup(typeof(FP.Cloud.OnlineRateTable.Authorization.Startup))]
+[assembly: OwinStartup("FP.Cloud.OnlineRateTable.Authorization", typeof(FP.Cloud.OnlineRateTable.Authorization.Startup))]
 
 namespace FP.Cloud.OnlineRateTable.Authorization
 {
