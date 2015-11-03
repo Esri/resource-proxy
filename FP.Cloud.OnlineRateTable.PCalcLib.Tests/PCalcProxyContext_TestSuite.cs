@@ -10,11 +10,13 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
     public class PCalcProxyContext_TestSuite
     {
         private EnvironmentInfo m_Environment;
+        private int m_TestCount = 0;
 
         [SetUp]
         public void SetUp()
         {
-            m_Environment = new EnvironmentInfo() { Culture = "de", UtcDate = DateTime.Now, SenderZipCode = "123" };
+            m_TestCount++;
+            m_Environment = new EnvironmentInfo() { Culture = "de", UtcDate = DateTime.Now.AddDays(m_TestCount), SenderZipCode = "123" };
         }
 
         #region Public Methods and Operators
