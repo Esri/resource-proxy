@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using FP.Cloud.OnlineRateTable.Common.ProductCalculation;
 
 namespace FP.Cloud.OnlineRateTable.PCalcLib.TestConsole
@@ -24,31 +22,19 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.TestConsole
 
             for (int i = 0; i < iterations; i++)
             {
-                Stopwatch watch = new Stopwatch();
-                watch.Start();
                 using (PCalcProxyContext context = new PCalcProxyContext(ENVIRONMENT, AMX_FILE.FullName, TABLE_FILE.FullName))
                 {
                     context.Proxy.Start(ENVIRONMENT, WEIGHT);
                 }
-                watch.Stop();
-                Console.WriteLine($"Iteration {i + 1} in {watch.ElapsedMilliseconds} ms");
             }
-
-            Console.WriteLine();
 
             using (PCalcProxyContext context = new PCalcProxyContext(ENVIRONMENT, AMX_FILE.FullName, TABLE_FILE.FullName))
             {
                 for (int i = 0; i < iterations; i++)
                 {
-                    Stopwatch watch = new Stopwatch();
-                    watch.Start();
                     context.Proxy.Start(ENVIRONMENT, WEIGHT);
-                    watch.Stop();
-                    Console.WriteLine($"Iteration {i + 1} in {watch.ElapsedMilliseconds} ms");
                 }
             }
-
-            Console.ReadLine();
         }
 
         #endregion

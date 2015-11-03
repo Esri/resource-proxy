@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -71,6 +72,13 @@ namespace FP.Cloud.OnlineRateTable.PCalcLib.Tests
                 //Assert.Pass($"Elapsed runtime {m_Watch.Elapsed.TotalMilliseconds} ms, Max expected runtime {m_ExpectedMaximum.TotalMilliseconds} ms. Product: { string.Join(", ",info.ProductDescription.ReadyModeSelection)}");
             }
         }
+
+        [TearDown]
+        public void TearDown()
+        {
+            GC.Collect();
+        }
+            
 
         #endregion
     }

@@ -1,3 +1,4 @@
+#include "Base/misc/assert_m.h"
 #include "ProductCalculation/src/PCalcManager.hpp"
 #include "PCalcFactoryCPP.hpp"
 

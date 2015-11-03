@@ -10,6 +10,7 @@ private ref class PCalcProxyPool
 {
 public:
 	~PCalcProxyPool();
+	!PCalcProxyPool();
 
 	PCalcProxy^ Pop(Shared::EnvironmentInfo^ key);
 	void Push(Shared::EnvironmentInfo^ key, PCalcProxy^ proxy);
@@ -17,7 +18,7 @@ public:
 	static property PCalcProxyPool^ Instance { PCalcProxyPool^ get() { return m_Singleton; } };
 
 protected:
-	!PCalcProxyPool();
+
 
 private:	
 	PCalcProxyPool();

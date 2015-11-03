@@ -1,3 +1,4 @@
+#include "Base/misc/assert_m.h"
 #include "PCalcFactory.hpp"
 #include "PCalcFactoryCPP.hpp"
 

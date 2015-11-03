@@ -22,6 +22,7 @@ private ref class PCalcFactory : public System::IDisposable
 public:
 	PCalcFactory(void);
 	~PCalcFactory(void);
+	!PCalcFactory(void);
 
 	PT::IPCalcConfigurationPtr GetConfig(void);
 	PT::IPCalcManagerPtr GetPCalcMgr(void);
@@ -41,7 +42,6 @@ public:
 	}
 
 protected:
-	!PCalcFactory(void);
 
 private:
 	PT::PCalcFactory* m_pFactory;

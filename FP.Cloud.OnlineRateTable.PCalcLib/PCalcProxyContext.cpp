@@ -8,9 +8,7 @@
 #include "ProductDescriptionMapper.hpp"
 #include "PCalcProxyPool.hpp"
 
-BEGIN_PCALC_LIB_NAMESPACE
-
-PCalcProxyContext::PCalcProxyContext(Shared::EnvironmentInfo^ environment, System::String^ amxPath, System::String^ tablePath, ... array<System::String^>^ additionalFiles)
+Lib::PCalcProxyContext::PCalcProxyContext(Shared::EnvironmentInfo^ environment, System::String^ amxPath, System::String^ tablePath, ... array<System::String^>^ additionalFiles)
 	: m_Environment(environment)
 	, m_Proxy(nullptr)
 	, m_AmxPath(amxPath)
@@ -26,7 +24,7 @@ PCalcProxyContext::PCalcProxyContext(Shared::EnvironmentInfo^ environment, Syste
 	}
 }
 
-PCalcProxyContext::PCalcProxyContext(Shared::EnvironmentInfo^ environment, IPCalcManager^ manager, IEnvironmentProcessor^ envProcessor, IActionResultProcessor^ actionProcessor, ICalculationResultProcessor^ calcProcessor, IProductDescriptionMapper^ mapper, System::String^ amxPath, System::String^ tablePath, ... array<System::String^>^ additionalFiles)
+Lib::PCalcProxyContext::PCalcProxyContext(Shared::EnvironmentInfo^ environment, IPCalcManager^ manager, IEnvironmentProcessor^ envProcessor, IActionResultProcessor^ actionProcessor, ICalculationResultProcessor^ calcProcessor, IProductDescriptionMapper^ mapper, System::String^ amxPath, System::String^ tablePath, ... array<System::String^>^ additionalFiles)
 	: m_Environment(environment)
 	, m_Proxy(nullptr)
 	, m_AmxPath(amxPath)
@@ -73,5 +71,4 @@ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxyContext::!PCalcProxyContext(void
 	}
 }
 
-END_PCALC_LIB_NAMESPACE
 

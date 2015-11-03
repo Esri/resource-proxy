@@ -21,6 +21,7 @@
 //## end module%4EB0FC380116.additionalIncludes
 
 //## begin module%4EB0FC380116.includes preserve=yes
+#include "Base/misc/assert_m.h"
 #include "Base/DateTime/WallClock.hpp"
 #include "ProductCalculation/FactoryPCalc.hpp"
 #include "ProductCalculation/ProdCalcException.hpp"

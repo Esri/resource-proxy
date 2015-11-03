@@ -33,11 +33,6 @@ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::PCalcProxy()
 
 FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::~PCalcProxy()
 {
-	this->!PCalcProxy();
-}
-
-FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::!PCalcProxy()
-{
 	if (nullptr != m_EnvironmentProcessor)
 		delete m_EnvironmentProcessor;
 
@@ -53,15 +48,22 @@ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::!PCalcProxy()
 	if (nullptr != m_ProductDescriptionMapper)
 		delete m_ProductDescriptionMapper;
 
-	if (nullptr != m_Factory)
-		delete m_Factory;
-
-	m_Factory = nullptr;
 	m_EnvironmentProcessor = nullptr;
 	m_CalculationResultProcessor = nullptr;
 	m_Manager = nullptr;
 	m_ActionResultProcessor = nullptr;
 	m_ProductDescriptionMapper = nullptr;
+
+	this->!PCalcProxy();
+}
+
+FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::!PCalcProxy()
+{
+	if (nullptr != m_Factory)
+	{
+		delete m_Factory;
+		m_Factory = nullptr;
+	}
 }
 
 Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Start(Shared::EnvironmentInfo^ environment, Shared::WeightInfo^ weight)

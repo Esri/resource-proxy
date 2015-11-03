@@ -13,7 +13,11 @@ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxyPool::~PCalcProxyPool()
 
 FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxyPool::!PCalcProxyPool()
 {
-
+	if (nullptr != m_Pool)
+	{
+		delete m_Pool->Value;
+		m_Pool = nullptr;
+	}
 }
 
 Lib::PCalcProxy^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxyPool::Pop(Shared::EnvironmentInfo^ key)
