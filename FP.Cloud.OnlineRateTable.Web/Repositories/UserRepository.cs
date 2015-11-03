@@ -38,13 +38,13 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
             await Execute<object>(request, m_ManageApi, authToken);
         }
 
-        public async Task<ApiResponse<object>> Register(RegisterBindingModel model)
+        public async Task<ApiResponse<EmptyObject>> Register(RegisterBindingModel model)
         {
             RestRequest request = GetNewRequest();
             request.Resource = "Register";
             request.Method = Method.POST;
             request.AddObject(model);
-            return await Execute<object>(request, m_ManageApi, string.Empty);
+            return await Execute<EmptyObject>(request, m_ManageApi, string.Empty);
         }
 
         public async Task<ApiResponse<List<UserClaim>>> GetUserClaims(string authToken)
@@ -64,13 +64,13 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
 
         }
 
-        public async Task<ApiResponse<object>>ChangePassword(ChangePasswordBindingModel model, string authToken)
+        public async Task<ApiResponse<EmptyObject>>ChangePassword(ChangePasswordBindingModel model, string authToken)
         {
             RestRequest request = GetNewRequest();
             request.Resource = "ChangePassword";
             request.Method = Method.POST;
             request.AddObject(model);
-            return await Execute<object>(request, m_ManageApi, authToken);
+            return await Execute<EmptyObject>(request, m_ManageApi, authToken);
         }
         #endregion
 

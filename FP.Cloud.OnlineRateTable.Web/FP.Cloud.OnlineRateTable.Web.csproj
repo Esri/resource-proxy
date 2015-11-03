@@ -188,6 +188,7 @@
     <Compile Include="Models\ViewModels\UpdateWeightViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\ApiResponse.cs" />
+    <Compile Include="Repositories\EmptyObject.cs" />
     <Compile Include="Repositories\ProductCalculationRepository.cs" />
     <Compile Include="Repositories\RateTableApi.cs" />
     <Compile Include="Repositories\RateTableRepository.cs" />

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Web;
 using FP.Cloud.OnlineRateTable.Bootstrapper;
 
-[assembly: OwinStartup(typeof(FP.Cloud.OnlineRateTable.Startup))]
+[assembly: OwinStartup("FP.Cloud.OnlineRateTable", typeof(FP.Cloud.OnlineRateTable.Startup))]
 
 namespace FP.Cloud.OnlineRateTable
 {
