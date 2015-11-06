@@ -3,7 +3,7 @@
 /*
  * DotNet proxy client.
  *
- * Version 1.1.0-beta
+ * Version 1.1.0
  * See https://github.com/Esri/resource-proxy for more information.
  *
  */
@@ -20,7 +20,7 @@ using System.Text.RegularExpressions;
 
 public class proxy : IHttpHandler {
 
-    private static String version = "1.1.0-beta";
+    private static String version = "1.1.0";
 
     class RateMeter {
         double _rate; //internal rate is stored in requests per second
