@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.1.0]
 
+## [1.1.0] - 2015-11-05
+
 ### Added 
 - Support for 10.3 tokens
 - Support for federated services
