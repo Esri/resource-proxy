@@ -93,6 +93,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(ProjectDir)\Exports</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -104,12 +105,16 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile />
+      <GenerateXMLDocumentationFiles>true</GenerateXMLDocumentationFiles>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Projekte\FMLibs\boost\boost_1_59_0\lib32-msvc-14.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>xdcmake FP.Cloud.OnlineRateTable.PCalcLib.dll</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -143,11 +148,14 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile />
+      <ForcedIncludeFiles>Base/misc/assert_m.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies />
+      <AdditionalLibraryDirectories>C:\Projekte\FMLibs\boost\boost_1_59_0\lib32-msvc-14.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -170,6 +178,10 @@
     <ClInclude Include="ActionResultProcessor.hpp" />
     <ClInclude Include="CalculationResultDisplayProcessor.hpp" />
     <ClInclude Include="CalculationResultFinishedProcessor.hpp" />
+    <ClInclude Include="CalculationResultProcessors.hpp" />
+    <ClInclude Include="CalculationResultRequestPostageProcessor.hpp" />
+    <ClInclude Include="CalculationResultSelectIndexProcessor.hpp" />
+    <ClInclude Include="CalculationResultSelectValueProcessor.hpp" />
     <ClInclude Include="Convert.hpp" />
     <ClInclude Include="DisplayObjectTypeVisitor.hpp" />
     <ClInclude Include="DisplayTypeVisitor.hpp" />
@@ -188,6 +200,7 @@
     <ClInclude Include="CalculationResultProcessorProxy.hpp" />
     <ClInclude Include="CalculationResultShowMenuProcessor.hpp" />
     <ClInclude Include="CalculationResultProcessor.hpp" />
+    <ClInclude Include="PCalcProxyPool.hpp" />
     <ClInclude Include="ProductDescriptionMapper.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Stdafx.h" />
@@ -195,7 +208,11 @@
   <ItemGroup>
     <ClCompile Include="ActionResultProcessor.cpp" />
     <ClCompile Include="AssemblyInfo.cpp" />
+    <ClCompile Include="CalculationResultDisplayProcessor.cpp" />
     <ClCompile Include="CalculationResultFinishedProcessor.cpp" />
+    <ClCompile Include="CalculationResultRequestPostageProcessor.cpp" />
+    <ClCompile Include="CalculationResultSelectIndexProcessor.cpp" />
+    <ClCompile Include="CalculationResultSelectValueProcessor.cpp" />
     <ClCompile Include="Convert.cpp" />
     <ClCompile Include="EnvironmentProcessor.cpp" />
     <ClCompile Include="ExtendedErrorCode.cpp" />
@@ -208,6 +225,7 @@
     <ClCompile Include="CalculationResultProcessorProxy.cpp" />
     <ClCompile Include="CalculationResultProcessor.cpp" />
     <ClCompile Include="CalculationResultShowMenuProcessor.cpp" />
+    <ClCompile Include="PCalcProxyPool.cpp" />
     <ClCompile Include="ProductDescriptionMapper.cpp" />
     <ClCompile Include="ZipToZoneMap.cpp" />
   </ItemGroup>

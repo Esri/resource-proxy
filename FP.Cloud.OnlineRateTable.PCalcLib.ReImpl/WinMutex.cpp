@@ -1,5 +1,10 @@
 
+#include "Base/misc/assert_m.h"
 #include "Base/windows/OSFacade/WinMutex.hpp"
+
+void AuxAssert(const char* FileName, int Line)
+{
+}
 
 WinMutex::WinMutex()
 	: m_Mutex(NULL),

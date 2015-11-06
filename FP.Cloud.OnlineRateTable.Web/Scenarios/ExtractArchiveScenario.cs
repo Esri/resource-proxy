@@ -54,6 +54,9 @@ namespace FP.Cloud.OnlineRateTable.Web.Scenarios
                             case ".amx":
                                 fileInfo.FileType = EFileType.PawnCode;
                                 break;
+                            case ".data":
+                                fileInfo.FileType = EFileType.Zip2Zone;
+                                break;
                             default:
                                 fileInfo.FileType = EFileType.Undefined;
                                 break;

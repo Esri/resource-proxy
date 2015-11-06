@@ -1,3 +1,4 @@
+#include "Base/misc/assert_m.h"
 #include "ProductCalculation/IPCalcConfiguration.hpp"
 #include "EnvironmentProcessor.hpp"
 #include "Convert.hpp"

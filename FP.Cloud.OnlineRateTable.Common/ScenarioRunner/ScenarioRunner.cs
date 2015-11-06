@@ -20,8 +20,21 @@ namespace FP.Cloud.OnlineRateTable.Common.ScenarioRunner
             catch(Exception e)
             {
                 //ToDo: error handling
-                //return new ScenarioResult() { Success = false };
-                throw;
+                return new ScenarioResult() { Success = false, Error = e };
+            }
+        }
+
+        public async Task<ScenarioResult> RunAsync(Task<Action> action)
+        {
+            try
+            {
+                await action;
+                return new ScenarioResult() { Success = true };
+            }
+            catch (Exception e)
+            {
+                //ToDo: error handling
+                return new ScenarioResult() { Success = false, Error = e };
             }
         }
 
@@ -29,13 +42,29 @@ namespace FP.Cloud.OnlineRateTable.Common.ScenarioRunner
         {
             try
             {
-                return action();
+                ScenarioResult<T> result = action();
+                result.Success = true;
+                return result;
             }
             catch (Exception e)
             {
                 //ToDo: error handling
-                //return new ScenarioResult<T>() { Success = false };
-                throw;
+                return new ScenarioResult<T>() { Success = false, Error = e };
+            }
+        }
+
+        public async Task<ScenarioResult<T>> RunAsync<T>(Task<ScenarioResult<T>> action)
+        {
+            try
+            {
+                ScenarioResult<T> result = await action;
+                result.Success = true;
+                return result;
+            }
+            catch (Exception e)
+            {
+                //ToDo: error handling
+                return new ScenarioResult<T>() { Success = false, Error = e };
             }
         }
         #endregion

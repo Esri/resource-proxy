@@ -74,7 +74,7 @@ void FP::Cloud::OnlineRateTable::PCalcLib::ProductDescriptionMapper::SetWeight(S
 			unit = Shared::EWeightUnit::HoundrethOunce;
 			break;
 		case PT::UNIT_TENTH_OUNCE:
-			unit = Shared::EWeightUnit::HoundrethOunce;
+			unit = Shared::EWeightUnit::TenthOunce;
 			break;
 		default:
 			throw gcnew FP::Cloud::OnlineRateTable::PCalcLib::PCalcLibException("Unknown unit type");

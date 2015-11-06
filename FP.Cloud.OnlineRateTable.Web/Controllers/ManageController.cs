@@ -36,8 +36,8 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
                 : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
                 : "";
 
-            var model = await m_UserRepository.GetManageInfo(string.Empty, GetAuthToken());
-            return View(model);
+            ApiResponse<ManageInfoViewModel> response = await m_UserRepository.GetManageInfo(string.Empty, GetAuthToken());
+            return View(response.ApiResult);
         }
 
         ////
@@ -193,7 +193,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
             {
                 return View(model);
             }
-            await m_UserRepository.ChangePassword(model, GetAuthToken());
+            ApiResponse<EmptyObject> response = await m_UserRepository.ChangePassword(model, GetAuthToken());
             //if (result.Succeeded)
             {
                 return RedirectToAction("Index", new { Message = ManageMessageId.ChangePasswordSuccess });

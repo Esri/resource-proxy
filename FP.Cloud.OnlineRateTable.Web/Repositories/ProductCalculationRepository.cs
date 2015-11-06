@@ -18,7 +18,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
         #endregion
 
         #region public
-        public async Task<PCalcResultInfo> Start(StartCalculationRequest startRequest)
+        public async Task<ApiResponse<PCalcResultInfo>> Start(StartCalculationRequest startRequest)
         {
             RestRequest request = GetNewRequest();
             request.Resource = "Start";
@@ -28,7 +28,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
             return await Execute<PCalcResultInfo>(request, m_Api, string.Empty);
         }
 
-        public async Task<PCalcResultInfo> StepBack(UpdateRequest stepBackRequest)
+        public async Task<ApiResponse<PCalcResultInfo>> StepBack(UpdateRequest stepBackRequest)
         {
             RestRequest request = GetNewRequest();
             request.Resource = "Back";
@@ -38,7 +38,17 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
             return await Execute<PCalcResultInfo>(request, m_Api, string.Empty);
         }
 
-        public async Task<PCalcResultInfo> Calculate(CalculateRequest calculateRequest)
+        public async Task<ApiResponse<PCalcResultInfo>> UpdateWeight(UpdateRequest updateWeightRequest)
+        {
+            RestRequest request = GetNewRequest();
+            request.Resource = "UpdateWeight";
+            request.Method = Method.POST;
+            request.AddBody(updateWeightRequest);
+
+            return await Execute<PCalcResultInfo>(request, m_Api, string.Empty);
+        }
+
+        public async Task<ApiResponse<PCalcResultInfo>> Calculate(CalculateRequest calculateRequest)
         {
             RestRequest request = GetNewRequest();
             request.Resource = "Calculate";
@@ -48,7 +58,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
             return await Execute<PCalcResultInfo>(request, m_Api, string.Empty);
         }
 
-        public async Task<IEnumerable<RateTableInfo>> GetActiveRateTables(DateTime clientDate)
+        public async Task<ApiResponse<List<RateTableInfo>>> GetActiveRateTables(DateTime clientDate)
         {
             DateTime clientUtcDate = clientDate.ToUniversalTime();
 
@@ -60,7 +70,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
             return await Execute<List<RateTableInfo>>(request, m_Api, string.Empty);
         }
 
-        public async Task<EnvironmentInfo> CreateEnvironment(int rateTableId)
+        public async Task<ApiResponse<EnvironmentInfo>> CreateEnvironment(int rateTableId)
         {
             RestRequest request = GetNewRequest();
             request.Resource = "CreateEnvironment";

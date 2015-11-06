@@ -9,6 +9,8 @@ namespace FP.Cloud.OnlineRateTable.Common.ScenarioRunner
     public class ScenarioResult
     {
         public bool Success { get; set; }
+
+        public Exception Error { get; set; }
     }
 
     public class ScenarioResult<T> : ScenarioResult

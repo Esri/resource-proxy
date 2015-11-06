@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@model System.Web.Mvc.HandleErrorInfo
+<!DOCTYPE html>
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
@@ -6,8 +7,55 @@
 </head>
 <body>
     <hgroup>
-        <h1>Error.</h1>
-        <h2>An error occurred while processing your request.</h2>
+        <h1>Oooops, we're sorry but...</h1>
+        <h2>...an error occurred while processing your request.</h2>
     </hgroup>
+    <div>
+        <h3>Error Details</h3>
+        <hr />
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Exception.Message)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Exception.Message)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Exception.InnerException)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Exception.InnerException)
+            </dd>
+            @{
+#if DEBUG
+                <dt>
+                    @Html.DisplayNameFor(model => model.Exception.StackTrace )
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Exception.StackTrace)
+                </dd>
+#endif
+            }
+            <dt>
+                @Html.DisplayNameFor(model => model.ControllerName)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.ControllerName)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.ActionName)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.ActionName)
+            </dd>
+        </dl>
+    </div>
 </body>
 </html>
+
+

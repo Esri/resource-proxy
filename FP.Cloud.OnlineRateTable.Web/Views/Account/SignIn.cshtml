@@ -17,7 +17,7 @@
                 @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Email", autofocus = true })
             </div>
             <div class="col-md-offset-2 col-md-10">
-                @Html.ValidationMessageFor(m => m.Email)
+                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
             </div>
         </div>
 
@@ -27,7 +27,7 @@
                 @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Password" })
             </div>
             <div class="col-md-offset-2 col-md-10">
-                @Html.ValidationMessageFor(m => m.Password)
+                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
             </div>
         </div>
 

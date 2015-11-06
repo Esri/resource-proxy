@@ -12,10 +12,11 @@
         var region = new RegionInfo(new CultureInfo(environment.Culture).LCID);
         bool regionIsMetric = null == region || region.IsMetric;
         Model.CultureIsMetric = regionIsMetric;
-        string weightUnit = regionIsMetric ? "g" : "lb";
+        Model.WeightValueInOunces = Model.WeightValueInGram = 0;
+        string weightUnit = regionIsMetric ? "g" : "oz";
 
-        <div class="alert alert-info">
-            <div id="ValueDisplay">
+        <div class="alert-info alert" style="min-height:80px">
+            <div id="ValueDisplay" class="h3">
                 <strong>Weight: </strong>
                 @if (regionIsMetric)
                 {
@@ -30,17 +31,38 @@
                 </div>
             </div>
             <div id="ValueInput">
-                @using (Html.BeginForm("RequestValue", "ProductCalculation", FormMethod.Post))
+                @using (Html.BeginForm("UpdateWeight", "ProductCalculation", FormMethod.Post))
                 {
                     @Html.AntiForgeryToken()
                     @Html.HiddenFor(model => model.CultureIsMetric);
+                    @Html.HiddenFor(model => model.ProductCalculationFinished);
                     <strong>Weight: </strong>
-                    @Html.EditorFor(model => model.WeightValue, new { @class = "form-control" })
+                    if (regionIsMetric)
+                    {
+                        Model.WeightValueInGram = weight.WeightInGram;
+                        @Html.EditorFor(model => model.WeightValueInGram, new { @class = "form-control" })
+                    }
+                    else
+                    {
+                        Model.WeightValueInOunces = weight.WeightInOunces;
+                        @Html.EditorFor(model => model.WeightValueInOunces, new { @class = "form-control" })
+                    }
                     <label>@weightUnit</label>
                     <div class="pull-right">
                         <input type="submit" value="Ok" class="btn btn-primary btn-sm" />
                     </div>
-                    @Html.ValidationMessageFor(model => model.WeightValue, "", new { @class = "text-danger" })
+                    if (regionIsMetric)
+                    {
+                        <div>
+                            @Html.ValidationMessageFor(model => model.WeightValueInGram, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    else
+                    {
+                        <div>
+                            @Html.ValidationMessageFor(model => model.WeightValueInOunces, "", new { @class = "text-danger" })
+                        </div>
+                    }
                 }
             </div>
         </div>

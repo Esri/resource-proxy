@@ -34,8 +34,9 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
         #endregion
         // GET: RateTable
         public async Task<ActionResult> Index()
-        {   
-            return View(await m_Repository.GetAllRateTables(GetAuthToken()));
+        {
+            ApiResponse<List<RateTableInfo>> response = await m_Repository.GetAllRateTables(GetAuthToken());
+            return HandleApiResponse(response, View(response.ApiResult), HttpNotFound());
         }
 
         // GET: RateTable/Details/5
@@ -45,12 +46,8 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            RateTableInfo rateTableInfo = await m_Repository.GetById(id.Value, GetAuthToken());
-            if (rateTableInfo == null)
-            {
-                return HttpNotFound();
-            }
-            return View(rateTableInfo);
+            ApiResponse<RateTableInfo> response = await m_Repository.GetById(id.Value, GetAuthToken());
+            return HandleApiResponse(response, View(response.ApiResult), HttpNotFound());
         }
 
         // GET: RateTable/Create
@@ -91,8 +88,8 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
                     {
                         //parsing meta file succeeded - information is stored in rateTableInfo
                         //add new item to database
-                        await m_Repository.AddNewRateTable(rateTableInfo, GetAuthToken());
-                        return RedirectToAction("Index");
+                        ApiResponse<RateTableInfo> response = await m_Repository.AddNewRateTable(rateTableInfo, GetAuthToken());
+                        return HandleApiResponse(response, RedirectToAction("Index"), new HttpStatusCodeResult(HttpStatusCode.BadRequest));
                     }
                 }
                 ModelState.AddModelError("ZipUpload", "Error processing RateTable file");
@@ -108,12 +105,8 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            RateTableInfo rateTableInfo = await m_Repository.GetById(id.Value, GetAuthToken());
-            if (rateTableInfo == null)
-            {
-                return HttpNotFound();
-            }
-            return View(rateTableInfo);
+            ApiResponse<RateTableInfo> response = await m_Repository.GetById(id.Value, GetAuthToken());
+            return HandleApiResponse(response, View(response.ApiResult), HttpNotFound());
         }
 
         // POST: RateTable/Edit/5
@@ -125,8 +118,8 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                await m_Repository.UpdateRateTable(rateTableInfo, GetAuthToken());
-                return RedirectToAction("Index");
+                ApiResponse<RateTableInfo> response = await m_Repository.UpdateRateTable(rateTableInfo, GetAuthToken());
+                return HandleApiResponse(response, RedirectToAction("Index"), new HttpStatusCodeResult(HttpStatusCode.BadRequest));
             }
             return View(rateTableInfo);
         }
@@ -138,12 +131,8 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            RateTableInfo rateTableInfo = await m_Repository.GetById(id.Value, GetAuthToken());
-            if (rateTableInfo == null)
-            {
-                return HttpNotFound();
-            }
-            return View(rateTableInfo);
+            ApiResponse<RateTableInfo> response = await m_Repository.GetById(id.Value, GetAuthToken());
+            return HandleApiResponse(response, View(response.ApiResult), HttpNotFound());
         }
 
         // POST: RateTable/Delete/5
@@ -151,13 +140,13 @@ namespace FP.Cloud.OnlineRateTable.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            RateTableInfo rateTableInfo = await m_Repository.GetById(id, GetAuthToken());
-            if (null == rateTableInfo)
+            ApiResponse<RateTableInfo> response = await m_Repository.GetById(id, GetAuthToken());
+            if (response.ApiResult == null)
             {
                 return HttpNotFound();
             }
-            await m_Repository.DeleteRateTable(id, GetAuthToken());
-            return RedirectToAction("Index");
+            ApiResponse<bool> deleteResponse = await m_Repository.DeleteRateTable(id, GetAuthToken());
+            return HandleApiResponse(response, RedirectToAction("Index"), new HttpStatusCodeResult(HttpStatusCode.BadRequest));
         }
 
         #region protected

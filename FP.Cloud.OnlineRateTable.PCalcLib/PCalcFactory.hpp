@@ -17,11 +17,13 @@ namespace ProductCalculation
 
 BEGIN_PCALC_LIB_NAMESPACE
 
-private ref class PCalcFactory
+private ref class PCalcFactory : public System::IDisposable
 {
 public:
 	PCalcFactory(void);
 	~PCalcFactory(void);
+	!PCalcFactory(void);
+
 	PT::IPCalcConfigurationPtr GetConfig(void);
 	PT::IPCalcManagerPtr GetPCalcMgr(void);
 	PT::IProductDescriptionPtr GetProdDesc(void);
@@ -40,7 +42,6 @@ public:
 	}
 
 protected:
-	!PCalcFactory(void);
 
 private:
 	PT::PCalcFactory* m_pFactory;
