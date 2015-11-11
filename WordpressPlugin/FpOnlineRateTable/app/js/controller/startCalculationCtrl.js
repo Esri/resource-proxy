@@ -7,9 +7,24 @@ define([
         '$scope',
         '$http',
         function($scope, $http) {
+            
+            function ServiceException(message, serviceUrl) {
+                this.name = 'ServiceException';
+                this.serviceUrl = serviceUrl;
+                this.basicMessage = message;
+                this.message = this.name + ' when invoking "' + serviceUrl
+                        + '": ' + message;
+            }
+            ServiceException.prototype = new Error();
+            ServiceException.prototype.constructor = ServiceException;
+            
+            
+            $scope.translation = $scope.appData.translation;
+            
             // we need the current date (in en-US locale) as service argument.
             var currentDate = new Date().toLocaleDateString('en-US');
-            var serviceUrl = $scope.config['service-url'];
+            var config = $scope.appData.config;
+            var serviceUrl = config['service-url'];
             var withArgs = serviceUrl + '?clientUtcDate=' + currentDate;
             $http.get(withArgs).then(
                     function success(response) {
@@ -23,11 +38,13 @@ define([
                             });
                             $scope.selectedRateTable = $scope.choices[0];
                         } else {
-                            alert('Error');
+                            throw new ServiceException(
+                                    "Empty Service answer. Maybe target service down?",
+                                    withArgs);
                         }
                     },
                     function error(response) {
-                        alert('Error');
+                        throw new ServiceException(response.data, withArgs);
                     });
         }
     ]);

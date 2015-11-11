@@ -1,0 +1,27 @@
+{
+    "name": "tcdent/php-restclient", 
+    "version": "0.1.4", 
+    "description": "A generic REST API client for PHP", 
+    "type": "library", 
+    "keywords": ["REST", "api", "client", "curl", "JSON", "XML"], 
+    "homepage": "http://github.com/tcdent/php-restclient", 
+    "license": "MIT", 
+    "authors": [
+        {
+            "name": "Travis Dent", 
+            "role": "Developer", 
+            "email": "tcdent@gmail.com"
+        }
+    ],
+    "support": {
+        "issues": "http://github.com/tcdent/php-restclient/issues"
+    }, 
+    "require": {
+        "php": ">=5.2", 
+        "ext-curl": "*", 
+        "ext-json": "*"
+    }, 
+    "autoload": {
+        "files": ["restclient.php"]
+    }
+}

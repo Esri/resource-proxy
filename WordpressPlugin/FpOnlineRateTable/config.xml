@@ -9,8 +9,14 @@
         <Id>fp_online_rate_calculator</Id>
         <HtmlClass>fp-online-rate-calculator</HtmlClass>
         <Shortcode>fp_online_rate_calculator</Shortcode>
-        <ServiceUrlId>service-url</ServiceUrlId>
     </FpOnlineRateCalculatorWidget>
+    <RateCalculationServiceService>
+        <DefaultGetActiveRateTablesPath>api/RateCalculation/GetActiveTables</DefaultGetActiveRateTablesPath>
+        <DefaultRateCalculationStartPath>api/RateCalculation/Start</DefaultRateCalculationStartPath>
+        <DefaultRateCalculationCalculatePath>api/RateCalculation/Calculate</DefaultRateCalculationCalculatePath>
+        <DefaultRateCalculationBackPath>api/RateCalculation/Back</DefaultRateCalculationBackPath>
+        <DefaultRateCalculationUpdateWeightPath>api/RateCalculation/UpdateWeight</DefaultRateCalculationUpdateWeightPath>
+    </RateCalculationServiceService>
     <CustomJavascriptWrapper>
         <IdPrefix>fp_online_rate_calculator-</IdPrefix>
         <LocalizationObject>localization</LocalizationObject>

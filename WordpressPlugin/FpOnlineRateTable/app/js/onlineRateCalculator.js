@@ -1,11 +1,13 @@
 define([
     'angular',
-    'angular-route'
+    'angular-route',
+    'errorHandler'
 ], function (angular) {
     "use strict";
  
     return angular.module(
-            'onlineRateCalculator', [
-                'ngRoute'
+            'OnlineRateCalculator', [
+                'ngRoute',
+                'ErrorHandler'
             ]);
 });

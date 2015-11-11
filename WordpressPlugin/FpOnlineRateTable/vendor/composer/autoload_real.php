@@ -40,6 +40,11 @@ class ComposerAutoloaderInitd18553d24b53678832f800f38a4fe590
 
         $loader->register(true);
 
+        $includeFiles = require __DIR__ . '/autoload_files.php';
+        foreach ($includeFiles as $file) {
+            composerRequired18553d24b53678832f800f38a4fe590($file);
+        }
+
         return $loader;
     }
 }

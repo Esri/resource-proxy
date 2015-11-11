@@ -1,5 +1,7 @@
 {
     "require": {
-        "monolog/monolog": "1.*"
+        "monolog/monolog": "1.*",
+        "tcdent/php-restclient": "^0.1.4",
+        "respect/validation": "^1.0"
     }
 }

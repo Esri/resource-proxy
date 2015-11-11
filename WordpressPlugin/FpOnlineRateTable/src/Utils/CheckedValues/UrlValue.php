@@ -9,14 +9,14 @@
 namespace FP\Web\Portal\FpOnlineRateTable\src\Utils\CheckedValue;
 
 require_once 'CheckedValue.php';
+require_once dirname(dirname(dirname(__DIR__))) . '/vendor/autoload.php';
+
+use Respect\Validation\Validator;
 
 
 class UrlValue extends CheckedValue {
     
-    protected function validate( $value ) {
-      
-        $sanitized = filter_var( $value, FILTER_VALIDATE_URL );
-        
-        return $value === $sanitized;
+    protected function validate($value) {
+        return Validator::url()->validate($value);
     }
 }

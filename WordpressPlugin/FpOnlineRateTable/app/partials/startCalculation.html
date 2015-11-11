@@ -1,20 +1,40 @@
 <div class="col-md-9">
-    <div>
-        <input name="__RequestVerificationToken" type="hidden" value="fpdiVSoxguUWUOdI7qRuNN5oA20FxfvEe0UbwuemBR2KabC3tEwslo46OVSCdLikqKi-YGecBobdkFhtEXCkBG3XfsMzQwHAq4xH_ClZMKY1">
-        <input id="QueryType" name="QueryType" type="hidden" value="None">
+    <div growl></div>
+    <form name="ProductCalculationStart">
         <div class="form-group">
-            <label class="control-label col-md-2" for="SelectedRateTable">Select Country</label>
+            <label class="control-label col-md-2" for="SelectedRateTable">
+                {{translation.selectCountry}}
+            </label>
             <div>
-                <select class="form-control" id="SelectedRateTable" ng-options="choice as choice.label for choice in choices track by choice.id" ng-model="selectedRateTable">
+                <select class="form-control"
+                        name="SelectedRateTable"
+                        id="SelectedRateTable"
+                        ng-options="choice as choice.label for choice in choices track by choice.id"
+                        ng-model="selectedRateTable"
+                        required>
                 </select>
-                <span class="field-validation-valid text-danger"></span>
+                <span class="error"
+                      ng-show="ProductCalculationStart.SelectedRateTable.$dirty && ProductCalculationStart.SelectedRateTable.$invalid">
+                    Please select a country
+                </span>
             </div>
         </div>
         <div class="form-group">
-            <label class="control-label col-md-2" for="SenderZip">Sender Zip Code</label>
+            <label class="control-label col-md-2" for="SenderZip">
+                {{translation.selectSenderZip}}
+            </label>
             <div>
-                <input class="form-control text-box single-line" id="SenderZip" type="text" value="">
-                <span class="field-validation-valid text-danger"></span>
+                <input class="form-control text-box single-line"
+                       name="SenderZip"
+                       id="SenderZip"
+                       type="text"
+                       value=""
+                       ng-model="zipCode"
+                       required>
+                <span class="error"
+                      ng-show="ProductCalculationStart.SenderZip.$dirty && ProductCalculationStart.SenderZip.$invalid">
+                    Please enter a valid Zip code
+                </span>
             </div>
         </div>
         <div class="form-group">
@@ -22,5 +42,5 @@
                 <input type="submit" value="Start Product Calculation" class="btn btn-primary btn-md btn-block">
             </div>
         </div>
-    </div>
+    </form>
 </div>

@@ -30,16 +30,20 @@ require_once 'src/Utils/GlobalLoggerConfigXml.php';
 require_once 'src/Utils/Wordpress/CustomJavascriptWrapper.php';
 require_once 'src/Utils/Wordpress/CustomJavascriptWrapperConfigXml.php';
 require_once 'src/Utils/Wordpress/LocalizationTextDomain.php';
-require_once 'src/Plugin/Widget.php';
-require_once 'src/Plugin/WidgetConfigXml.php';
+require_once 'src/Plugin/Widget/Widget.php';
+require_once 'src/Plugin/Widget/WidgetConfigXml.php';
+require_once 'src/Plugin/RateCalculationService/RateCalculationServiceConfigXml.php';
+require_once 'src/Plugin/RateCalculationService/RateCalculationService.php';
 
 use FP\Web\Portal\FpOnlineRateTable\src\Utils\GlobalLogger;
 use FP\Web\Portal\FpOnlineRateTable\src\Utils\GlobalLoggerConfigXml;
-use FP\Web\Portal\FpOnlineRateTable\src\Plugin\Widget;
-use FP\Web\Portal\FpOnlineRateTable\src\Plugin\WidgetConfigXml;
+use FP\Web\Portal\FpOnlineRateTable\src\Plugin\Widget\Widget;
+use FP\Web\Portal\FpOnlineRateTable\src\Plugin\Widget\WidgetConfigXml;
 use FP\Web\Portal\FpOnlineRateTable\src\Utils\Wordpress\CustomJavascriptWrapper;
 use FP\Web\Portal\FpOnlineRateTable\src\Utils\Wordpress\CustomJavascriptWrapperConfigXml;
 use FP\Web\Portal\FpOnlineRateTable\src\Utils\Wordpress\LocalizationTextDomain;
+use FP\Web\Portal\FpOnlineRateTable\src\Plugin\RateCalculationService\RateCalculationServiceConfigXml;
+use FP\Web\Portal\FpOnlineRateTable\src\Plugin\RateCalculationService\RateCalculationService;
 
 
 class CannotLoadConfigFileException extends \RuntimeException {
@@ -57,23 +61,21 @@ class Plugin {
     
     static private $instance;
     
-    private $config;
-    private $textDomain;
-    
     
     private function __construct() {
         
         // read config file
-        $this->loadConfig();
+        $config = $this->loadConfig();
         
         // use config file to initialize logger settings.
         // Note: if 'loadConfig' fails (the failure is logged using
         // GlobalLogger) GlobalLogger uses it's default configuration.
-        $this->initLogger();
+        $this->initLogger($config);
         
-        $this->initWordpressHelper();
-        $this->initLocalization();
-        $this->registerWidget();
+        $this->initWordpressHelper($config);
+        $textDomain = $this->initLocalization();
+        $rateCalculationService = $this->crateRateCalculationService($config);
+        $this->registerWidget($config, $rateCalculationService, $textDomain);
     }
     
     private function loadConfig() {
@@ -84,38 +86,54 @@ class Plugin {
             throw new CannotLoadConfigFileException($fileName);
         }
         
-        $this->config = new \SimpleXMLElement($xml);
+        $config = new \SimpleXMLElement($xml);
+        
+        return $config;
     }
     
-    private function initLogger() {
+    private function initLogger(\SimpleXMLElement $config) {
         
-        $loggerConfig = new GlobalLoggerConfigXml($this->config);
+        $loggerConfig = new GlobalLoggerConfigXml($config);
         GlobalLogger::readInitialConfig($loggerConfig);
     }
     
-    private function registerWidget() {
+    private function registerWidget(
+            \SimpleXMLElement $config,
+            RateCalculationService $rateCalculationService,
+            LocalizationTextDomain $textDomain) {
         
-        $widgetConfig = new WidgetConfigXml($this->config);
-        Widget::registerOnAction($widgetConfig, $this->textDomain);
+        $widgetConfig = new WidgetConfigXml($config);
+        Widget::registerOnAction($widgetConfig,
+                $rateCalculationService, $textDomain);
     }
     
-    private function initWordpressHelper() {
+    private function crateRateCalculationService(\SimpleXMLElement $config) {
+        
+        $serviceConfig = new RateCalculationServiceConfigXml($config);
+        $result = new RateCalculationService($serviceConfig);
+        
+        return $result;
+    }
+    
+    private function initWordpressHelper(\SimpleXMLElement $config) {
         
         $customerJavascriptConfig
-                = new CustomJavascriptWrapperConfigXml($this->config);
+                = new CustomJavascriptWrapperConfigXml($config);
         CustomJavascriptWrapper::readConfiguration($customerJavascriptConfig);
     }
     
     private function initLocalization() {
      
         $languageDir = 'languages';
-        $this->textDomain = new LocalizationTextDomain(
+        $textDomain = new LocalizationTextDomain(
                 $languageDir, 'FpOnlineRateTable');
      
         // Note:
         // the TextDomain will be globally loaded in the admin backend. In the
         // frontend it won't be loaded before the widget is rendered.
-        $this->textDomain->loadOnAction('admin_init');
+        $textDomain->loadOnAction('admin_init');
+        
+        return $textDomain;
     }
     
     static public function init() {
