@@ -132,7 +132,7 @@ java.text.SimpleDateFormat" %>
     private HttpURLConnection forwardToServer(HttpServletRequest request, String uri, byte[] postBody) throws IOException{
         //copy the client's request header to the proxy's request
         Enumeration headerNames = request.getHeaderNames();
-        HashMap<String, String> mapHeaderInfo = new HashMap<>();
+        HashMap<String, String> mapHeaderInfo = new HashMap<String, String>();
         while (headerNames.hasMoreElements()) {
             String key = (String) headerNames.nextElement();
             String value = request.getHeader(key);
@@ -223,7 +223,7 @@ java.text.SimpleDateFormat" %>
         byte[] bytes = null;
 
         //build the header sent to server
-        HashMap<String, String> headerInfo=new HashMap<>();
+        HashMap<String, String> headerInfo=new HashMap<String, String>();
         headerInfo.put("Referer", PROXY_REFERER);
         if (method.equals("POST")){
             String[] uriArray = uri.split("\\?", 2);
@@ -668,7 +668,7 @@ java.text.SimpleDateFormat" %>
                                 p = Pattern.compile("<\\s*serverUrl (.+?)((<\\s*/\\s*serverUrl\\s*)|/)>", Pattern.MULTILINE | Pattern.DOTALL);
                                 m = p.matcher(serverUrls);
 
-                                ArrayList<ServerUrl> serverList = new ArrayList<>();
+                                ArrayList<ServerUrl> serverList = new ArrayList<ServerUrl>();
                                 while(m.find()){
                                     String server = m.group(1);
                                     String url = ProxyConfig.getAttributeWithRegex("url", server);
@@ -846,7 +846,7 @@ java.text.SimpleDateFormat" %>
             this.url = url;
         }
 
-        private static ConcurrentHashMap<String,String> tokenServiceMap = new ConcurrentHashMap<>();
+        private static ConcurrentHashMap<String,String> tokenServiceMap = new ConcurrentHashMap<String,String>();
 
         public String getUrl(){
             return this.url;
@@ -1064,7 +1064,7 @@ java.text.SimpleDateFormat" %>
             synchronized(_rateMapLock){
                 ConcurrentHashMap<String, RateMeter> ratemap = castRateMap(application.getAttribute("rateMap"));
                 if (ratemap == null){
-                    ratemap = new ConcurrentHashMap<>();
+                    ratemap = new ConcurrentHashMap<String, RateMeter>();
                     application.setAttribute("rateMap", ratemap);
                     application.setAttribute("rateMap_cleanup_counter", 0);
                 }
@@ -1089,7 +1089,7 @@ java.text.SimpleDateFormat" %>
                 }
 
                 //making sure the rateMap gets periodically cleaned up so it does not grow uncontrollably
-                int cnt = (int) application.getAttribute("rateMap_cleanup_counter");
+                int cnt = (Integer) application.getAttribute("rateMap_cleanup_counter");
                 cnt++;
                 if (cnt >= CLEAN_RATEMAP_AFTER) {
                     cnt = 0;
