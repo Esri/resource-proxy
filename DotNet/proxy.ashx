@@ -236,6 +236,11 @@ public class proxy : IHttpHandler {
         {
             credentials = new System.Net.NetworkCredential(serverUrl.Username, serverUrl.Password, serverUrl.Domain);
         }
+        // If the Url is configured with httpBasicAuth=true in proxy.config, create new credentials without domain
+        if (serverUrl.HttpBasicAuth != null && serverUrl.HttpBasicAuth == true)
+        {
+            credentials = new System.Net.NetworkCredential(serverUrl.Username, serverUrl.Password);
+        }
         else
         {
             //if token comes with client request, it takes precedence over token or credentials stored in configuration
@@ -460,7 +465,18 @@ public class proxy : IHttpHandler {
         req.Proxy = SYSTEM_PROXY;
 
         if (credentials != null)
+        {
             req.Credentials = credentials;
+
+            // For now, this is a quick hack.
+            // If the credentials do not contain a domain, assume that we are using Basic Authentication
+            // Because if Domain is empty in the config, and httpBasicAuth is false (or empty), then credentials = null
+            if (credentials.Domain == null)
+            {
+                log(TraceLevel.Info, "Enabling PreAuthenticate for Basic Authentication");
+                req.PreAuthenticate = true;
+            }
+        }
         
         if (bytes != null && bytes.Length > 0 || method == "POST") {
             req.Method = "POST";
@@ -1042,6 +1058,7 @@ public class ServerUrl {
     string tokenParamName;
     string rateLimit;
     string rateLimitPeriod;
+    bool httpBasicAuth;
 
     private ServerUrl()
     {
@@ -1118,5 +1135,12 @@ public class ServerUrl {
     public int RateLimitPeriod {
         get { return string.IsNullOrEmpty(rateLimitPeriod)? 60 : int.Parse(rateLimitPeriod); }
         set { rateLimitPeriod = value.ToString(); }
+    }
+    // New attribute to indicate whether or not the configured URL requires basic authentication
+    [XmlAttribute("httpBasicAuth")]
+    public bool HttpBasicAuth
+    {
+        get { return httpBasicAuth; }
+        set { httpBasicAuth = value; }
     }
 }
