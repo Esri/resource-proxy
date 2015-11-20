@@ -1,16 +1,14 @@
 {
+    "name": "resource-proxy",
+    "description": "Acts as proxy to circumvent the browsers same origin policy",
+    "keywords": ["proxy", "rest"],
+    "homepage": "https://github.com/Yall1963/resource-proxy",
+    "type": "library",
+    "license": "Apache 2.0",
     "authors": [
         {
             "name": "Yall1963",
-            "email": "[email protected]",
-            "homepage": "[homepage protected]",
             "role": "Developer"
         }
     ],
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/Yall1963/resource-proxy.git"
-        }
-    ]
 }
