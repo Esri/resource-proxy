@@ -9,6 +9,22 @@
 namespace FP\Web\Portal\FpOnlineRateTable\src\Plugin\RateCalculationService;
 
 require_once 'IRateCalculationServiceConfig.php';
+require_once 'RateTableInfo.php';
+require_once 'RateTableInfo.php';
+
+
+class ServiceException extends \RuntimeException {}
+class GeneralServiceException extends ServiceException {}
+class CouldNotConnectException extends ServiceException {}
+class CouldNotDeserializeException extends ServiceException {}
+
+class ResourceNotFoundException extends ServiceException {
+    public function __construct($htmlCode, $previous = null) {
+        parent::__construct(
+                "Could not access resource, html response code is: {$htmlCode}",
+                0, $previous);
+    }
+}
 
 
 /**
@@ -27,5 +43,57 @@ class RateCalculationService {
     
     public function config() {
         return $this->config;
+    }
+    
+    public function GetActiveTables(\DateTime $clientDate) {
+        
+        $restClient = $this->getRestClient();
+        $url = $this->config->getActiveRateTablesPath();
+        $dateAsString = $clientDate->format('m/d/Y');
+        $response = $restClient->get($url,
+                ['clientUtcDate' => $dateAsString]);
+        
+        if(!($response instanceof \RestClient)) {
+            throw new GeneralServiceException(
+                    "Could not interpret answer of Rest Client");
+        }
+        
+        if(false === $response->response) {
+            throw new CouldNotConnectException($response->error);
+        }
+        
+        if($response->info->http_code >= 400) {
+            throw new ResourceNotFoundException($response->info->http_code);
+        }
+        
+        $decoded = json_decode($response->response);
+        if(null == $decoded) {
+            throw new CouldNotDeserializeException(
+                    "Error during decoding JSON string");
+        }
+        
+        // if we got a singular result create an array first
+        if(!is_array($decoded)) {
+            $decoded = [$decoded];
+        }
+        
+        // transfer the result array into an array of proper objects
+        $result = array_map(
+            [RateTableInfo::fqcn(), 'createFromStdClass'],
+            $decoded);
+        
+        return $result;
+    }
+    
+    private function getRestClient() {
+        
+        static $client = null;
+        if(!isset($client)) {
+            $client = new \RestClient( [
+                'base_url' => $this->config->baseUrl()
+            ]);
+        }
+        
+        return $client;
     }
 }

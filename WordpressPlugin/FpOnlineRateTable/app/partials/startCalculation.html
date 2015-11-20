@@ -1,45 +1,31 @@
-<div class="col-md-9">
+<div>
     <div growl></div>
     <form name="ProductCalculationStart">
-        <div class="form-group">
-            <label class="control-label col-md-2" for="SelectedRateTable">
-                {{translation.selectCountry}}
-            </label>
-            <div>
-                <select class="form-control"
-                        name="SelectedRateTable"
-                        id="SelectedRateTable"
-                        ng-options="choice as choice.label for choice in choices track by choice.id"
-                        ng-model="selectedRateTable"
-                        required>
-                </select>
-                <span class="error"
-                      ng-show="ProductCalculationStart.SelectedRateTable.$dirty && ProductCalculationStart.SelectedRateTable.$invalid">
-                    Please select a country
-                </span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="control-label col-md-2" for="SenderZip">
+        <div class="form-group row">
+            <label class="control-label span2" for="SenderZip">
                 {{translation.selectSenderZip}}
             </label>
-            <div>
-                <input class="form-control text-box single-line"
+            <div class="span10">
+                <input class="form-control"
                        name="SenderZip"
                        id="SenderZip"
                        type="text"
                        value=""
                        ng-model="zipCode"
-                       required>
-                <span class="error"
-                      ng-show="ProductCalculationStart.SenderZip.$dirty && ProductCalculationStart.SenderZip.$invalid">
-                    Please enter a valid Zip code
-                </span>
+                       required >
+                <div role="alert" ng-show="ProductCalculationStart.$submitted || ProductCalculationStart.SenderZip.$touched">
+                    <span class="error"
+                          ng-show="ProductCalculationStart.SenderZip.$error.pattern || ProductCalculationStart.SenderZip.$error.required">
+                        {{translation.invalidZipCode}}
+                    </span>
+                </div>
             </div>
         </div>
-        <div class="form-group">
-            <div>
-                <input type="submit" value="Start Product Calculation" class="btn btn-primary btn-md btn-block">
+        <div class="form-group row">
+            <div class="offset2">
+                <button type="submit" class="btn btn-primary btn-md" ng-click="proceedToCalculation()">
+                    {{translation.startCalculation}}
+                </button>
             </div>
         </div>
     </form>

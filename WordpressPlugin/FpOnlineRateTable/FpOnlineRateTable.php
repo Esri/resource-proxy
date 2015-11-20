@@ -27,23 +27,19 @@ if (!defined('ABSPATH')) {
 
 require_once 'src/Utils/GlobalLogger.php';
 require_once 'src/Utils/GlobalLoggerConfigXml.php';
-require_once 'src/Utils/Wordpress/CustomJavascriptWrapper.php';
-require_once 'src/Utils/Wordpress/CustomJavascriptWrapperConfigXml.php';
 require_once 'src/Utils/Wordpress/LocalizationTextDomain.php';
+require_once 'src/Utils/Wordpress/CustomCssWrapper.php';
+require_once 'src/Utils/Wordpress/CustomCssWrapperConfigXml.php';
 require_once 'src/Plugin/Widget/Widget.php';
 require_once 'src/Plugin/Widget/WidgetConfigXml.php';
-require_once 'src/Plugin/RateCalculationService/RateCalculationServiceConfigXml.php';
-require_once 'src/Plugin/RateCalculationService/RateCalculationService.php';
 
 use FP\Web\Portal\FpOnlineRateTable\src\Utils\GlobalLogger;
 use FP\Web\Portal\FpOnlineRateTable\src\Utils\GlobalLoggerConfigXml;
 use FP\Web\Portal\FpOnlineRateTable\src\Plugin\Widget\Widget;
 use FP\Web\Portal\FpOnlineRateTable\src\Plugin\Widget\WidgetConfigXml;
-use FP\Web\Portal\FpOnlineRateTable\src\Utils\Wordpress\CustomJavascriptWrapper;
-use FP\Web\Portal\FpOnlineRateTable\src\Utils\Wordpress\CustomJavascriptWrapperConfigXml;
 use FP\Web\Portal\FpOnlineRateTable\src\Utils\Wordpress\LocalizationTextDomain;
-use FP\Web\Portal\FpOnlineRateTable\src\Plugin\RateCalculationService\RateCalculationServiceConfigXml;
-use FP\Web\Portal\FpOnlineRateTable\src\Plugin\RateCalculationService\RateCalculationService;
+use FP\Web\Portal\FpOnlineRateTable\src\Utils\Wordpress\CustomCssWrapper;
+use FP\Web\Portal\FpOnlineRateTable\src\Utils\Wordpress\CustomCssWrapperConfigXml;
 
 
 class CannotLoadConfigFileException extends \RuntimeException {
@@ -74,8 +70,7 @@ class Plugin {
         
         $this->initWordpressHelper($config);
         $textDomain = $this->initLocalization();
-        $rateCalculationService = $this->crateRateCalculationService($config);
-        $this->registerWidget($config, $rateCalculationService, $textDomain);
+        $this->registerWidget($config, $textDomain);
     }
     
     private function loadConfig() {
@@ -99,27 +94,16 @@ class Plugin {
     
     private function registerWidget(
             \SimpleXMLElement $config,
-            RateCalculationService $rateCalculationService,
             LocalizationTextDomain $textDomain) {
         
         $widgetConfig = new WidgetConfigXml($config);
-        Widget::registerOnAction($widgetConfig,
-                $rateCalculationService, $textDomain);
-    }
-    
-    private function crateRateCalculationService(\SimpleXMLElement $config) {
-        
-        $serviceConfig = new RateCalculationServiceConfigXml($config);
-        $result = new RateCalculationService($serviceConfig);
-        
-        return $result;
+        Widget::registerOnAction($widgetConfig, $textDomain);
     }
     
     private function initWordpressHelper(\SimpleXMLElement $config) {
         
-        $customerJavascriptConfig
-                = new CustomJavascriptWrapperConfigXml($config);
-        CustomJavascriptWrapper::readConfiguration($customerJavascriptConfig);
+        $customCssConfig = new CustomCssWrapperConfigXml($config);
+        CustomCssWrapper::readConfiguration($customCssConfig);
     }
     
     private function initLocalization() {

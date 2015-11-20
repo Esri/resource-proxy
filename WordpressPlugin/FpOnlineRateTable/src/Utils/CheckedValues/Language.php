@@ -8,11 +8,9 @@
 
 namespace FP\Web\Portal\FpOnlineRateTable\src\Utils\CheckedValue;
 
-$includePath = dirname(__FILE__);
-
 require_once 'SelectionValue.php';
-require_once $includePath . '/Helper/CallableHelper.php';
-require_once $includePath . '/Polyfill/array_column.php';    // if we are not using PHP 5.5 or greater we need to include this file
+require_once dirname(__DIR__) . '/Helper/CallableHelper.php';
+require_once dirname(__DIR__) . '/Polyfill/array_column.php';    // if we are not using PHP 5.5 or greater we need to include this file
 
 use FP\Web\Portal\FpOnlineRateTable\src\Utils\Helper\CallableHelper;
 

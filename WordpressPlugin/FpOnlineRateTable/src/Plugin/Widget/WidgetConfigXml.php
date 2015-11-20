@@ -36,15 +36,15 @@ class WidgetConfigXml implements IWidgetConfig {
         $this->shortcode
                 = (string)$config->FpOnlineRateCalculatorWidget->Shortcode;
         $this->defaultGetActiveRateTablesPath
-                = (string)$config->FpOnlineRateCalculatorWidget->DefaultGetActiveRateTablesPath;
+                = (string)$config->FpOnlineRateCalculatorWidget->DefaultSettings->GetActiveRateTablesPath;
         $this->defaultRateCalculationStartPath
-                = (string)$config->FpOnlineRateCalculatorWidget->DefaultRateCalculationStartPath;
+                = (string)$config->FpOnlineRateCalculatorWidget->DefaultSettings->RateCalculationStartPath;
         $this->defaultRateCalculationCalculatePath
-                = (string)$config->FpOnlineRateCalculatorWidget->DefaultRateCalculationCalculatePath;
+                = (string)$config->FpOnlineRateCalculatorWidget->DefaultSettings->RateCalculationCalculatePath;
         $this->defaultRateCalculationBackPath
-                = (string)$config->FpOnlineRateCalculatorWidget->DefaultRateCalculationBackPath;
+                = (string)$config->FpOnlineRateCalculatorWidget->DefaultSettings->RateCalculationBackPath;
         $this->defaultRateCalculationUpdateWeightPath
-                = (string)$config->FpOnlineRateCalculatorWidget->DefaultRateCalculationUpdateWeightPath;
+                = (string)$config->FpOnlineRateCalculatorWidget->DefaultSettings->RateCalculationUpdateWeightPath;
     }
     
     /**

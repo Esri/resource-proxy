@@ -1,19 +1,13 @@
 require.config({
-    //baseUrl: 'app/js',
-    deps: ['onlineRateCalculator'],
+    deps: ['routing'],
     paths: {
         'angular': '../../bower_components/angular/angular',
-        'angular-route': '../../bower_components/angular-route/angular-route.min',
         'angular-resource': '../../bower_components/angular-resource/angular-resource.min',
-        'angular-translate': '../../bower_components/angular-translate/angular-translate.min',
-        'angular-growl': '../../bower_components/angular-growl-v2/build/angular-growl'
+        'angular-growl': '../../bower_components/angular-growl-v2/build/angular-growl',
+        'angular-ui-router': '../../bower_components/angular-ui-router/release/angular-ui-router.min'
     },
     shim: {
         'angular': { 'exports': 'angular' },
-        'angular-route': {
-            deps: ['angular'],
-            'exports': 'angular-route'
-        },
         'angular-resource': {
             deps: ['angular'],
             'exports': 'angular-resource'
@@ -21,6 +15,10 @@ require.config({
         'angular-growl': {
             deps: ['angular'],
             'exports': 'angular-growl'
+        },
+        'angular-ui-router': {
+            deps: ['angular'],
+            'exports': 'angular-ui-router'
         }
     },
     callback: function() {
@@ -28,8 +26,7 @@ require.config({
         
         // manual angularJs bootstrapping
         require([
-            'angular',
-            'routing'
+            'angular'
         ], function(angular) {
             var baseElement
                     = document.getElementsByClassName('onlineRateCalculator');

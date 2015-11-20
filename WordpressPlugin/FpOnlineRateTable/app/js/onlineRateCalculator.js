@@ -1,13 +1,16 @@
 define([
     'angular',
-    'angular-route',
-    'errorHandler'
+    'angular-ui-router',
+    'errorHandler',
+    'services/onlineRateTableServices',
 ], function (angular) {
     "use strict";
  
-    return angular.module(
-            'OnlineRateCalculator', [
-                'ngRoute',
-                'ErrorHandler'
-            ]);
+    var app = angular.module('OnlineRateCalculator', [
+        'ui.router',
+        'ErrorHandler',
+        'OnlineRateTableServices'
+    ]);
+    
+    return app;
 });

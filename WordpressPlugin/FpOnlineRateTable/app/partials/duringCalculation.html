@@ -1,0 +1,61 @@
+<div>
+    <div growl></div>
+    <div class="row">
+        <div class="span6">
+            <div>
+                <div class="alert alert-info value-box">
+                    <strong>Postage: </strong>€0,00
+                </div>
+            </div>
+        </div>
+        <div class="span6">
+            <div class="alert alert-info value-box">
+                <div id="ValueDisplay">
+                    <strong>Weight: </strong>0kg 0g
+                    <div class="pull-right">
+                        <input type="button" class="btn btn-primary btn-sm" id="ChangeValue" value="Change">
+                    </div>
+                </div>
+                <div id="ValueInput" style="display: none;">
+                    <form action="/ProductCalculation/RequestValue" method="post" novalidate="novalidate"><input name="__RequestVerificationToken" type="hidden" value="9wxM4fY7Qj6qVKwkNozSLJL0CqA9AhaMdvqI6S6OJEUssE6MSF8k80XdrQFNQ7GxTxTxexB-S50z8t4QcC9Z61jg3nLshzLsL9S0rd7La4g1"><input data-val="true" data-val-required="The CultureIsMetric field is required." id="CultureIsMetric" name="CultureIsMetric" type="hidden" value="True">
+                        <strong>Weight: </strong>
+                        <input class="text-box single-line" data-val="true" data-val-number="The field WeightValue must be a number." data-val-required="The WeightValue field is required." id="WeightValue" name="WeightValue" type="text" value="0.00">                    <label>g</label>
+                        <div class="pull-right">
+                            <input type="submit" value="Ok" class="btn btn-primary btn-sm">
+                        </div>
+                        <span class="field-validation-valid text-danger" data-valmsg-for="WeightValue" data-valmsg-replace="true"></span>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="span12">
+            <div>
+                <table class="table-condensed" style="width:100%">
+                    <tbody>
+                        <tr>
+                            <th>
+                                Produktberechnung
+                            </th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span6">
+        </div>
+        <div class="span2">
+            <a class="btn btn-primary btn-md btn-block" href="/ProductCalculation/StepBack">Step Back</a>
+        </div>
+        <div class="span2">
+            <a class="btn btn-primary btn-md btn-block" href="/ProductCalculation/Restart">Restart</a>
+        </div>
+        <div class="span2">
+            <a class="btn btn-primary btn-md btn-block disabled" href="/ProductCalculation/Finish">Finish</a>
+        </div>
+    </div>
+</div>

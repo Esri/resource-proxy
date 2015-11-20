@@ -19,7 +19,9 @@ abstract class Translation {
         
         $result = [
             'selectCountry' => _x('Select Country', 'Start Calculation Page', 'FpOnlinerateTable'),
-            'selectSenderZip' => _x('Sender Zip Code', 'Start Calculation Page', 'FpOnlinerateTable')
+            'selectSenderZip' => _x('Sender Zip Code', 'Start Calculation Page', 'FpOnlinerateTable'),
+            'startCalculation' => _x('Start Product Calculation', 'Start Calculation Page', 'FpOnlinerateTable'),
+            'invalidZipCode' => _x('Please enter a valid Zip code', 'Start Calculation Page', 'FpOnlinerateTable')
         ];
         
         return $result;

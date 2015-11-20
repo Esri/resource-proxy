@@ -14,28 +14,29 @@ if (!defined('ABSPATH')) {
 }
 
 require_once dirname(dirname(__DIR__)) . '/Utils/GlobalLogger.php';
-//require_once dirname(__DIR__) . '/Utils/WordPress/JavascriptWrapper.php';
-//require_once dirname(__DIR__) . '/Utils/WordPress/CustomJavascriptWrapper.php';
+require_once dirname(dirname(__DIR__)) . '/Utils/WordPress/CustomCssWrapper.php';
 require_once dirname(dirname(__DIR__)) . '/Utils/Wordpress/LocalizationTextDomain.php';
-require_once dirname(__DIR__) . '/RateCalculationService/RateCalculationService.php';
 require_once 'IWidgetConfig.php';
 require_once 'WidgetSettings.php';
 require_once 'Translation.php';
+require_once 'RateCalculationServiceConfigWidget.php';
+require_once 'AppSettings.php';
 
 use FP\Web\Portal\FpOnlineRateTable\src\Utils\GlobalLogger;
-//use FP\Web\Portal\FpOnlineRateTable\src\Utils\Wordpress\JavascriptWrapper;
-//use FP\Web\Portal\FpOnlineRateTable\src\Utils\Wordpress\CustomJavascriptWrapper;
+use FP\Web\Portal\FpOnlineRateTable\src\Utils\Wordpress\CustomCssWrapper;
 use FP\Web\Portal\FpOnlineRateTable\src\Utils\Wordpress\LocalizationTextDomain;
-use FP\Web\Portal\FpOnlineRateTable\src\Plugin\RateCalculationService\RateCalculationService;
+
 
 
 class Widget extends \WP_Widget {
     
+    //const BOOTSTRAP_PATH = '/3rdParty/bootstrap/bootstrap.min.css';
+    const STYLE_PATH = 'app/css/style.css';
+    
     static private $config;
     static private $textDomain;
-    static private $rateCalculationService;
     
-    //private $js;
+    private $css;
     
     
     public function __construct() {
@@ -52,28 +53,19 @@ class Widget extends \WP_Widget {
                 _x('FP Online Rate Table', 'Widget Title', 'FpOnlinerateTable'),
                 $widget_ops);
         
-        //$this->registerAssets();
+        $this->registerAssets();
     }
     
-    /*private function registerAssets() {
+    private function registerAssets() {
         
-        $assetsUrl = plugin_dir_url(dirname(__DIR__)) . 'assets/js/';
+        $pluginUrl = plugin_dir_url(dirname(dirname(__DIR__)));
+        
+        $dependencies = [];
+        $mainCss = new CustomCssWrapper(
+                $pluginUrl . self::STYLE_PATH, $dependencies );
 
-        $buildInScripts = array();
-        $buildInScripts[] = new JavascriptWrapper('jquery');
-        
-        $customScripts = array();
-        $customScripts[] = new CustomJavascriptWrapper($assetsUrl . 'test.js');
-        foreach($customScripts as $script) {
-            $script->register();
-        }
-        
-        $dependencies = array_merge($buildInScripts, $customScripts);
-        
-        $dependencies = $buildInScripts;
-        $this->js = new CustomJavascriptWrapper(
-                $assetsUrl . 'test.js', $dependencies );
-    }*/
+        $this->css = $mainCss;
+    }
     
     public function widget($args, $instance) {
         
@@ -82,6 +74,7 @@ class Widget extends \WP_Widget {
         try {
             $widgetSettings = new WidgetSettings($this, $instance);
             self::$textDomain->load();
+            $this->css->registerAndLoad();
             
             // render title if necessary
             $title = $widgetSettings->getIfValid(WidgetSettings::TITLE);
@@ -93,7 +86,7 @@ class Widget extends \WP_Widget {
             $appData = $this->buildJsAppData($widgetSettings);
             
             // render actual widget
-            include(dirname(__DIR__) . '/Templates/widget.php');
+            include dirname(__DIR__) . '/Templates/widget.php';
             
             // append script tag to footer
             $this->loadRequireJs();
@@ -106,9 +99,29 @@ class Widget extends \WP_Widget {
     
     public function form($instance) {
         
-        // will be used in template
-        $widgetSettings = new WidgetSettings($this, $instance);
-        include(dirname(__DIR__) . '/Templates/admin.php');
+        try {
+            // the first call to this function will be with an empty instance array.
+            // Also the results won't be rendered. So do nothing in this case.
+            if (!empty($instance)) {
+                // will also be used in template
+                $widgetSettings = new WidgetSettings($this, $instance);
+
+                include dirname(__DIR__) . '/Templates/admin.php';
+            }
+        } catch (\Exception $ex) {
+            $msg = _x('An error occured when trying to render this form',
+                    'Widget Setting Error', 'FpOnlineRateTable');
+            $error = $ex->getMessage();
+            echo "
+                <div class='error'>
+                    <p>
+                        {$msg}
+                        <br>
+                        {$error}
+                    </p>
+                </div>
+            ";
+        }
     }
     
     public function update($new_instance, $old_instance) {
@@ -116,7 +129,7 @@ class Widget extends \WP_Widget {
         $widgetSettings = new WidgetSettings($this, $old_instance);
         $widgetSettings->mergeArray($new_instance);
         
-        return $widgetSettings->toArray(false);
+        return $widgetSettings->toArray();
     }
     
 
@@ -145,13 +158,11 @@ class Widget extends \WP_Widget {
     
     public static function registerOnAction(
             IWidgetConfig $config,
-            RateCalculationService $rateCalculationService,
             LocalizationTextDomain $textDomain,
             $action = 'widgets_init') {
         
         self::$config = $config;
         self::$textDomain = $textDomain;
-        self::$rateCalculationService = $rateCalculationService;
         
         add_action($action, get_class() . '::registerWidget_callback' );
         add_shortcode(self::$config->shortcode(),
@@ -160,10 +171,6 @@ class Widget extends \WP_Widget {
     
     public static function config() {
         return self::$config;
-    }
-    
-    public static function rateCalculatorService() {
-        return self::$rateCalculationService;
     }
     
     
@@ -186,8 +193,9 @@ class Widget extends \WP_Widget {
     
     private function buildJsAppData(WidgetSettings $widgetSettings) {
         
+        $appSettings = new AppSettings($widgetSettings);
         $data = [
-            'config' => $widgetSettings->validToArray(),
+            'config' => $appSettings->toArray(),
             'translation' => Translation::getTexts()
         ];
         $result = json_encode($data);

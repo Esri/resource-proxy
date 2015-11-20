@@ -9,14 +9,14 @@
         <Id>fp_online_rate_calculator</Id>
         <HtmlClass>fp-online-rate-calculator</HtmlClass>
         <Shortcode>fp_online_rate_calculator</Shortcode>
+        <DefaultSettings>
+            <GetActiveRateTablesPath>RateCalculation/GetActiveTables</GetActiveRateTablesPath>
+            <RateCalculationStartPath>RateCalculation/Start</RateCalculationStartPath>
+            <RateCalculationCalculatePath>RateCalculation/Calculate</RateCalculationCalculatePath>
+            <RateCalculationBackPath>RateCalculation/Back</RateCalculationBackPath>
+            <RateCalculationUpdateWeightPath>RateCalculation/UpdateWeight</RateCalculationUpdateWeightPath>
+        </DefaultSettings>
     </FpOnlineRateCalculatorWidget>
-    <RateCalculationServiceService>
-        <DefaultGetActiveRateTablesPath>api/RateCalculation/GetActiveTables</DefaultGetActiveRateTablesPath>
-        <DefaultRateCalculationStartPath>api/RateCalculation/Start</DefaultRateCalculationStartPath>
-        <DefaultRateCalculationCalculatePath>api/RateCalculation/Calculate</DefaultRateCalculationCalculatePath>
-        <DefaultRateCalculationBackPath>api/RateCalculation/Back</DefaultRateCalculationBackPath>
-        <DefaultRateCalculationUpdateWeightPath>api/RateCalculation/UpdateWeight</DefaultRateCalculationUpdateWeightPath>
-    </RateCalculationServiceService>
     <CustomJavascriptWrapper>
         <IdPrefix>fp_online_rate_calculator-</IdPrefix>
         <LocalizationObject>localization</LocalizationObject>

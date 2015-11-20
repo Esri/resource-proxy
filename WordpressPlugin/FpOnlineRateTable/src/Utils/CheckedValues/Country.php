@@ -101,6 +101,17 @@ class Country extends SelectionValue {
         return $mapping;
     }
     
+    static public function iso3166a3_to_iso3166Number_mapping() {
+        
+        static $mapping = null;
+        
+        if(!isset($mapping)) {
+            $mapping = array_column(self::countryTable(), 'number', 'a3');
+        }
+        
+        return $mapping;
+    }
+    
     static public function iso3166a2_to_iso3166a3_mapping() {
         
         static $mapping = null;
@@ -131,6 +142,10 @@ class Country extends SelectionValue {
         return self::iso3166a2_to_iso3166a3_mapping()[$a2];        
     }
     
+    static public function iso3166Number_from_iso3166a3($a3) {
+        return self::iso3166a3_to_iso3166Number_mapping()[$a3];
+    }
+    
     static public function iso4217_from_iso3166a3($a3) {
         return self::iso3166a3_to_iso4217_mapping()[$a3];        
     }
@@ -153,6 +168,10 @@ class Country extends SelectionValue {
     
     public function getIso3166a2() {
         return self::iso3166a2_from_iso3166a3($this->get());
+    }
+    
+    public function getIso3166Number() {
+        return self::iso3166Number_from_iso3166a3($this->get());
     }
     
     public function getIso3166a3() {
