@@ -5,6 +5,8 @@
  *
  * Version 1.1.0
  * See https://github.com/Esri/resource-proxy for more information.
+ * 
+ * forked by Yall1963 to support POST requests including a JSON body 
  *
  */
 
@@ -77,6 +79,15 @@ class Proxy {
      */
 
     public $proxyMethod;
+    
+    /**
+     * Is true we are about to send a POST request containing an
+     * 'applictaion/json' body.
+     *
+     * @var boolean
+     */
+
+    public $isJsonRequest;
 
     /**
      * Holds the URL being requested
@@ -627,9 +638,27 @@ class Proxy {
     {
         $this->decodeCharacterEncoding(); // Sanitize url being proxied and removing encodings if present
 
+        // Read in the PHP input stream (aka raw POST input) as the standard
+        // $_POST array will only include entries of mime type
+        // 'x-www-form-urlencoded'. But we also expect 'application/json'
+        // input.
+        $json = file_get_contents('php://input');
+        
         try {
+            
+            if( !empty($json)) { // is it POST with JSON input?
+                
+                $this->proxyLog->log('POST detected');
 
-            if (!empty($_POST) && empty($_FILES)) { // Is it a POST without files?
+                $this->proxyUrl = $_SERVER['QUERY_STRING'];
+
+                $this->proxyData = $json;
+
+                $this->proxyMethod = "POST";
+                
+                $this->isJsonRequest = true;
+                
+            } else if (!empty($_POST) && empty($_FILES)) { // Is it a POST without files?
 
                 $this->proxyLog->log('POST detected');
 
@@ -638,6 +667,8 @@ class Proxy {
                 $this->proxyData = $_POST;
 
                 $this->proxyMethod = "POST";
+                
+                $this->isJsonRequest = false;
 
             } else if (!empty($_POST) && !empty($_FILES)) { // Is it a POST with files?
 
@@ -648,6 +679,8 @@ class Proxy {
                 $this->proxyData = $_POST;
 
                 $this->proxyMethod = "FILES";
+                
+                $this->isJsonRequest = false;
 
             } else if (empty($_POST) && empty($_FILES)) { // It must be a GET!
 
@@ -660,6 +693,8 @@ class Proxy {
                 $this->proxyUrlWithData = $_SERVER['QUERY_STRING'];
 
                 $this->proxyMethod = "GET";
+                
+                $this->isJsonRequest = false;
             }
 
         } catch (Exception $e) {
@@ -1115,12 +1150,19 @@ class Proxy {
 
             curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
 
-            curl_setopt($this->ch, CURLOPT_POST, true);
-
             if(is_array($params)){ //If $params is array, convert it to a curl query string like 'image=png&f=json'
                 curl_setopt($this->ch, CURLOPT_POSTFIELDS, http_build_query($params));
             } else {
                 curl_setopt($this->ch, CURLOPT_POSTFIELDS, $params);
+            }
+            
+            if(true === $this->isJsonRequest) {
+                curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, "POST");
+                curl_setopt($this->ch, CURLOPT_HTTPHEADER, [                                                                          
+                    'Content-Type: application/json',                                                                                
+                    'Content-Length: ' . strlen($params) ]);
+            } else {
+                curl_setopt($this->ch, CURLOPT_POST, true);
             }
 
             $this->response = curl_exec($this->ch);

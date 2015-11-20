@@ -1,0 +1,16 @@
+{
+    "authors": [
+        {
+            "name": "Yall1963",
+            "email": "[email protected]",
+            "homepage": "[homepage protected]",
+            "role": "Developer"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/Yall1963/resource-proxy.git"
+        }
+    ]
+}
