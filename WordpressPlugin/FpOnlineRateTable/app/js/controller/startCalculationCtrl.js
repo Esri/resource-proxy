@@ -59,7 +59,7 @@ define([
                         SenderZipCode: $scope.zipCode
                     }
                     RateCalculationStartService.init(
-                            $scope.appData.config.rateCalculationStartUrl);
+                            $scope.appData.config.rateCalculationUrl);
                     RateCalculationStartService.start(weight, environment);
                     $state.go("calculate", {'zip': $scope.zipCode});
                 }

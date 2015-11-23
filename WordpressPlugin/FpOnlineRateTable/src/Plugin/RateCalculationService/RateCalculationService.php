@@ -34,6 +34,8 @@ class ResourceNotFoundException extends ServiceException {
  */
 class RateCalculationService {
     
+    CONST GET_ACTIVE_TABLES_METHOD = 'GetActiveTables';
+    
     private $config;
     
     
@@ -48,9 +50,8 @@ class RateCalculationService {
     public function GetActiveTables(\DateTime $clientDate) {
         
         $restClient = $this->getRestClient();
-        $url = $this->config->getActiveRateTablesPath();
         $dateAsString = $clientDate->format('m/d/Y');
-        $response = $restClient->get($url,
+        $response = $restClient->get(self::GET_ACTIVE_TABLES_METHOD,
                 ['clientUtcDate' => $dateAsString]);
         
         if(!($response instanceof \RestClient)) {
@@ -90,7 +91,7 @@ class RateCalculationService {
         static $client = null;
         if(!isset($client)) {
             $client = new \RestClient( [
-                'base_url' => $this->config->baseUrl()
+                'base_url' => $this->config->resourceUrl()
             ]);
         }
         

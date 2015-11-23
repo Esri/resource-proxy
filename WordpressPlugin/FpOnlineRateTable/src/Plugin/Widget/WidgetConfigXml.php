@@ -21,11 +21,7 @@ class WidgetConfigXml implements IWidgetConfig {
     private $id;
     private $htmlClass;
     private $shortcode;
-    private $defaultGetActiveRateTablesPath;
-    private $defaultRateCalculationStartPath;
-    private $defaultRateCalculationCalculatePath;
-    private $defaultRateCalculationBackPath;
-    private $defaultRateCalculationUpdateWeightPath;
+    private $serviceProxyPath;
     
     
     public function __construct(\SimpleXMLElement $config) {
@@ -35,16 +31,8 @@ class WidgetConfigXml implements IWidgetConfig {
                 = (string)$config->FpOnlineRateCalculatorWidget->HtmlClass;
         $this->shortcode
                 = (string)$config->FpOnlineRateCalculatorWidget->Shortcode;
-        $this->defaultGetActiveRateTablesPath
-                = (string)$config->FpOnlineRateCalculatorWidget->DefaultSettings->GetActiveRateTablesPath;
-        $this->defaultRateCalculationStartPath
-                = (string)$config->FpOnlineRateCalculatorWidget->DefaultSettings->RateCalculationStartPath;
-        $this->defaultRateCalculationCalculatePath
-                = (string)$config->FpOnlineRateCalculatorWidget->DefaultSettings->RateCalculationCalculatePath;
-        $this->defaultRateCalculationBackPath
-                = (string)$config->FpOnlineRateCalculatorWidget->DefaultSettings->RateCalculationBackPath;
-        $this->defaultRateCalculationUpdateWeightPath
-                = (string)$config->FpOnlineRateCalculatorWidget->DefaultSettings->RateCalculationUpdateWeightPath;
+        $this->serviceProxyPath
+                = (string)$config->FpOnlineRateCalculatorWidget->ServiceProxyPath;
     }
     
     /**
@@ -69,39 +57,13 @@ class WidgetConfigXml implements IWidgetConfig {
     }
     
     /**
-     * The standard path (without hostname) of the GetActiveRateTables resource
+     * The path relative to the plugin directory of the OnlineRateTable service
+     * proxy.
+     * Note: Currently the resource-proxy is in use that requires the
+     * original service URL to be passed as parameter. This URL is meant to be
+     * specified without this parameter.
      */
-    public function defaultGetActiveRateTablesPath() {
-        return $this->defaultGetActiveRateTablesPath;
-    }
-    
-    /**
-     * The standard path (without hostname) of the RateCalculationStart resource
-     */
-    public function defaultRateCalculationStartPath() {
-        return $this->defaultRateCalculationStartPath;
-    }
-    
-    /**
-     * The standard path (without hostname) of the RateCalculationCalculate
-     * resource
-     */
-    public function defaultRateCalculationCalculatePath() {
-        return $this->defaultRateCalculationCalculatePath;
-    }
-    
-    /**
-     * The standard path (without hostname) of the RateCalculationBack resource
-     */
-    public function defaultRateCalculationBackPath() {
-        return $this->defaultRateCalculationBackPath;
-    }
-    
-    /**
-     * The standard path (without hostname) of the RateCalculationUpdateWeight
-     * resource
-     */
-    public function defaultRateCalculationUpdateWeightPath() {
-        return $this->defaultRateCalculationUpdateWeightPath;
+    public function serviceProxyPath() {
+        return $this->serviceProxyPath;
     }
 }

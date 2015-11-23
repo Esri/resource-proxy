@@ -6,5 +6,5 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    $vendorDir . '/tcdent/php-restclient/restclient.php',
+    'b460a94731cdc177b9532a25b34c7ffa' => $vendorDir . '/tcdent/php-restclient/restclient.php',
 );

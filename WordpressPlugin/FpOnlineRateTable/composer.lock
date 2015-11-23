@@ -4,8 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0f08253cf4ecf22fccf6837eab73a5b8",
+    "hash": "e3b1a91840f0baa999f20e9ed6168782",
+    "content-hash": "7781b2b20ac774b94078f92729b3b96c",
     "packages": [
+        {
+            "name": "Yall1963/resource-proxy",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Yall1963/resource-proxy.git",
+                "reference": "master"
+            },
+            "type": "library",
+            "time": "2015-11-23 11:58:11"
+        },
         {
             "name": "monolog/monolog",
             "version": "1.17.2",
@@ -237,7 +249,9 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "yall1963/resource-proxy": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

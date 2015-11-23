@@ -41,22 +41,12 @@ class WidgetSettings {
     
     const TITLE = 'title';
     const CURRENT_RATE_TABLE_CULTURE = 'current-rate-table-culture';
-    const BASE_SERVICE_URL = 'service-url';
-    const GET_ACTIVE_RATETABLES_PATH = 'get-active-rate-tables-path';
-    const RATE_CALCULATION_START_PATH = 'rate-calculation-start-path';
-    const RATE_CALCULATION_CALCULATE_PATH = 'rate-calculation-calculate-path';
-    const RATE_CALCULATION_BACK_PATH = 'rate-calculation-back-path';
-    const RATE_CALCULATION_UPDATE_WEIGHT_PATH = 'rate-calculation-update-weight-path';
+    const RESOURCE_URL = 'resource-url';
     
     private static $idToCheckedValueClass = [
         self::TITLE => '\FP\Web\Portal\FpOnlineRateTable\src\Utils\CheckedValue\TextValue',
         self::CURRENT_RATE_TABLE_CULTURE => '\FP\Web\Portal\FpOnlineRateTable\src\Utils\CheckedValue\Culture',
-        self::BASE_SERVICE_URL => '\FP\Web\Portal\FpOnlineRateTable\src\Utils\CheckedValue\UrlValue',
-        self::GET_ACTIVE_RATETABLES_PATH => '\FP\Web\Portal\FpOnlineRateTable\src\Utils\CheckedValue\TextValue',
-        self::RATE_CALCULATION_START_PATH => '\FP\Web\Portal\FpOnlineRateTable\src\Utils\CheckedValue\TextValue',
-        self::RATE_CALCULATION_CALCULATE_PATH => '\FP\Web\Portal\FpOnlineRateTable\src\Utils\CheckedValue\TextValue',
-        self::RATE_CALCULATION_BACK_PATH => '\FP\Web\Portal\FpOnlineRateTable\src\Utils\CheckedValue\TextValue',
-        self::RATE_CALCULATION_UPDATE_WEIGHT_PATH => '\FP\Web\Portal\FpOnlineRateTable\src\Utils\CheckedValue\TextValue'
+        self::RESOURCE_URL => '\FP\Web\Portal\FpOnlineRateTable\src\Utils\CheckedValue\UrlValue'
     ];
     
     private $settings;
@@ -154,21 +144,6 @@ class WidgetSettings {
         return $this->widget->get_field_name($id);
     }
     
-    public function getServiceUrl($id) {
-        
-        $url = $this->getIfValid(self::BASE_SERVICE_URL);
-        $path = $this->getIfValid($id);
-        $result = false; // aka error condition
-        if(isset($url) && isset($path)) {
-            $result = http_build_url('',
-                    [   'host' => $url,
-                        'path' => $path ],
-                    HTTP_URL_JOIN_PATH );
-        }
-        
-        return $result;
-    }
-    
     public function getRateTableChoices() {
         
         static $choices = null;
@@ -236,6 +211,10 @@ class WidgetSettings {
         
         return $this->rateTableServiceError->getMessage();
     }
+    
+    public function getWidgetConfig() {
+        return $this->widgetConfig;
+    }
    
     
     private function initSettings() {
@@ -243,17 +222,7 @@ class WidgetSettings {
         $this->settings = [];
         $this->set(self::TITLE, '');
         $this->set(self::CURRENT_RATE_TABLE_CULTURE, '');
-        $this->set(self::BASE_SERVICE_URL, '');
-        $this->set(self::GET_ACTIVE_RATETABLES_PATH,
-                $this->widgetConfig->defaultGetActiveRateTablesPath());
-        $this->set(self::RATE_CALCULATION_START_PATH,
-                $this->widgetConfig->defaultRateCalculationStartPath());
-        $this->set(self::RATE_CALCULATION_CALCULATE_PATH,
-                $this->widgetConfig->defaultRateCalculationCalculatePath());
-        $this->set(self::RATE_CALCULATION_BACK_PATH,
-                $this->widgetConfig->defaultRateCalculationBackPath());
-        $this->set(self::RATE_CALCULATION_UPDATE_WEIGHT_PATH,
-                $this->widgetConfig->defaultRateCalculationUpdateWeightPath());
+        $this->set(self::RESOURCE_URL, '');
     }
     
 

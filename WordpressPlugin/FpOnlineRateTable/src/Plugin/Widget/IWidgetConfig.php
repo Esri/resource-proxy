@@ -30,29 +30,11 @@ interface IWidgetConfig {
     public function shortcode();
     
     /**
-     * The standard path (without hostname) of the GetActiveRateTables resource
+     * The path relative to the plugin directory of the OnlineRateTable service
+     * proxy.
+     * Note: Currently the resource-proxy is in use that requires the
+     * original service URL to be passed as parameter. This URL is meant to be
+     * specified without this parameter.
      */
-    public function defaultGetActiveRateTablesPath();
-    
-    /**
-     * The standard path (without hostname) of the RateCalculationStart resource
-     */
-    public function defaultRateCalculationStartPath();
-    
-    /**
-     * The standard path (without hostname) of the RateCalculationCalculate
-     * resource
-     */
-    public function defaultRateCalculationCalculatePath();
-    
-    /**
-     * The standard path (without hostname) of the RateCalculationBack resource
-     */
-    public function defaultRateCalculationBackPath();
-    
-    /**
-     * The standard path (without hostname) of the RateCalculationUpdateWeight
-     * resource
-     */
-    public function defaultRateCalculationUpdateWeightPath();
+    public function serviceProxyPath();
 }

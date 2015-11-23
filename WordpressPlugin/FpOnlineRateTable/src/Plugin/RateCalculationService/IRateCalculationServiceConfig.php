@@ -15,35 +15,8 @@ namespace FP\Web\Portal\FpOnlineRateTable\src\Plugin\RateCalculationService;
 interface IRateCalculationServiceConfig {
     
     /**
-     * The base service URL (i.e. protocol, hostname, port and api path but no
-     * resource path)
+     * The resource URL (i.e. protocol, hostname, port and resource path but 
+     * without a method name)
      */
-    public function baseUrl();
-    
-    /**
-     * Resource path (relative to baseUrl) of the GetActiveRateTables resource
-     */
-    public function getActiveRateTablesPath();
-    
-    /**
-     * Resource path (relative to baseUrl) of the RateCalculationStart resource
-     */
-    public function rateCalculationStartPath();
-    
-    /**
-     * Resource path (relative to baseUrl) of the RateCalculationCalculate
-     * resource
-     */
-    public function rateCalculationCalculatePath();
-    
-    /**
-     * Resource path (relative to baseUrl) of the RateCalculationBack resource
-     */
-    public function rateCalculationBackPath();
-    
-    /**
-     * Resource path (relative to baseUrl) of the RateCalculationUpdateWeight
-     * resource
-     */
-    public function rateCalculationUpdateWeightPath();
+    public function resourceUrl();
 }

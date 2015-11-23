@@ -10,35 +10,35 @@ define([
     
     service.factory('RateCalculationStartService', ['$resource',
         function($resource) {
-            var service;
+            var startService;
+            var calculateService;
+            var backService;
+            var updateWeightService;
             
+            // Note: we use the methode 'save' to call a service as this the the
+            // angular-resource synonym for 'post'.
             return {
                 init: function(url) {
-                    service = $resource(url, {}, {
-                        Start: {
-                            method: 'POST',
-                            params: {Weight: null, Environment: null} },
-                        Calculate: {
-                            method: 'POST',
-                            params: {ProductDescription: null, ActionResult: null, Environment: null} },
-                        Back: {
-                            method: 'POST',
-                            params: {ProductDescription: null, Environment: null} },
-                        UpdateWeight: {
-                            method: 'POST',
-                            params: {ProductDescription: null, Environment: null} }
-                        });
+                    startService = $resource(url + '/Start');
+                    calculateService = $resource(url + '/Calculate');
+                    backService = $resource(url + '/Back');
+                    updateWeightService = $resource(url + '/UpdateWeight');
                 },
                 
                 start: function(weight, environment) {
-                    return service.Start({}, {
+                    var result = startService.save({}, {
                         Weight: weight,
-                        Environment: environment
-                    });
+                        Environment: environment },
+                        function success() {
+                            var test = result;
+                        },
+                        function error() {
+                            var test = result;
+                        });
                 },
                 
                 calculate: function(productDescription, actionResult, environment) {
-                    return service.Calculate({}, {
+                    return calculateService.save({}, {
                         ProductDescription: productDescription,
                         ActionResult: actionResult,
                         Environment: environment
@@ -46,14 +46,14 @@ define([
                 },
                 
                 back: function(productDescription, environment) {
-                    return service.Calculate({}, {
+                    return backService.save({}, {
                         ProductDescription: productDescription,
                         Environment: environment
                     });
                 },
                 
                 updateWeight: function(productDescription, environment) {
-                    return service.Calculate({}, {
+                    return updateWeightService.save({}, {
                         ProductDescription: productDescription,
                         Environment: environment
                     });

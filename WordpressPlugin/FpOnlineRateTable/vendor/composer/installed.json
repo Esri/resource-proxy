@@ -233,5 +233,17 @@
             "logging",
             "psr-3"
         ]
+    },
+    {
+        "name": "Yall1963/resource-proxy",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/Yall1963/resource-proxy.git",
+            "reference": "master"
+        },
+        "type": "library",
+        "installation-source": "source"
     }
 ]

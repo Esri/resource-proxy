@@ -2,9 +2,9 @@ require.config({
     deps: ['routing'],
     paths: {
         'angular': '../../bower_components/angular/angular',
-        'angular-resource': '../../bower_components/angular-resource/angular-resource.min',
+        'angular-resource': '../../bower_components/angular-resource/angular-resource',
         'angular-growl': '../../bower_components/angular-growl-v2/build/angular-growl',
-        'angular-ui-router': '../../bower_components/angular-ui-router/release/angular-ui-router.min'
+        'angular-ui-router': '../../bower_components/angular-ui-router/release/angular-ui-router'
     },
     shim: {
         'angular': { 'exports': 'angular' },

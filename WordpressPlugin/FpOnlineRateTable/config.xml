@@ -9,13 +9,7 @@
         <Id>fp_online_rate_calculator</Id>
         <HtmlClass>fp-online-rate-calculator</HtmlClass>
         <Shortcode>fp_online_rate_calculator</Shortcode>
-        <DefaultSettings>
-            <GetActiveRateTablesPath>RateCalculation/GetActiveTables</GetActiveRateTablesPath>
-            <RateCalculationStartPath>RateCalculation/Start</RateCalculationStartPath>
-            <RateCalculationCalculatePath>RateCalculation/Calculate</RateCalculationCalculatePath>
-            <RateCalculationBackPath>RateCalculation/Back</RateCalculationBackPath>
-            <RateCalculationUpdateWeightPath>RateCalculation/UpdateWeight</RateCalculationUpdateWeightPath>
-        </DefaultSettings>
+        <ServiceProxyPath>vendor/Yall1963/resource-proxy/PHP/proxy.php</ServiceProxyPath>
     </FpOnlineRateCalculatorWidget>
     <CustomJavascriptWrapper>
         <IdPrefix>fp_online_rate_calculator-</IdPrefix>

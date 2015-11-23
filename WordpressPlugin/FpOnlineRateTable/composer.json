@@ -2,6 +2,21 @@
     "require": {
         "monolog/monolog": "1.*",
         "tcdent/php-restclient": "^0.1.4",
-        "respect/validation": "^1.0"
-    }
+        "respect/validation": "^1.0",
+        "Yall1963/resource-proxy": "dev-master"
+    },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "Yall1963/resource-proxy",
+                "version": "dev-master",
+                "source": {
+                    "url": "https://github.com/Yall1963/resource-proxy.git",
+                    "type": "git",
+                    "reference": "master"
+                }
+            }
+        }
+    ]
 }

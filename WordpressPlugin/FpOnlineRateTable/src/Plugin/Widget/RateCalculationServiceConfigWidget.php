@@ -32,50 +32,8 @@ class RateCalculationServiceConfigWidget
      * The base service URL (i.e. protocol, hostname, port and api path but no
      * resource path)
      */
-    public function baseUrl() {
+    public function resourceUrl() {
         return $this->widgetSettings->getIfValid(
-                WidgetSettings::BASE_SERVICE_URL);
-    }
-    
-    /**
-     * Resource path (relative to baseUrl) of the GetActiveRateTables resource
-     */
-    public function getActiveRateTablesPath() {
-        return $this->widgetSettings->getIfValid(
-                WidgetSettings::GET_ACTIVE_RATETABLES_PATH);
-    }
-    
-    /**
-     * Resource path (relative to baseUrl) of the RateCalculationStart resource
-     */
-    public function rateCalculationStartPath() {
-        return $this->widgetSettings->getIfValid(
-                WidgetSettings::RATE_CALCULATION_START_PATH);
-    }
-    
-    /**
-     * Resource path (relative to baseUrl) of the RateCalculationCalculate
-     * resource
-     */
-    public function rateCalculationCalculatePath() {
-        return $this->widgetSettings->getIfValid(
-                WidgetSettings::RATE_CALCULATION_CALCULATE_PATH);
-    }
-    
-    /**
-     * Resource path (relative to baseUrl) of the RateCalculationBack resource
-     */
-    public function rateCalculationBackPath() {
-        return $this->widgetSettings->getIfValid(
-                WidgetSettings::RATE_CALCULATION_BACK_PATH);
-    }
-    
-    /**
-     * Resource path (relative to baseUrl) of the RateCalculationUpdateWeight
-     * resource
-     */
-    public function rateCalculationUpdateWeightPath() {
-        return $this->widgetSettings->getIfValid(
-                WidgetSettings::RATE_CALCULATION_UPDATE_WEIGHT_PATH);
+                WidgetSettings::RESOURCE_URL);
     }
 }
