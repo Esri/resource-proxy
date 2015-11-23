@@ -18,7 +18,7 @@ define([
                 url: '/calculate',
                 templateUrl: baseUrl + 'partials/duringCalculation.html',
                 controller: 'DuringCalculationCtrl',
-                params: {zip: null}
+                params: {zip: null, serviceState: null}
             });
             
         $urlRouterProvider.otherwise('/start');

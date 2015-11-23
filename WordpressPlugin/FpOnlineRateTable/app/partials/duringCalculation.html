@@ -4,7 +4,9 @@
         <div class="span6">
             <div>
                 <div class="alert alert-info value-box">
-                    <strong>Postage: </strong>€0,00
+                    <strong>Postage: </strong>
+                    {{productDescription.ProductDescription.Postage.CurrencySymbol}}
+                    {{productDescription.ProductDescription.Postage.PostageValue}}
                 </div>
             </div>
         </div>
@@ -13,7 +15,7 @@
                 <div id="ValueDisplay">
                     <strong>Weight: </strong>0kg 0g
                     <div class="pull-right">
-                        <input type="button" class="btn btn-primary btn-sm" id="ChangeValue" value="Change">
+                        <input type="button" class="btn btn-primary btn-sm" id="ChangeValue" value="Change" ng-click="changeWeight()">
                     </div>
                 </div>
                 <div id="ValueInput" style="display: none;">

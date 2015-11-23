@@ -57,11 +57,14 @@ define([
                         UtcDate: new Date(),
                         Culture: $scope.appData.config.culture,
                         SenderZipCode: $scope.zipCode
-                    }
+                    };
                     RateCalculationStartService.init(
-                            $scope.appData.config.rateCalculationUrl);
-                    RateCalculationStartService.start(weight, environment);
-                    $state.go("calculate", {'zip': $scope.zipCode});
+                            $scope.appData.config.rateCalculationUrl,
+                            environment, weight);
+                    var serviceState = RateCalculationStartService.start();
+                    $state.go("calculate", {
+                        'zip': $scope.zipCode,
+                        'serviceState': serviceState});
                 }
             };
         }

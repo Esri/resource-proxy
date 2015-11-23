@@ -5,10 +5,28 @@ define([
     
     return app.controller('DuringCalculationCtrl', [
         '$scope',
+        '$state',
         '$stateParams',
-        function($scope, $stateParams) {
+        function($scope, $state, $stateParams) {
             $scope.translation = $scope.appData.translation;
             $scope.zip = $stateParams.zip;
+            $scope.serviceState = $stateParams.serviceState;
+            
+            // in case we have no useful parameters (e.g. the calculate page
+            // was accessed directly instead of getting here through the start
+            // page) redirect to start page.
+            if((null === $scope.zip === null)
+                    || (null === $scope.serviceState)) {
+                $state.go("start");
+            }
+       
+            $scope.$watch('serviceState.ProductDescription', function(newVal, oldVal) {
+                var t = 42;
+            });
+            
+            $scope.changeWeight = function() {
+                var t = 42;
+            };
         }
     ]);
 });
