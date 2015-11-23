@@ -1,5 +1,6 @@
 define([
-    'onlineRateCalculator'
+    'onlineRateCalculator',
+    'services/formatFilters'
 ], function(app) {
     "use strict";
     
@@ -8,6 +9,7 @@ define([
         '$state',
         '$stateParams',
         function($scope, $state, $stateParams) {
+            
             $scope.translation = $scope.appData.translation;
             $scope.zip = $stateParams.zip;
             $scope.serviceState = $stateParams.serviceState;
@@ -19,10 +21,6 @@ define([
                     || (null === $scope.serviceState)) {
                 $state.go("start");
             }
-       
-            $scope.$watch('serviceState.ProductDescription', function(newVal, oldVal) {
-                var t = 42;
-            });
             
             $scope.changeWeight = function() {
                 var t = 42;

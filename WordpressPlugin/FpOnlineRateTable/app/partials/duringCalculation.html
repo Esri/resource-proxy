@@ -4,26 +4,34 @@
         <div class="span6">
             <div>
                 <div class="alert alert-info value-box">
-                    <strong>Postage: </strong>
-                    {{productDescription.ProductDescription.Postage.CurrencySymbol}}
-                    {{productDescription.ProductDescription.Postage.PostageValue}}
+                    <strong>{{translation.postage}}</strong>
+                    {{serviceState.ProductDescription.Postage | postageAsString}}
                 </div>
             </div>
         </div>
         <div class="span6">
             <div class="alert alert-info value-box">
                 <div id="ValueDisplay">
-                    <strong>Weight: </strong>0kg 0g
+                    <strong>{{translation.weight}}</strong>
+                    {{serviceState.Weight | weightAsString}}
                     <div class="pull-right">
-                        <input type="button" class="btn btn-primary btn-sm" id="ChangeValue" value="Change" ng-click="changeWeight()">
+                        <input type="button"
+                               class="btn btn-primary btn-sm"
+                               id="ChangeValue"
+                               value="{{translation.changeWeight}}"
+                               ng-click="changeWeight()">
                     </div>
                 </div>
                 <div id="ValueInput" style="display: none;">
-                    <form action="/ProductCalculation/RequestValue" method="post" novalidate="novalidate"><input name="__RequestVerificationToken" type="hidden" value="9wxM4fY7Qj6qVKwkNozSLJL0CqA9AhaMdvqI6S6OJEUssE6MSF8k80XdrQFNQ7GxTxTxexB-S50z8t4QcC9Z61jg3nLshzLsL9S0rd7La4g1"><input data-val="true" data-val-required="The CultureIsMetric field is required." id="CultureIsMetric" name="CultureIsMetric" type="hidden" value="True">
-                        <strong>Weight: </strong>
-                        <input class="text-box single-line" data-val="true" data-val-number="The field WeightValue must be a number." data-val-required="The WeightValue field is required." id="WeightValue" name="WeightValue" type="text" value="0.00">                    <label>g</label>
+                    <form action="/ProductCalculation/RequestValue" method="post" novalidate="novalidate">
+                        <input data-val="true" data-val-required="The CultureIsMetric field is required." id="CultureIsMetric" name="CultureIsMetric" type="hidden" value="True">
+                        <strong>{{translation.weight}}</strong>
+                        <input class="text-box single-line" data-val="true" data-val-number="The field WeightValue must be a number." data-val-required="The WeightValue field is required." id="WeightValue" name="WeightValue" type="text" value="0.00">
+                        <label>g</label>
                         <div class="pull-right">
-                            <input type="submit" value="Ok" class="btn btn-primary btn-sm">
+                            <input type="submit"
+                                   value="{{translation.ok}}"
+                                   class="btn btn-primary btn-sm">
                         </div>
                         <span class="field-validation-valid text-danger" data-valmsg-for="WeightValue" data-valmsg-replace="true"></span>
                     </form>
@@ -39,7 +47,7 @@
                     <tbody>
                         <tr>
                             <th>
-                                Produktberechnung
+                                {{serviceState.QueryDescription.DescriptionTitle}}
                             </th>
                         </tr>
                     </tbody>

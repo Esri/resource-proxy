@@ -1,55 +1,64 @@
 define([
-    'angular',
-    'angular-resource'
-], function() {
+    'onlineRateCalculator',
+    'services/appSettings'
+], function(app) {
     "use strict";
     
-    var service = angular.module('OnlineRateTableServices', [
-        'ngResource'
-    ]);
-    
-    service.factory('RateCalculationStartService', ['$resource',
-        function($resource) {
-            var startService;
+    app.factory('RateCalculationStartService', [
+        '$resource', 'AppSettings',
+        function($resource, AppSettings) {
             var startServiceUrl;
-            var calculateService;
             var calculateServiceUrl;
-            var backService;
             var backServiceUrl;
-            var updateWeightService;
             var updateWeightServiceUrl;
+            var service = null;
             
             var weight;
             var environment;
             var productDescription;
             
-            function ServiceEexception(message) {
+            function ServiceException(message) {
                 this.name = 'ServiceEexception';
                 this.message= message;
             }
-            ServiceEexception.prototype = new Error();
-            ServiceEexception.prototype.constructor = ServiceEexception;
+            ServiceException.prototype = new Error();
+            ServiceException.prototype.constructor = ServiceException;
             
             
             // Note: we use the methode 'save' to call a service as this the the
             // angular-resource synonym for 'post'.
             return {
-                init: function(url, env, startWeight) {
+                isInitialized: function() {
+                    return !!service;
+                },
+                
+                init: function(env, startWeight) {
+                    
+                    if(!AppSettings.isInitialized()) {
+                        return null;
+                    }
+                    
+                    var url = AppSettings.rateCalculationUrl();
+                    
                     startServiceUrl = url + '/Start';
-                    startService = $resource(startServiceUrl);
                     calculateServiceUrl = url + '/Calculate';
-                    calculateService = $resource(calculateServiceUrl);
                     backServiceUrl = url + '/Back';
-                    backService = $resource(backServiceUrl);
                     updateWeightServiceUrl = url + '/UpdateWeight';
-                    updateWeightService = $resource(updateWeightServiceUrl);
                     
                     weight = startWeight;
                     environment = env;
+                    
+                    service = $resource(url, {}, {
+                        'start': { method: 'POST', url: startServiceUrl },
+                        'calculate': { method: 'POST', url: calculateServiceUrl },
+                        'back': { method: 'POST', url: backServiceUrl },
+                        'updateWeight': { method: 'POST', url: updateWeightServiceUrl }
+                    });
                 },
                 
                 start: function() {
-                    var result = startService.save({}, {
+                    //var result = startService.save({}, {
+                    var result = service.start({}, {
                         Weight: weight,
                         Environment: environment },
                         function success() {
@@ -76,7 +85,7 @@ define([
                 },
                 
                 calculate: function(actionResult, environment) {
-                    return calculateService.save({}, {
+                    return service.calculate({}, {
                         ProductDescription: productDescription,
                         ActionResult: actionResult,
                         Environment: environment
@@ -84,14 +93,14 @@ define([
                 },
                 
                 back: function(environment) {
-                    return backService.save({}, {
+                    return service.back({}, {
                         ProductDescription: productDescription,
                         Environment: environment
                     });
                 },
                 
                 updateWeight: function(environment) {
-                    return updateWeightService.save({}, {
+                    return service.updateWeight({}, {
                         ProductDescription: productDescription,
                         Environment: environment
                     });
@@ -100,5 +109,5 @@ define([
         }
     ]);
     
-    return service;
+    return app;
 });

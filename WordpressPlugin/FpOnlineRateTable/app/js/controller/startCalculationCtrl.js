@@ -1,6 +1,8 @@
 define([
     'onlineRateCalculator',
-    'services/onlineRateTableServices'
+    'services/onlineRateTableServices',
+    'services/appSettings',
+    'services/translation'
 ], function(app) {
     "use strict";
     
@@ -8,19 +10,19 @@ define([
         '$scope',
         '$state',
         'RateCalculationStartService',
-        function($scope, $state, RateCalculationStartService) {
+        'AppSettings',
+        'Translation',
+        function($scope, $state, RateCalculationStartService,
+                AppSettings, Translation) {
             
-            $scope.translation = $scope.appData.translation;
-            
-            // Once the 'ng-init' directive is evaluated take the zip code regex
-            // and make it available to the controller.
-            $scope.$watch('appData.config.zipRegex', function(newVal, oldVal) {
+            // Do settings and translation initialization.
+            $scope.$watch('appData', function(newVal, oldVal) {
                 if(newVal) {
-                    // we need to remove the leading and trailing slashes as
-                    // Javascript does not expect them (as opposed to PHP).
-                    var withOutSlashes= $scope.appData.config.zipRegex.replace(
-                            /^\/|\/$/g, '');
-                    $scope.zipRegex = new RegExp(withOutSlashes);
+                    AppSettings.init(newVal.config);
+                    Translation.init(newVal.translation);
+                    // make the translation table available as model so it can
+                    // be used in views.
+                    $scope.translation = Translation.table();
                 }
             });
             
@@ -31,10 +33,11 @@ define([
             // patterns set via 'ng-init'.
             $scope.$watch('zipCode', function(newVal, oldVal) {
                 var model = $scope.ProductCalculationStart.SenderZip;
-                var regexIsPresent = !!$scope.zipRegex;
+                var zipRegex = AppSettings.zipRegex();
+                var regexIsPresent = !!zipRegex;
                 var newValIsSet = !!newVal;
                 if(regexIsPresent && newValIsSet) {
-                    var regexMatches = $scope.zipRegex.test(newVal);
+                    var regexMatches = zipRegex.test(newVal);
                     if(regexMatches) {
                         model.$setValidity('pattern', true);
                         return newVal;
@@ -58,9 +61,7 @@ define([
                         Culture: $scope.appData.config.culture,
                         SenderZipCode: $scope.zipCode
                     };
-                    RateCalculationStartService.init(
-                            $scope.appData.config.rateCalculationUrl,
-                            environment, weight);
+                    RateCalculationStartService.init(environment, weight);
                     var serviceState = RateCalculationStartService.start();
                     $state.go("calculate", {
                         'zip': $scope.zipCode,
