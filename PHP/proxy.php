@@ -633,6 +633,26 @@ class Proxy {
 
         exit();
     }
+    
+    private function isJson($string) {
+        
+        // We expect the encoding to be UTF-8.
+        // Alternatively we could try to get the encoding from the http request
+        // header ('charset') or to guess the encoing by using
+        // 'mb_detect_encoding'.
+        static $encoding = 'utf-8';
+        
+        if(is_string($string) && !empty($string)) {
+            $firstChar = mb_substr($string, 0, 1, $encoding);
+            if(($firstChar === '[') || ($firstChar === '{')) {
+                if(null !== json_decode($string)) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
 
     public function setupClassProperties()
     {
@@ -642,21 +662,20 @@ class Proxy {
         // $_POST array will only include entries of mime type
         // 'x-www-form-urlencoded'. But we also expect 'application/json'
         // input.
-        $json = file_get_contents('php://input');
+        $rawInput = file_get_contents('php://input');
+        $this->isJsonRequest = $this->isJson($rawInput);
         
         try {
             
-            if( !empty($json)) { // is it POST with JSON input?
+            if($this->isJsonRequest) { // is it POST with JSON input?
                 
                 $this->proxyLog->log('POST detected');
 
                 $this->proxyUrl = $_SERVER['QUERY_STRING'];
 
-                $this->proxyData = $json;
+                $this->proxyData = $rawInput;
 
                 $this->proxyMethod = "POST";
-                
-                $this->isJsonRequest = true;
                 
             } else if (!empty($_POST) && empty($_FILES)) { // Is it a POST without files?
 
@@ -667,8 +686,6 @@ class Proxy {
                 $this->proxyData = $_POST;
 
                 $this->proxyMethod = "POST";
-                
-                $this->isJsonRequest = false;
 
             } else if (!empty($_POST) && !empty($_FILES)) { // Is it a POST with files?
 
@@ -679,8 +696,6 @@ class Proxy {
                 $this->proxyData = $_POST;
 
                 $this->proxyMethod = "FILES";
-                
-                $this->isJsonRequest = false;
 
             } else if (empty($_POST) && empty($_FILES)) { // It must be a GET!
 
@@ -693,8 +708,6 @@ class Proxy {
                 $this->proxyUrlWithData = $_SERVER['QUERY_STRING'];
 
                 $this->proxyMethod = "GET";
-                
-                $this->isJsonRequest = false;
             }
 
         } catch (Exception $e) {
