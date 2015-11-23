@@ -15,7 +15,7 @@
                                     <xs:attribute name="domain" type="xs:string" use="optional" />
                                     <xs:attribute name="clientId" type="xs:string" use="optional" />
                                     <xs:attribute name="clientSecret" type="xs:string" use="optional" />
-                                    <xs:attribute name="oauthEndpoint" type="xs:anyURI" use="optional" />
+                                    <xs:attribute name="oauth2Endpoint" type="xs:anyURI" use="optional" />
                                     <xs:attribute name="accessToken" type="xs:string" use="optional" />
                                     <xs:attribute name="rateLimit" type="xs:integer" use="optional" />
                                     <xs:attribute name="rateLimitPeriod" type="xs:integer" use="optional" />
