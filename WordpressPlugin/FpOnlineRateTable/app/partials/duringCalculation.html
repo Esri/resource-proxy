@@ -4,33 +4,33 @@
         <div class="span6">
             <div>
                 <div class="alert alert-info value-box">
-                    <strong>{{translation.postage}}</strong>
-                    {{serviceState.ProductDescription.Postage | postageAsString}}
+                        <strong>{{vm.translation.postage}}</strong>
+                    {{vm.serviceState.ProductDescription.Postage | postageAsString}}
                 </div>
             </div>
         </div>
         <div class="span6">
             <div class="alert alert-info value-box">
                 <div id="ValueDisplay">
-                    <strong>{{translation.weight}}</strong>
-                    {{serviceState.Weight | weightAsString}}
+                    <strong>{{vm.translation.weight}}</strong>
+                    {{vm.serviceState.Weight | weightAsString}}
                     <div class="pull-right">
                         <input type="button"
                                class="btn btn-primary btn-sm"
                                id="ChangeValue"
-                               value="{{translation.changeWeight}}"
-                               ng-click="changeWeight()">
+                               value="{{vm.translation.changeWeight}}"
+                               ng-click="vm.changeWeight()">
                     </div>
                 </div>
                 <div id="ValueInput" style="display: none;">
                     <form action="/ProductCalculation/RequestValue" method="post" novalidate="novalidate">
                         <input data-val="true" data-val-required="The CultureIsMetric field is required." id="CultureIsMetric" name="CultureIsMetric" type="hidden" value="True">
-                        <strong>{{translation.weight}}</strong>
+                        <strong>{{vm.translation.weight}}</strong>
                         <input class="text-box single-line" data-val="true" data-val-number="The field WeightValue must be a number." data-val-required="The WeightValue field is required." id="WeightValue" name="WeightValue" type="text" value="0.00">
                         <label>g</label>
                         <div class="pull-right">
                             <input type="submit"
-                                   value="{{translation.ok}}"
+                                   value="{{vm.translation.ok}}"
                                    class="btn btn-primary btn-sm">
                         </div>
                         <span class="field-validation-valid text-danger" data-valmsg-for="WeightValue" data-valmsg-replace="true"></span>
@@ -43,12 +43,20 @@
     <div class="row">
         <div class="span12">
             <div>
-                <table class="table-condensed" style="width:100%">
-                    <tbody>
+                <table class="table-condensed product-calc">
+                    <thead>
                         <tr>
                             <th>
-                                {{serviceState.QueryDescription.DescriptionTitle}}
+                                {{vm.serviceState.QueryDescription.DescriptionTitle}}
                             </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="(index, entry) in vm.serviceState.QueryDescription.Entries">
+                            <td>
+                                <a class="btn btn-primary btn-md btn-block"
+                                   ng-click="vm.selectProductOption(index)">{{entry}}</a>
+                            </td>
                         </tr>
                     </tbody>
                 </table>

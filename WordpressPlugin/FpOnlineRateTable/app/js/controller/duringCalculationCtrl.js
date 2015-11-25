@@ -1,30 +1,40 @@
 define([
     'onlineRateCalculator',
-    'services/formatFilters'
+    'services/formatFilters',
+    'services/rateCalculationService'
 ], function(app) {
     "use strict";
     
     return app.controller('DuringCalculationCtrl', [
-        '$scope',
         '$state',
         '$stateParams',
-        function($scope, $state, $stateParams) {
+        'Translation',
+        'RateCalculationService',
+        function($state, $stateParams, Translation, RateCalculationService) {
             
-            $scope.translation = $scope.appData.translation;
-            $scope.zip = $stateParams.zip;
-            $scope.serviceState = $stateParams.serviceState;
+            var vm = this;
             
             // in case we have no useful parameters (e.g. the calculate page
             // was accessed directly instead of getting here through the start
             // page) redirect to start page.
-            if((null === $scope.zip === null)
-                    || (null === $scope.serviceState)) {
+            if(!angular.isObject($stateParams.serviceState)) {
                 $state.go("start");
             }
             
-            $scope.changeWeight = function() {
+            vm.translation = Translation.table();
+            vm.serviceState = $stateParams.serviceState;
+            
+            vm.changeWeight = changeWeight;
+            vm.selectProductOption = selectProductOption;
+
+            
+            function changeWeight() {
                 var t = 42;
             };
+            
+            function selectProductOption(index) {
+                vm.serviceState = RateCalculationService.calculate(index);
+            }
         }
     ]);
 });

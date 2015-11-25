@@ -177,7 +177,7 @@ class WidgetSettings {
         if(isset($currentRateTable)) {
             $culture = $currentRateTable->Culture;
             $country = $culture->getCountry();
-            $countryCode = $country->getIso3166Number();
+            $countryCode = $country->getIso3166a3();
             return $countryCode;
         }
         

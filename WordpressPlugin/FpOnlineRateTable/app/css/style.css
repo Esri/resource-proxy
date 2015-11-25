@@ -12,3 +12,11 @@ and open the template in the editor.
     padding-top: 15px;
     padding-bottom: 15px;
 }
+
+// remove some table borders introduced by by cutomizr blue.css
+table.product-calc {
+    border-bottom: 0;
+}
+table.product-calc th {
+    border-bottom: 0;
+}

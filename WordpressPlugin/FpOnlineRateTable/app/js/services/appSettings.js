@@ -29,31 +29,45 @@ define([
             },
             
             usesUsUnits: function() {
-                return appSettings.usesUsUnits;
+                if(angular.isObject(appSettings)) {
+                    return appSettings.usesUsUnits;
+                }
             },
             
             usesMetricunits: function() {
-                return appSettings.usesMetricUnits;
+                if(angular.isObject(appSettings)) {
+                    return appSettings.usesMetricUnits;
+                }
             },
             
             culture: function() {
-                return appSettings.culture;
+                if(angular.isObject(appSettings)) {
+                    return appSettings.culture;
+                }
             },
             
             countryCode: function() {
-                return appSettings.countryCode;
+                if(angular.isObject(appSettings)) {
+                    return appSettings.countryCode;
+                }
             },
             
             carrierId: function() {
-                return appSettings.carrierId;
+                if(angular.isObject(appSettings)) {
+                    return appSettings.carrierId;
+                }
             },
             
             zipRegex: function() {
-                return appSettings.zipRegex;
+                if(angular.isObject(appSettings)) {
+                    return appSettings.zipRegex;
+                }
             },
             
             rateCalculationUrl: function() {
-                return appSettings.rateCalculationUrl;
+                if(angular.isObject(appSettings)) {
+                    return appSettings.rateCalculationUrl;
+                }
             }
         };
     });

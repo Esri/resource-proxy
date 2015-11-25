@@ -10,15 +10,17 @@ define([
         var baseUrl = '/wordpress/wp-content/plugins/FpOnlineRateTable/app/';
         $stateProvider
             .state('start', {
-                url: '/start/',
+                url: '/start',
                 templateUrl: baseUrl + 'partials/startCalculation.html',
-                controller: 'StartCalculationCtrl'
+                controller: 'StartCalculationCtrl',
+                controllerAs: 'vm'
             })
             .state('calculate', {
-                url: '/calculate/',
+                url: '/calculate',
                 templateUrl: baseUrl + 'partials/duringCalculation.html',
                 controller: 'DuringCalculationCtrl',
-                params: {zip: null, serviceState: null}
+                controllerAs: 'vm',
+                params: {serviceState: null}
             });
             
         $urlRouterProvider.otherwise('/start');

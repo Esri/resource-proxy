@@ -1,9 +1,9 @@
 <div>
     <div growl></div>
-    <form name="ProductCalculationStart">
+    <form name="vm.ProductCalculationStart">
         <div class="form-group row">
             <label class="control-label span2" for="SenderZip">
-                {{translation.selectSenderZip}}
+                {{vm.translation.selectSenderZip}}
             </label>
             <div class="span10">
                 <input class="form-control"
@@ -11,20 +11,20 @@
                        id="SenderZip"
                        type="text"
                        value=""
-                       ng-model="zipCode"
+                       ng-model="vm.zipCode"
                        required >
-                <div role="alert" ng-show="ProductCalculationStart.$submitted || ProductCalculationStart.SenderZip.$touched">
+                <div role="alert" ng-show="vm.ProductCalculationStart.$submitted || vm.ProductCalculationStart.SenderZip.$touched">
                     <span class="error"
-                          ng-show="ProductCalculationStart.SenderZip.$error.pattern || ProductCalculationStart.SenderZip.$error.required">
-                        {{translation.invalidZipCode}}
+                          ng-show="vm.ProductCalculationStart.SenderZip.$error.pattern || vm.ProductCalculationStart.SenderZip.$error.required">
+                        {{vm.translation.invalidZipCode}}
                     </span>
                 </div>
             </div>
         </div>
         <div class="form-group row">
             <div class="offset2">
-                <button type="submit" class="btn btn-primary btn-md" ng-click="proceedToCalculation()">
-                    {{translation.startCalculation}}
+                <button type="submit" class="btn btn-primary btn-md" ng-click="vm.proceedToCalculation()">
+                    {{vm.translation.startCalculation}}
                 </button>
             </div>
         </div>
