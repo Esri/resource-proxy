@@ -1,0 +1,18 @@
+Composer is a package dependency management tool for PHP.
+Additionally it offers an autoloader so there is no need to "require"
+before "use" a namespace.
+Many third party libraries (like monolog) require the use of composer because
+they do not require their own files - relying on the autoloader.
+
+usage:
+* The file composer.json contains all the third party dependencies of the
+project.
+* "composer install" installs the third party packages mentioned in
+composer.json.
+* "composer update" updates the already installed packages.
+
+When using Windows behind a prxoy set the following environment variables:
+set HTTP_PROXY=http://<host>:<port>
+set HTTPS_PROXY=%HTTP_PROXY%
+set HTTP_PROXY_REQUEST_FULLURI=true
+set HTTPS_PROXY_REQUEST_FULLURI=false
