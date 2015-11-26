@@ -2,6 +2,9 @@
 #include "CalculationResultShowMenuProcessor.hpp"
 #include "CalculationResultRequestValueProcessor.hpp"
 #include "CalculationResultFinishedProcessor.hpp"
+#include "CalculationResultDisplayProcessor.hpp"
+#include "CalculationResultSelectIndexProcessor.hpp"
+#include "CalculationResultSelectValueProcessor.hpp"
 #include "CalculationResultProcessor.hpp"
 #include "ProductDescriptionMapper.hpp"
 #include "ProductCalculation/ActionDefs.hpp"
@@ -16,7 +19,10 @@ CalculationResultProcessorProxy::CalculationResultProcessorProxy(FP::Cloud::Onli
 	, m_Processors(gcnew System::Collections::Generic::Dictionary<INT32, CalculationResultProcessor^>())
 {
 	m_Processors->Add(ACTION_NONE, gcnew CalculationResultFinishedProcessor(m_Factory));
+	m_Processors->Add(ACTION_DISPLAY, gcnew CalculationResultDisplayProcessor(m_Factory));
 	m_Processors->Add(ACTION_SHOW_MENU, gcnew CalculationResultShowMenuProcessor(m_Factory));
+	m_Processors->Add(ACTION_SELECT_INDEX, gcnew CalculationResultSelectIndexProcessor(m_Factory));
+	m_Processors->Add(ACTION_SELECT_VALUE, gcnew CalculationResultSelectValueProcessor(m_Factory));
 	m_Processors->Add(ACTION_REQUEST_VALUE, gcnew CalculationResultRequestValueProcessor(m_Factory));
 	m_Processors->Add(ACTION_TEST_IMPRINT, gcnew CalculationResultFinishedProcessor(m_Factory));
 }

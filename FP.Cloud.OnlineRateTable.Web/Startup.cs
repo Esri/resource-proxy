@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-[assembly: OwinStartup(typeof(FP.Cloud.OnlineRateTable.Web.Startup))]
+[assembly: OwinStartup("FP.Cloud.OnlineRateTable.Web", typeof(FP.Cloud.OnlineRateTable.Web.Startup))]
 
 namespace FP.Cloud.OnlineRateTable.Web
 {

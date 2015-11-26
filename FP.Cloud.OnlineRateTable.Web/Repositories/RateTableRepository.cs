@@ -13,7 +13,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
         private string m_RateTableApi = string.Format("{0}/api/RateTableAdministration", ConfigurationManager.AppSettings["RateTableUrl"]);
         #endregion
         #region public
-        public async Task<IEnumerable<RateTableInfo>> GetAllRateTables(string authToken)
+        public async Task<ApiResponse<List<RateTableInfo>>> GetAllRateTables(string authToken)
         {
             RestRequest request = GetNewRequest();
             request.Resource = "GetAll";
@@ -22,7 +22,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
             return await Execute<List<RateTableInfo>>(request, m_RateTableApi, authToken) ;
         }
 
-        public async Task<RateTableInfo> GetById(int id, string authToken)
+        public async Task<ApiResponse<RateTableInfo>> GetById(int id, string authToken)
         {
             RestRequest request = GetNewRequest();
             request.Resource = "GetById";
@@ -31,12 +31,12 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
             return await Execute<RateTableInfo>(request, m_RateTableApi, authToken);
         }
 
-        public async Task<IEnumerable<RateTableInfo>> GetFilteredRateTables(string authToken)
+        public async Task<ApiResponse<List<RateTableInfo>>> GetFilteredRateTables(string authToken)
         {
             return null;
         }
 
-        public async Task<RateTableInfo> AddNewRateTable(RateTableInfo info, string authToken)
+        public async Task<ApiResponse<RateTableInfo>> AddNewRateTable(RateTableInfo info, string authToken)
         {
             info.ValidFrom = new DateTime(info.ValidFrom.Year, info.ValidFrom.Month, info.ValidFrom.Day, 0, 0, 0, DateTimeKind.Utc);
 
@@ -45,11 +45,10 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
             request.Method = Method.POST;
             request.AddBody(info);
 
-            RateTableInfo result = await Execute<RateTableInfo>(request, m_RateTableApi, authToken);
-            return result;
+            return await Execute<RateTableInfo>(request, m_RateTableApi, authToken);
         }
 
-        public async Task<RateTableInfo> UpdateRateTable(RateTableInfo info, string authToken)
+        public async Task<ApiResponse<RateTableInfo>> UpdateRateTable(RateTableInfo info, string authToken)
         {
             info.ValidFrom = new DateTime(info.ValidFrom.Year, info.ValidFrom.Month, info.ValidFrom.Day, 0, 0, 0, DateTimeKind.Utc);
 
@@ -58,19 +57,17 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
             request.Method = Method.POST;
             request.AddBody(info);
 
-            RateTableInfo result = await Execute<RateTableInfo>(request, m_RateTableApi, authToken);
-            return result;
+            return await Execute<RateTableInfo>(request, m_RateTableApi, authToken);
         }
 
-        public async Task<bool> DeleteRateTable(int id, string authToken)
+        public async Task<ApiResponse<bool>> DeleteRateTable(int id, string authToken)
         {
             RestRequest request = GetNewRequest();
             request.Resource = @"Delete/{id}";
             request.Method = Method.DELETE;
             request.AddParameter("id", id, ParameterType.UrlSegment);
 
-            await Execute<bool>(request, m_RateTableApi, authToken);
-            return true;
+            return await Execute<bool>(request, m_RateTableApi, authToken);
         }
 
         #region IDisposable Support

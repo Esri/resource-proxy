@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Base/misc/assert_m.h"
+
 #define BEGIN_PCALC_LIB_NAMESPACE namespace FP { namespace Cloud { namespace OnlineRateTable { namespace PCalcLib {
 
 #define END_PCALC_LIB_NAMESPACE  } } } }

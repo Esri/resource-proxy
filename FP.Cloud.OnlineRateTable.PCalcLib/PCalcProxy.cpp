@@ -11,6 +11,15 @@
 
 using namespace System;
 
+FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::PCalcProxy(IPCalcManager^ manager, IActionResultProcessor^ actionResultProcessor, IEnvironmentProcessor^ environmentProcessor, ICalculationResultProcessor^ calculationResultProcessor, IProductDescriptionMapper^ mapper)
+	: m_Manager(manager)
+	, m_CalculationResultProcessor(calculationResultProcessor)
+	, m_ActionResultProcessor(actionResultProcessor)
+	, m_EnvironmentProcessor(environmentProcessor)
+	, m_ProductDescriptionMapper(mapper)
+{
+}
+
 FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::PCalcProxy()
 	: m_Factory(gcnew PCalcFactory())
 	, m_Manager(gcnew PCalcManager(m_Factory))
@@ -19,14 +28,10 @@ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::PCalcProxy()
 	, m_EnvironmentProcessor(gcnew EnvironmentProcessor(m_Factory))
 	, m_ProductDescriptionMapper(gcnew ProductDescriptionMapper(m_Factory))
 {
+
 }
 
 FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::~PCalcProxy()
-{
-	this->!PCalcProxy();
-}
-
-FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::!PCalcProxy()
 {
 	if (nullptr != m_EnvironmentProcessor)
 		delete m_EnvironmentProcessor;
@@ -43,22 +48,40 @@ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::!PCalcProxy()
 	if (nullptr != m_ProductDescriptionMapper)
 		delete m_ProductDescriptionMapper;
 
+	m_EnvironmentProcessor = nullptr;
+	m_CalculationResultProcessor = nullptr;
+	m_Manager = nullptr;
+	m_ActionResultProcessor = nullptr;
+	m_ProductDescriptionMapper = nullptr;
+
+	this->!PCalcProxy();
+}
+
+FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::!PCalcProxy()
+{
 	if (nullptr != m_Factory)
+	{
 		delete m_Factory;
+		m_Factory = nullptr;
+	}
 }
 
 Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Start(Shared::EnvironmentInfo^ environment, Shared::WeightInfo^ weight)
 {
-	Lock lock(m_SyncLock);
+	//Lock lock(m_SyncLock);
 	int nextAction = 0;
 
+	// set state
 	this->m_EnvironmentProcessor->Handle(environment);
+
+	// calculate first step
 	this->m_Manager->CalculateStart(nextAction);
 
-	// update weight after valid product is available
+	// get the result from first calculation step.	
 	Shared::PCalcResultInfo^ result = this->m_CalculationResultProcessor->Handle(nextAction);
 
-	// recalculate with changed weight
+	// at start, the lib will discard the product desc parameter and we lost all changes.
+	// this behavior makes it necessary to recalculate the product with changed weight.	
 	this->m_ProductDescriptionMapper->SetWeight(weight);
 	this->Calculate(nullptr, (Shared::ProductDescriptionInfo^)nullptr);
 
@@ -70,7 +93,7 @@ Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Start
 
 Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(Shared::EnvironmentInfo^ environment, Shared::ProductDescriptionInfo^ product, Shared::ActionResultInfo^ actionResult)
 {
-	Lock lock(m_SyncLock);
+	//Lock lock(m_SyncLock);
 	INT32 nextAction = 0;
 
 	this->m_EnvironmentProcessor->Handle(environment);
@@ -93,9 +116,10 @@ Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calcu
 
 Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calculate(Shared::EnvironmentInfo^ environment, Shared::ProductDescriptionInfo^ product)
 {
-	Lock lock(m_SyncLock);
+	//Lock lock(m_SyncLock);
 	INT32 nextAction = 0;
 
+	// set state
 	this->m_EnvironmentProcessor->Handle(environment);
 	this->m_ProductDescriptionMapper->SetProduct(product);
 
@@ -107,12 +131,11 @@ Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Calcu
 	result->ProductDescription = this->m_ProductDescriptionMapper->GetProduct();
 
 	return result;
-
 }
 
 Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Back(Shared::EnvironmentInfo^ environment, Shared::ProductDescriptionInfo^ product)
 {
-	Lock lock(m_SyncLock);
+	//Lock lock(m_SyncLock);
 	INT32 nextAction = 0;
 
 	// set state
@@ -131,9 +154,16 @@ Shared::PCalcResultInfo^ FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Back(
 
 void FP::Cloud::OnlineRateTable::PCalcLib::PCalcProxy::Init(String^ amxPath, String^ tablePath)
 {
-	m_Manager->Create();
-	m_Manager->LoadPawn(amxPath);
-	m_Manager->LoadProductTable(tablePath);
+	try
+	{
+		m_Manager->Create();
+		m_Manager->LoadPawn(amxPath);
+		m_Manager->LoadProductTable(tablePath);
+	}
+	catch (System::Runtime::InteropServices::SEHException^ ex)
+	{
+		throw gcnew PCalcLibException(ex->Message, ex);
+	}
 }
 
 

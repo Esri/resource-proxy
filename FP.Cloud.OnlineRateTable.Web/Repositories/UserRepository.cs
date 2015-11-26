@@ -17,7 +17,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
         #endregion
 
         #region public
-        public async Task<AccessToken> Login(string user, string password)
+        public async Task<ApiResponse<AccessToken>> Login(string user, string password)
         {
             RestRequest request = GetNewRequest();
             request.Resource = "Token";
@@ -38,16 +38,16 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
             await Execute<object>(request, m_ManageApi, authToken);
         }
 
-        public async Task Register(RegisterBindingModel model)
+        public async Task<ApiResponse<EmptyObject>> Register(RegisterBindingModel model)
         {
             RestRequest request = GetNewRequest();
             request.Resource = "Register";
             request.Method = Method.POST;
             request.AddObject(model);
-            await Execute<object>(request, m_ManageApi, string.Empty);
+            return await Execute<EmptyObject>(request, m_ManageApi, string.Empty);
         }
 
-        public async Task<List<UserClaim>> GetUserClaims(string authToken)
+        public async Task<ApiResponse<List<UserClaim>>> GetUserClaims(string authToken)
         {
             RestRequest request = GetNewRequest();
             request.Resource = "UserClaims";
@@ -55,7 +55,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
             return await Execute<List<UserClaim>>(request, m_ManageApi, authToken);
         }
 
-        public async Task<ManageInfoViewModel> GetManageInfo(string returnUrl, string authToken)
+        public async Task<ApiResponse<ManageInfoViewModel>> GetManageInfo(string returnUrl, string authToken)
         {
             RestRequest request = GetNewRequest();
             request.Resource = "ManageInfo";
@@ -64,13 +64,13 @@ namespace FP.Cloud.OnlineRateTable.Web.Repositories
 
         }
 
-        public async Task ChangePassword(ChangePasswordBindingModel model, string authToken)
+        public async Task<ApiResponse<EmptyObject>>ChangePassword(ChangePasswordBindingModel model, string authToken)
         {
             RestRequest request = GetNewRequest();
             request.Resource = "ChangePassword";
             request.Method = Method.POST;
             request.AddObject(model);
-            await Execute<object>(request, m_ManageApi, authToken);
+            return await Execute<EmptyObject>(request, m_ManageApi, authToken);
         }
         #endregion
 

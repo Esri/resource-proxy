@@ -8,9 +8,22 @@ namespace FP.Cloud.OnlineRateTable.Web.Models.ViewModels
 {
     public class ProductCalculationViewModel
     {
+        #region members
+        private bool m_ProductCalculationFinished = false;
+        #endregion
+
         #region properties
         public UpdateWeightViewModel UpdateWeightModel { get; set; }
         public EQueryType QueryType { get; set; }
+        public bool ProductCalculationFinished
+        {
+            get { return m_ProductCalculationFinished; }
+            set
+            {
+                m_ProductCalculationFinished = value;
+                UpdateWeightModel.ProductCalculationFinished = value;
+            }
+        }
         public string PartialView
         {
             get { return GetPartialView(); }
@@ -21,6 +34,7 @@ namespace FP.Cloud.OnlineRateTable.Web.Models.ViewModels
         protected ProductCalculationViewModel()
         {
             UpdateWeightModel = new UpdateWeightViewModel();
+            ProductCalculationFinished = false;
         }
         #endregion
 
@@ -48,6 +62,10 @@ namespace FP.Cloud.OnlineRateTable.Web.Models.ViewModels
         #region private
         private string GetPartialView()
         {
+            if(ProductCalculationFinished)
+            {
+                return "~/Views/ProductCalculation/_FinishPartial.cshtml";
+            }
             switch (QueryType)
             {
                 case EQueryType.RequestPostage:
@@ -56,7 +74,6 @@ namespace FP.Cloud.OnlineRateTable.Web.Models.ViewModels
                     return "~/Views/ProductCalculation/_RequestValuePartial.cshtml";
                 case EQueryType.SelectIndex:
                     return "~/Views/ProductCalculation/_SelectIndexPartial.cshtml";
-                    break;
                 case EQueryType.ShowMenu:
                     return "~/Views/ProductCalculation/_ShowMenuPartial.cshtml";
                 case EQueryType.ShowDisplay:

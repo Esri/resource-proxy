@@ -13,6 +13,12 @@ using FP.Cloud.OnlineRateTable.Common.ProductCalculation.ApiRequests;
 
 namespace FP.Cloud.OnlineRateTable.Controllers
 {
+    /// <summary>
+    /// This controller provides all necessary functions to administer FP style
+    /// product calculation rate tables. These methods are protected. For you to be able to 
+   ///  administer rate tables you need to login using the FP authentication API 
+   /// and your user account needs to be assigned to the correct role
+    /// </summary>
     public class RateTableAdministrationController : ApiController
     {
         #region members
