@@ -1,6 +1,8 @@
 define([
     'onlineRateCalculator',
-    'services/appSettings'
+    'services/appSettings',
+    'services/weight',
+    'productCalculation/queryDispatcher.service'
 ], function(app) {
     "use strict";
     
@@ -34,6 +36,18 @@ define([
         Unknown: 100
     };
     
+    // query type returned by a calculation request
+    var eQueryType = {
+        None: 0,
+        RequestPostage: 1,
+        RequestValue: 2,
+        RequestString: 3,
+        SelectIndex: 4,
+        ShowMenu: 5,
+        ShowDisplay: 6,
+        SelectValue: 7
+    };
+    
     // calculation state to be found in the product description
     var eProductDescriptionState = {
         Complete: 0,
@@ -43,7 +57,9 @@ define([
     app.factory('RateCalculationService', [
         '$resource',
         'AppSettings',
-        function($resource, AppSettings) {
+        'Weight',
+        'QueryDispatcher',
+        function($resource, AppSettings, Weight, QueryDispatcher) {
             
             var startServiceUrl;
             var calculateServiceUrl;
@@ -51,9 +67,9 @@ define([
             var updateWeightServiceUrl;
             var service = null;
             
-            var weight;
             var environment;
             var productDescription;
+            var serviceState = null;
             
             function ServiceException(message) {
                 this.name = 'ServiceEexception';
@@ -66,8 +82,8 @@ define([
             // Note: we use the methode 'save' to call a service as this the the
             // angular-resource synonym for 'post'.
             return {
-                isInitialized: function() {
-                    return !!service;
+                getServiceState: function() {
+                    return serviceState;
                 },
                 
                 init: function(zipCode) {
@@ -90,12 +106,6 @@ define([
                         'updateWeight': { method: 'POST', url: updateWeightServiceUrl }
                     });
                     
-                    // some arbitary initial weight
-                    weight = {
-                        WeightValue: 1,
-                        WeightUnit: 0
-                    };
-                    
                     // setup environment
                     environment = {
                         Iso3CountryCode: AppSettings.countryCode(),
@@ -108,39 +118,24 @@ define([
                 
                 start: function() {
                     
-                    if(!this.isInitialized()) {
+                    if(!service) {
                         return null;
                     }
                     
-                    var result = service.start({}, {
+                    // some arbitary initial weight
+                    var weight = {
+                        WeightValue: 1,
+                        WeightUnit: 0
+                    };
+                    
+                    return callService(service.start, startServiceUrl, {
                         Weight: weight,
-                        Environment: environment },
-                        function success() {
-                            // now that the service call has returned
-                            // successfully we can access the ProductDescription
-                            // field in th promise. So store the returned
-                            // product description for further use.
-                            productDescription = result.ProductDescription;
-                            
-                            // also append the current weight and envoronment
-                            // objects to the result so they're available in for
-                            // the caller (presumably a controller).
-                            result.Weight = weight;
-                            result.Environment = environment;
-                        },
-                        function error(error) {
-                            throw new ServiceException(
-                                    'service error occurred when trying do a post request for "'
-                                    + startServiceUrl + '": ' + error.data.Message);
-                        });
-                        
-                    // returns the promise for the service call
-                    return result;
+                        Environment: environment });
                 },
                 
                 calculate: function(index) {
                     
-                    if(!this.isInitialized()) {
+                    if(!service) {
                         return null;
                     }
                     
@@ -151,46 +146,64 @@ define([
                             { AnyType: eAnyType.INT32, AnyValue: index } ]
                     };
                     
-                    var result = service.calculate({}, {
+                    return callService(service.calculate, calculateServiceUrl, {
                         ProductDescription: productDescription,
                         ActionResult: actionResult,
-                        Environment: environment },
-                        function success() {
-                            // now that the service call has returned
-                            // successfully we can access the ProductDescription
-                            // field in th promise. So store the returned
-                            // product description for further use.
-                            productDescription = result.ProductDescription;
-                            
-                            // also append the current weight and envoronment
-                            // objects to the result so they're available in for
-                            // the caller (presumably a controller).
-                            result.Weight = weight;
-                            result.Environment = environment;
-                        },
-                        function error(error) {
-                            throw new ServiceException(
-                                    'service error occurred when trying do a post request for "'
-                                    + startServiceUrl + '": ' + error.data.Message);
-                        });
-                        
-                    return result;
+                        Environment: environment });
+
                 },
                 
-                back: function(environment) {
-                    return service.back({}, {
-                        ProductDescription: productDescription,
-                        Environment: environment
-                    });
+                back: function() {
+                    
+                    if(!service) {
+                        return null;
+                    }
+                    
+                    return callService(
+                            service.back, updateWeightServiceUrl, {
+                                ProductDescription: productDescription,
+                                Environment: environment });
                 },
                 
-                updateWeight: function(environment) {
-                    return service.updateWeight({}, {
-                        ProductDescription: productDescription,
-                        Environment: environment
-                    });
+                updateWeight: function(weightValue) {
+                    
+                    if(!service) {
+                        return null;
+                    }
+                    
+                    productDescription.Weight
+                            = Weight.getWeightInfo(weightValue);
+                    
+                    return callService(
+                            service.updateWeight, updateWeightServiceUrl, {
+                                ProductDescription: productDescription,
+                                Environment: environment });
                 }
             };
+            
+            function callService(serviceMethod, serviceUrl, serviceParams) {
+                
+                serviceState = serviceMethod.call(service, {}, serviceParams,
+                    function success() {
+                        // now that the service call has returned
+                        // successfully we can access the ProductDescription
+                        // field in th promise. So store the returned
+                        // product description for further use.
+                        productDescription = serviceState.ProductDescription;
+                        
+                        QueryDispatcher.dispatch(
+                                serviceState.CalculationError,
+                                serviceState.QueryType,
+                                serviceState.QueryDescription);
+                    },
+                    function error(error) {
+                        throw new ServiceException(
+                                'service error occurred when trying do a post request for "'
+                                + serviceUrl + '": ' + error.data.Message);
+                    });
+
+                return serviceState;
+            }
         }
     ]);
     

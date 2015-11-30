@@ -28,7 +28,8 @@ abstract class Translation {
             'kg' => _x('kg', 'During Calculation Page: weight value kilogram unit', 'FpOnlinerateTable'),
             'g' => _x('g', 'During Calculation Page: weight value gram unit', 'FpOnlinerateTable'),
             'lb' => _x('lb', 'During Calculation Page: weight value pound unit', 'FpOnlinerateTable'),
-            'oz' => _x('oz', 'During Calculation Page: weight value ounce unit', 'FpOnlinerateTable')
+            'oz' => _x('oz', 'During Calculation Page: weight value ounce unit', 'FpOnlinerateTable'),
+            'errorRestartCalculation' => _x('Restart Product Calculation', 'Calculation Error Page: restart button label', 'FpOnlinerateTable')
         ];
         
         return $result;

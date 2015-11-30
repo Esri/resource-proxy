@@ -1,28 +1,50 @@
 define([
     'onlineRateCalculator',
-    'controller/startCalculationCtrl',
-    'controller/duringCalculationCtrl'
+    'controller/startCalculation.controller',
+    'controller/duringCalculation.controller',
+    'controller/calculationError.controller',
+    'productCalculation/showMenuQuery.controller'
 ], function(app) {
     "use strict";
     
-    return app.config(function($stateProvider, $urlRouterProvider) {
+    app.config(RoutingTable);
+    
+    RoutingTable.$inject = ['$stateProvider', '$urlRouterProvider'];
+            
+    function RoutingTable($stateProvider, $urlRouterProvider) {
         
         var baseUrl = '/wordpress/wp-content/plugins/FpOnlineRateTable/app/';
         $stateProvider
+            .state('error', {
+                url: '/error',
+                templateUrl: baseUrl + 'partials/calculationError.html',
+                controller: 'CalculationErrorController',
+                controllerAs: 'vm',
+                params: {'error': {}}
+            })
             .state('start', {
                 url: '/start',
                 templateUrl: baseUrl + 'partials/startCalculation.html',
-                controller: 'StartCalculationCtrl',
+                controller: 'StartCalculationController',
                 controllerAs: 'vm'
             })
             .state('calculate', {
                 url: '/calculate',
                 templateUrl: baseUrl + 'partials/duringCalculation.html',
-                controller: 'DuringCalculationCtrl',
+                controller: 'DuringCalculationController',
+                controllerAs: 'vm'
+            })
+            .state('calculate.showMenu', {
+                url: '/',
+                templateUrl: baseUrl + 'js/productCalculation/showMenuQuery.html',
+                controller: 'ShowMenuQueryController',
                 controllerAs: 'vm',
-                params: {serviceState: null}
+                parent: 'calculate',
+                params: { 'queryDescription': {} }
             });
             
         $urlRouterProvider.otherwise('/start');
-    });
+    }
+    
+    return app;
 });

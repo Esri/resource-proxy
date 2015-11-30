@@ -1,0 +1,19 @@
+<table class="table-condensed product-calc">
+    <thead>
+        <tr>
+            <th>
+                {{vm.queryDescription.DescriptionTitle}}
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="(index, entry) in vm.queryDescription.Entries">
+            <td>
+                <a class="btn btn-primary btn-md btn-block"
+                   ng-click="vm.selectMenuItem(index)">
+                    {{entry}}
+                </a>
+            </td>
+        </tr>
+    </tbody>
+</table>

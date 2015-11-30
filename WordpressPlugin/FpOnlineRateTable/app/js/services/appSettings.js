@@ -14,10 +14,15 @@ define([
             init: function(settings) {
                 appSettings = settings;
                 
-                // transform PHP regex string into Javascript Regex Object
-                var regexWithoutSlashes
-                        = settings.zipRegex.replace(/^\/|\/$/g, '');
-                appSettings.zipRegex = new RegExp(regexWithoutSlashes);
+                // in case we get here a second time (e.g. the user pressed
+                // 'back' the zipRegex was already transformed into a RegExp
+                // object. 
+                if(!(settings.zipRegex instanceof RegExp)) {
+                    // transform PHP regex string into Javascript Regex Object
+                    var regexWithoutSlashes
+                            = settings.zipRegex.replace(/^\/|\/$/g, '');
+                    appSettings.zipRegex = new RegExp(regexWithoutSlashes);
+                }
                 
                 if('US' === settings.culture.slice(-2)) {
                     appSettings.usesUsUnits = true;

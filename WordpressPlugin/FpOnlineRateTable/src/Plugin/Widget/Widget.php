@@ -30,7 +30,6 @@ use FP\Web\Portal\FpOnlineRateTable\src\Utils\Wordpress\LocalizationTextDomain;
 
 class Widget extends \WP_Widget {
     
-    //const BOOTSTRAP_PATH = '/3rdParty/bootstrap/bootstrap.min.css';
     const STYLE_PATH = 'app/css/style.css';
     
     static private $config;
@@ -65,6 +64,8 @@ class Widget extends \WP_Widget {
                 $pluginUrl . self::STYLE_PATH, $dependencies );
 
         $this->css = $mainCss;
+        $this->css->register();
+        $this->css->loadOnAction();
     }
     
     public function widget($args, $instance) {
@@ -74,7 +75,7 @@ class Widget extends \WP_Widget {
         try {
             $widgetSettings = new WidgetSettings($this, $instance);
             self::$textDomain->load();
-            $this->css->registerAndLoad();
+            //$this->css->registerAndLoad();
             
             // render title if necessary
             $title = $widgetSettings->getIfValid(WidgetSettings::TITLE);

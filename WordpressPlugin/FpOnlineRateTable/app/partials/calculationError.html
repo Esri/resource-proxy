@@ -1,0 +1,20 @@
+<div class="col-md-9">
+    <div class="text-center alert alert-danger">
+        <span class="field-validation-error text-danger" data-valmsg-for="GeneralError" data-valmsg-replace="true">
+            {{vm.error.ErrorMessage}}
+        </span>
+    </div>
+    <div>
+        <div class="validation-summary-errors text-danger">
+            <ul>
+                <li style="display:none"></li>
+            </ul>
+        </div>
+        <div class="text-center">
+            <button class="btn btn-primary btn-md"
+                    ng-click="vm.restartCalculation()">
+                {{vm.translation.errorRestartCalculation}}
+            </button>
+        </div>
+    </div>
+</div>

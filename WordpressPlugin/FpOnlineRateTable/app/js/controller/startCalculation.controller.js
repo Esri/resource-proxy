@@ -1,6 +1,6 @@
 define([
     'onlineRateCalculator',
-    'services/rateCalculationService',
+    'services/rateCalculationServiceFrontend.service',
     'services/appSettings',
     'services/translation'
 ], function(app) {
@@ -10,15 +10,15 @@ define([
             'StartCalculationController', StartCalculationController);
     
     
-    StartCalculationController.$inject([
+    StartCalculationController.$inject = [
         '$scope',
         '$state',
-        'RateCalculationService',
+        'RateCalculationServiceFrontend',
         'AppSettings',
-        'Translation']);
+        'Translation'];
     
-    function StartCalculationController($scope, $state, RateCalculationService,
-                AppSettings, Translation) {
+    function StartCalculationController($scope, $state,
+            RateCalculationServiceFrontend, AppSettings, Translation) {
 
         var vm = this;
         
@@ -54,11 +54,7 @@ define([
         function proceedToCalculation() {
             
             if(vm.ProductCalculationStart.SenderZip.$valid) {
-                RateCalculationService.init(vm.zipCode);
-                var serviceState = RateCalculationService.start();
-
-                $state.go("calculate", {
-                    'serviceState': serviceState});
+                RateCalculationServiceFrontend.start(vm.zipCode);
             }
         };
         

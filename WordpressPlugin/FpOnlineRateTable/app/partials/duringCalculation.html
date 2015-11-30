@@ -11,29 +11,41 @@
         </div>
         <div class="span6">
             <div class="alert alert-info value-box">
-                <div id="ValueDisplay">
+                <div id="ValueDisplay" ng-hide="vm.showWeightInput">
                     <strong>{{vm.translation.weight}}</strong>
-                    {{vm.serviceState.Weight | weightAsString}}
+                    {{vm.serviceState.ProductDescription.Weight | weightAsString}}
                     <div class="pull-right">
                         <input type="button"
                                class="btn btn-primary btn-sm"
                                id="ChangeValue"
                                value="{{vm.translation.changeWeight}}"
-                               ng-click="vm.changeWeight()">
+                               ng-click="vm.showWeightInput=true">
                     </div>
                 </div>
-                <div id="ValueInput" style="display: none;">
-                    <form action="/ProductCalculation/RequestValue" method="post" novalidate="novalidate">
-                        <input data-val="true" data-val-required="The CultureIsMetric field is required." id="CultureIsMetric" name="CultureIsMetric" type="hidden" value="True">
+                <div id="ValueInput" ng-show="vm.showWeightInput">
+                    <form name="vm.ChangeWeightForm">
                         <strong>{{vm.translation.weight}}</strong>
-                        <input class="text-box single-line" data-val="true" data-val-number="The field WeightValue must be a number." data-val-required="The WeightValue field is required." id="WeightValue" name="WeightValue" type="text" value="0.00">
-                        <label>g</label>
+                        <input class="number-input"
+                               data-val-number="The field WeightValue must be a number."
+                               data-val-required="The WeightValue field is required."
+                               id="WeightValue"
+                               name="WeightValue"
+                               type="number"
+                               step="any"
+                               min="0"
+                               value="0.00"
+                               ng-model="vm.weightValue">
+                        <strong>{{vm.weightInputUnit}}</strong>
                         <div class="pull-right">
-                            <input type="submit"
-                                   value="{{vm.translation.ok}}"
-                                   class="btn btn-primary btn-sm">
+                            <button type="submit"
+                                    class="btn btn-primary btn-md"
+                                    ng-click="vm.changeWeight()">
+                                {{vm.translation.ok}}
+                            </button>
                         </div>
-                        <span class="field-validation-valid text-danger" data-valmsg-for="WeightValue" data-valmsg-replace="true"></span>
+                        <span class="field-validation-valid text-danger"
+                              data-valmsg-for="WeightValue"
+                              data-valmsg-replace="true"></span>
                     </form>
                 </div>
             </div>
@@ -42,24 +54,7 @@
     </div>
     <div class="row">
         <div class="span12">
-            <div>
-                <table class="table-condensed product-calc">
-                    <thead>
-                        <tr>
-                            <th>
-                                {{vm.serviceState.QueryDescription.DescriptionTitle}}
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="(index, entry) in vm.serviceState.QueryDescription.Entries">
-                            <td>
-                                <a class="btn btn-primary btn-md btn-block"
-                                   ng-click="vm.selectProductOption(index)">{{entry}}</a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div ui-view>
             </div>
         </div>
     </div>

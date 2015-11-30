@@ -2,7 +2,7 @@ define([
     'onlineRateCalculator',
     'filters/postageAsString',
     'filters/weightAsString',
-    'services/rateCalculationService',
+    'services/rateCalculationServiceFrontend.service',
     'services/weight'
 ], function(app) {
     "use strict";
@@ -11,42 +11,40 @@ define([
             'DuringCalculationController', DuringCalculationController);
         
     
-    DuringCalculationController.$inject([
+    DuringCalculationController.$inject = [
+        '$rootScope',
         '$state',
         'Translation',
-        'RateCalculationService',
-        'Weight']);
+        'RateCalculationServiceFrontend',
+        'Weight'];
     
-    function DuringCalculationController($state, Translation,
-                RateCalculationService, Weight) {
+    function DuringCalculationController($rootScope, $state, Translation,
+                RateCalculationServiceFrontend, Weight) {
 
         var vm = this;
-
-        vm.serviceState = RateCalculationService.getServiceState();
-        // in case we have no useful parameters (e.g. the calculate page
-        // was accessed directly instead of getting here through the start
-        // page) redirect to start page.
-        if(!vm.serviceState) {
-             $state.go("start");
-             return;
-        }
 
         vm.translation = Translation.table();
         vm.weightInputUnit = Weight.getLocalizedMinorUnit();
 
         vm.changeWeight = changeWeight;
-        vm.selectProductOption = selectProductOption;
+
+        activate();
 
         /////////////////////////
 
+        function activate() {
+            
+            $rootScope.$watch('productDescriptionChanged',
+            function(productDescription) {
+               vm.productDescription = productDescription; 
+            });
+        }
+
         function changeWeight() {
-            vm.serviceState
-                    = RateCalculationService.updateWeight(vm.weightValue);
+            RateCalculationServiceFrontend.updateWeight(vm.weightValue);
             vm.showWeightInput = false;
         };
-
-        function selectProductOption(index) {
-            vm.serviceState = RateCalculationService.calculate(index);
-        }
     }
+    
+    return app;
 });
