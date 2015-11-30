@@ -3,28 +3,33 @@
     <div class="row">
         <div class="span6">
             <div>
-                <div class="alert alert-info value-box">
-                        <strong>{{vm.translation.postage}}</strong>
-                    {{vm.serviceState.ProductDescription.Postage | postageAsString}}
+                <div class="alert alert-info value-box"
+                     ng-show="calc.complete">
+                        <strong>{{calc.translation.postage}}</strong>
+                    {{calc.productDescription.Postage | postageAsString}}
+                </div>
+                <div class="alert alert-info value-box"
+                     ng-hide="calc.complete">
+                        <strong>{{calc.translation.notComplete}}</strong>
                 </div>
             </div>
         </div>
         <div class="span6">
             <div class="alert alert-info value-box">
-                <div id="ValueDisplay" ng-hide="vm.showWeightInput">
-                    <strong>{{vm.translation.weight}}</strong>
-                    {{vm.serviceState.ProductDescription.Weight | weightAsString}}
+                <div id="ValueDisplay" ng-hide="calc.showWeightInput">
+                    <strong>{{calc.translation.weight}}</strong>
+                    {{calc.productDescription.Weight | weightAsString}}
                     <div class="pull-right">
                         <input type="button"
                                class="btn btn-primary btn-sm"
                                id="ChangeValue"
-                               value="{{vm.translation.changeWeight}}"
-                               ng-click="vm.showWeightInput=true">
+                               value="{{calc.translation.changeWeight}}"
+                               ng-click="calc.showWeightInput=true">
                     </div>
                 </div>
-                <div id="ValueInput" ng-show="vm.showWeightInput">
-                    <form name="vm.ChangeWeightForm">
-                        <strong>{{vm.translation.weight}}</strong>
+                <div id="ValueInput" ng-show="calc.showWeightInput">
+                    <form name="calc.ChangeWeightForm">
+                        <strong>{{calc.translation.weight}}</strong>
                         <input class="number-input"
                                data-val-number="The field WeightValue must be a number."
                                data-val-required="The WeightValue field is required."
@@ -34,13 +39,13 @@
                                step="any"
                                min="0"
                                value="0.00"
-                               ng-model="vm.weightValue">
-                        <strong>{{vm.weightInputUnit}}</strong>
+                               ng-model="calc.weightValue">
+                        <strong>{{calc.weightInputUnit}}</strong>
                         <div class="pull-right">
                             <button type="submit"
                                     class="btn btn-primary btn-md"
-                                    ng-click="vm.changeWeight()">
-                                {{vm.translation.ok}}
+                                    ng-click="calc.changeWeight()">
+                                {{calc.translation.ok}}
                             </button>
                         </div>
                         <span class="field-validation-valid text-danger"
@@ -62,13 +67,24 @@
         <div class="span6">
         </div>
         <div class="span2">
-            <a class="btn btn-primary btn-md btn-block" href="/ProductCalculation/StepBack">Step Back</a>
+            <a class="btn btn-primary btn-md btn-block"
+               ng-click="calc.stepBack()"
+               ng-disabled="!calc.hasHistory">
+                {{calc.translation.stepBack}}
+            </a>
         </div>
         <div class="span2">
-            <a class="btn btn-primary btn-md btn-block" href="/ProductCalculation/Restart">Restart</a>
+            <a class="btn btn-primary btn-md btn-block"
+               ui-sref="start">
+                {{calc.translation.restart}}
+            </a>
         </div>
         <div class="span2">
-            <a class="btn btn-primary btn-md btn-block disabled" href="/ProductCalculation/Finish">Finish</a>
+            <a class="btn btn-primary btn-md btn-block"
+               ng-disabled="!calc.complete"
+               ui-sref="finish">
+                {{calc.translation.finish}}
+            </a>
         </div>
     </div>
 </div>

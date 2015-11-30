@@ -29,7 +29,12 @@ abstract class Translation {
             'g' => _x('g', 'During Calculation Page: weight value gram unit', 'FpOnlinerateTable'),
             'lb' => _x('lb', 'During Calculation Page: weight value pound unit', 'FpOnlinerateTable'),
             'oz' => _x('oz', 'During Calculation Page: weight value ounce unit', 'FpOnlinerateTable'),
-            'errorRestartCalculation' => _x('Restart Product Calculation', 'Calculation Error Page: restart button label', 'FpOnlinerateTable')
+            'notComplete' => _x('not complete', 'During Calculation Page: calculation incomplete indicator', 'FpOnlinerateTable'),
+            'stepBack' => _x('Step Back', 'During Calculation Page: button label', 'FpOnlinerateTable'),
+            'restart' => _x('Restart', 'During Calculation Page: button label', 'FpOnlinerateTable'),
+            'finish' => _x('Finish', 'During Calculation Page: button label', 'FpOnlinerateTable'),
+            'errorRestartCalculation' => _x('Restart Product Calculation', 'Calculation Error Page: restart button label', 'FpOnlinerateTable'),
+            'complete' => _x('Product Calculation complete', 'Finish page: calculation complete text', 'FpOnlinerateTable')
         ];
         
         return $result;

@@ -9,15 +9,12 @@ define([
         
     
     ShowMenuQueryController.$inject = [
-        '$stateParams',
         'RateCalculationServiceFrontend'];
     
-    function ShowMenuQueryController(
-            $stateParams, RateCalculationServiceFrontend) {
+    function ShowMenuQueryController(RateCalculationServiceFrontend) {
 
         var vm = this;
 
-        vm.queryDescription = $stateParams.queryDescription;
         vm.selectMenuItem = selectMenuItem;
         
         ///////////

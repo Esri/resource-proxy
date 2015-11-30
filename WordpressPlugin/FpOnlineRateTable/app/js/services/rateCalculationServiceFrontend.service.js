@@ -3,8 +3,8 @@ define([
     'services/appSettings',
     'services/weight',
     'productCalculation/queryDispatcher.service',
-    'services/rateCalculationService.service',
-    'services/rateCalculationServiceAlternative.service'
+    'productCalculation/currentProductDescription.service',
+    'services/rateCalculationService.service'
 ], function(app) {
     "use strict";
     
@@ -43,20 +43,17 @@ define([
             'RateCalculationServiceFrontend', RateCalculationServiceFrontend);
     
     RateCalculationServiceFrontend.$inject = [
-        '$rootScope',
         'RateCalculationService',
-        'RateCalculationServiceAlternative',
+        'CurrentProductDescription',
         'QueryDispatcher',
         'Weight',
         'AppSettings'];
     
     
-    function RateCalculationServiceFrontend($rootScope,
-            RateCalculationService, RateCalculationServiceAlternative,
-            QueryDispatcher, Weight, AppSettings) {
+    function RateCalculationServiceFrontend(RateCalculationService,
+            CurrentProductDescription, QueryDispatcher, Weight, AppSettings) {
         
         return {
-            getProductDescription: getProductDescription,
             start: start,
             calculate: calculate,
             back: back,
@@ -66,7 +63,6 @@ define([
         //////////
         
         var environment;
-        var productDescription;
         
         function createEnvironment(zipCode) {
             return {
@@ -96,46 +92,45 @@ define([
             };
         }
         
-        function getProductDescription() {
-            return productDescription;
-        }
-        
         function start(zipCode, weightValue) {
 
             environment = createEnvironment(zipCode);
             var weightInfo = createWeightInfo(weightValue);
-//            var promise = RateCalculationService.start(environment, weightInfo);
-            var promise = RateCalculationServiceAlternative.start(
-                    environment, weightInfo);
+            var promise = RateCalculationService.start(weightInfo, environment);
+//            var promise = RateCalculationServiceAlternative.start(
+//                    weightInfo, environment);
             return handleSuccess(promise);
         }
         
         function calculate(index) {
             
             var actionResult = createActionResultFromIndex(index);
-//            var promise = RateCalculationService.calculate(
-//                    productDescription, actionResult, environment);
-            var promise = RateCalculationServiceAlternative.calculate(
+            var productDescription = CurrentProductDescription.get();
+            var promise = RateCalculationService.calculate(
                     productDescription, actionResult, environment);
+//            var promise = RateCalculationServiceAlternative.calculate(
+//                    productDescription, actionResult, environment);
             return handleSuccess(promise);
         }
         
         function back() {
             
-//            var promise = RateCalculationService.back(
-//                    productDescription, environment);
-            var promise = RateCalculationServiceAlternative.back(
+            var productDescription = CurrentProductDescription.get();
+            var promise = RateCalculationService.back(
                     productDescription, environment);
+//            var promise = RateCalculationServiceAlternative.back(
+//                    productDescription, environment);
             return handleSuccess(promise);
         }
         
         function updateWeight(weight) {
             
-            productDescription.Weight = Weight.getWeightInfo(weight);
-//            var promise = RateCalculationService.back(
-//                    productDescription, environment);
-            var promise = RateCalculationServiceAlternative.back(
+            var productDescription
+                    = CurrentProductDescription.updateWeight(weight);
+            var promise = RateCalculationService.updateWeight(
                     productDescription, environment);
+//            var promise = RateCalculationServiceAlternative.back(
+//                    productDescription, environment);
             return handleSuccess(promise);
         }
         
@@ -144,13 +139,13 @@ define([
         function handleSuccess(promise) {
             return promise.then(
                 function (result) {
-                    productDescription = result.ProductDescription;
-                    $rootScope.$emit('productDescriptionChanged',
-                            productDescription);
+                    CurrentProductDescription.set(
+                            result.data.ProductDescription);
+
                     QueryDispatcher.dispatch(
-                            result.CalculationError,
-                            result.QueryType,
-                            result.QueryDescription);
+                            result.data.CalculationError,
+                            result.data.QueryType,
+                            result.data.QueryDescription);
                 });
         }
     }

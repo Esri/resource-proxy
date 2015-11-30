@@ -3,7 +3,8 @@ define([
     'controller/startCalculation.controller',
     'controller/duringCalculation.controller',
     'controller/calculationError.controller',
-    'productCalculation/showMenuQuery.controller'
+    'productCalculation/showMenuQuery.controller',
+    'productCalculation/finish.controller'
 ], function(app) {
     "use strict";
     
@@ -32,15 +33,22 @@ define([
                 url: '/calculate',
                 templateUrl: baseUrl + 'partials/duringCalculation.html',
                 controller: 'DuringCalculationController',
-                controllerAs: 'vm'
+                controllerAs: 'calc',
+                params: { 'queryDescription': null }
             })
             .state('calculate.showMenu', {
                 url: '/',
                 templateUrl: baseUrl + 'js/productCalculation/showMenuQuery.html',
                 controller: 'ShowMenuQueryController',
                 controllerAs: 'vm',
-                parent: 'calculate',
-                params: { 'queryDescription': {} }
+                parent: 'calculate'
+            })
+            .state('finish', {
+                url: '/finish',
+                templateUrl: baseUrl + 'js/productCalculation/finish.html',
+                controller: 'FinishController',
+                controllerAs: 'vm',
+                parent: 'calculate'
             });
             
         $urlRouterProvider.otherwise('/start');
