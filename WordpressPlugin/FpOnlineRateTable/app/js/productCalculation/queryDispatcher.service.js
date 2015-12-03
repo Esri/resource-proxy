@@ -1,5 +1,7 @@
 define([
-    'onlineRateCalculator'
+    'onlineRateCalculator',
+    'productCalculation/currentProductDescription.service',
+    'productCalculation/currentQueryDescription.service'
 ], function(app) {
     "use strict";
     
@@ -17,9 +19,13 @@ define([
     
     app.factory('QueryDispatcher', QueryDispatcher);
     
-    QueryDispatcher.$inject = ['$state'];
+    QueryDispatcher.$inject = [
+        '$state',
+        'CurrentProductDescription',
+        'CurrentQueryDescription'];
     
-    function QueryDispatcher($state) {
+    function QueryDispatcher(
+            $state, CurrentProductDescription, CurrentQueryDescription) {
         
         return {
             dispatch: dispatch
@@ -35,7 +41,7 @@ define([
         NotImplementedException.prototype.constructor = NotImplementedException;
         
         
-        function dispatch(error, queryType, query) {
+        function dispatch(error, productDescription, queryType, query) {
             
             var path;
             
@@ -45,10 +51,42 @@ define([
             
             switch(queryType) {
                 case eQueryType.None:
+                    
+                    // We have a new product description but no new query
+                    // description.
+                    CurrentProductDescription.set(productDescription);
+                    
                     return;
+                    
+                case eQueryType.RequestValue:
+                
+                    path = 'calculate.requestValue';
+                    
+                    CurrentProductDescription.set(productDescription);
+                    CurrentQueryDescription.set(queryType, query);
+                    
+                    break;
                 
                 case eQueryType.ShowMenu:
+                    
                     path = 'calculate.showMenu';
+                    
+                    // We have a new query description and a new product
+                    // description - so store both.
+                    CurrentProductDescription.set(productDescription);
+                    CurrentQueryDescription.set(queryType, query);
+                    
+                    break;
+                    
+                case eQueryType.ShowDisplay:
+                    
+                    path = 'calculate.showDisplay';
+                    
+                    // We have a new query description and a new product
+                    // description - so store both.
+                    CurrentProductDescription.set(productDescription);
+                    CurrentQueryDescription.set(queryType, query);
+                    
                     break;
                     
                 default:

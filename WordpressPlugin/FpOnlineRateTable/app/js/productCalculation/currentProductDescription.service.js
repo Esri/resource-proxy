@@ -4,23 +4,28 @@ define([
 ], function(app) {
     "use strict";
     
-    var eProductDescriptionState = {
+    app.constant('EProductDescriptionState', {
         Complete: 0,
         Incomplete: 1
-    };
-    
+    });
     
     app.factory('CurrentProductDescription', CurrentProductDescription);
     
     CurrentProductDescription.$inject = [
         '$rootScope',
-        'Weight'];
+        'Weight',
+        'EProductDescriptionState'];
     
-    function CurrentProductDescription($rootScope, Weight) {
+    function CurrentProductDescription(
+            $rootScope, Weight, EProductDescriptionState) {
+        
+        var productDescriptionStack = [];
+        var currentProductDescription;
         
         return {
             get: get,
             set: set,
+            restoreLast: restoreLast, 
             updateWeight: updateWeight,
             isComplete: isComplete,
             hasHistory: hasHistory
@@ -28,35 +33,46 @@ define([
         
         /////////////
         
-        var productDescription;
-        
         function get() {
-            return productDescription;
+            return currentProductDescription;
         }
         
         function set(value) {
             
-            productDescription = value;
+            currentProductDescription = value;
+            productDescriptionStack.push(value);
             notifyListeners();
                     
-            return productDescription;
+            return currentProductDescription;
+        }
+        
+        function restoreLast() {
+            
+            var last = productDescriptionStack.pop();
+            if(last) {
+                currentProductDescription = last;
+                notifyListeners();
+            }
+            
+            return currentProductDescription;
         }
         
         function updateWeight(weightValue) {
             
-            productDescription.Weight = Weight.getWeightInfo(weightValue);
+            currentProductDescription.Weight
+                    = Weight.getWeightInfo(weightValue);
             notifyListeners();
             
-            return productDescription;
+            return currentProductDescription;
         }
         
         function isComplete() {
-            return (productDescription.State
-                    === eProductDescriptionState.Complete);
+            return (currentProductDescription.State
+                    === EProductDescriptionState.Complete);
         }
         
         function hasHistory() {
-            return (productDescription.ReadyModeSelection.length !== 0);
+            return (currentProductDescription.ReadyModeSelection.length !== 0);
         }
         
         function notifyListeners() {

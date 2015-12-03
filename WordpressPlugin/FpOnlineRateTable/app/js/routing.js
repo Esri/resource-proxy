@@ -4,6 +4,8 @@ define([
     'controller/duringCalculation.controller',
     'controller/calculationError.controller',
     'productCalculation/showMenuQuery.controller',
+    'productCalculation/showDisplayQuery.controller',
+    'productCalculation/requestValueQuery.controller',
     'productCalculation/finish.controller'
 ], function(app) {
     "use strict";
@@ -40,6 +42,20 @@ define([
                 url: '/',
                 templateUrl: baseUrl + 'js/productCalculation/showMenuQuery.html',
                 controller: 'ShowMenuQueryController',
+                controllerAs: 'vm',
+                parent: 'calculate'
+            })
+            .state('calculate.showDisplay', {
+                url: '/',
+                templateUrl: baseUrl + 'js/productCalculation/showDisplayQuery.html',
+                controller: 'ShowDisplayQueryController',
+                controllerAs: 'vm',
+                parent: 'calculate'
+            })
+            .state('calculate.requestValue', {
+                url: '/',
+                templateUrl: baseUrl + 'js/productCalculation/requestValueQuery.html',
+                controller: 'RequestValueQueryController',
                 controllerAs: 'vm',
                 parent: 'calculate'
             })

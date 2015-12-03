@@ -1,0 +1,30 @@
+<div>
+    <table class="table-condensed product-calc">
+        <thead>
+            <th>
+                {{calc.queryDescription.DescriptionTitle}}
+            </th>
+        </thead>
+    </table>
+    
+    <div class="text-center">
+        <label for="InputValue">
+            {{calc.queryDescription.StatusMessage}}
+        </label>
+        <input type="number"
+               class="number-input"
+               id="InputValue"
+               name="InputValue"
+               step="any"
+               min="0"
+               value="0"
+               ng-model="vm.value">
+    </div>
+    
+    <div class="text-center">
+        <a class="btn btn-primary btn-md"
+           ng-click="vm.requestValue()">
+            {{calc.translation.ok}}
+        </a>
+    </div>
+</div>

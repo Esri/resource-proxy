@@ -54,11 +54,28 @@
                     </form>
                 </div>
             </div>
-
         </div>
     </div>
     <div class="row">
-        <div class="span12">
+        <div class="span3 history-table">
+            <table class="table-condensed product-calc">
+                <thead>
+                    <tr>
+                        <th>{{calc.translation.history}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="entry in calc.productDescription.ReadyModeSelection">
+                        <td>
+                            <a class="btn btn-primary btn-md btn-block disabled">
+                                {{entry}}
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="span9">
             <div ui-view>
             </div>
         </div>
@@ -68,7 +85,7 @@
         </div>
         <div class="span2">
             <a class="btn btn-primary btn-md btn-block"
-               ng-click="calc.stepBack()"
+               ng-click="calc.hasHistory && calc.stepBack()"
                ng-disabled="!calc.hasHistory">
                 {{calc.translation.stepBack}}
             </a>

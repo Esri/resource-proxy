@@ -20,7 +20,7 @@ define([
         ///////////
         
         function selectMenuItem(index) {
-            RateCalculationServiceFrontend.calculate(index);
+            RateCalculationServiceFrontend.selectMenuIndex(index);
         }
     }
     

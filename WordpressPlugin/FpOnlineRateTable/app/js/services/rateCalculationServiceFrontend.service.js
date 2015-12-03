@@ -4,40 +4,10 @@ define([
     'services/weight',
     'productCalculation/queryDispatcher.service',
     'productCalculation/currentProductDescription.service',
-    'services/rateCalculationService.service'
+    'services/rateCalculationService.service',
+    'productCalculation/actionResult.service'
 ], function(app) {
     "use strict";
-    
-    // action id enum needed by the web service interface
-    var eActionId = {
-        Finish: 1,
-        ShowMenu: 2,
-        Display: 3,
-        RequestValue: 5,
-        SelectIndex: 7,
-        SelectValue: 8,
-        NoProduct: 11,
-        Continue: 12,
-        TestImprint: 13,
-        NoAction: 0,
-        ManualPostage: 14,
-        RequestString: 15,
-        Unknown: 100
-    };
-    
-    // enum to denote the any type needed by the web service interface
-    var eAnyType = {
-        UNDEFINED: 0,
-        INT32: 1,
-        UINT32: 2,
-        STRING: 3,
-        INT16: 4,
-        UINT16: 5,
-        BOOLEAN: 6,
-        UINT64: 7,
-        INT64: 8
-    };
-    
     
     app.factory(
             'RateCalculationServiceFrontend', RateCalculationServiceFrontend);
@@ -45,19 +15,27 @@ define([
     RateCalculationServiceFrontend.$inject = [
         'RateCalculationService',
         'CurrentProductDescription',
+        'ActionResult',
         'QueryDispatcher',
         'Weight',
         'AppSettings'];
     
     
     function RateCalculationServiceFrontend(RateCalculationService,
-            CurrentProductDescription, QueryDispatcher, Weight, AppSettings) {
+            CurrentProductDescription, ActionResult, QueryDispatcher,
+            Weight, AppSettings) {
         
         return {
             start: start,
-            calculate: calculate,
             back: back,
-            updateWeight: updateWeight
+            updateWeight: updateWeight,
+            selectMenuIndex: selectMenuIndex,
+            selectIndex: selectIndex,
+            selectValue: selectValue,
+            requestString: requestString,
+            requestValue: requestValue,
+            requestPostage: requestPostage,
+            acknoledge: acknoledge
         };
         
         //////////
@@ -83,13 +61,12 @@ define([
             return Weight.getWeightInfo(weightValue);
         }
         
-        function createActionResultFromIndex(index) {
-            return  {
-                Action: eActionId.ShowMenu,
-                Label: 0,
-                Results: [
-                    { AnyType: eAnyType.INT32, AnyValue: index } ]
-            };
+        function calculate(actionResult) {
+            
+            var productDescription = CurrentProductDescription.get();
+            var promise = RateCalculationService.calculate(
+                    productDescription, actionResult, environment);
+            return handleSuccess(promise);
         }
         
         function start(zipCode, weightValue) {
@@ -97,20 +74,49 @@ define([
             environment = createEnvironment(zipCode);
             var weightInfo = createWeightInfo(weightValue);
             var promise = RateCalculationService.start(weightInfo, environment);
-//            var promise = RateCalculationServiceAlternative.start(
-//                    weightInfo, environment);
             return handleSuccess(promise);
         }
         
-        function calculate(index) {
+        function selectMenuIndex(index) {
             
-            var actionResult = createActionResultFromIndex(index);
-            var productDescription = CurrentProductDescription.get();
-            var promise = RateCalculationService.calculate(
-                    productDescription, actionResult, environment);
-//            var promise = RateCalculationServiceAlternative.calculate(
-//                    productDescription, actionResult, environment);
-            return handleSuccess(promise);
+            var actionResult = ActionResult.selectMenuIndex(index);
+            return calculate(actionResult);
+        }
+        
+        function selectIndex(index) {
+            
+            var actionResult = ActionResult.selectIndex(index);
+            return calculate(actionResult);
+        }
+        
+        function selectValue(value) {
+            
+            var actionResult = ActionResult.selectValue(value);
+            return calculate(actionResult);
+        }
+        
+        function requestString(value) {
+
+            var actionResult = ActionResult.requestString(value);
+            return calculate(actionResult);
+        }
+        
+        function requestValue(value) {
+
+            var actionResult = ActionResult.requestValue(value);
+            return calculate(actionResult);
+        }
+        
+        function requestPostage(value) {
+
+            var actionResult = ActionResult.requestPostage(value);
+            return calculate(actionResult);
+        }
+        
+        function acknoledge() {
+            
+            var actionResult = ActionResult.acknoledge();
+            return calculate(actionResult);
         }
         
         function back() {
@@ -118,8 +124,6 @@ define([
             var productDescription = CurrentProductDescription.get();
             var promise = RateCalculationService.back(
                     productDescription, environment);
-//            var promise = RateCalculationServiceAlternative.back(
-//                    productDescription, environment);
             return handleSuccess(promise);
         }
         
@@ -129,8 +133,6 @@ define([
                     = CurrentProductDescription.updateWeight(weight);
             var promise = RateCalculationService.updateWeight(
                     productDescription, environment);
-//            var promise = RateCalculationServiceAlternative.back(
-//                    productDescription, environment);
             return handleSuccess(promise);
         }
         
@@ -139,11 +141,9 @@ define([
         function handleSuccess(promise) {
             return promise.then(
                 function (result) {
-                    CurrentProductDescription.set(
-                            result.data.ProductDescription);
-
                     QueryDispatcher.dispatch(
                             result.data.CalculationError,
+                            result.data.ProductDescription,
                             result.data.QueryType,
                             result.data.QueryDescription);
                 });
