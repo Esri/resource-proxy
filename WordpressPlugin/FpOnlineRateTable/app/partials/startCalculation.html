@@ -12,6 +12,7 @@
                        type="text"
                        value=""
                        ng-model="vm.zipCode"
+                       ng-pattern="vm.zipRegex"
                        required >
                 <div role="alert" ng-show="vm.ProductCalculationStart.$submitted || vm.ProductCalculationStart.SenderZip.$touched">
                     <span class="error"

@@ -26,3 +26,9 @@ input.number-input {
     width: 50%;
     min-width: 50px;
 }
+
+/* reduce the field width of automatically generated input field
+  (from DisplayFormat) to the maxlength attribute */
+input.inline-input {
+    width: initial;
+}

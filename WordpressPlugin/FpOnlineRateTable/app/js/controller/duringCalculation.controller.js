@@ -59,8 +59,11 @@ define([
         }
 
         function changeWeight() {
-            RateCalculationServiceFrontend.updateWeight(calc.weightValue);
+            
             calc.showWeightInput = false;
+            if(calc.weightValue) {
+                RateCalculationServiceFrontend.updateWeight(calc.weightValue);
+            }   
         };
         
         function stepBack() {

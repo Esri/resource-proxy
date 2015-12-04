@@ -1,0 +1,10 @@
+<div>
+    <span ng-repeat="(index, field) in vm.fields">
+        <span ng-if="vm.renderAsString(field)">
+            {{field}}
+        </span>
+        <input ng-if="vm.renderAsInput(field)"
+               fp-dynamic-attributes="field"
+               ng-model="vm.model[index]">
+    </span>
+</div>

@@ -2,14 +2,16 @@ define([
     'angular',
     'angular-ui-router',
     'angular-resource',
-    'errorHandler'
+    'errorHandler',
+    'helper/fpHelper.module'
 ], function (angular) {
     "use strict";
  
     var app = angular.module('OnlineRateCalculator', [
         'ui.router',
         'ngResource',
-        'ErrorHandler'
+        'ErrorHandler',
+        'FP.Helper'
     ]);
     
     return app;

@@ -1,6 +1,7 @@
 define([
     'onlineRateCalculator',
-    'services/rateCalculationServiceFrontend.service'
+    'services/rateCalculationServiceFrontend.service',
+    'helper/fpInputLine.directive'
 ], function(app) {
     "use strict";
     
@@ -16,7 +17,7 @@ define([
         var vm = this;
 
         vm.requestValue = requestValue;
-        
+     
         ///////////
         
         function requestValue() {

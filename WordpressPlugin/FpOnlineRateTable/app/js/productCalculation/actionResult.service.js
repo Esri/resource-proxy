@@ -94,13 +94,24 @@ define([
             };
         }
         
-        function requestValue(value) {
-            return {
+        function requestValue(values) {
+            
+            if(!Array.isArray(values)) {
+                values = [values];
+            }
+            var result = {
                 Action: EActionId.RequestValue,
-                Results: [{
-                    AnyType: EAnyType.UINT32,
-                    AnyValue: value }]
+                Results: []
             };
+            
+            for(var i = 0; i < values.length; ++i) {
+                result.Results.push({
+                    AnyType: EAnyType.UINT32,
+                    AnyValue: values[i]
+                });
+            }
+            
+            return result;
         }
         
         function requestPostage(value) {

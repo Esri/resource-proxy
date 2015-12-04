@@ -12,15 +12,18 @@ define([
     
     StartCalculationController.$inject = [
         '$scope',
-        '$state',
         'RateCalculationServiceFrontend',
         'AppSettings',
         'Translation'];
     
-    function StartCalculationController($scope, $state,
+    function StartCalculationController($scope,
             RateCalculationServiceFrontend, AppSettings, Translation) {
 
         var vm = this;
+        
+        // as long as ng-init has not been evaluated we accept everything as
+        // zip code input.
+        vm.zipRegex = /.*/;
         
         vm.proceedToCalculation = proceedToCalculation;
         
@@ -31,16 +34,9 @@ define([
         function activate() {
             // Do settings and translation initialization.
             $scope.$watch('appData', appDataChanged);
-
-            // This is our own pattern matching validation code.
-            // We need to to implement it ourselves instead of using the
-            // 'ng-pattern' directive because the pattern is not fixed but set
-            // using 'ng-init'. Obviously 'ng-pattern' does not work on
-            // patterns set via 'ng-init'.
-            $scope.$watch('vm.zipCode', zipCodeChanged);
         }
 
-        function appDataChanged(newVal, oldVal) {
+        function appDataChanged(newVal) {
             
             if(newVal) {
                 AppSettings.init(newVal.config);
@@ -48,6 +44,7 @@ define([
                 // make the translation table available as model so it can
                 // be used in views.
                 vm.translation = Translation.table();
+                vm.zipRegex = AppSettings.zipRegex();
             }
         }
 
@@ -57,22 +54,7 @@ define([
                 RateCalculationServiceFrontend.start(vm.zipCode);
             }
         };
-        
-        function zipCodeChanged(newVal, oldVal) {
-            
-            var model = vm.ProductCalculationStart.SenderZip;
-            var zipRegex = AppSettings.zipRegex();
-            var regexIsPresent = !!zipRegex;
-            var newValIsSet = !!newVal;
-            if(regexIsPresent && newValIsSet) {
-                var regexMatches = zipRegex.test(newVal);
-                if(regexMatches) {
-                    model.$setValidity('pattern', true);
-                    return newVal;
-                }
-            }
-
-            model.$setValidity('pattern', false);
-        }
     }
+    
+    return app;
 });
