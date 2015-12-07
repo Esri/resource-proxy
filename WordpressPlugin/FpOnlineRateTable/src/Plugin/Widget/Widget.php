@@ -184,7 +184,7 @@ class Widget extends \WP_Widget {
         // RequireJS is the new way of dealing with Javascript dependencies so
         // we do not need CustomJavascriptWrapper for scripts managed through
         // it.
-        $jsPath = plugins_url('app/js', dirname(dirname(__DIR__)));
+        $jsPath = plugins_url('app', dirname(dirname(__DIR__)));
         $requireJsPath = plugins_url(
                 'bower_components/requirejs', dirname(dirname(__DIR__)));
         add_action( 'wp_footer', function() use ($jsPath, $requireJsPath) {
