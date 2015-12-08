@@ -48,3 +48,13 @@ use FP\Web\Portal\FpOnlineRateTable\src\Plugin\Widget\WidgetSettings;
            name="<?php echo $widgetSettings->htmlName(WidgetSettings::RESOURCE_URL); ?>"
            value="<?php echo $widgetSettings->get(WidgetSettings::RESOURCE_URL); ?>" />
 </span>
+
+<span>
+    <label for="<?php echo $widgetSettings->htmlId(WidgetSettings::MAX_WEIGHT); ?>">
+        <h4><?php _ex('Max weight in g/oz', 'Widget Settings', 'FpOnlineRateTable'); ?></h4>
+    </label>
+    <input class="widefat" type="number" step="1" min="0"
+           id="<?php echo $widgetSettings->htmlId(WidgetSettings::MAX_WEIGHT); ?>"
+           name="<?php echo $widgetSettings->htmlName(WidgetSettings::MAX_WEIGHT); ?>"
+           value="<?php echo $widgetSettings->get(WidgetSettings::MAX_WEIGHT); ?>" />
+</span>

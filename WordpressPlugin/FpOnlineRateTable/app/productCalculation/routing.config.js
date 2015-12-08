@@ -6,13 +6,17 @@ define([
     './pages/queries/showMenuQuery.controller',
     './pages/queries/showDisplayQuery.controller',
     './pages/queries/requestValueQuery.controller',
+    './pages/queries/selectValueQuery.controller',
     './pages/queries/finish.controller'
 ], function(module) {
     "use strict";
     
     module.config(RoutingTable);
     
-    RoutingTable.$inject = ['$stateProvider', '$urlRouterProvider'];
+    RoutingTable.$inject = [
+        '$stateProvider',
+        '$urlRouterProvider'
+    ];
             
     function RoutingTable($stateProvider, $urlRouterProvider) {
         
@@ -23,7 +27,7 @@ define([
                 templateUrl: baseUrl + 'pages/calculationError.html',
                 controller: 'CalculationErrorController',
                 controllerAs: 'vm',
-                params: {'error': {}}
+                params: {'error': null}
             })
             .state('start', {
                 url: '/start',
@@ -36,7 +40,7 @@ define([
                 templateUrl: baseUrl + 'pages/duringCalculation.html',
                 controller: 'DuringCalculationController',
                 controllerAs: 'calc',
-                params: { 'queryDescription': null }
+                params: {'queryDescription': null}
             })
             .state('calculate.showMenu', {
                 url: '/',
@@ -59,7 +63,14 @@ define([
                 controllerAs: 'vm',
                 parent: 'calculate'
             })
-            .state('finish', {
+            .state('calculate.selectValue', {
+                url: '/',
+                templateUrl: baseUrl + 'pages/queries/selectValueQuery.html',
+                controller: 'SelectValueQueryController',
+                controllerAs: 'vm',
+                parent: 'calculate'
+            })
+            .state('calculate.finish', {
                 url: '/finish',
                 templateUrl: baseUrl + 'pages/queries/finish.html',
                 controller: 'FinishController',

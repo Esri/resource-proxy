@@ -51,48 +51,35 @@ define([
             
             switch(queryType) {
                 case EQueryType.None:
-                    
-                    // We have a new product description but no new query
-                    // description.
-                    CurrentProductDescription.set(productDescription);
-                    
+                    // no query description needs to be set
                     return;
                     
                 case EQueryType.RequestValue:
-                
                     path = 'calculate.requestValue';
-                    
-                    CurrentProductDescription.set(productDescription);
                     CurrentQueryDescription.set(queryType, query);
-                    
                     break;
                 
                 case EQueryType.ShowMenu:
-                    
                     path = 'calculate.showMenu';
-                    
-                    // We have a new query description and a new product
-                    // description - so store both.
-                    CurrentProductDescription.set(productDescription);
                     CurrentQueryDescription.set(queryType, query);
-                    
                     break;
                     
                 case EQueryType.ShowDisplay:
-                    
                     path = 'calculate.showDisplay';
-                    
-                    // We have a new query description and a new product
-                    // description - so store both.
-                    CurrentProductDescription.set(productDescription);
                     CurrentQueryDescription.set(queryType, query);
+                    break;
                     
+                case EQueryType.SelectValue:
+                    path = 'calculate.selectValue';
+                    CurrentQueryDescription.set(queryType, query);
                     break;
                     
                 default:
-                    throw new NotImplementedException('handling of query type '
+                    return $state.go('error', 'Handling of query type '
                             + queryType + ' is not yet supported!');
             }
+            
+            CurrentProductDescription.set(productDescription);
             
             return $state.go(path, { queryDescription: query });
         }

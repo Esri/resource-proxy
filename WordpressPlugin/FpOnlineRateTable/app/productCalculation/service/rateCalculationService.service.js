@@ -35,7 +35,7 @@ define([
                 Weight: weight,
                 Environment: environment};
             var promise = $http.post(url, params);
-            return handleFailure(promise, url);
+            return promise;
         }
         
         function calculate(productDescription, actionResult, environment) {
@@ -46,7 +46,7 @@ define([
                 ActionResult: actionResult,
                 Environment: environment};
             var promise = $http.post(url, params);
-            return handleFailure(promise, url);
+            return promise;
         }
         
         function back(productDescription, environment) {
@@ -56,7 +56,7 @@ define([
                 ProductDescription: productDescription,
                 Environment: environment};
             var promise = $http.post(url, params);
-            return handleFailure(promise, url);
+            return promise;
         }
         
         function updateWeight(productDescription, environment) {
@@ -66,15 +66,7 @@ define([
                 ProductDescription: productDescription,
                 Environment: environment};
             var promise = $http.post(url, params);
-            return handleFailure(promise, url);
-        }
-        
-        function handleFailure(promise, url) {
-            return promise.catch(function(error) {
-                throw new ServiceException(
-                        'service error occurred when trying do a post request for "'
-                        + url + '": ' + error.data.Message);
-            });
+            return promise;
         }
     }
     

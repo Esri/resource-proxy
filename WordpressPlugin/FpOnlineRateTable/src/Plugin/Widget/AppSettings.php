@@ -30,6 +30,7 @@ class AppSettings {
     const CARRIER_ID = 'carrierId';
     const ZIP_REGEX = 'zipRegex';
     const RESOURCE_URL = 'rateCalculationUrl';
+    const MAX_WEIGHT = 'maxWeight';
     
     private $settings;
     
@@ -43,7 +44,9 @@ class AppSettings {
             self::ISO3_COUNTRY_CODE => $widgetSettings->getCurrentRateTableCountryCode(),
             self::CARRIER_ID => $widgetSettings->getCurrentRateTableCarrierId(),
             self::ZIP_REGEX => $this->zipRegexFromCulture($culture),
-            self::RESOURCE_URL => $this->buildServiceUrl($widgetSettings)
+            self::RESOURCE_URL => $this->buildServiceUrl($widgetSettings),
+            self::MAX_WEIGHT => $widgetSettings->getIfValid(
+                    WidgetSettings::MAX_WEIGHT)
         ];
     }
 

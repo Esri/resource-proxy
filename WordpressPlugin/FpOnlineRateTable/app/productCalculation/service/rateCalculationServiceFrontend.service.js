@@ -141,11 +141,14 @@ define([
         function handleSuccess(promise) {
             return promise.then(
                 function (result) {
-                    QueryDispatcher.dispatch(
+                    return QueryDispatcher.dispatch(
                             result.data.CalculationError,
                             result.data.ProductDescription,
                             result.data.QueryType,
                             result.data.QueryDescription);
+                },
+                function (error) {
+                    return QueryDispatcher.dispatch(error.data);
                 });
         }
     }

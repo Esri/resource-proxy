@@ -18,7 +18,8 @@ define([
             countryCode: countryCode,
             carrierId: carrierId,
             zipRegex: zipRegex,
-            rateCalculationUrl: rateCalculationUrl
+            rateCalculationUrl: rateCalculationUrl,
+            maxWeight: maxWeight
         };
         
         function isInitialized() {
@@ -94,6 +95,13 @@ define([
             
             if(angular.isObject(appSettings)) {
                 return appSettings.rateCalculationUrl;
+            }
+        }
+        
+        function maxWeight() {
+            
+            if(angular.isObject(appSettings)) {
+                return appSettings.maxWeight;
             }
         }
     }

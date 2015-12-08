@@ -34,6 +34,7 @@ abstract class Translation {
             'restart' => _x('Restart', 'During Calculation Page: button label', 'FpOnlinerateTable'),
             'finish' => _x('Finish', 'During Calculation Page: button label', 'FpOnlinerateTable'),
             'history' => _x('History', 'During Calculation Page: history list title', 'FpOnlinerateTable'),
+            'acknoledge' => _x('Please Acknoledge', 'During Calculation Page: acknoledge query title', 'FpOnlinerateTable'),
             'errorRestartCalculation' => _x('Restart Product Calculation', 'Calculation Error Page: restart button label', 'FpOnlinerateTable'),
             'complete' => _x('Product Calculation complete', 'Finish page: calculation complete text', 'FpOnlinerateTable')
         ];

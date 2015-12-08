@@ -32,3 +32,11 @@ input.number-input {
 input.inline-input {
     width: initial;
 }
+
+div.finish-box {
+    text-align: center;
+}
+
+div.margin-bottom {
+    margin-bottom: 20px;
+}

@@ -4,7 +4,8 @@ define([
     '../weightAsString.filter',
     '../service/rateCalculationServiceFrontend.service',
     '../weightHelper.service',
-    '../currentProductDescription.service'
+    '../currentProductDescription.service',
+    '../moduleSettings.service'
 ], function(module) {
     "use strict";
     
@@ -19,11 +20,12 @@ define([
         'Translation',
         'RateCalculationServiceFrontend',
         'CurrentProductDescription.service',
-        'WeightHelper'];
+        'WeightHelper',
+        'ModuleSettings'];
     
     function DuringCalculationController($rootScope, $state, $stateParams,
                 Translation, RateCalculationServiceFrontend,
-                CurrentProductDescription, WeightHelper) {
+                CurrentProductDescription, WeightHelper, ModuleSettings) {
 
         var calc = this;
 
@@ -38,8 +40,10 @@ define([
         calc.translation = Translation.table();
         calc.productDescription = CurrentProductDescription.get();
         calc.weightInputUnit = WeightHelper.getLocalizedMinorUnit();
-        calc.complete = false;
-        calc.hasHistory = false;
+        calc.maxWeight = ModuleSettings.maxWeight();
+        calc.showFinish = false;
+        calc.showBack = false;
+        calc.isComplete = false;
         
         calc.changeWeight = changeWeight;
         calc.stepBack = stepBack;
@@ -53,15 +57,19 @@ define([
             $rootScope.$watch('currentProductDescriptionChanged',
                 function() {
                     calc.productDescription = CurrentProductDescription.get(); 
-                    calc.complete = CurrentProductDescription.isComplete();
-                    calc.hasHistory = CurrentProductDescription.hasHistory();
+                    calc.isComplete = CurrentProductDescription.isComplete();
+                    calc.showBack = CurrentProductDescription.hasHistory();
+                    
+                    // showFinish is set independently from isComplete as they are
+                    // not the same once the user presses 'Finsish'.
+                    calc.showFinish = calc.isComplete;
                 });
         }
 
         function changeWeight() {
             
-            calc.showWeightInput = false;
-            if(calc.weightValue) {
+            if(calc.ChangeWeightForm.WeightValue.$valid) {
+                calc.showWeightInput = false;
                 RateCalculationServiceFrontend.updateWeight(calc.weightValue);
             }   
         };

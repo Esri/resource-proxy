@@ -8,14 +8,12 @@ define([
     
     function CurrentQueryDescription() {
         
-        var queryStack = [];
         var currentQuery;
         
         return {
             get: get,
             getType: getType,
-            set: set,
-            restoreLast: restoreLast
+            set: set
         };
         
         /////////////
@@ -34,18 +32,7 @@ define([
                 type: type,
                 query: query
             };
-            queryStack.push(currentQuery);
                     
-            return currentQuery;
-        }
-        
-        function restoreLast() {
-            
-            var last = queryStack.pop();
-            if(last) {
-                currentQuery = last;
-            }
-            
             return currentQuery;
         }
     }

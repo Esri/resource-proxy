@@ -11,6 +11,7 @@ namespace FP\Web\Portal\FpOnlineRateTable\src\Plugin\Widget;
 require_once 'Widget.php';
 require_once dirname(dirname(__DIR__)) . '/Utils/CheckedValues/UrlValue.php';
 require_once dirname(dirname(__DIR__)) . '/Utils/CheckedValues/TextValue.php';
+require_once dirname(dirname(__DIR__)) . '/Utils/CheckedValues/IntegerValue.php';
 require_once dirname(dirname(__DIR__)) . '/Utils/CheckedValues/Culture.php';
 require_once dirname(dirname(__DIR__)) . '/Utils/GlobalLogger.php';
 require_once dirname(dirname(__DIR__)) . '/Utils/Polyfill/http_build_url.php';
@@ -42,11 +43,13 @@ class WidgetSettings {
     const TITLE = 'title';
     const CURRENT_RATE_TABLE_CULTURE = 'current-rate-table-culture';
     const RESOURCE_URL = 'resource-url';
+    const MAX_WEIGHT = 'max-weight';
     
     private static $idToCheckedValueClass = [
         self::TITLE => '\FP\Web\Portal\FpOnlineRateTable\src\Utils\CheckedValue\TextValue',
         self::CURRENT_RATE_TABLE_CULTURE => '\FP\Web\Portal\FpOnlineRateTable\src\Utils\CheckedValue\Culture',
-        self::RESOURCE_URL => '\FP\Web\Portal\FpOnlineRateTable\src\Utils\CheckedValue\UrlValue'
+        self::RESOURCE_URL => '\FP\Web\Portal\FpOnlineRateTable\src\Utils\CheckedValue\UrlValue',
+        self::MAX_WEIGHT => '\FP\Web\Portal\FpOnlineRateTable\src\Utils\CheckedValue\IntegerValue'
     ];
     
     private $settings;
@@ -223,6 +226,7 @@ class WidgetSettings {
         $this->set(self::TITLE, '');
         $this->set(self::CURRENT_RATE_TABLE_CULTURE, '');
         $this->set(self::RESOURCE_URL, '');
+        $this->set(self::MAX_WEIGHT, 70000);
     }
     
 

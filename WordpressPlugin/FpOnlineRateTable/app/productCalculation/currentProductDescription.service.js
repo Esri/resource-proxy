@@ -17,13 +17,11 @@ define([
     
     function CurrentProductDescription($rootScope, WeightHelper) {
         
-        var productDescriptionStack = [];
         var currentProductDescription;
         
         return {
             get: get,
             set: set,
-            restoreLast: restoreLast, 
             updateWeight: updateWeight,
             isComplete: isComplete,
             hasHistory: hasHistory
@@ -38,20 +36,8 @@ define([
         function set(value) {
             
             currentProductDescription = value;
-            productDescriptionStack.push(value);
             notifyListeners();
                     
-            return currentProductDescription;
-        }
-        
-        function restoreLast() {
-            
-            var last = productDescriptionStack.pop();
-            if(last) {
-                currentProductDescription = last;
-                notifyListeners();
-            }
-            
             return currentProductDescription;
         }
         

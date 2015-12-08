@@ -7,11 +7,11 @@
         </tr>
     </thead>
     <tbody>
-        <tr ng-repeat="(index, entry) in calc.queryDescription.Entries">
+        <tr ng-repeat="entry in calc.queryDescription.ValueEntries">
             <td>
                 <a class="btn btn-primary btn-md btn-block"
-                   ng-click="vm.selectMenuItem(index)">
-                    {{entry}}
+                   ng-click="vm.selectValue(entry.EntryValue)">
+                    {{entry.EntryMessage}}
                 </a>
             </td>
         </tr>

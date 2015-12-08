@@ -1,15 +1,21 @@
 define([
     '../../fpProductCalculation.module'
-], function(module) {
+], function(app) {
     "use strict";
     
-    return module.controller(
+    return app.controller(
             'FinishController', FinishController);
+        
     
-    function FinishController() {
-
-        // nothing here
+    FinishController.$inject = [
+        '$scope'
+    ];
+    
+    function FinishController($scope) {
+        
+        $scope.$parent.calc.showBack = false;
+        $scope.$parent.calc.showFinish = false;
     }
     
-    return module;
+    return app;
 });

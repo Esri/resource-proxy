@@ -4,12 +4,12 @@
         <div class="span6">
             <div>
                 <div class="alert alert-info value-box"
-                     ng-show="calc.complete">
+                     ng-show="calc.isComplete">
                         <strong>{{calc.translation.postage}}</strong>
                     {{calc.productDescription.Postage | postageAsString}}
                 </div>
                 <div class="alert alert-info value-box"
-                     ng-hide="calc.complete">
+                     ng-hide="calc.isComplete">
                         <strong>{{calc.translation.notComplete}}</strong>
                 </div>
             </div>
@@ -31,15 +31,14 @@
                     <form name="calc.ChangeWeightForm">
                         <strong>{{calc.translation.weight}}</strong>
                         <input class="number-input"
-                               data-val-number="The field WeightValue must be a number."
-                               data-val-required="The WeightValue field is required."
                                id="WeightValue"
                                name="WeightValue"
                                type="number"
                                step="any"
                                min="0"
-                               value="0.00"
-                               ng-model="calc.weightValue">
+                               max="{{calc.maxWeight}}"
+                               ng-model="calc.weightValue"
+                               required>
                         <strong>{{calc.weightInputUnit}}</strong>
                         <div class="pull-right">
                             <button type="submit"
@@ -48,9 +47,6 @@
                                 {{calc.translation.ok}}
                             </button>
                         </div>
-                        <span class="field-validation-valid text-danger"
-                              data-valmsg-for="WeightValue"
-                              data-valmsg-replace="true"></span>
                     </form>
                 </div>
             </div>
@@ -85,8 +81,8 @@
         </div>
         <div class="span2">
             <a class="btn btn-primary btn-md btn-block"
-               ng-click="calc.hasHistory && calc.stepBack()"
-               ng-disabled="!calc.hasHistory">
+               ng-click="calc.showBack && calc.stepBack()"
+               ng-disabled="!calc.showBack">
                 {{calc.translation.stepBack}}
             </a>
         </div>
@@ -96,10 +92,15 @@
                 {{calc.translation.restart}}
             </a>
         </div>
-        <div class="span2">
+        <div class="span2" ng-show="calc.showFinish">
             <a class="btn btn-primary btn-md btn-block"
-               ng-disabled="!calc.complete"
-               ui-sref="finish">
+               ui-sref="calculate.finish">
+                {{calc.translation.finish}}
+            </a>
+        </div>
+        <div class="span2" ng-hide="calc.showFinish">
+            <a class="btn btn-primary btn-md btn-block"
+               ng-disabled="true">
                 {{calc.translation.finish}}
             </a>
         </div>
