@@ -46,6 +46,9 @@ define([
                 vm.translation = Translation.table();
                 vm.zipRegex = ModuleSettings.zipRegex();
                 
+                // call the GetActivateTables service. This has no effect except
+                // if no current rate table could be found. In this case we are
+                // redirected to the error page.
                 RateCalculationServiceFrontend.getActiveTables();
             }
         }

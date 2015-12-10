@@ -3,17 +3,27 @@ require.config({
     paths: {
         'angular': '../bower_components/angular/angular',
         'angular-growl': '../bower_components/angular-growl-v2/build/angular-growl',
-        'angular-ui-router': '../bower_components/angular-ui-router/release/angular-ui-router'
+        'angular-ui-router': '../bower_components/angular-ui-router/release/angular-ui-router',
+        'angular-animate': '../bower_components/angular-animate/angular-animate',
+        'anim-in-out': '../bower_components/angular-ui-router-anim-in-out/anim-in-out'
     },
     shim: {
         'angular': { 'exports': 'angular' },
         'angular-growl': {
             deps: ['angular'],
-            'exports': 'angular-growl'
+            exports: 'angular-growl'
         },
         'angular-ui-router': {
             deps: ['angular'],
-            'exports': 'angular-ui-router'
+            exports: 'angular-ui-router'
+        },
+        'angular-animate': {
+            deps: ['angular'],
+            exports: 'angular-animate'
+        },
+        'anim-in-out': {
+            deps: ['angular-ui-router', 'angular-animate'],
+            exports: 'anim-in-out'
         }
     },
     callback: function() {

@@ -31,6 +31,7 @@ use FP\Web\Portal\FpOnlineRateTable\src\Utils\Wordpress\LocalizationTextDomain;
 class Widget extends \WP_Widget {
     
     const STYLE_PATH = 'app/css/style.css';
+    const ANIM_IN_OUT_STYLE_PATH = 'bower_components/angular-ui-router-anim-in-out/css/anim-in-out.css';
     const REQUIREJS_ID = "requirejs-script-tag";
     
     static private $config;
@@ -60,13 +61,16 @@ class Widget extends \WP_Widget {
         
         $pluginUrl = plugin_dir_url(dirname(dirname(__DIR__)));
         
-        $dependencies = [];
-        $mainCss = new CustomCssWrapper(
-                $pluginUrl . self::STYLE_PATH, $dependencies );
-
-        $this->css = $mainCss;
-        $this->css->register();
-        $this->css->loadOnAction();
+        $this->css = [];
+        $this->css[] = new CustomCssWrapper(
+                $pluginUrl . self::STYLE_PATH);
+        $this->css[] = new CustomCssWrapper(
+                $pluginUrl . self::ANIM_IN_OUT_STYLE_PATH);
+        
+        foreach($this->css as $style) {
+            $style->register();
+            $style->loadOnAction();
+        }
     }
     
     public function widget($args, $instance) {
