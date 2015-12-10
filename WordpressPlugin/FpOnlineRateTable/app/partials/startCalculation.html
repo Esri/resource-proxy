@@ -1,0 +1,26 @@
+<div class="col-md-9">
+    <div>
+        <input name="__RequestVerificationToken" type="hidden" value="fpdiVSoxguUWUOdI7qRuNN5oA20FxfvEe0UbwuemBR2KabC3tEwslo46OVSCdLikqKi-YGecBobdkFhtEXCkBG3XfsMzQwHAq4xH_ClZMKY1">
+        <input id="QueryType" name="QueryType" type="hidden" value="None">
+        <div class="form-group">
+            <label class="control-label col-md-2" for="SelectedRateTable">Select Country</label>
+            <div>
+                <select class="form-control" id="SelectedRateTable" ng-options="choice as choice.label for choice in choices track by choice.id" ng-model="selectedRateTable">
+                </select>
+                <span class="field-validation-valid text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-2" for="SenderZip">Sender Zip Code</label>
+            <div>
+                <input class="form-control text-box single-line" id="SenderZip" type="text" value="">
+                <span class="field-validation-valid text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div>
+                <input type="submit" value="Start Product Calculation" class="btn btn-primary btn-md btn-block">
+            </div>
+        </div>
+    </div>
+</div>
