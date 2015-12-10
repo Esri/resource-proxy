@@ -1,0 +1,25 @@
+<div class="margin-bottom">
+    <table class="table-condensed product-calc">
+        <thead>
+            <th>
+                {{calc.queryDescription.DescriptionTitle}}
+            </th>
+        </thead>
+    </table>
+    
+    <div class="text-center">
+        <label for="InputValue">
+            {{calc.queryDescription.StatusMessage}}
+        </label>
+        <fp-input-line descr="{{calc.queryDescription.DisplayFormat}}"
+                       class="inline-input"
+                       ng-model="vm.value">
+    </div>
+    
+    <div class="text-center">
+        <a class="btn btn-primary btn-md"
+           ng-click="vm.requestValue()">
+            {{calc.translation.ok}}
+        </a>
+    </div>
+</div>

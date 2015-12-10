@@ -1,0 +1,19 @@
+<FpOnlineRateTable>
+    <GlobalLogger>
+        <LogFile>C:\inetpub\wwwroot\wordpress\wp-content\plugins\FpOnlineRateTable\log\FpOnlineRateTable.log</LogFile>
+        <LogLevel>DEBUG</LogLevel>
+        <LoggerName>FpOnlineRateTable</LoggerName>
+        <MaxFiles>10</MaxFiles>
+    </GlobalLogger>
+    <FpOnlineRateCalculatorWidget>
+        <Id>fp_online_rate_calculator</Id>
+        <HtmlClass>fp-online-rate-calculator</HtmlClass>
+        <Shortcode>fp_online_rate_calculator</Shortcode>
+        <ServiceProxyPath>vendor/Yall1963/resource-proxy/PHP/proxy.php</ServiceProxyPath>
+    </FpOnlineRateCalculatorWidget>
+    <CustomJavascriptWrapper>
+        <IdPrefix>fp_online_rate_calculator-</IdPrefix>
+        <LocalizationObject>localization</LocalizationObject>
+        <MetaObject>meta</MetaObject>
+    </CustomJavascriptWrapper>
+</FpOnlineRateTable>

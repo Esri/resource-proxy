@@ -1,0 +1,54 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 19.11.2015, 11:07:07
+    Author     : scharfenberg
+*/
+
+.value-box {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+/* remove some table borders introduced by by cutomizr blue.css */
+table.product-calc {
+    border-bottom: 0;
+}
+table.product-calc th {
+    border-bottom: 0;
+}
+
+/* ein constraint von der ASP.NET Version */
+input.number-input {
+    width: 50%;
+    min-width: 50px;
+}
+
+/* reduce the field width of automatically generated input field
+  (from DisplayFormat) to the maxlength attribute */
+input.inline-input {
+    width: initial;
+}
+
+div.finish-box {
+    text-align: center;
+}
+
+div.margin-bottom {
+    margin-bottom: 20px;
+}
+
+/*
+ * give the main view absolute positioning so we don't have view distortions
+ * when animating state transitions
+ */
+div.view-container {
+    position: relative;
+}
+div.view {
+    position: absolute;
+    width: 100%;
+}
