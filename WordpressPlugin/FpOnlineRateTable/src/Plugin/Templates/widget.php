@@ -1,7 +1,5 @@
-<div class="onlineRateCalculator" ng-init='appData = <?php echo $appData; ?>'>
+<div class="onlineRateCalculator" ng-init='config = <?php echo $widgetSettings->toJson(); ?>'>
     <div class="view-container">
-        <div ui-view
-             class="view anim-in-out anim-fade"
-             data-anim-speed="100"></div>
+        <div ng-view class="view-frame"></div>
     </div>
 </div>
