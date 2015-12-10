@@ -4,7 +4,7 @@
  * Plugin Name: FpOnlineRateTable
  * Plugin URI: http://unknown
  * Description: A client for the OnlineRateTable
- * Version: 00.01.15.444000
+ * Version: 01.00.15.504000
  * Author: Carsten Scharfenberg
  * Author URI: http://unknown
  * License: FP internal use only
@@ -30,6 +30,7 @@ require_once 'src/Utils/GlobalLoggerConfigXml.php';
 require_once 'src/Utils/Wordpress/LocalizationTextDomain.php';
 require_once 'src/Utils/Wordpress/CustomCssWrapper.php';
 require_once 'src/Utils/Wordpress/CustomCssWrapperConfigXml.php';
+require_once 'src/Utils/Wordpress/AdminNotice.php';
 require_once 'src/Plugin/Widget/Widget.php';
 require_once 'src/Plugin/Widget/WidgetConfigXml.php';
 
@@ -40,6 +41,7 @@ use FP\Web\Portal\FpOnlineRateTable\src\Plugin\Widget\WidgetConfigXml;
 use FP\Web\Portal\FpOnlineRateTable\src\Utils\Wordpress\LocalizationTextDomain;
 use FP\Web\Portal\FpOnlineRateTable\src\Utils\Wordpress\CustomCssWrapper;
 use FP\Web\Portal\FpOnlineRateTable\src\Utils\Wordpress\CustomCssWrapperConfigXml;
+use FP\Web\Portal\FpOnlineRateTable\src\Utils\Wordpress\AdminNotice;
 
 
 class CannotLoadConfigFileException extends \RuntimeException {
@@ -71,6 +73,7 @@ class Plugin {
         $this->initWordpressHelper($config);
         $textDomain = $this->initLocalization();
         $this->registerWidget($config, $textDomain);
+        $this->handleAdminNotices();
     }
       
     private function loadConfig() {
@@ -118,6 +121,24 @@ class Plugin {
         $textDomain->loadOnAction('admin_init');
         
         return $textDomain;
+    }
+    
+    public function checkLogFileWritable_callback() {
+        
+        if(!GlobalLogger::canWriteLog()) {
+            return 'error';
+        }
+    }
+    
+    private function handleAdminNotices() {
+        
+        AdminNotice::register(
+                [$this, 'checkLogFileWritable_callback'],
+                'FpOnlineRateTable',
+                function() { return __(
+                        'No write access to the log file. Please check the file "config.xml" in the plugin directory for the log file path.',
+                        'FpOnlineRateTable'); }
+        );
     }
     
     static public function init() {

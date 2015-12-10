@@ -36,6 +36,7 @@ class GlobalLogger {
     static private $logLevel = self::DEFAULT_LOG_LEVEL;
     
     private $logger;
+    private $canWriteLog;
     
     
     static public function initilaLoggerName() {
@@ -74,12 +75,47 @@ class GlobalLogger {
         self::setInitialMaxFiles($config->maxFiles());
     }
     
+    static public function canWriteLog() {
+        return self::instance()->canWriteLog;
+    }
+    
     
     private function __construct($loggerName, $logFile, $maxFiles, $logLevel) {
         
         $this->logger = new Logger($loggerName);
-        $handler = new RotatingFileHandler($logFile, $maxFiles, $logLevel);
-        $this->logger->pushHandler($handler);
+        
+        $this->canWriteLog = $this->checkLogFileWritable($logFile);
+        if($this->canWriteLog) {
+            $handler = new RotatingFileHandler($logFile, $maxFiles, $logLevel);
+            $this->logger->pushHandler($handler);
+        }
+    }
+    
+    private function checkFileWritable($file) {
+        
+        // check if we can create a log file
+        $modFile = $file . '_checkPermission';
+        $writable = touch($modFile);
+        if($writable) {
+            unlink($modFile);
+        }
+        
+        return $writable;
+    }
+    
+    private function checkLogFileWritable($logFile) {
+        
+        // First treat the log file path as absolute path
+        $writable = $this->checkFileWritable($logFile);
+        if($writable) {
+            return true;
+        }
+        
+        // Now assume that it is a path relative to the plugin directory
+        $pluginDir = dirname(dirname(dirname(plugin_dir_path(__FILE__))));
+        $writable = $this->checkFileWritable($pluginDir . '/' . $logFile);
+        
+        return $writable;
     }
     
     static private function instance() {
