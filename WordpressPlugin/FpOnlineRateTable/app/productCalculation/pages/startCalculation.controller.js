@@ -45,6 +45,8 @@ define([
                 // be used in views.
                 vm.translation = Translation.table();
                 vm.zipRegex = ModuleSettings.zipRegex();
+                
+                RateCalculationServiceFrontend.getActiveTables();
             }
         }
 

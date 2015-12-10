@@ -10,8 +10,8 @@ namespace FP\Web\Portal\FpOnlineRateTable\src\Plugin\Widget;
 
 require_once 'WidgetSettings.php';
 require_once dirname(dirname(__DIR__)) . '/Utils/Polyfill/http_build_url.php';
-require_once dirname(dirname(__DIR__)) . '/utils/CheckedValues/Culture.php';
-require_once dirname(dirname(__DIR__)) . '/utils/Helper/UrlHelper.php';
+require_once dirname(dirname(__DIR__)) . '/Utils/CheckedValues/Culture.php';
+require_once dirname(dirname(__DIR__)) . '/Utils/Helper/UrlHelper.php';
 
 use FP\Web\Portal\FpOnlineRateTable\src\Utils\CheckedValue\Culture;
 use FP\Web\Portal\FpOnlineRateTable\src\Utils\Helper\UrlHelper;

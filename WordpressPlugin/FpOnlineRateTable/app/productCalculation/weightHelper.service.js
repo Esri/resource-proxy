@@ -23,7 +23,8 @@ define([
     WeightHelper.$inject = [
         'ModuleSettings',
         'Translation',
-        'NumberFormatting' ];
+        'NumberFormatting'
+    ];
         
     function WeightHelper(ModuleSettings, Translation, NumberFormatting) {
         

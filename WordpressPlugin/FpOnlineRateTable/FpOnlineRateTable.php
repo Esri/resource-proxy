@@ -72,7 +72,7 @@ class Plugin {
         $textDomain = $this->initLocalization();
         $this->registerWidget($config, $textDomain);
     }
-    
+      
     private function loadConfig() {
         
         $fileName = path_join(__DIR__, self::CONFIG_FILE);

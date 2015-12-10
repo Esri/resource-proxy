@@ -15,64 +15,65 @@ define([
     
     RoutingTable.$inject = [
         '$stateProvider',
-        '$urlRouterProvider'
+        '$urlRouterProvider',
+        'BaseUrl'               // defined in main.js
     ];
             
-    function RoutingTable($stateProvider, $urlRouterProvider) {
+    function RoutingTable($stateProvider, $urlRouterProvider, BaseUrl) {
         
-        var baseUrl = '/wordpress/wp-content/plugins/FpOnlineRateTable/app/productCalculation/';
+        var baseUrl = BaseUrl + '/productCalculation/pages/';
         $stateProvider
             .state('error', {
                 url: '/error',
-                templateUrl: baseUrl + 'pages/calculationError.html',
+                templateUrl: baseUrl + 'calculationError.html',
                 controller: 'CalculationErrorController',
                 controllerAs: 'vm',
                 params: {'error': null}
             })
             .state('start', {
                 url: '/start',
-                templateUrl: baseUrl + 'pages/startCalculation.html',
+                templateUrl: baseUrl + 'startCalculation.html',
                 controller: 'StartCalculationController',
                 controllerAs: 'vm'
             })
             .state('calculate', {
                 url: '/calculate',
-                templateUrl: baseUrl + 'pages/duringCalculation.html',
+                templateUrl: baseUrl + 'duringCalculation.html',
                 controller: 'DuringCalculationController',
                 controllerAs: 'calc',
                 params: {'queryDescription': null}
             })
             .state('calculate.showMenu', {
                 url: '/',
-                templateUrl: baseUrl + 'pages/queries/showMenuQuery.html',
+                templateUrl: baseUrl + 'queries/showMenuQuery.html',
                 controller: 'ShowMenuQueryController',
                 controllerAs: 'vm',
                 parent: 'calculate'
             })
             .state('calculate.showDisplay', {
                 url: '/',
-                templateUrl: baseUrl + 'pages/queries/showDisplayQuery.html',
+                templateUrl: baseUrl + 'queries/showDisplayQuery.html',
                 controller: 'ShowDisplayQueryController',
                 controllerAs: 'vm',
                 parent: 'calculate'
             })
             .state('calculate.requestValue', {
                 url: '/',
-                templateUrl: baseUrl + 'pages/queries/requestValueQuery.html',
+                templateUrl: baseUrl + 'queries/requestValueQuery.html',
                 controller: 'RequestValueQueryController',
                 controllerAs: 'vm',
                 parent: 'calculate'
             })
             .state('calculate.selectValue', {
                 url: '/',
-                templateUrl: baseUrl + 'pages/queries/selectValueQuery.html',
+                templateUrl: baseUrl + 'queries/selectValueQuery.html',
                 controller: 'SelectValueQueryController',
                 controllerAs: 'vm',
                 parent: 'calculate'
             })
             .state('calculate.finish', {
                 url: '/finish',
-                templateUrl: baseUrl + 'pages/queries/finish.html',
+                templateUrl: baseUrl + 'queries/finish.html',
                 controller: 'FinishController',
                 controllerAs: 'vm',
                 parent: 'calculate'

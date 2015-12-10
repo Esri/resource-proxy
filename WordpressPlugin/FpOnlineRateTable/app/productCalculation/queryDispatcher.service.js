@@ -1,7 +1,8 @@
 define([
-    '../fpProductCalculation.module',
-    '../currentProductDescription.service',
-    '../currentQueryDescription.service'
+    './fpProductCalculation.module',
+    './currentProductDescription.service',
+    './currentQueryDescription.service',
+    '../errorHandler/notImplementedException.factory'
 ], function(module) {
     "use strict";
     
@@ -22,10 +23,12 @@ define([
     QueryDispatcher.$inject = [
         '$state',
         'CurrentProductDescription',
-        'CurrentQueryDescription'];
+        'CurrentQueryDescription',
+        'NotImplementedException'
+    ];
     
-    function QueryDispatcher(
-            $state, CurrentProductDescription, CurrentQueryDescription) {
+    function QueryDispatcher($state, CurrentProductDescription,
+            CurrentQueryDescription, NotImplementedException) {
         
         return {
             dispatch: dispatch
@@ -33,20 +36,12 @@ define([
         
         /////////////
         
-        function NotImplementedException(message) {
-            this.name = 'NotImplementedException';
-            this.message= message;
-        }
-        NotImplementedException.prototype = new Error();
-        NotImplementedException.prototype.constructor = NotImplementedException;
-        
-        
         function dispatch(error, productDescription, queryType, query) {
             
             var path;
             
             if(error) {
-                return $state.go('error', { error: error });
+                return $state.go('error', {error: error});
             }
             
             switch(queryType) {
@@ -75,13 +70,15 @@ define([
                     break;
                     
                 default:
-                    return $state.go('error', 'Handling of query type '
-                            + queryType + ' is not yet supported!');
+                    var exception = NotImplementedException.create(
+                            'Handling of query type '+ queryType
+                            + ' is not yet supported!');
+                    return $state.go('error', {error: exception}); 
             }
             
             CurrentProductDescription.set(productDescription);
             
-            return $state.go(path, { queryDescription: query });
+            return $state.go(path, {queryDescription: query});
         }
     }
     

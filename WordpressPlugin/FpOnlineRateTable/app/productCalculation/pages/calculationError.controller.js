@@ -1,6 +1,7 @@
 define([
     '../fpProductCalculation.module',
-    '../translation.service'
+    '../translation.service',
+    '../../errorHandler/fpException.factory'
 ], function(module) {
     "use strict";
     
@@ -10,9 +11,11 @@ define([
     CalculationErrorController.$inject = [
         '$state',
         '$stateParams',
-        'Translation'];
+        'Translation',
+        'FpException'];
     
-    function CalculationErrorController($state, $stateParams, Translation) {
+    function CalculationErrorController(
+            $state, $stateParams, Translation, FpException) {
 
         var vm = this;
 
@@ -22,10 +25,8 @@ define([
         }
 
         var error = $stateParams.error;
-        if(error.Message) {             // if error results from an $http error message
-            vm.errorMessage = error.Message;
-        } else if(error.ErrorMessage) { // if error is a calculation error returned from PCalc service
-            vm.errorMessage = error.ErrorMessage;
+        if(error instanceof FpException) {
+            vm.errorMessage = error.message;
         } else if('string' === typeof error) {
             vm.errorMessage = error;
         }

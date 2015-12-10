@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 require_once dirname(dirname(__DIR__)) . '/Utils/GlobalLogger.php';
-require_once dirname(dirname(__DIR__)) . '/Utils/WordPress/CustomCssWrapper.php';
+require_once dirname(dirname(__DIR__)) . '/Utils/Wordpress/CustomCssWrapper.php';
 require_once dirname(dirname(__DIR__)) . '/Utils/Wordpress/LocalizationTextDomain.php';
 require_once 'IWidgetConfig.php';
 require_once 'WidgetSettings.php';
@@ -31,6 +31,7 @@ use FP\Web\Portal\FpOnlineRateTable\src\Utils\Wordpress\LocalizationTextDomain;
 class Widget extends \WP_Widget {
     
     const STYLE_PATH = 'app/css/style.css';
+    const REQUIREJS_ID = "requirejs-script-tag";
     
     static private $config;
     static private $textDomain;
@@ -188,7 +189,13 @@ class Widget extends \WP_Widget {
         $requireJsPath = plugins_url(
                 'bower_components/requirejs', dirname(dirname(__DIR__)));
         add_action( 'wp_footer', function() use ($jsPath, $requireJsPath) {
-            echo "<script data-main='{$jsPath}/main' src='{$requireJsPath}/require.js'></script>";
+            // Note: here we are adding an id to the script tag. This is used to
+            // find the tag from Javascript (in main.js) in order to extract the
+            // data-main attribute which will be used as base URL to load
+            // further files from Javascript.
+            // WARNING: in fact this is a hack!
+            $id = self::REQUIREJS_ID;
+            echo "<script id='$id' data-main='{$jsPath}/main' src='{$requireJsPath}/require.js'></script>";
         }, 99);
     }
     

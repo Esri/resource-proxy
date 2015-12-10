@@ -2,10 +2,15 @@ define([
     '../fpProductCalculation.module',
     '../moduleSettings.service',
     '../weightHelper.service',
-    './queryDispatcher.service',
+    '../queryDispatcher.service',
     '../currentProductDescription.service',
     './rateCalculationService.service',
-    './actionResult.service'
+    './actionResult.service',
+    './serviceException.factory',
+    './calculationException.factory',
+    './calculationModuleException.factory',
+    './noRateTableException.factory',
+    '../../errorHandler/unknownErrorException.factory'
 ], function(module) {
     "use strict";
     
@@ -18,14 +23,22 @@ define([
         'ActionResult',
         'QueryDispatcher',
         'WeightHelper',
-        'ModuleSettings'];
+        'ModuleSettings',
+        'ServiceException',
+        'CalculationException',
+        'CalculationModuleException',
+        'NoRateTableException',
+        'UnknownErrorException'];
     
     
     function RateCalculationServiceFrontend(RateCalculationService,
             CurrentProductDescription, ActionResult, QueryDispatcher,
-            WeightHelper, ModuleSettings) {
+            WeightHelper, ModuleSettings, ServiceException,
+            CalculationException, CalculationModuleException,
+            NoRateTableException, UnknownErrorException) {
         
         return {
+            getActiveTables: getActiveTables,
             start: start,
             back: back,
             updateWeight: updateWeight,
@@ -41,6 +54,7 @@ define([
         //////////
         
         var environment;
+        var rateTableDate;
         
         function createEnvironment(zipCode) {
             return {
@@ -66,7 +80,15 @@ define([
             var productDescription = CurrentProductDescription.get();
             var promise = RateCalculationService.calculate(
                     productDescription, actionResult, environment);
-            return handleSuccess(promise);
+            return handleResponse(promise);
+        }
+        
+        function getActiveTables() {
+            
+            rateTableDate = new Date();
+            var promise = RateCalculationService.getActiveTables(
+                    rateTableDate.toISOString());
+            return promise.then(handleRateTables, handleFailure);
         }
         
         function start(zipCode, weightValue) {
@@ -74,7 +96,7 @@ define([
             environment = createEnvironment(zipCode);
             var weightInfo = createWeightInfo(weightValue);
             var promise = RateCalculationService.start(weightInfo, environment);
-            return handleSuccess(promise);
+            return handleResponse(promise);
         }
         
         function selectMenuIndex(index) {
@@ -124,7 +146,7 @@ define([
             var productDescription = CurrentProductDescription.get();
             var promise = RateCalculationService.back(
                     productDescription, environment);
-            return handleSuccess(promise);
+            return handleResponse(promise);
         }
         
         function updateWeight(weight) {
@@ -133,23 +155,135 @@ define([
                     = CurrentProductDescription.updateWeight(weight);
             var promise = RateCalculationService.updateWeight(
                     productDescription, environment);
-            return handleSuccess(promise);
+            return handleResponse(promise);
         }
         
-        // we only need to handle the success case here as the failure case is
-        // already handled by the lower level RateCalculationService.
-        function handleSuccess(promise) {
-            return promise.then(
-                function (result) {
-                    return QueryDispatcher.dispatch(
-                            result.data.CalculationError,
-                            result.data.ProductDescription,
-                            result.data.QueryType,
-                            result.data.QueryDescription);
-                },
-                function (error) {
-                    return QueryDispatcher.dispatch(error.data);
-                });
+        function handleResponse(promise) {
+            return promise.then(handleSuccess, handleFailure);
+        }
+        
+        function tryGetCalculationException(data) {
+
+            var error = data.CalculationError;
+            var exception;
+            if(error) {
+                exception = CalculationException.create(
+                        error.ErrorMessage,
+                        error.ErrorCode,
+                        error.ErrorSubCode1,
+                        error.ErrorSubCode2);
+            }
+            
+            return exception;
+        }
+        
+        function tryGetServiceException(data) {
+                    
+            var error = data.error;
+            var exception;
+            if(error) {
+                exception = ServiceException.create(
+                        error.message, error.code);
+            } 
+            
+            return exception;
+        }
+        
+        function tryGetCalculationModuleException(data) {
+            
+            var message = data.Message;
+            var exception;
+            if(message) {
+                exception = CalculationModuleException.create(message);
+            }
+            
+            return exception;
+        }
+        
+        function tryGetRateTableException(data) {
+            
+            var exception;
+            var culture = ModuleSettings.culture();
+            var found = data.filter(function(rateTable) {
+                if(culture === rateTable.Culture) {
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+            
+            if(0 === found.length) {
+                exception = NoRateTableException.create(
+                        "No current rate table could be found",
+                        rateTableDate,
+                        culture);
+            }
+            
+            return exception;
+        }
+        
+        // Takes an array of tryGetXxxException functions and a service result
+        // data item.
+        // Evaluates the service result data against all functions an initiates
+        // a disptach if an exception was found.
+        function errorDispatchOnException(fns, data) {
+            
+            var exceptions = fns
+                    .map(function(fn) {
+                        return fn(data);
+                    })
+                    .filter(function(exception) {
+                        return exception;
+                    });
+                    
+            if(exceptions.length > 0) {
+               return QueryDispatcher.dispatch(exceptions[0]);
+            }
+        }
+        
+        function handleSuccess(result) {
+            
+            var data = result.data;
+            var exception = tryGetCalculationException(data);
+                    
+            return QueryDispatcher.dispatch(
+                    exception,
+                    data.ProductDescription,
+                    data.QueryType,
+                    data.QueryDescription);
+        }
+        
+        function handleFailure(result) {
+            
+            var data = result.data;
+            var promise = errorDispatchOnException([
+                tryGetServiceException,
+                tryGetCalculationModuleException
+            ], data);
+            
+            if(promise) {
+                return promise;
+            }
+            
+            // if we get here we have encountered an unknown error.
+            var exception = UnknownErrorException(
+                    'encountered an unknown service exception');
+            
+            return QueryDispatcher.dispatch(exception);
+        }
+        
+        function handleRateTables(result) {
+            
+            var data = result.data;
+            var promise = errorDispatchOnException([
+                tryGetCalculationException,
+                tryGetRateTableException
+            ], data);
+           
+            // no special treatment in case no error was encountered.
+            // Just return undefined in this case.
+            
+            return promise;
         }
     }
     

@@ -2,15 +2,7 @@ define([
     '../fpProductCalculation.module',
     '../moduleSettings.service'
 ], function(module) {
-    "use strict";
-    
-    function ServiceException(message) {
-        this.name = 'ServiceException';
-        this.message= message;
-    }
-    ServiceException.prototype = new Error();
-    ServiceException.prototype.constructor = ServiceException;
-    
+    "use strict";    
     
     module.factory('RateCalculationService', RateCalculationService);
     
@@ -20,6 +12,7 @@ define([
     function RateCalculationService($http, ModuleSettings) {
         
         return {
+            getActiveTables: getActiveTables,
             start: start,
             calculate: calculate,
             back: back,
@@ -27,6 +20,14 @@ define([
         };
         
         //////////
+
+        function getActiveTables(date) {
+            
+            var url = ModuleSettings.rateCalculationUrl()
+                    + '/GetActiveTables?clientUtcDate=' + date;
+            var promise = $http.get(url);
+            return promise;
+        }
 
         function start(weight, environment) {
             

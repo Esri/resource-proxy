@@ -5,8 +5,10 @@ define([
 ], function (angular) {
     "use strict";
  
-    return angular.module('FP.ProductCalculation', [
+    var module = angular.module('FP.ProductCalculation', [
         'ui.router',
         'FP.Helper'
     ]);
+    
+    return module;
 });

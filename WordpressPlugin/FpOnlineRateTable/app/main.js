@@ -19,11 +19,26 @@ require.config({
     callback: function() {
         "use strict";
         
+        // access the data-main attribute of the script tag that loads
+        // requirejs. This path will be used as base path when loading template
+        // file from angularjs.
+        // WARNING: this procedure can be considered as hack.
+        var id = "requirejs-script-tag";
+        var main = document.getElementById(id).getAttribute('data-main');
+        var baseUrl = main.substring(0, main.lastIndexOf('/'));
+        
         // manual angularJs bootstrapping
         require([
             'angular',
             'app'
-        ], function(angular) {
+        ], function(angular, app) {
+            
+            // define a constant on the FP.ProductCalculation module to pass the
+            // baseUrl into it.
+            // WARNING: this can be considered as hack
+            angular.module('FP.ProductCalculation')
+                .constant('BaseUrl', baseUrl);
+            
             var baseElement
                     = document.getElementsByClassName('onlineRateCalculator');
             angular.bootstrap(baseElement, ['FP.OnlineRateCalculator']);

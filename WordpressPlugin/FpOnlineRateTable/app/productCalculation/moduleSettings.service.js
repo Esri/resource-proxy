@@ -33,7 +33,7 @@ define([
             // in case we get here a second time (e.g. the user pressed
             // 'back' the zipRegex was already transformed into a RegExp
             // object. 
-            if(!(settings.zipRegex instanceof RegExp)) {
+            if(settings.zipRegex && !(settings.zipRegex instanceof RegExp)) {
                 // transform PHP regex string into Javascript Regex Object
                 var regexWithoutSlashes
                         = settings.zipRegex.replace(/^\/|\/$/g, '');
