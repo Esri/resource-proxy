@@ -1,6 +1,7 @@
 define([
+    'angular',
     './fpProductCalculation.module'
-], function(module) {
+], function(angular, module) {
     "use strict";
     
     module.factory('ModuleSettings', ModuleSettings);

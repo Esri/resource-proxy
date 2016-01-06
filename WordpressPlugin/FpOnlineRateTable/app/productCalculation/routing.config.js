@@ -7,7 +7,8 @@ define([
     './pages/queries/showDisplayQuery.controller',
     './pages/queries/requestValueQuery.controller',
     './pages/queries/selectValueQuery.controller',
-    './pages/queries/finish.controller'
+    './pages/queries/finish.controller',
+    '../helper/fpAdjustHeight.directive'
 ], function(module) {
     "use strict";
     

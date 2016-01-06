@@ -25,17 +25,17 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-require_once 'src/Utils/GlobalLogger.php';
-require_once 'src/Utils/GlobalLoggerConfigXml.php';
+require_once 'src/Plugin/Helper/GlobalLogger.php';
 require_once 'src/Utils/Wordpress/LocalizationTextDomain.php';
 require_once 'src/Utils/Wordpress/CustomCssWrapper.php';
 require_once 'src/Utils/Wordpress/CustomCssWrapperConfigXml.php';
 require_once 'src/Utils/Wordpress/AdminNotice.php';
 require_once 'src/Plugin/Widget/Widget.php';
 require_once 'src/Plugin/Widget/WidgetConfigXml.php';
+require_once 'src/Utils/Helper/MonologgerConfigXml.php';
 
-use FP\Web\Portal\FpOnlineRateTable\src\Utils\GlobalLogger;
-use FP\Web\Portal\FpOnlineRateTable\src\Utils\GlobalLoggerConfigXml;
+use FP\Web\Portal\FpOnlineRateTable\src\Plugin\Helper\GlobalLogger;
+use FP\Web\Portal\FpOnlineRateTable\src\Utils\MonologgerConfigXml;
 use FP\Web\Portal\FpOnlineRateTable\src\Plugin\Widget\Widget;
 use FP\Web\Portal\FpOnlineRateTable\src\Plugin\Widget\WidgetConfigXml;
 use FP\Web\Portal\FpOnlineRateTable\src\Utils\Wordpress\LocalizationTextDomain;
@@ -91,7 +91,7 @@ class Plugin {
     
     private function initLogger(\SimpleXMLElement $config) {
         
-        $loggerConfig = new GlobalLoggerConfigXml($config);
+        $loggerConfig = new MonoLoggerConfigXml($config);
         GlobalLogger::readInitialConfig($loggerConfig);
     }
     
@@ -113,7 +113,8 @@ class Plugin {
      
         $languageDir = 'languages';
         $textDomain = new LocalizationTextDomain(
-                $languageDir, 'FpOnlineRateTable');
+                $languageDir, 'FpOnlineRateTable',
+                GlobalLogger::instance());
      
         // Note:
         // the TextDomain will be globally loaded in the admin backend. In the
@@ -123,22 +124,16 @@ class Plugin {
         return $textDomain;
     }
     
-    public function checkLogFileWritable_callback() {
-        
-        if(!GlobalLogger::canWriteLog()) {
-            return 'error';
-        }
-    }
-    
     private function handleAdminNotices() {
         
-        AdminNotice::register(
-                [$this, 'checkLogFileWritable_callback'],
-                'FpOnlineRateTable',
-                function() { return __(
-                        'No write access to the log file. Please check the file "config.xml" in the plugin directory for the log file path.',
-                        'FpOnlineRateTable'); }
-        );
+        if(!GlobalLogger::canWriteLog()) {
+            AdminNotice::register(
+                    'FpOnlineRateTable',
+                    function() { return __(
+                            'No write access to the log file. Please check the file "config.xml" in the plugin directory for the log file path.',
+                            'FpOnlineRateTable');
+                    });
+        }
     }
     
     static public function init() {
@@ -149,6 +144,7 @@ class Plugin {
             }
         } catch (\Exception $ex) {
             GlobalLogger::addError($ex);
+            AdminNotice::register('FpOnlineRateTable', $ex->getMessage());
         }
     }
 }

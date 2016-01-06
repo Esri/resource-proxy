@@ -25,7 +25,7 @@ abstract class AdminNotice {
      *      result as message. This feature can be used to provide localized
      *      messages.
      */
-    static public function register($checker, $pluginName, $msg) {
+    static public function conditionalRegister($checker, $pluginName, $msg) {
         
         if(is_callable($checker)) {
             add_action('admin_notices',
@@ -34,8 +34,16 @@ abstract class AdminNotice {
                         if($class) {
                             self::renderMessage($msg, $pluginName, $class);
                         }
-            });
+                    });
         }
+    }
+    
+    static public function register($pluginName, $msg, $class = 'error') {
+        
+        add_action('admin_notices',
+                function() use ($pluginName, $msg, $class) {
+                    self::renderMessage($msg, $pluginName, $class);
+                });
     }
     
     static private function renderMessage($msg, $pluginName, $class) {

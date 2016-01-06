@@ -1,6 +1,7 @@
 define([
+    'angular',
     './fpHelper.module'
-], function(module) {
+], function(angular, module) {
     "use strict";
     
     module.directive('fpDynamicAttributes', fpDynamicAttributes);

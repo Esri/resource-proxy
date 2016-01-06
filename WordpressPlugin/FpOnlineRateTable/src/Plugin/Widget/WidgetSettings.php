@@ -13,13 +13,13 @@ require_once dirname(dirname(__DIR__)) . '/Utils/CheckedValues/UrlValue.php';
 require_once dirname(dirname(__DIR__)) . '/Utils/CheckedValues/TextValue.php';
 require_once dirname(dirname(__DIR__)) . '/Utils/CheckedValues/IntegerValue.php';
 require_once dirname(dirname(__DIR__)) . '/Utils/CheckedValues/Culture.php';
-require_once dirname(dirname(__DIR__)) . '/Utils/GlobalLogger.php';
+require_once dirname(__DIR__) . '/Helper/GlobalLogger.php';
 require_once dirname(dirname(__DIR__)) . '/Utils/Polyfill/http_build_url.php';
 require_once dirname(__DIR__) . '/RateCalculationService/RateCalculationService.php';
 require_once dirname(__DIR__) . '/RateCalculationService/RateTableInfo.php';
 
 use FP\Web\Portal\FpOnlineRateTable\src\Utils\CheckedValue\CheckedValue;
-use FP\Web\Portal\FpOnlineRateTable\src\Utils\GlobalLogger;
+use FP\Web\Portal\FpOnlineRateTable\src\Plugin\Helper\GlobalLogger;
 use FP\Web\Portal\FpOnlineRateTable\src\Plugin\RateCalculationService\RateCalculationService;
 use FP\Web\Portal\FpOnlineRateTable\src\Plugin\RateCalculationService\RateTableInfo;
 use FP\Web\Portal\FpOnlineRateTable\src\Plugin\RateCalculationService\ServiceException;

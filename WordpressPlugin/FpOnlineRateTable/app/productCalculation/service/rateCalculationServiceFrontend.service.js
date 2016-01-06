@@ -1,4 +1,5 @@
 define([
+    'angular',
     '../fpProductCalculation.module',
     '../moduleSettings.service',
     '../weightHelper.service',
@@ -11,7 +12,7 @@ define([
     './calculationModuleException.factory',
     './noRateTableException.factory',
     '../../errorHandler/unknownErrorException.factory'
-], function(module) {
+], function(angular, module) {
     "use strict";
     
     module.factory(
@@ -183,7 +184,7 @@ define([
             var exception;
             if(error) {
                 exception = ServiceException.create(
-                        error.message, error.code);
+                        error.message, error.code, error.details);
             } 
             
             return exception;
@@ -201,6 +202,10 @@ define([
         }
         
         function tryGetRateTableException(data) {
+            
+            if(!angular.isArray(data)) {
+                return;
+            }
             
             var exception;
             var culture = ModuleSettings.culture();
@@ -244,7 +249,11 @@ define([
         function handleSuccess(result) {
             
             var data = result.data;
-            var exception = tryGetCalculationException(data);
+            
+            // we can get a service exception from the proxy server even though
+            // we are in "success" branch.
+            var exception = tryGetServiceException(data)
+                    || tryGetCalculationException(data);
                     
             return QueryDispatcher.dispatch(
                     exception,

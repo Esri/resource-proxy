@@ -6,19 +6,18 @@
  * and open the template in the editor.
  */
 
-namespace FP\Web\Portal\FpOnlineRateTable\src\Utils;
+namespace FP\Web\Portal\FpOnlineRateTable\src\Utils\Helper;
+
+require_once 'ILoggerConfig.php';
+
 
 /**
  *
  * @author scharfenberg
  */
-interface IGlobalLoggerConfig {
+interface IMonologgerConfig extends ILoggerConfig {
     
     function logFile();
-    
-    function logLevel();
-    
-    function loggerName();
     
     function maxFiles();
 }

@@ -9,9 +9,11 @@
 namespace FP\Web\Portal\FpOnlineRateTable\src\Utils\Wordpress;
 
 require_once 'Helper.php';
-require_once dirname(__DIR__) . '/GlobalLogger.php';
+require_once dirname(__DIR__) . '/Helper/ILogger.php';
+require_once 'WordpressLogger.php';
 
-use FP\Web\Portal\FpOnlineRateTable\src\Utils\GlobalLogger;
+use FP\Web\Portal\FpOnlineRateTable\src\Utils\Helper\ILogger;
+use FP\Web\Portal\FpOnlineRateTable\src\Utils\Wordpress\WordpressLogger;
 
 
 /**
@@ -23,6 +25,7 @@ class LocalizationTextDomain {
     
     private $languageDir;
     private $translationDomain;
+    private $logger;
     
     
     public function load() {
@@ -33,34 +36,32 @@ class LocalizationTextDomain {
             $this->languageDir
         );
         if(false === $result) {
-            GlobalLogger::addWarning(
+            $this->logger->addWarning(
                     "Localization file could not be loaded",
                     [   'textDomain' => $this->translationDomain,
                         'languageDir' => $this->languageDir]);
         }
     }
-    
-    public function load_callback() {
-        
-        try {
-            $this->load();
-        } catch (Exception $ex) {
-            GlobalLogger::addError($ex);
-        }
-    }
         
     public function loadOnAction($action = 'init') {
-        add_action($action, [$this, 'load_callback']);
+        add_action($action, [$this, 'load']);
     }
     
     // Note $languageDir has to be specified as a relative path with
     // respect to the Wordpress plugin directory (e.g. 'TDCInfo/Languages')
-    public function __construct($languageDir, $domain) {
+    public function __construct($languageDir, $domain,
+            ILogger $logger = null) {
     
         $this->languageDir = $languageDir;
         
         // Note: Wordpress looks for translation files in the language
         // directory that look like "<translationDomain>-de_DE.mo".
         $this->translationDomain = $domain; 
+        
+        if(isset($logger)) {
+            $this->logger = $logger;
+        } else {
+            $this->logger = WordpressLogger::create();
+        }
     }
 }

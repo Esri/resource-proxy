@@ -13,19 +13,21 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-require_once dirname(dirname(__DIR__)) . '/Utils/GlobalLogger.php';
+require_once dirname(__DIR__) . '/Helper/GlobalLogger.php';
 require_once dirname(dirname(__DIR__)) . '/Utils/Wordpress/CustomCssWrapper.php';
 require_once dirname(dirname(__DIR__)) . '/Utils/Wordpress/LocalizationTextDomain.php';
+require_once dirname(dirname(__DIR__)) . '/Utils/Wordpress/AdminNotice.php';
+require_once dirname(__DIR__) . '/Helper/ResourceProxyConfigurator.php';
 require_once 'IWidgetConfig.php';
 require_once 'WidgetSettings.php';
 require_once 'Translation.php';
 require_once 'RateCalculationServiceConfigWidget.php';
 require_once 'AppSettings.php';
 
-use FP\Web\Portal\FpOnlineRateTable\src\Utils\GlobalLogger;
+use FP\Web\Portal\FpOnlineRateTable\src\Plugin\Helper\GlobalLogger;
 use FP\Web\Portal\FpOnlineRateTable\src\Utils\Wordpress\CustomCssWrapper;
 use FP\Web\Portal\FpOnlineRateTable\src\Utils\Wordpress\LocalizationTextDomain;
-
+use FP\Web\Portal\FpOnlineRateTable\src\Utils\Wordpress\AdminNotice;
 
 
 class Widget extends \WP_Widget {
@@ -131,11 +133,19 @@ class Widget extends \WP_Widget {
     }
     
     public function update($new_instance, $old_instance) {
+     
+        try {
+            $widgetSettings = new WidgetSettings($this, $old_instance);
+            $widgetSettings->mergeArray($new_instance);
+
+            $result = $widgetSettings->toArray();
+        } catch (\Exception $ex) {
+            $result = $old_instance;
+            GlobalLogger::addError($ex);
+            AdminNotice::register('FpOnlineRateTable', $ex->getMessage());
+        }
         
-        $widgetSettings = new WidgetSettings($this, $old_instance);
-        $widgetSettings->mergeArray($new_instance);
-        
-        return $widgetSettings->toArray();
+        return $result;
     }
     
 

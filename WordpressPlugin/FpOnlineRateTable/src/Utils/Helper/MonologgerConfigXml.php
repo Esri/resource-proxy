@@ -8,40 +8,34 @@
 
 namespace FP\Web\Portal\FpOnlineRateTable\src\Utils;
 
-require_once 'IGlobalLoggerConfig.php';
+require_once 'LoggerConfigXml.php';
+require_once 'IMonologgerConfig.php';
 
+use FP\Web\Portal\FpOnlineRateTable\src\Utils\Helper\IMonologgerConfig;
 
 /**
  * Description of GlobalLoggerConfigXml
  *
  * @author scharfenberg
  */
-class GlobalLoggerConfigXml implements IGlobalLoggerConfig {
+class MonologgerConfigXml
+        extends LoggerConfigXml
+        implements IMonologgerConfig {
     
     private $logFile;
-    private $logLevel;
-    private $loggerName;
     private $maxFiles;
     
     
     public function __construct(\SimpleXMLElement $config) {
         
+        parent::__construct($config);
+        
         $this->logFile = (string)$config->GlobalLogger->LogFile;
-        $this->logLevel = (string)$config->GlobalLogger->LogLevel;
-        $this->loggerName = (string)$config->GlobalLogger->LoggerName;
         $this->maxFiles = (string)$config->GlobalLogger->MaxFiles;
     }
     
     function logFile() {
         return $this->logFile;
-    }
-    
-    function logLevel() {
-        return $this->logLevel;
-    }
-    
-    function loggerName() {
-        return $this->loggerName;
     }
     
     function maxFiles() {

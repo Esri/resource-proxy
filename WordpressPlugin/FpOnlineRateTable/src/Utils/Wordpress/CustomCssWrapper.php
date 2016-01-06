@@ -10,12 +10,8 @@ namespace FP\Web\Portal\FpOnlineRateTable\src\Utils\Wordpress;
 
 $includePath = dirname( dirname( __FILE__ ) );
 
-require_once dirname(__DIR__) . '/GlobalLogger.php';
 require_once 'ICustomCssWrapperConfig.php';
 require_once 'Helper.php';
-
-use FP\Web\Portal\FpOnlineRateTable\src\Utils\GlobalLogger;
-use FP\Web\Portal\FpOnlineRateTable\src\Utils\Wordpress\ICustomCssWrapperConfig;
 
 
 /**
@@ -55,17 +51,8 @@ class CustomCssWrapper {
         wp_register_style($this->handle, $this->source, $this->dependencies);
     }
     
-    public function register_callback() {
-        
-        try {
-            $this->register();
-        } catch ( \Exception $ex ) {
-            GlobalLogger::addError( $ex );
-        }
-    }
-    
     public function registerOnAction($action = 'init') {
-        add_action($action, [$this, 'register_callback']);
+        add_action($action, [$this, 'register']);
     }
     
     public function registerAndLoad() {

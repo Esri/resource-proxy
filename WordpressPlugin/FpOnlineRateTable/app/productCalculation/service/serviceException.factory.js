@@ -11,11 +11,13 @@ define([
           
     function ServiceExceptionFactory(FpException) {
         
-        function ServiceException(message, code, fileName, lineNumber) {
+        function ServiceException(
+                message, code, details, fileName, lineNumber) {
             
             FpException.call(this, message, fileName, lineNumber);
             
             this.code = code;
+            this.details = details;
         }
         ServiceException.prototype = Object.create(FpException.prototype);
         ServiceException.prototype.constructor = ServiceException;
@@ -27,8 +29,9 @@ define([
         
         ////////
 
-        function create(message, code, fileName, lineNumber) {
-            return new ServiceException(message, code, fileName, lineNumber);
+        function create(message, code, details, fileName, lineNumber) {
+            return new ServiceException(
+                    message, code, details, fileName, lineNumber);
         }
     }
 

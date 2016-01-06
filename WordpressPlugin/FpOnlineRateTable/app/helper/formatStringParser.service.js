@@ -1,6 +1,7 @@
 define([
+    'angular',
     './fpHelper.module'
-], function(module) {
+], function(angular, module) {
     "use strict";
     
     // Some constant data we nedd.
