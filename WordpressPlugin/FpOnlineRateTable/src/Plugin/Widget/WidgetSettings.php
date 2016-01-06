@@ -152,7 +152,8 @@ class WidgetSettings {
         static $choices = null;
         if(!isset($choices)) {
             $choices = [];
-            array_walk($this->getRateTables(),
+            $rateTables = $this->getRateTables();
+            array_walk($rateTables,
                     function(RateTableInfo $rateTable) use (&$choices) {
                         $culture = $rateTable->Culture->getAsString();
                         $variant = $rateTable->Variant->getAsString();

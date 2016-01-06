@@ -33,7 +33,7 @@ use FP\Web\Portal\FpOnlineRateTable\src\Utils\Wordpress\AdminNotice;
 class Widget extends \WP_Widget {
     
     const STYLE_PATH = 'app/css/style.css';
-    const ANIM_IN_OUT_STYLE_PATH = 'bower_components/angular-ui-router-anim-in-out/css/anim-in-out.css';
+    //const ANIM_IN_OUT_STYLE_PATH = 'bower_components/angular-ui-router-anim-in-out/css/anim-in-out.css';
     const REQUIREJS_ID = "requirejs-script-tag";
     
     static private $config;
@@ -66,8 +66,8 @@ class Widget extends \WP_Widget {
         $this->css = [];
         $this->css[] = new CustomCssWrapper(
                 $pluginUrl . self::STYLE_PATH);
-        $this->css[] = new CustomCssWrapper(
-                $pluginUrl . self::ANIM_IN_OUT_STYLE_PATH);
+//        $this->css[] = new CustomCssWrapper(
+//                $pluginUrl . self::ANIM_IN_OUT_STYLE_PATH);
         
         foreach($this->css as $style) {
             $style->register();

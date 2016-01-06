@@ -41,14 +41,6 @@ div.margin-bottom {
     margin-bottom: 20px;
 }
 
-/*
- * give the main view absolute positioning so we don't have view distortions
- * when animating state transitions
- */
-div.view-container {
-    position: relative;
-}
 div.view {
-    position: absolute;
-    width: 100%;
+    margin-bottom: 20px;
 }
