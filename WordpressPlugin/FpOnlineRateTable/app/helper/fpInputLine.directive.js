@@ -22,7 +22,7 @@ define([
             },
             controller: InputLineController,
             controllerAs: 'vm',
-            templateUrl: '/wordpress/wp-content/plugins/FpOnlineRateTable/app/helper/fpInputLine.html'
+            templateUrl: '/wp-content/plugins/FpOnlineRateTable/app/helper/fpInputLine.html'
         };
     }
     
