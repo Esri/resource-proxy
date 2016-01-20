@@ -1,6 +1,6 @@
 <FpOnlineRateTable>
     <GlobalLogger>
-        <LogFile>C:\inetpub\wwwroot\wordpress\wp-content\plugins\FpOnlineRateTable\log\FpOnlineRateTable.log</LogFile>
+        <LogFile>log\FpOnlineRateTable.log</LogFile>
         <LogLevel>DEBUG</LogLevel>
         <LoggerName>FpOnlineRateTable</LoggerName>
         <MaxFiles>10</MaxFiles>
