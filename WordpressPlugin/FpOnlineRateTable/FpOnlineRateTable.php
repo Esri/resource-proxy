@@ -4,7 +4,7 @@
  * Plugin Name: FpOnlineRateTable
  * Plugin URI: http://unknown
  * Description: A client for the OnlineRateTable
- * Version: 01.00.15.504000
+ * Version: 01.01.16.033000
  * Author: Carsten Scharfenberg
  * Author URI: http://unknown
  * License: FP internal use only
