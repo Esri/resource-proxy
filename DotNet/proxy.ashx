@@ -466,12 +466,15 @@ public class proxy : IHttpHandler {
             req.Method = "POST";
             req.ContentType = string.IsNullOrEmpty(contentType) ? "application/x-www-form-urlencoded" : contentType;
             if (bytes != null && bytes.Length > 0)
+            {
                 req.ContentLength = bytes.Length;
-            else
-                req.ContentLength = 0;
-            using (Stream outputStream = req.GetRequestStream()) {
-                outputStream.Write(bytes, 0, bytes.Length);
+                using (Stream outputStream = req.GetRequestStream())
+                {
+                    outputStream.Write(bytes, 0, bytes.Length);
+                }
             }
+            else
+                req.ContentLength = 0;                
         }
         return req.GetResponse();
     }
