@@ -49,7 +49,7 @@ Files created by the proxy:
 
 ## Requirements
 
-* PHP 5.4.2 (recommended)
+* PHP 5.4.2 or higher (recommended)
 * cURL PHP extension
 * OpenSSL PHP extension
 * PDO_SQLITE PDO PHP extension
