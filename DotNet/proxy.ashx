@@ -11,6 +11,7 @@
 #define TRACE
 using System;
 using System.IO;
+using System.IO.Compression;
 using System.Web;
 using System.Xml.Serialization;
 using System.Web.Caching;
@@ -71,7 +72,10 @@ public class proxy : IHttpHandler {
             Trace.Listeners.Add(logTraceListener);
         }
 
-
+        context.Response.Filter = new GZipStream(context.Response.Filter, CompressionMode.Compress);
+        HttpContext.Current.Response.AppendHeader("Content-encoding", "gzip");
+        HttpContext.Current.Response.Cache.VaryByHeaders["Accept-encoding"] = true;
+        
         HttpResponse response = context.Response;
         if (context.Request.Url.Query.Length < 1)
         {
