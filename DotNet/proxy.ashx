@@ -381,10 +381,6 @@ public class proxy : IHttpHandler {
                 case "access-control-allow-credentials":
                 case "access-control-expose-headers":
                 case "access-control-max-age":
-                case "access-control-allow-methods":
-                case "access-control-allow-headers":
-                case "access-control-request-method":
-                case "access-control-request-headers":
                     continue;
                 default:
                     toResponse.AddHeader(headerKey, fromResponse.Headers[headerKey]);
