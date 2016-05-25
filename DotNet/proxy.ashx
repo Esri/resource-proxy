@@ -377,6 +377,10 @@ public class proxy : IHttpHandler {
                 case "content-type":
                 case "transfer-encoding":
                 case "accept-ranges":   // Prevent requests for partial content
+                case "access-control-allow-origin":
+                case "access-control-allow-credentials":
+                case "access-control-expose-headers":
+                case "access-control-max-age":
                     continue;
                 default:
                     toResponse.AddHeader(headerKey, fromResponse.Headers[headerKey]);
