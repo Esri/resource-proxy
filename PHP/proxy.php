@@ -1172,10 +1172,13 @@ class Proxy {
 
                         rename($file["tmp_name"], $this->unlinkPath);
 
-                        $this->proxyData[$key] = "@" . $this->unlinkPath;
-
-                        $query_array[$key] = "@" . $this->unlinkPath;
-
+                        if (version_compare(PHP_VERSION, '5.6.0') >= 0) {
+                            $this->proxyData[$key]  = new CURLFile($this->unlinkPath);
+                            $query_array[$key] = new CURLFile($this->unlinkPath);
+                        } else { 
+                            $this->proxyData[$key] = "@" . $this->unlinkPath;
+                            $query_array[$key] = "@" . $this->unlinkPath;
+                        }
                     }
 
                 }
