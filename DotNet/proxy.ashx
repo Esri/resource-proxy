@@ -82,6 +82,7 @@ public class proxy : IHttpHandler {
         }
 
         string uri = context.Request.Url.Query.Substring(1);
+        log(TraceLevel.Verbose, "URI requested: " + uri);
 
         //if uri is ping
         if (uri.Equals("ping", StringComparison.InvariantCultureIgnoreCase))
@@ -99,9 +100,9 @@ public class proxy : IHttpHandler {
                 String filename = proxyConfig.logFile;
                 checkLog = (filename != null && filename != "") ? "OK" : "Not Exist/Readable";
 
-                if (checkLog == "OK")
-                    log(TraceLevel.Info, "Log from ping");
-
+                if (checkLog == "OK") {
+                    log(TraceLevel.Info, "Pinged");
+                }
             }
 
             sendPingResponse(response, version, checkConfig, checkLog);
@@ -112,7 +113,6 @@ public class proxy : IHttpHandler {
         if (uri.StartsWith("http%3a%2f%2f", StringComparison.InvariantCultureIgnoreCase) || uri.StartsWith("https%3a%2f%2f", StringComparison.InvariantCultureIgnoreCase))
             uri = HttpUtility.UrlDecode(uri);
 
-        log(TraceLevel.Info, uri);
         ServerUrl serverUrl;
         try {
             serverUrl = getConfig().GetConfigServerUrl(uri);
@@ -443,7 +443,7 @@ public class proxy : IHttpHandler {
     {
         byte[] bytes = null;
         String contentType = null;
-        log(TraceLevel.Info, "Sending request!");
+        log(TraceLevel.Info, "Sending " + method + " request: " + uri);
 
         if (method.Equals("POST"))
         {
