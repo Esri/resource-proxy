@@ -387,7 +387,15 @@ public class proxy : IHttpHandler {
                     break;
             }
         }
-        toResponse.ContentType = fromResponse.ContentType;
+        // Reset the content-type for Microsoft xml formats - issue #367
+        // Note: this might not be what everyone expects, but it helps some users
+        // TODO: make this configurable
+        if (fromResponse.ContentType.Contains("application/vnd.openxmlformats")) {
+            toResponse.ContentType = "text/xml";
+            log(TraceLevel.Verbose, "Adjusting returned Content-Type for MS* files: " + fromResponse.ContentType );
+        } else {
+            toResponse.ContentType = fromResponse.ContentType;
+        }        
     }
 
     private bool fetchAndPassBackToClient(System.Net.WebResponse serverResponse, HttpResponse clientResponse, bool ignoreAuthenticationErrors) {

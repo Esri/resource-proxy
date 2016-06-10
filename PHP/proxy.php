@@ -593,6 +593,14 @@ class Proxy {
         foreach ($this->headers as $key => $value) {
             // TODO: Proxies should not return hop-by-hop header fields #362
 
+            // Reset the content-type for Microsoft xml formats - issue #367
+            // Note: this might not be what everyone expects, but it helps some users
+            // TODO: make this configurable
+            if ($this->contains($value, "Content-Type: application/vnd.openxmlformats")) {
+                $this->proxyLog->log("Adjusting Content-Type for MS* files: " . $value);
+                $value = "Content-Type: text/xml";
+            }
+
             // Remove scenario causing provisional header error message - see issue #75
             if ($this->contains($value, "Transfer-Encoding: chunked")) {
                 continue;
