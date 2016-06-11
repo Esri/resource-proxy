@@ -161,12 +161,12 @@ java.text.SimpleDateFormat" %>
                 List<String> headerFieldValue = headerFields.get(headerFieldKey);
                 StringBuilder sb = new StringBuilder();
                 for (String value : headerFieldValue) {
-                    // Reset the content-type for Microsoft xml formats - issue #367
+                    // Reset the content-type for OGC WMS - issue #367
                     // Note: this might not be what everyone expects, but it helps some users
                     // TODO: make this configurable
                     if (headerFieldKey != null && headerFieldKey.toLowerCase().equals("content-type")){
-                        if (value != null && value.toLowerCase().contains("application/vnd.openxmlformats")){
-                            _log(Level.FINE, "Adjusting returned Content-Type for MS* files: " + value); 
+                        if (value != null && value.toLowerCase().contains("application/vnd.ogc.wms_xml")){
+                            _log(Level.FINE, "Adjusting Content-Type for WMS OGC: " + value); 
                             value = "text/xml";
                         }
                     }

@@ -387,12 +387,12 @@ public class proxy : IHttpHandler {
                     break;
             }
         }
-        // Reset the content-type for Microsoft xml formats - issue #367
+        // Reset the content-type for OGC WMS - issue #367
         // Note: this might not be what everyone expects, but it helps some users
         // TODO: make this configurable
-        if (fromResponse.ContentType.Contains("application/vnd.openxmlformats")) {
+        if (fromResponse.ContentType.Contains("application/vnd.ogc.wms_xml")) {
             toResponse.ContentType = "text/xml";
-            log(TraceLevel.Verbose, "Adjusting returned Content-Type for MS* files: " + fromResponse.ContentType );
+            log(TraceLevel.Verbose, "Adjusting Content-Type for WMS OGC: " + fromResponse.ContentType );
         } else {
             toResponse.ContentType = fromResponse.ContentType;
         }        
