@@ -269,7 +269,7 @@ java.text.SimpleDateFormat" %>
 
             con.setRequestMethod("POST");
             con.setDoOutput(true);
-
+            con.setRequestProperty("Content-Length", String.valueOf(bytes.length));
 
             OutputStream os = con.getOutputStream();
             os.write(bytes);
