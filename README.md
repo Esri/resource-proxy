@@ -9,6 +9,11 @@ These proxy files support:
 * Enabling logging
 * Both resource and referer based rate limiting
 
+## Alternatives
+There are several good alternative solutions to use instead of your own resource-proxy:
+* [Enable CORS on your server](http://enable-cors.org/server.html) - in order to access cross domain resources.
+* Access secure services [using ArcGIS Online](https://doc.arcgis.com/en/arcgis-online/reference/arcgis-server-services.htm#ESRI_SECTION1_FEB0DF92DA064B6A970DFB59A18AA4C2) to store your username/password credentials.
+
 ## Instructions
 
 * Download and unzip the .zip file or clone the repository. You can download [a released version](https://github.com/Esri/resource-proxy/releases) (recommended) or the [most recent daily build](https://github.com/Esri/resource-proxy/archive/master.zip).
