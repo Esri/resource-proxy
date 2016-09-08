@@ -1998,7 +1998,7 @@ class RateMeter
 
         $this->countCap = $ratelimit;
 
-        $this->rate = $ratelimit / $ratelimitperiod / 60;  //ratelimitperiod is designed to be in seconds
+        $this->rate = $ratelimit / $ratelimitperiod / 60;
 
         $this->ip = $_SERVER['REMOTE_ADDR'];
 
