@@ -336,8 +336,8 @@ public class proxy : IHttpHandler {
                 fetchAndPassBackToClient(serverResponse, response, true);
             }
         }
-        
-        // Use instead of response.End() to avoid the "Exception thrown: 'System.Threading.ThreadAbortException' in mscorlib.dll" error 
+
+        // Use instead of response.End() to avoid the "Exception thrown: 'System.Threading.ThreadAbortException' in mscorlib.dll" error
         // that appears in the output of Visual Studio.  response.End() appears to only really be necessary if you need to end the thread immediately
         // (i.e. no more code is processed).  Since this call is at the end of the main subroutine we can safely call ApplicationInstance.CompleteRequest()
         // and avoid unnecessary exceptions.
@@ -345,7 +345,7 @@ public class proxy : IHttpHandler {
         // http://stackoverflow.com/questions/14590812/what-is-the-difference-between-use-cases-for-using-response-endfalse-vs-appl
         // http://weblogs.asp.net/hajan/why-not-to-use-httpresponse-close-and-httpresponse-end
         // http://stackoverflow.com/questions/1087777/is-response-end-considered-harmful
-        
+
         context.ApplicationInstance.CompleteRequest();
     }
 
@@ -405,7 +405,7 @@ public class proxy : IHttpHandler {
             log(TraceLevel.Verbose, "Adjusting Content-Type for WMS OGC: " + fromResponse.ContentType );
         } else {
             toResponse.ContentType = fromResponse.ContentType;
-        }        
+        }
     }
 
     private bool fetchAndPassBackToClient(System.Net.WebResponse serverResponse, HttpResponse clientResponse, bool ignoreAuthenticationErrors) {
@@ -420,7 +420,7 @@ public class proxy : IHttpHandler {
                         if (
                             !ignoreAuthenticationErrors
                             && strResponse.Contains("error")
-                            && (strResponse.Contains("\"code\": 498") || strResponse.Contains("\"code\": 499") || strResponse.Contains("\"code\":498") || strResponse.Contains("\"code\":499"))
+                            && Regex.Match(strResponse, "\"code\"\\s*:\\s*49[89]").Success
                         )
                             return true;
 
