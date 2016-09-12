@@ -790,11 +790,31 @@ public class proxy : IHttpHandler {
         String value = "";
         if (i > -1) {
             value = text.Substring(text.IndexOf(':', i) + 1).Trim();
+
             value = value.Length > 0 && value[0] == '"' ?
-                value.Substring(1, value.IndexOf('"', 1) - 1):
-                value = value.Substring(0, Math.Max(0, Math.Min(Math.Min(value.IndexOf(","), value.IndexOf("]")), value.IndexOf("}"))));
+                // Get the rest of a quoted string
+                value.Substring(1, Math.Max(0, value.IndexOf('"', 1) - 1)) :
+                // Get a string up to the closest comma, bracket, or brace
+                value = value.Substring(0,
+                    Math.Min(
+                        value.Length,
+                        Math.Min(
+                            indexOf_HighFlag(value, ","),
+                            Math.Min(
+                                indexOf_HighFlag(value, "]"),
+                                indexOf_HighFlag(value, "}")
+                            )
+                        )
+                    )
+                );
         }
         return value;
+    }
+
+    private int indexOf_HighFlag(string text, string key) {
+        int i = text.IndexOf(key);
+        if (i < 0) i = Int32.MaxValue;
+        return i;
     }
 
     private void cleanUpRatemap(ConcurrentDictionary<string, RateMeter> ratemap) {
