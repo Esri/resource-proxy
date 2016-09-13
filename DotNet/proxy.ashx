@@ -270,14 +270,12 @@ public class proxy : IHttpHandler {
                 if (String.IsNullOrEmpty(tokenParamName))
                     tokenParamName = "token";
             }
-
-            requestUri = addTokenToUri(requestUri, token, tokenParamName);
         }
 
         //forwarding original request
         System.Net.WebResponse serverResponse = null;
         try {
-            serverResponse = forwardToServer(context, requestUri, postBody, credentials);
+            serverResponse = forwardToServer(context, addTokenToUri(requestUri, token, tokenParamName), postBody, credentials);
         } catch (System.Net.WebException webExc) {
 
             string errorMsg = webExc.Message + " " + uri;
