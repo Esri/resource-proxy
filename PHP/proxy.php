@@ -579,7 +579,7 @@ class Proxy {
         // headers_list() - Returns a list of response headers sent (or ready to send)
         foreach(headers_list() as $key => $value)
         {
-            $pos = strripos($value, ":");
+            $pos = stripos($value, ":");
 
             $header_type = substr($value,0,$pos);
 
