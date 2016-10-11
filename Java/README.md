@@ -40,7 +40,7 @@ The proxy consists of the following files:
 
 ## Requirements
 
-* Java 6 or greater
+* Java 7 or greater
 
 ## Issues
 
