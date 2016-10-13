@@ -17,6 +17,7 @@ using System.Web.Caching;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.Net;
 
 public class proxy : IHttpHandler {
 
@@ -470,7 +471,8 @@ public class proxy : IHttpHandler {
     }
 
     private System.Net.WebResponse doHTTPRequest(string uri, byte[] bytes, string method, string referer, string contentType, System.Net.NetworkCredential credentials = null)
-    {
+    { 
+        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         System.Net.HttpWebRequest req = (System.Net.HttpWebRequest)System.Net.HttpWebRequest.Create(uri);
         req.ServicePoint.Expect100Continue = false;
         req.Referer = referer;
