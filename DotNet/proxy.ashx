@@ -1,4 +1,4 @@
-<asp:TreeView runat="server"></asp:TreeView><%@ WebHandler Language="C#" Class="proxy" %>
+<%@ WebHandler Language="C#" Class="proxy" %>
 
 /*
  * DotNet proxy client.
