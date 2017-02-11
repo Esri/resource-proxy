@@ -171,6 +171,11 @@ File filtering directives added to Apache's main ```httpd.conf``` can lead to fa
 </Files>
 ```
 
+### When running this proxy on nginx, it's been reported that following php extensions are needed
+
+``` php-sqlite3 php-curl php-xmllinux ```
+
+
 ### When I ran the verification test my browser displays raw PHP code
 
 Raw PHP code in the browser indicates that the PHP server is not configured correctly.
