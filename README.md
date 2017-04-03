@@ -34,7 +34,7 @@ There are several good alternative solutions to use instead of your own resource
     * proxy.config
     * README.md
 
-##Troubleshooting
+## Troubleshooting
 
 * Watch the web requests being handled by the proxy to ensure that the proxy and the web resource locations are correct and properly configured in the application. Use something like [Fiddler](http://www.telerik.com/fiddler) or developer tools like [Network panel in Chrome Developer Tools](https://developer.chrome.com/devtools/docs/network#network-panel-overview).
 

@@ -202,7 +202,7 @@ lines in your ```httpd.conf```.
 
 On a Mac an alternative is to uncommented the line that says ```Include /private/etc/apache2/other/*.conf``` in the ```https.conf``` file.
 
-###PHP version check has failed
+### PHP version check has failed
 
 This is because the minimum proxy requirements are set to PHP version 5.4.2.  If this fails, the recommendation is to install the most recent stable PHP release.
 Other PHP versions may work, however PHP version 5.4.2 contains important security updates.
@@ -259,7 +259,7 @@ token based authentication and ideal for implementing features like rate limitin
 it's recommended to use proxy rules and avoid such things like ```esri.config.defaults.io.alwaysUseProxy```.  Alternatively, consider
 implementing Cross-origin resource sharing ```CORS``` on the application server.
 
-###Where do I get clientId and clientSecret credentials to leverage OAuth2?
+### Where do I get clientId and clientSecret credentials to leverage OAuth2?
 
 There are several ways to obtain these credentials.  Credentials can be created by signing into [ArcGIS for Developers](https://developers.arcgis.com) and clicking ```Applications``` then ```Create an Application```.  Another option is to sign into [ArcGIS Online](https://arcgis.com) click ```My Content``` then click ```Add Item``` to go through the steps to add an application.  Once the application has been added click the item to ```View item details``` and click ```Register``` within the App Registration section.  Tip: OAuth2 workflows contain a variety of value added features for distributing apps, accessing billable services, and getting usage reports.
 
@@ -285,7 +285,7 @@ The utilities worth looking into are:
 
 Use the help documentation included in these products to get your PHP server up and running on Windows.
 
-###PHP version check has failed
+### PHP version check has failed
 
 This is because the minimum proxy requirements are set to PHP version 5.4.2.  If this fails, the recommendation is to install the most recent stable PHP release.
 Other PHP versions may work, however PHP version 5.4.2 contains important security updates.
@@ -314,20 +314,20 @@ token based authentication and ideal for implementing features like rate limitin
 it's recommended to use proxy rules and avoid such things like ```esri.config.defaults.io.alwaysUseProxy```.  Alternatively, consider
 implementing Cross-origin resource sharing ```CORS``` on the application server.
 
-###Where do I get clientId and clientSecret credentials to leverage OAuth2?
+### Where do I get clientId and clientSecret credentials to leverage OAuth2?
 
 There are several ways to obtain these credentials.  Credentials can be created by signing into [ArcGIS for Developers](https://developers.arcgis.com) and clicking ```Applications``` then ```Create an Application```.  Another option is to sign into [ArcGIS Online](https://arcgis.com) click ```My Content``` then click ```Add Item``` to go through the steps to add an application.  Once the application has been added click the item to ```View item details``` and click ```Register``` within the App Registration section.  Tip: OAuth2 workflows contain a variety of value added features for distributing apps, accessing billable services, and getting usage reports.
 
 
-##Issues
+## Issues
 
 Found a bug or want to request a new feature? Let us know by submitting an issue.
 
-##Contributing
+## Contributing
 
 All contributions are welcome.
 
-##Licensing
+## Licensing
 
 Copyright 2014 Esri
 
