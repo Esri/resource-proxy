@@ -53,7 +53,7 @@ There are several good alternative solutions to use instead of your own resource
 All three proxies respect the XML configuration properties listed below.
 
 * Use the ProxyConfig tag to specify the following proxy level settings.
-    * **mustMatch="true"** : When true only the sites listed using serverUrl will be proxied. Set to false to proxy any site, which can be useful in testing. However, we recommend setting it to "true" for production sites.
+    * **mustMatch="true"** : When `true` only the sites listed using serverUrl will be proxied. Set to `false` to proxy any site, which can be useful in testing. However, we recommend setting it to `true` for production sites.
     * **allowedReferers="http://server.com/app1,http://server.com/app2"** : A comma-separated list of referer URLs. Only requests coming from referers in the list will be proxied. See https://github.com/Esri/resource-proxy/issues/282 for detailed usage.
     * **logFile="proxylog.txt"** : When a logFile is specified, the proxy will log messages to this file. *N.B.: The folder containing the logFile must be writable by the web server.* If a path is not specified, the .Net proxy uses the folder where the proxy.config file is found. (The Java proxy uses java.util.logging.FileHandler to open the file; the PHP proxy uses fopen to open the file.)
     * **logLevel="Error"** : An optional flag indicating the level of detail to write to the logFile. Flags for each of the various languages are listed below.
@@ -62,11 +62,11 @@ All three proxies respect the XML configuration properties listed below.
         *  PHP levels are 0 (writes messages and errors to logs), 1 (shows proxy errors and messages in browser console), 2 (combination of levels 0 and 1), and 3 (no logging); the default is 0.
 * Add a new `<serverUrl>` entry for each service that will use the proxy. The proxy.config allows you to use the serverUrl tag to specify one or more ArcGIS Server services that the proxy will forward requests to. The serverUrl tag has the following attributes:
     * **url**: Location of the ArcGIS Server service (or other URL) to proxy. Specify either the specific URL or the root (in which case you should set matchAll="false").
-    * **matchAll="true"**: When true all requests that begin with the specified URL are forwarded. Otherwise, the URL requested must match exactly.
+    * **matchAll="true"**: When `true` all requests that begin with the specified URL are forwarded. Otherwise, the URL requested must match exactly.
     * **username**: Username to use when requesting a token - if needed for ArcGIS Server token based authentication.
     * **password**: Password to use when requesting a token - if needed for ArcGIS Server token based authentication.
     * **tokenServiceUri**: If username and password are specified, the proxy will use the supplied token service uri to request a token.  If this value is left blank, the proxy will request a token URL from the ArcGIS server.
-    * **useAppPoolIdentity**: The IIS application pool identity will be used for authenticating with secured resources.  This configuration will supersede the domain, username, and password configurations.  Only applies to DotNet proxy.
+    * **useAppPoolIdentity**: When `true`, the IIS application pool identity will be used for authenticating with secured resources. This configuration will supersede the domain, username, and password configurations. The default is `false`. Only applies to DotNet proxy.
     * **domain**: The Windows domain to use with username/password when using Windows Authentication. Only applies to DotNet proxy.
     * **clientId**.  Used with clientSecret for OAuth authentication to obtain a token - if needed for OAuth 2.0 authentication. **NOTE**: If used to access hosted services, the service(s) must be owned by the user accessing it, (with the exception of credit-based esri services, e.g. routing, geoenrichment, etc.)
     * **clientSecret**: Used with clientId for OAuth authentication to obtain a token - if needed for OAuth 2.0 authentication.
