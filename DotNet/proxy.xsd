@@ -10,6 +10,7 @@
                                 <xs:complexType>
                                     <xs:attribute name="url" type="xs:string" use="required" />
                                     <xs:attribute name="matchAll" type="xs:boolean" use="required" />
+                                    <xs:attribute name="useAppPoolIdentity" type="xs:boolean" use="optional" />
                                     <xs:attribute name="username" type="xs:string" use="optional" />
                                     <xs:attribute name="password" type="xs:string" use="optional" />
                                     <xs:attribute name="domain" type="xs:string" use="optional" />

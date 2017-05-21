@@ -5,6 +5,7 @@ A .NET proxy that handles support for
 * Accessing cross domain resources
 * Requests that exceed 2048 characters
 * Accessing resources secured with token based authentication.
+* Accessing resources secured with Microsoft Integrated Windows Authentication (IWA) by using the configured application pool identity for the hosted resource-proxy.
 * [OAuth 2.0 app logins](https://developers.arcgis.com/en/authentication).
 * Enabling logging
 * Both resource and referer based rate limiting
