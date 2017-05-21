@@ -47,7 +47,7 @@ NOTE: as of v1.1.0, log levels and log file locations are specified in proxy con
 
 ## Requirements
 
-* ASP.NET 4.0 or greater (4.5 is required on Windows 8/Server 2012, see [this article] (http://www.iis.net/learn/get-started/whats-new-in-iis-8/iis-80-using-aspnet-35-and-aspnet-45) for more information)
+* ASP.NET 4.0 or greater (4.5 is required on Windows 8/Server 2012, see [this article](http://www.iis.net/learn/get-started/whats-new-in-iis-8/iis-80-using-aspnet-35-and-aspnet-45) for more information)
 
 ## Issues
 
