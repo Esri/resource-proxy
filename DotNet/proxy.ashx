@@ -1171,4 +1171,10 @@ public class ServerUrl {
         get { return string.IsNullOrEmpty(rateLimitPeriod)? 60 : int.Parse(rateLimitPeriod); }
         set { rateLimitPeriod = value.ToString(); }
     }
+
+    public ServerUrl()
+    {
+        // Set initial value to avoid requiring Domain parameter in proxy.config
+        this.Domain = "";
+    }
 }
