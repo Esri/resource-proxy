@@ -870,13 +870,13 @@ class Proxy {
 
         }else if($this->proxyMethod == "GET"){
 
-            if(strpos(phpversion(), "7.1") !== false){
+            if(strpos(phpversion(), "7.1") == 0){
 
-              $this->proxyGet();
+              $this->proxyGet(null);
 
             }else{
 
-              $this->proxyGet(null);
+              $this->proxyGet();
 
             }
         }
