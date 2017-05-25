@@ -1,3 +1,4 @@
+
 <?php
 
 /**
@@ -869,8 +870,15 @@ class Proxy {
 
         }else if($this->proxyMethod == "GET"){
 
-            $this->proxyGet();
+            if(strpos(phpversion(), "7.1") !== false){
 
+              $this->proxyGet();
+
+            }else{
+
+              $this->proxyGet(null);
+
+            }
         }
 
         //Check the response to see if any error occurs
