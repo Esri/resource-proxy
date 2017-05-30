@@ -143,7 +143,16 @@ public class proxy : IHttpHandler {
         }
         //use actual request header instead of a placeholder, if present
         if (context.Request.Headers["referer"] != null)
+        {
             PROXY_REFERER = context.Request.Headers["referer"];
+
+            //REMOVE ANY QUERY STRINGS IN THE URL TO PASS A PROPER HTTP REFERER
+            if (PROXY_REFERER.Contains("?"))
+                //SPLIT THE STRING AND TAKE THE FIRST HALF
+                PROXY_REFERER = PROXY_REFERER.Split("?".ToCharArray())[0];
+            }
+        }
+           
 
         //referer
         //check against the list of referers if they have been specified in the proxy.config
