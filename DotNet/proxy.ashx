@@ -457,7 +457,18 @@ public class proxy : IHttpHandler {
                 default:
                     // Some headers are restricted and would throw an exception:
                     // http://msdn.microsoft.com/en-us/library/system.net.httpwebrequest.headers(v=vs.100).aspx
+                    // Also check for our custom list of headers that should not be sent (https://github.com/Esri/resource-proxy/issues/362)
                     if (!System.Net.WebHeaderCollection.IsRestricted(headerKey) &&
+                        headerKey.ToLower() != "accept-encoding" &&
+                        headerKey.ToLower() != "proxy-connection" &&
+                        headerKey.ToLower() != "connection" &&
+                        headerKey.ToLower() != "keep-alive" &&
+                        headerKey.ToLower() != "proxy-authenticate" &&
+                        headerKey.ToLower() != "proxy-authorization" &&
+                        headerKey.ToLower() != "transfer-encoding" &&
+                        headerKey.ToLower() != "te" &&
+                        headerKey.ToLower() != "trailer" &&
+                        headerKey.ToLower() != "upgrade" &&
                         toRequest.Headers[headerKey] == null)
                         toRequest.Headers[headerKey] = headerValue;
                     break;
