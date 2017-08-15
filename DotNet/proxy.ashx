@@ -63,6 +63,13 @@ public class proxy : IHttpHandler {
     private static LogTraceListener logTraceListener = null;
     private static Object _rateMapLock = new Object();
 
+    private static string RemoveQueryString(string uri) {
+        if (uri == null)
+            return null;
+
+        return uri.Split('?')[0];
+    }
+
     public void ProcessRequest(HttpContext context) {
 
 
@@ -143,15 +150,15 @@ public class proxy : IHttpHandler {
         }
         //use actual request header instead of a placeholder, if present
         if (context.Request.Headers["referer"] != null)
-            PROXY_REFERER = context.Request.Headers["referer"];
+            PROXY_REFERER = RemoveQueryString(context.Request.Headers["referer"]);
 
         //referer
         //check against the list of referers if they have been specified in the proxy.config
         String[] allowedReferersArray = ProxyConfig.GetAllowedReferersArray();
         if (allowedReferersArray != null && allowedReferersArray.Length > 0 && context.Request.Headers["referer"] != null)
         {
-            PROXY_REFERER = context.Request.Headers["referer"];
-            string requestReferer = context.Request.Headers["referer"];
+            PROXY_REFERER = RemoveQueryString(context.Request.Headers["referer"]);
+            string requestReferer = RemoveQueryString(context.Request.Headers["referer"]);
             try
             {
                 String checkValidUri = new UriBuilder(requestReferer.StartsWith("//") ? requestReferer.Substring(requestReferer.IndexOf("//") + 2) : requestReferer).Host;
@@ -371,7 +378,7 @@ public class proxy : IHttpHandler {
     {
         return
             postBody.Length > 0?
-            doHTTPRequest(uri, postBody, "POST", context.Request.Headers["referer"], context.Request.ContentType, credentials):
+            doHTTPRequest(uri, postBody, "POST", RemoveQueryString(context.Request.Headers["referer"]), context.Request.ContentType, credentials):
             doHTTPRequest(uri, context.Request.HttpMethod, credentials);
     }
 
@@ -474,7 +481,7 @@ public class proxy : IHttpHandler {
     }
 
     private System.Net.WebResponse doHTTPRequest(string uri, byte[] bytes, string method, string referer, string contentType, System.Net.NetworkCredential credentials = null)
-    { 
+    {
         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         System.Net.HttpWebRequest req = (System.Net.HttpWebRequest)System.Net.HttpWebRequest.Create(uri);
         req.ServicePoint.Expect100Continue = false;
