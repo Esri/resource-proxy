@@ -2,9 +2,26 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.1] - 2017-08-15
+
+### Added
+- (DotNet) Support for using IIS application pool for authenticating with secured resources
+
+### Fixed
+- Support WMS servers that use `application/vnd.ogc.wms_xml` content-type
+- (DotNet) Change error response to be well-formed JSON
+- (DotNet) Smarter SSL/TLS1.2/TLS1.3 picking
+- (DotNet) Smarter HTTP header pass-alongs
+- (DotNet) Improved 498/499 handling
+- (DotNet) Avoid "Exception thrown: 'System.Threading.ThreadAbortException' in mscorlib.dll" error in Visual Studio.
+- (Java) Support chunked transfers
+- Improved doc
+
+### Security
+
 ## [1.1.0] - 2015-11-05
 
-### Added 
+### Added
 - Support for 10.3 tokens
 - Support for federated services
 - Support for hostRedirect to use aliased domains
@@ -45,6 +62,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 - Initial public release
 
-[Unreleased]: https://github.com/Esri/resource-proxy/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/Esri/resource-proxy/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/Esri/resource-proxy/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/Esri/resource-proxy/compare/v1.0...v1.1.0
 [1.0]: https://github.com/Esri/resource-proxy/compare/v0.9...v1.0

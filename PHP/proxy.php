@@ -3,12 +3,12 @@
 /**
  * PHP Proxy Client
  *
- * Version 1.1.1-beta
+ * Version 1.1.1
  * See https://github.com/Esri/resource-proxy for more information.
  *
  */
 
-$version = "1.1.1-beta";
+$version = "1.1.1";
 
 error_reporting(0);
 
