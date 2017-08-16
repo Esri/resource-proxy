@@ -35,12 +35,12 @@ java.text.SimpleDateFormat" %>
 *
 * JSP proxy client
 *
-* Version 1.1.2
+* Version 1.1.1
 * See https://github.com/Esri/resource-proxy for more information.
 *
 ----------------------------------------------------------- -->
 
-<%! final String version = "1.1.2";   %>
+<%! final String version = "1.1.1";   %>
 
 <%!
     public static final class DataValidUtil {

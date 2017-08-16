@@ -3,7 +3,7 @@
 /*
  * DotNet proxy client.
  *
- * Version 1.1.2
+ * Version 1.1.1
  * See https://github.com/Esri/resource-proxy for more information.
  *
  */
@@ -21,7 +21,7 @@ using System.Net;
 
 public class proxy : IHttpHandler {
 
-    private static String version = "1.1.2";
+    private static String version = "1.1.1";
 
     class RateMeter {
         double _rate; //internal rate is stored in requests per second
