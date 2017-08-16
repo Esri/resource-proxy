@@ -1,0 +1,23 @@
+﻿@using FP.Cloud.OnlineRateTable.Web.Controllers
+@using FP.Cloud.OnlineRateTable.Common.ProductCalculation
+
+@if (ViewData.ContainsKey(ProductCalculationController.POSTAGE))
+{
+    var postage = ((PostageInfo)ViewData[ProductCalculationController.POSTAGE]);
+    if (null != postage)
+    {
+        if (postage.PostageValue > 0)
+        {
+            <div class="alert alert-info h3" style="min-height:80px">
+                    <strong>Postage: </strong>
+                    @postage.GetFormattedPostage(true, false)
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info h3" style="min-height:80px">
+                <strong>not complete</strong>
+            </div>
+        }
+    }
+}

@@ -1,0 +1,25 @@
+﻿@using FP.Cloud.OnlineRateTable.Web.Controllers
+@using FP.Cloud.OnlineRateTable.Common.ProductCalculation
+
+@if (ViewData.ContainsKey(ProductCalculationController.PRODUCT_DESCRIPTION))
+{
+    var productDescription = ((ProductDescriptionInfo)ViewData[ProductCalculationController.PRODUCT_DESCRIPTION]);
+    if (null != productDescription && productDescription.ReadyModeSelection.Count > 0)
+    {
+        <table class="table-condensed" style="width:100%">
+            <tr>
+                <th>
+                    History
+                </th>
+            </tr>
+            @foreach (var entry in productDescription.ReadyModeSelection)
+            {
+                <tr>
+                    <td>
+                        @Html.ActionLink(entry, string.Empty,string.Empty, null, new { @class = "btn btn-default btn-md btn-block disabled" })
+                    </td>
+                </tr>
+            }
+        </table>
+    }
+}

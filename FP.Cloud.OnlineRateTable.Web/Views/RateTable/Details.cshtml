@@ -1,0 +1,74 @@
+﻿@model FP.Cloud.OnlineRateTable.Common.RateTable.RateTableInfo
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>RateTableInfo</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.ValidFrom)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ValidFrom)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Culture)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Culture)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Variant)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Variant)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.VersionNumber)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FormattedVersion)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CarrierId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CarrierId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CarrierDetails)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CarrierDetails)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PackageFiles)
+        </dt>
+        @foreach (var fileInfo in Model.PackageFiles)
+        {
+            <dd>
+                @Html.DisplayFor(model => fileInfo.FileName)
+            </dd>
+        }
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

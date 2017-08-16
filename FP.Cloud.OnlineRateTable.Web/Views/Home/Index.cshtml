@@ -1,0 +1,27 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>FP ORC</h1>
+    <p class="lead">FP <strong>O</strong>nline <strong>R</strong>ate <strong>C</strong>alculation offers calculation of postal rates for multiple countries
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <h2>Getting started</h2>
+        <p>
+            Simply click the Product Calculation Link in the menu on top of the page or follow the link below
+        </p>
+        @Html.ActionLink("Product Calculation", "Index", "ProductCalculation", null, new {@class="btn btn-info btn-md btn-block" })
+    </div>
+    <div class="col-md-4">
+        <h2>Administration</h2>
+        <p>If you are an administrator use the Sign In link in the top right corner of the page or follow the link below</p>
+        @Html.ActionLink("Sign In", "SignIn", "Account", null, new { @class = "btn btn-info btn-md btn-block" })
+    </div>
+    <div class="col-md-4">
+        <h2>Up ahead</h2>
+        <p>Come back regularly to check out new features</p>
+    </div>
+</div>

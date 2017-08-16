@@ -1,0 +1,80 @@
+﻿@model FP.Cloud.OnlineRateTable.Common.RateTable.RateTableInfo
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>RateTableInfo</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.ValidFrom)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ValidFrom)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Culture)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Culture)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Variant)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Variant)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.VersionNumber)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FormattedVersion)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CarrierId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CarrierId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CarrierDetails)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CarrierDetails)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PackageFiles)
+        </dt>
+        @foreach (var fileInfo in Model.PackageFiles)
+        {
+            <dd>
+                @Html.DisplayFor(model => fileInfo.FileName)
+            </dd>
+        }
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>

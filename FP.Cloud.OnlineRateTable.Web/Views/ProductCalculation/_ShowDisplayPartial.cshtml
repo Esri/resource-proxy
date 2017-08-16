@@ -1,0 +1,23 @@
+﻿@using FP.Cloud.OnlineRateTable.Web.Controllers
+@using FP.Cloud.OnlineRateTable.Common.ProductCalculation
+
+@if (ViewData.ContainsKey(ProductCalculationController.REQUEST_DESCRIPTION))
+{
+    var requestDescription = ((DescriptionInfo)ViewData[ProductCalculationController.REQUEST_DESCRIPTION]);
+
+    <div>
+        <table class="table-condensed" style="width:100%">
+            <tr>
+                <th>
+                    Please acknowledge
+                </th>
+            </tr>
+        </table>
+        <div class="text-center">
+            @requestDescription.DescriptionTitle
+        </div>
+        <div class="text-center">
+            @Html.ActionLink("OK", "Acknowledge", null, new { @class = "btn btn-primary btn-md" })
+        </div>
+</div>
+}

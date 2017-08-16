@@ -1,0 +1,169 @@
+﻿@model FP.Cloud.OnlineRateTable.Web.Models.ViewModels.ProductCalculationViewModel
+@using FP.Cloud.OnlineRateTable.Web.Controllers
+@using FP.Cloud.OnlineRateTable.Common.ProductCalculation
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Product Calculation</title>
+</head>
+<body>
+    <h3>Product Calculation</h3>
+    <hr />
+    @{
+        var productDescription = ViewData.ContainsKey(ProductCalculationController.PRODUCT_DESCRIPTION) ?
+            ((ProductDescriptionInfo)ViewData[ProductCalculationController.PRODUCT_DESCRIPTION]) : null;
+
+        var finishButtonStyle = productDescription == null || productDescription.State !=
+            EProductDescriptionState.Complete || Model.ProductCalculationFinished ? "disabled" : string.Empty;
+
+        var stepBackButtonStyle = productDescription == null || null == productDescription.ReadyModeSelection ||
+            productDescription.ReadyModeSelection.Count == 0 || Model.ProductCalculationFinished ? "disabled" : string.Empty;
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <a><img src="@Url.Content("~/Content/images/fp_logo.png")" alt="logo" height="80" class="img-rounded" /></a>
+                </div>
+                <div class="col-md-4">
+                    @Html.Partial("~/Views/ProductCalculation/_PostagePartial.cshtml", ViewData)
+                </div>
+                <div class="col-md-5">
+                    @Html.Partial("~/Views/ProductCalculation/_WeightPartial.cshtml", Model.UpdateWeightModel, ViewData)
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    @Html.Partial("~/Views/ProductCalculation/_HistoryPartial.cshtml", ViewData)
+                </div>
+                <div class="col-md-9">
+                    @if (ViewData.ModelState.Values.Any(v => v.Errors.Count > 0))
+                    {
+                        <div class="text-center alert alert-danger">
+                            @Html.ValidationMessage(BaseController.GENERAL_ERROR, new { @class = "text-danger" })
+                        </div>
+                    }
+                    @if (null == productDescription)
+                    {
+                        @Html.Partial("~/Views/ProductCalculation/_StartPartial.cshtml", ViewData)
+                    }
+                    else
+                    {
+                        @Html.Partial(Model.PartialView, Model, ViewData)
+                    }
+                </div>
+            </div>
+            @if (null != productDescription)
+            {
+                <div class="row">
+                    <div class="col-md-6">
+                    </div>
+                    <div class="col-md-2">
+                        @Html.ActionLink("Step Back", "StepBack", null, new { @class = "btn btn-primary btn-md btn-block " +stepBackButtonStyle })
+                    </div>
+                    <div class="col-md-2">
+                        @Html.ActionLink("Restart", "Restart", null, new { @class = "btn btn-primary btn-md btn-block" })
+                    </div>
+                    <div class="col-md-2">
+                        @Html.ActionLink("Finish", "Finish", null, new { @class = "btn btn-primary btn-md btn-block " + finishButtonStyle })
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</body>
+</html>
+
+@section scripts
+{
+    <script type="text/javascript">
+        function FormatPostageInput(currentString, formatString, cultureString, revertOnError)
+        {
+            $.ajax(
+            {
+                url: "/ProductCalculation/FormatInput",
+                type: "POST",
+                data: JSON.stringify(
+                {
+                    'formatString': formatString,
+                    'inputString': currentString,
+                    'cultureString': cultureString,
+                }),
+                dataType: "json",
+                traditional: true,
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    if (data.Success == true)
+                    {
+                        $("#EnteredPostage").val(data.DisplayString);
+                        $("#EnteredPostageRaw").val(currentString);
+                        UpdateOkButton(currentString > 0);
+                    }
+                    else
+                    {
+                        //Revert to default
+                        if (revertOnError == true)
+                        {
+                            FormatPostageInput("", formatString, cultureString, false);
+                        }
+                        else
+                        {
+                            $("#EnteredPostage").val("");
+                            $("#EnteredPostageRaw").val("");
+                            UpdateOkButton(false);
+                        }
+                    }
+                },
+                error: function () {
+                    $("#EnteredPostage").val("");
+                    $("#EnteredPostageRaw").val("");
+                    UpdateOkButton(false);
+                }
+            });
+        }
+
+        function UpdateOkButton(enabled)
+        {
+            $("#OkButton").prop("disabled", !enabled);
+        }
+
+        $('.number-pad').click(function ()
+        {
+            var buttonValue = $(this).val();
+            var currentString = $("#EnteredPostageRaw").val();
+            var formatString = $("#FormatString").val();
+            var cultureString = $("#CultureString").val();
+            if (buttonValue == "CE")
+            {
+                if (currentString.length > 0)
+                {
+                    currentString = currentString.substr(0, currentString.length - 1)
+                }
+            }
+            else
+            {
+                currentString = currentString + buttonValue;
+            }
+
+            FormatPostageInput(currentString, formatString, cultureString, true);
+        });
+
+        $(document).ready(function ()
+        {
+            $('#ValueInput').hide();
+            var formatString = $("#FormatString").val();
+            var cultureString = $("#CultureString").val();
+            if (null != formatString)
+            {
+                FormatPostageInput("", formatString, cultureString, true);
+            }
+        });
+
+        $('#ChangeValue').click(function ()
+        {
+            $('#ValueDisplay').hide();
+            $('#ValueInput').show();
+        });
+    </script>
+}

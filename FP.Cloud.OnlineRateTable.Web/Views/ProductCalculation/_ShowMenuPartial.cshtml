@@ -1,0 +1,29 @@
+﻿@using FP.Cloud.OnlineRateTable.Web.Controllers
+@using FP.Cloud.OnlineRateTable.Common.ProductCalculation
+
+@if (ViewData.ContainsKey(ProductCalculationController.REQUEST_DESCRIPTION))
+{
+    var pcalc = ((ShowMenuDescriptionInfo)ViewData[ProductCalculationController.REQUEST_DESCRIPTION]);
+
+    <div>
+        <table class="table-condensed" style="width:100%">
+            <tr>
+                <th>
+                    @pcalc.DescriptionTitle
+                </th>
+            </tr>
+
+            @{int i = 0; }
+            @foreach (var item in pcalc.MenuEntries)
+            {
+                <tr>
+                    <td>
+                        @Html.ActionLink(item, "SelectMenuIndex", new { index = @i }, new { @class = "btn btn-primary btn-md btn-block" })
+                    </td>
+                </tr>
+                i++;
+            }
+
+        </table>
+    </div>
+}

@@ -1,0 +1,108 @@
+<div>
+    <div growl></div>
+    <div class="row">
+        <div class="span6">
+            <div>
+                <div class="alert alert-info value-box"
+                     ng-show="calc.isComplete">
+                        <strong>{{calc.translation.postage}}</strong>
+                    {{calc.productDescription.Postage | postageAsString}}
+                </div>
+                <div class="alert alert-info value-box"
+                     ng-hide="calc.isComplete">
+                        <strong>{{calc.translation.notComplete}}</strong>
+                </div>
+            </div>
+        </div>
+        <div class="span6">
+            <div class="alert alert-info value-box">
+                <div id="ValueDisplay" ng-hide="calc.showWeightInput">
+                    <strong>{{calc.translation.weight}}</strong>
+                    {{calc.productDescription.Weight | weightAsString}}
+                    <div class="pull-right">
+                        <input type="button"
+                               class="btn btn-primary btn-sm"
+                               id="ChangeValue"
+                               value="{{calc.translation.changeWeight}}"
+                               ng-click="calc.showWeightInput=true">
+                    </div>
+                </div>
+                <div id="ValueInput" ng-show="calc.showWeightInput">
+                    <form name="calc.ChangeWeightForm">
+                        <strong>{{calc.translation.weight}}</strong>
+                        <input class="number-input"
+                               id="WeightValue"
+                               name="WeightValue"
+                               type="number"
+                               step="any"
+                               min="0"
+                               max="{{calc.maxWeight}}"
+                               ng-model="calc.weightValue"
+                               required>
+                        <strong>{{calc.weightInputUnit}}</strong>
+                        <div class="pull-right">
+                            <button type="submit"
+                                    class="btn btn-primary btn-md"
+                                    ng-click="calc.changeWeight()">
+                                {{calc.translation.ok}}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span3 history-table">
+            <table class="table-condensed product-calc">
+                <thead>
+                    <tr>
+                        <th>{{calc.translation.history}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="entry in calc.productDescription.ReadyModeSelection">
+                        <td>
+                            <a class="btn btn-primary btn-md btn-block disabled">
+                                {{entry}}
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="span9">
+            <div ui-view>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span6">
+        </div>
+        <div class="span2">
+            <a class="btn btn-primary btn-md btn-block"
+               ng-click="calc.showBack && calc.stepBack()"
+               ng-disabled="!calc.showBack">
+                {{calc.translation.stepBack}}
+            </a>
+        </div>
+        <div class="span2">
+            <a class="btn btn-primary btn-md btn-block"
+               ui-sref="start">
+                {{calc.translation.restart}}
+            </a>
+        </div>
+        <div class="span2" ng-show="calc.showFinish">
+            <a class="btn btn-primary btn-md btn-block"
+               ui-sref="calculate.finish">
+                {{calc.translation.finish}}
+            </a>
+        </div>
+        <div class="span2" ng-hide="calc.showFinish">
+            <a class="btn btn-primary btn-md btn-block"
+               ng-disabled="true">
+                {{calc.translation.finish}}
+            </a>
+        </div>
+    </div>
+</div>

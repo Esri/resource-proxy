@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{0DD4A6A3-1B46-474D-90AE-324CD5D7F8A0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FP.Cloud.OnlineRateTable.Common</RootNamespace>
+    <AssemblyName>FP.Cloud.OnlineRateTable.Common</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="RestSharp, Version=105.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.105.2.3\lib\net452\RestSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ApiError.cs" />
+    <Compile Include="Authorization\AccessToken.cs" />
+    <Compile Include="Authorization\AddExternalLoginBindingModel.cs" />
+    <Compile Include="Authorization\ChangePasswordBindingModel.cs" />
+    <Compile Include="Authorization\ExternalLoginViewModel.cs" />
+    <Compile Include="Authorization\ManageInfoViewModel.cs" />
+    <Compile Include="Authorization\RegisterBindingModel.cs" />
+    <Compile Include="Authorization\RegisterExternalBindingModel.cs" />
+    <Compile Include="Authorization\RemoveLoginBindingModel.cs" />
+    <Compile Include="Authorization\SetPasswordBindingModel.cs" />
+    <Compile Include="Authorization\SignInModel.cs" />
+    <Compile Include="Authorization\UserClaim.cs" />
+    <Compile Include="Authorization\UserInfoViewModel.cs" />
+    <Compile Include="Authorization\UserLoginInfoViewModel.cs" />
+    <Compile Include="Interfaces\IRateTableManager.cs" />
+    <Compile Include="NumberConverter.cs" />
+    <Compile Include="ProductCalculation\ActionResultInfo.cs" />
+    <Compile Include="ProductCalculation\AnyInfo.cs" />
+    <Compile Include="ProductCalculation\ApiRequests\CalculationBaseRequest.cs" />
+    <Compile Include="ProductCalculation\ApiRequests\CalculateRequest.cs" />
+    <Compile Include="RateTable\ApiRequests\GetRateTableRequest.cs" />
+    <Compile Include="ProductCalculation\ApiRequests\StartCalculationRequest.cs" />
+    <Compile Include="ProductCalculation\ApiRequests\UpdateRequest.cs" />
+    <Compile Include="ProductCalculation\AttributeInfo.cs" />
+    <Compile Include="ProductCalculation\EActionDisplayResult.cs" />
+    <Compile Include="ProductCalculation\EActionId.cs" />
+    <Compile Include="ProductCalculation\EAnyType.cs" />
+    <Compile Include="ProductCalculation\EProductDescriptionState.cs" />
+    <Compile Include="ProductCalculation\EQueryType.cs" />
+    <Compile Include="ProductCalculation\EScaleMode.cs" />
+    <Compile Include="Interfaces\IRateCalculation.cs" />
+    <Compile Include="ProductCalculation\PCalcResultInfo.cs" />
+    <Compile Include="ProductCalculation\PostageInfo.cs" />
+    <Compile Include="ProductCalculation\ProductDescriptionInfo.cs" />
+    <Compile Include="ProductCalculation\ShowMenuDescriptionInfo.cs" />
+    <Compile Include="ProductCalculation\DescriptionInfo.cs" />
+    <Compile Include="ProductCalculation\EnvironmentInfo.cs" />
+    <Compile Include="ProductCalculation\EWeightUnit.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProductCalculation\RequestDescriptionInfo.cs" />
+    <Compile Include="ProductCalculation\SelectIndexDescriptionInfo.cs" />
+    <Compile Include="ProductCalculation\SelectValueDescriptionInfo.cs" />
+    <Compile Include="ProductCalculation\ValueEntryInfo.cs" />
+    <Compile Include="ProductCalculation\WeightInfo.cs" />
+    <Compile Include="RateTable\EFileType.cs" />
+    <Compile Include="RateTable\RateTableFileInfo.cs" />
+    <Compile Include="RateTable\RateTableInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="ScenarioRunner\ScenarioResult.cs" />
+    <Compile Include="ScenarioRunner\ScenarioRunner.cs" />
+    <Compile Include="ProductCalculation\TransferDescriptionInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

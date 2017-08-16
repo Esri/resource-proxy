@@ -1,0 +1,25 @@
+{
+  "name": "FpOnlineRateTable",
+  "description": "Wordpress plugin that offers a widget that acts as client for the OnlineRateTable service",
+  "main": "",
+  "dependencies": {
+      "requirejs": "2.1.20",
+      "angular": "1.4.8",
+      "angular-growl-v2": "0.7.9",
+      "angular-ui-router": "0.2.15"
+  },
+  "moduleType": [],
+  "authors": [
+      "Carsten Scharfenberg"
+  ],
+  "license": "FP internal",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

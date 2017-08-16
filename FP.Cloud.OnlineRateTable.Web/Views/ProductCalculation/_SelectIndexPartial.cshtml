@@ -1,0 +1,29 @@
+﻿@using FP.Cloud.OnlineRateTable.Web.Controllers
+@using FP.Cloud.OnlineRateTable.Common.ProductCalculation
+
+@if (ViewData.ContainsKey(ProductCalculationController.REQUEST_DESCRIPTION))
+{
+    var requestDescription = ((SelectIndexDescriptionInfo)ViewData[ProductCalculationController.REQUEST_DESCRIPTION]);
+    <div>
+        <table class="table-condensed" style="width:100%">
+            <tr>
+                <th>
+                    @requestDescription.DescriptionTitle
+                </th>
+            </tr>
+
+            @{int i = 0; }
+            @foreach (var item in requestDescription.IndexEntries)
+            {
+                <tr>
+                    <td>
+                        @Html.ActionLink(item, "SelectIndex", new { index = @i }, new { @class = "btn btn-primary btn-md btn-block" })
+                    </td>
+                </tr>
+                i++;
+            }
+
+        </table>
+
+    </div>
+}

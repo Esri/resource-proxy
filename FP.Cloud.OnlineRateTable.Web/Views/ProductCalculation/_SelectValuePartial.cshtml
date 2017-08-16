@@ -1,0 +1,27 @@
+﻿@using FP.Cloud.OnlineRateTable.Web.Controllers
+@using FP.Cloud.OnlineRateTable.Common.ProductCalculation
+
+@if (ViewData.ContainsKey(ProductCalculationController.REQUEST_DESCRIPTION))
+{
+    var pcalc = ((SelectValueDescriptionInfo)ViewData[ProductCalculationController.REQUEST_DESCRIPTION]);
+
+    <div>
+        <table class="table-condensed" style="width:100%">
+            <tr>
+                <th>
+                    @pcalc.DescriptionTitle
+                </th>
+            </tr>
+
+            @foreach (var item in pcalc.ValueEntries)
+            {
+                <tr>
+                    <td>
+                        @Html.ActionLink(item.EntryMessage, "SelectValue", new { entryValue = item.EntryValue }, new { @class = "btn btn-primary btn-md btn-block" })
+                    </td>
+                </tr>
+            }
+
+        </table>
+    </div>
+}

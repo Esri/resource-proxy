@@ -1,0 +1,268 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{76A56159-98F6-40CC-9E75-7E641119B757}</ProjectGuid>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <Keyword>ManagedCProj</Keyword>
+    <RootNamespace>FPCloudOnlineRateTablePCalcLib</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.10240.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CLRSupport>true</CLRSupport>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CLRSupport>true</CLRSupport>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CLRSupport>true</CLRSupport>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CLRSupport>true</CLRSupport>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\FMLibs\Base\windows\Base.props" />
+    <Import Project="..\..\FMLibs\Base\windows\FPDEBUG.props" />
+    <Import Project="..\..\FMLibs\boost\windows\Boost.1_59_0.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\FMLibs\Base\windows\Base.props" />
+    <Import Project="..\..\FMLibs\Base\windows\FPDEBUG.props" />
+    <Import Project="..\..\FMLibs\boost\windows\Boost.1_59_0.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\FMLibs\Base\windows\Base.props" />
+    <Import Project="..\..\FMLibs\Base\windows\FPDEBUG.props" />
+    <Import Project="..\..\FMLibs\boost\windows\Boost.1_59_0.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\FMLibs\Base\windows\Base.props" />
+    <Import Project="..\..\FMLibs\Base\windows\FPDEBUG.props" />
+    <Import Project="..\..\FMLibs\boost\windows\Boost.1_59_0.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(ProjectDir)\Exports</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(ProjectDir)\Exports</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile />
+      <GenerateXMLDocumentationFiles>true</GenerateXMLDocumentationFiles>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Projekte\FMLibs\boost\boost_1_59_0\lib32-msvc-14.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <PostBuildEvent>
+      <Command>xdcmake FP.Cloud.OnlineRateTable.PCalcLib.dll</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>\projekte\FMLibs\ProductCalculation\Windows\PCalcSimulation\PCalcManagedLib\PTManagement;\projekte\fmlibs\ProductCalculation\Windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <StringPooling>false</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <OpenMPSupport>false</OpenMPSupport>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ErrorReporting>Prompt</ErrorReporting>
+      <CompileAsManaged>true</CompileAsManaged>
+      <CallingConvention>Cdecl</CallingConvention>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies />
+      <AdditionalLibraryDirectories>C:\Projekte\FMLibs\boost\boost_1_59_0\lib64-msvc-14.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile />
+      <ForcedIncludeFiles>Base/misc/assert_m.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies />
+      <AdditionalLibraryDirectories>C:\Projekte\FMLibs\boost\boost_1_59_0\lib32-msvc-14.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies />
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ActionResultProcessor.hpp" />
+    <ClInclude Include="CalculationResultDisplayProcessor.hpp" />
+    <ClInclude Include="CalculationResultFinishedProcessor.hpp" />
+    <ClInclude Include="CalculationResultProcessors.hpp" />
+    <ClInclude Include="CalculationResultRequestPostageProcessor.hpp" />
+    <ClInclude Include="CalculationResultSelectIndexProcessor.hpp" />
+    <ClInclude Include="CalculationResultSelectValueProcessor.hpp" />
+    <ClInclude Include="Convert.hpp" />
+    <ClInclude Include="DisplayObjectTypeVisitor.hpp" />
+    <ClInclude Include="DisplayTypeVisitor.hpp" />
+    <ClInclude Include="EnvironmentProcessor.hpp" />
+    <ClInclude Include="ExtendedErrorCode.hpp" />
+    <ClInclude Include="IPCalcProxy.hpp" />
+    <ClInclude Include="Lock.hpp" />
+    <ClInclude Include="CalculationResultRequestValueProcessor.hpp" />
+    <ClInclude Include="PCalcFactory.hpp" />
+    <ClInclude Include="PCalcFactoryCPP.hpp" />
+    <ClInclude Include="PCalcLib.hpp" />
+    <ClInclude Include="Exceptions.hpp" />
+    <ClInclude Include="PCalcManager.hpp" />
+    <ClInclude Include="PCalcProxy.hpp" />
+    <ClInclude Include="PCalcProxyContext.hpp" />
+    <ClInclude Include="CalculationResultProcessorProxy.hpp" />
+    <ClInclude Include="CalculationResultShowMenuProcessor.hpp" />
+    <ClInclude Include="CalculationResultProcessor.hpp" />
+    <ClInclude Include="PCalcProxyPool.hpp" />
+    <ClInclude Include="ProductDescriptionMapper.hpp" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="Stdafx.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ActionResultProcessor.cpp" />
+    <ClCompile Include="AssemblyInfo.cpp" />
+    <ClCompile Include="CalculationResultDisplayProcessor.cpp" />
+    <ClCompile Include="CalculationResultFinishedProcessor.cpp" />
+    <ClCompile Include="CalculationResultRequestPostageProcessor.cpp" />
+    <ClCompile Include="CalculationResultSelectIndexProcessor.cpp" />
+    <ClCompile Include="CalculationResultSelectValueProcessor.cpp" />
+    <ClCompile Include="Convert.cpp" />
+    <ClCompile Include="EnvironmentProcessor.cpp" />
+    <ClCompile Include="ExtendedErrorCode.cpp" />
+    <ClCompile Include="CalculationResultRequestValueProcessor.cpp" />
+    <ClCompile Include="PCalcFactory.cpp" />
+    <ClCompile Include="PCalcFactoryCPP.cpp" />
+    <ClCompile Include="PCalcManager.cpp" />
+    <ClCompile Include="PCalcProxy.cpp" />
+    <ClCompile Include="PCalcProxyContext.cpp" />
+    <ClCompile Include="CalculationResultProcessorProxy.cpp" />
+    <ClCompile Include="CalculationResultProcessor.cpp" />
+    <ClCompile Include="CalculationResultShowMenuProcessor.cpp" />
+    <ClCompile Include="PCalcProxyPool.cpp" />
+    <ClCompile Include="ProductDescriptionMapper.cpp" />
+    <ClCompile Include="ZipToZoneMap.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="app.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="app.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\FMLibs\Base\windows\Base.vs15.vcxproj">
+      <Project>{bba7ee16-2b87-464b-abe2-2d3c23149713}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\FMLibs\boost\windows\BoostLib.vs15.vcxproj">
+      <Project>{577d012b-e3dd-4f7f-8989-d149b4212971}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\FMLibs\Pawn\Windows\PawnLib.vs15.vcxproj">
+      <Project>{94f04a44-fe1f-4ca4-9804-f2dc5ce563c3}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\FMLibs\Persistence\windows\Persistence.vs15.vcxproj">
+      <Project>{537314e7-8986-4838-8087-f26444a7f842}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\FMLibs\ProductCalculation\Windows\PCalcLib.vs15.vcxproj">
+      <Project>{a7a6e01b-d338-4aba-9b51-db9266dac915}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\FP.Cloud.OnlineRateTable.Common\FP.Cloud.OnlineRateTable.Common.csproj">
+      <Project>{0dd4a6a3-1b46-474d-90ae-324cd5d7f8a0}</Project>
+      <Private>false</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\FP.Cloud.OnlineRateTable.PCalcLib.ReImpl\FP.Cloud.OnlineRateTable.PCalcLib.ReImpl.vcxproj">
+      <Project>{016d415a-34f4-414c-ae4f-6caf3b361d1b}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

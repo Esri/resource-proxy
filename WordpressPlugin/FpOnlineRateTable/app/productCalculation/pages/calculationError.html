@@ -1,0 +1,13 @@
+<div class="col-md-9">
+    <div class="text-center alert alert-danger">
+        <span class="field-validation-error text-danger">
+            {{vm.errorMessage}}
+        </span>
+    </div>
+    <div class="text-center">
+        <button class="btn btn-primary btn-md"
+                ng-click="vm.restartCalculation()">
+            {{vm.translation.errorRestartCalculation}}
+        </button>
+    </div>
+</div>
