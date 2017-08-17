@@ -1,0 +1,199 @@
+{
+  "tests" : [
+    {
+      "name": "T01-ping",
+      "desc": "Basic ping",
+      "url" : "ping",
+      "expectedString": "Proxy Version"
+    },
+    {
+      "name": "T02-basic",
+      "desc": "Proxy serviceUrl in config",
+      "url" : "http://services.arcgisonline.com",
+      "expectedString": "Demographics",
+      "httpheaders": {"Referer": "http://sub.domain.com"}
+    },
+    {
+      "name": "T03-empty",
+      "desc": "If nothing specified",
+      "url" : "",
+      "expectedString": "This proxy does not support empty parameters."
+    },
+    {
+      "name": "T04-ArcGIS 10.3 Server token authentication",
+      "desc": "Connect with username/password",
+      "url" : "http://sampleserver6.arcgisonline.com/arcgis/rest/services/SaveTheBay/FeatureServer",
+      "expectedString": "SaveTheBay",
+      "httpheaders": {"Referer": "http://sub.domain.com"}
+    },
+    {
+      "name": "T05-unsupported URL",
+      "desc": "Should fail - due to missing serviceURL in proxy.config",
+      "url" : "http://server.arcgisonline.com",
+      "expectedString": "Proxy has not been set up for this URL.",
+      "httpheaders": {"Referer": "http://sub.domain.com"}
+    },
+    {
+      "name": "T06-matchall-false",
+      "desc": "Should fail - due to match=false restriction",
+      "url" : "http://www.esri.com/industries/federal",
+      "expectedString": "Proxy has not been set up for this URL.",
+      "httpheaders": {"Referer": "http://sub.domain.com"}
+    },
+    {
+      "name": "T07-https-when-http",
+      "desc": "Should fail - https should NOT work for http serviceUrl",
+      "url" : "https://services.arcgisonline.com",
+      "expectedString": "Proxy has not been set up for this URL.",
+      "httpheaders": {"Referer": "http://sub.domain.com"}
+    },
+    {
+      "name": "T08-http-when-https",
+      "desc": "Should fail - http should NOT work for https serviceUrl",
+      "url" : "http://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities",
+      "expectedString": "Proxy has not been set up for this URL.",
+      "httpheaders": {"Referer": "http://sub.domain.com"}
+    },
+    {
+      "name": "T09-allow host redirecting",
+      "desc": "The obfuscated host name will be redirected by the real url in the proxy.config",
+      "url" : "http://hostRedirect/arcgis/rest/services/World?f=pjson",
+      "expectedString": "ClosestFacility",
+      "httpheaders": {"Referer": "http://sub.domain.com"}
+    },
+    {
+      "name": "T10-basic request via POST",
+      "postbody": "f=pjson",
+      "desc": "POST should work as well as GET",
+      "url" : "https://logistics.arcgis.com/arcgis/rest/services/World",
+      "expectedString": "ClosestFacility",
+      "httpheaders": {"Referer": "http://sub.domain.com"}
+    },
+    {
+      "name": "T11-federation-only",
+      "desc": "Issue #191 Support federated services",
+      "url" : "http://analysis.arcgis.com/arcgis/rest/services/tasks/GPServer?f=pjson",
+      "expectedString": "FindHotSpots",
+      "httpheaders": {"Referer": "http://sub.domain.com"}
+    },
+    {
+      "name": "T12-App log in",
+      "desc": "App Log in",
+      "url" : "http://route.arcgis.com/arcgis/rest/services?f=json",
+      "expectedString": "World",
+      "httpheaders": {"Referer": "http://sub.domain.com"}
+    },
+    {
+      "name": "T13-Referer=allowedReferers",
+      "desc": "Referer is the same as allowedReferer, nothing fancy",
+      "url" : "http://services.arcgisonline.com",
+      "expectedString": "Demographics",
+      "httpheaders": {"Referer": "http://foo.domain.com"}
+    },
+    {
+      "name": "T14-Referer-sub-of-allowedReferers",
+      "desc": "Referer/something when allowedReferers has Referer",
+      "url" : "http://services.arcgisonline.com",
+      "expectedString": "Demographics",
+      "httpheaders": {"Referer": "http://bar.domain.com/something"}
+    },
+    {
+      "name": "T15-wildcard-in-allowReferers",
+      "desc": "Like T14, but allowReferers contains wildcard for subdomain",
+      "url" : "http://services.arcgisonline.com",
+      "expectedString": "Demographics",
+      "httpheaders": {"Referer": "http://foo.baz.com/something"}
+    },
+    {
+      "name": "T16-referer-http-allowReferer-https",
+      "desc": "Should fail.  Similar to T15, but with request being https",
+      "url" : "http://services.arcgisonline.com",
+      "expectedString": "403",
+      "httpheaders": {"Referer": "https://foo.baz.com/something"}
+    },
+    {
+      "name": "T17-allowReferer = http://*.baz.com/* | Referer: http://foo.baz.com/something",
+      "desc": "",
+      "url" : "http://services.arcgisonline.com",
+      "expectedString": "Demographics",
+      "httpheaders": {"Referer": "http://foo.baz.com/something"}
+    },
+    {
+      "name": "T18-allowedReferer = http://*.baz.com/* | Referer: http://sub.foo.baz.com/something",
+      "desc": "The lengths in the subdomain do not match",
+      "url" : "http://services.arcgisonline.com",
+      "expectedString": "403",
+      "httpheaders": {"Referer": "http://sub.foo.baz.com/something"}
+    },
+    {
+      "name": "T19-Referer not fully in allowedReferer",
+      "desc": "Referer is longer (http://foo.domain.com) than the allowedReferer",
+      "url" : "http://services.arcgisonline.com",
+      "expectedString": "403",
+      "httpheaders": {"Referer": "http://foo.domain.com/something"}
+    },
+    {
+      "name": "T20-RefererWithoutSlash",
+      "desc": "Should fail since Referer have slash but allowedReferers does not (//bar.domain.com/*)",
+      "url" : "http://services.arcgisonline.com",
+      "expectedString": "403",
+      "httpheaders": {"Referer": "http://bar.domain.com"}
+    },
+    {
+      "name": "T21-RefererWithSlash",
+      "desc": "Should be allowed based on allowedReferers (//bar.domain.com/*) and referer with slash (http://bar.domain.com/)",
+      "url" : "http://services.arcgisonline.com",
+      "expectedString": "Demographics",
+      "httpheaders": {"Referer": "http://bar.domain.com/"}
+    },
+    {
+      "name": "T22-password with ?",
+      "desc": "Test a password containing a '?'",
+      "url" : "https://logistics.arcgis.com/arcgis/rest/services/World?f=pjson",
+      "expectedString": "ClosestFacility",
+      "httpheaders": {"Referer": "http://sub.domain.com"}
+    },
+    {
+      "name": "T23 content-type",
+      "desc": "csv should be text/csv",
+      "url" : "https://bsvensson.github.io/various-tests/resource-proxy-testing/somewhere.csv",
+      "expectedString": "lat,lon,text",
+      "expectedHeaderContentType": "text/csv",
+      "httpheaders": {"Referer": "http://sub.domain.com"}
+    },
+    {
+      "name": "T24 content-type four letter extension",
+      "desc": "html should come back as text/html",
+      "url" : "https://bsvensson.github.io/ge-demo/index.html",
+      "expectedString": "<title>Geometry Engine Showcase</title>",
+      "expectedHeaderContentType": "text/html",
+      "httpheaders": {"Referer": "http://sub.domain.com"}
+    },
+    {
+      "name": "T25-MS* content-type",
+      "desc": "OGC should come back as text/xml",
+      "url" : "http://data.wien.gv.at/daten/wms?SERVICE=WMS&REQUEST=GetCapabilities",
+      "expectedString": "xml version",
+      "expectedHeaderContentType": "text/xml",
+      "httpheaders": {"Referer": "http://sub.domain.com"}
+    },
+    {
+      "name": "T26 chunked",
+      "desc": "Chunked data should come back as non-chunked",
+      "url" : "https://httpbin.org/range/1024?duration=1",
+      "expectedString": "abc",
+      "expectedHeaderContentType": "application/octet-stream",
+      "httpheaders": {"Referer": "http://sub.domain.com"}
+    },
+    {
+      "name": "T27 attachment Content-Disposition",
+      "desc": "This attachment should filename set in Content-Disposition, see https://github.com/Esri/resource-proxy/issues/87",
+      "url" : "http://services.arcgisonline.com/arcgis/rest/services/world_physical_map/mapserver?f=lyr",
+      "expectedString": "W",
+      "expectedHeaderContentType": "application/octet-stream",
+      "expectedHeaderContentDisposition": "attachment; filename=\"World_Physical_Map.lyr\"",
+      "httpheaders": {"Referer": "http://sub.domain.com"},
+      "usetestcase": "true"
+    }
+  ]
+}
