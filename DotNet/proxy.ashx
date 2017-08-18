@@ -381,10 +381,6 @@ public class proxy : IHttpHandler {
 
     private System.Net.WebResponse forwardToServer(HttpRequest req, string uri, byte[] postBody, System.Net.NetworkCredential credentials = null)
     {
-        // return
-        //     postBody.Length > 0?
-        //     doHTTPRequest(uri, postBody, "POST", context.Request.Headers["referer"], context.Request.ContentType, credentials):
-        //     doHTTPRequest(uri, context.Request.HttpMethod, credentials);
         string method = postBody.Length > 0 ? "POST" : req.HttpMethod;
         System.Net.HttpWebRequest forwardReq = createHTTPRequest(uri, method, req.ContentType, credentials);
         copyRequestHeaders(req, forwardReq);
@@ -432,7 +428,9 @@ public class proxy : IHttpHandler {
         foreach (var headerKey in fromRequest.Headers.AllKeys)
         {
             string headerValue = fromRequest.Headers[headerKey];
-            switch (headerKey.ToLower())
+            string headerKeyLower = headerKey.ToLower();
+
+            switch (headerKeyLower)
             {
                 case "accept-encoding":
                 case "proxy-connection":
@@ -459,16 +457,16 @@ public class proxy : IHttpHandler {
                     // http://msdn.microsoft.com/en-us/library/system.net.httpwebrequest.headers(v=vs.100).aspx
                     // Also check for our custom list of headers that should not be sent (https://github.com/Esri/resource-proxy/issues/362)
                     if (!System.Net.WebHeaderCollection.IsRestricted(headerKey) &&
-                        headerKey.ToLower() != "accept-encoding" &&
-                        headerKey.ToLower() != "proxy-connection" &&
-                        headerKey.ToLower() != "connection" &&
-                        headerKey.ToLower() != "keep-alive" &&
-                        headerKey.ToLower() != "proxy-authenticate" &&
-                        headerKey.ToLower() != "proxy-authorization" &&
-                        headerKey.ToLower() != "transfer-encoding" &&
-                        headerKey.ToLower() != "te" &&
-                        headerKey.ToLower() != "trailer" &&
-                        headerKey.ToLower() != "upgrade" &&
+                        headerKeyLower != "accept-encoding" &&
+                        headerKeyLower != "proxy-connection" &&
+                        headerKeyLower != "connection" &&
+                        headerKeyLower != "keep-alive" &&
+                        headerKeyLower != "proxy-authenticate" &&
+                        headerKeyLower != "proxy-authorization" &&
+                        headerKeyLower != "transfer-encoding" &&
+                        headerKeyLower != "te" &&
+                        headerKeyLower != "trailer" &&
+                        headerKeyLower != "upgrade" &&
                         toRequest.Headers[headerKey] == null)
                         toRequest.Headers[headerKey] = headerValue;
                     break;
