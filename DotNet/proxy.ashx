@@ -279,7 +279,7 @@ public class proxy : IHttpHandler {
         //forwarding original request
         System.Net.WebResponse serverResponse = null;
         try {
-            serverResponse = forwardToServer(context, addTokenToUri(requestUri, token, tokenParamName), postBody, credentials);
+            serverResponse = forwardToServer(context.Request, addTokenToUri(requestUri, token, tokenParamName), postBody, credentials);
         } catch (System.Net.WebException webExc) {
 
             string errorMsg = webExc.Message + " " + uri;
@@ -287,7 +287,7 @@ public class proxy : IHttpHandler {
 
             if (webExc.Response != null)
             {
-                copyHeaders(webExc.Response as System.Net.HttpWebResponse, context.Response);
+                copyResponseHeaders(webExc.Response as System.Net.HttpWebResponse, context.Response);
 
                 using (Stream responseStream = webExc.Response.GetResponseStream())
                 {
@@ -328,7 +328,7 @@ public class proxy : IHttpHandler {
                 //server returned error - potential cause: token has expired.
                 //we'll do second attempt to call the server with renewed token:
                 token = getNewTokenIfCredentialsAreSpecified(serverUrl, requestUri);
-                serverResponse = forwardToServer(context, addTokenToUri(requestUri, token, tokenParamName), postBody);
+                serverResponse = forwardToServer(context.Request, addTokenToUri(requestUri, token, tokenParamName), postBody);
 
                 //storing the token in Application scope, to do not waste time on requesting new one untill it expires or the app is restarted.
                 context.Application.Lock();
@@ -367,12 +367,25 @@ public class proxy : IHttpHandler {
         return new byte[0];
     }
 
-    private System.Net.WebResponse forwardToServer(HttpContext context, string uri, byte[] postBody, System.Net.NetworkCredential credentials = null)
+    private void writeRequestPostBody(System.Net.HttpWebRequest req, byte[] bytes)
     {
-        return
-            postBody.Length > 0?
-            doHTTPRequest(uri, postBody, "POST", context.Request.Headers["referer"], context.Request.ContentType, credentials):
-            doHTTPRequest(uri, context.Request.HttpMethod, credentials);
+        if (bytes != null && bytes.Length > 0)
+        {
+            req.ContentLength = bytes.Length;
+            using (Stream outputStream = req.GetRequestStream())
+            {
+                outputStream.Write(bytes, 0, bytes.Length);
+            }
+        }
+    }
+
+    private System.Net.WebResponse forwardToServer(HttpRequest req, string uri, byte[] postBody, System.Net.NetworkCredential credentials = null)
+    {
+        string method = postBody.Length > 0 ? "POST" : req.HttpMethod;
+        System.Net.HttpWebRequest forwardReq = createHTTPRequest(uri, method, req.ContentType, credentials);
+        copyRequestHeaders(req, forwardReq);
+        writeRequestPostBody(forwardReq, postBody);
+        return forwardReq.GetResponse();
     }
 
     /// <summary>
@@ -380,7 +393,7 @@ public class proxy : IHttpHandler {
     /// </summary>
     /// <param name="fromResponse">The response that we are copying the headers from</param>
     /// <param name="toResponse">The response that we are copying the headers to</param>
-    private void copyHeaders(System.Net.WebResponse fromResponse, HttpResponse toResponse)
+    private void copyResponseHeaders(System.Net.WebResponse fromResponse, HttpResponse toResponse)
     {
         foreach (var headerKey in fromResponse.Headers.AllKeys)
         {
@@ -410,6 +423,73 @@ public class proxy : IHttpHandler {
         }
     }
 
+    private void copyRequestHeaders(HttpRequest fromRequest, System.Net.HttpWebRequest toRequest)
+    {
+        foreach (var headerKey in fromRequest.Headers.AllKeys)
+        {
+            string headerValue = fromRequest.Headers[headerKey];
+            string headerKeyLower = headerKey.ToLower();
+
+            switch (headerKeyLower)
+            {
+                case "accept-encoding":
+                case "proxy-connection":
+                    continue;
+                case "range":
+                    setRangeHeader(toRequest, headerValue);
+                    break;
+                case "accept":
+                    toRequest.Accept = headerValue;
+                    break;
+                case "if-modified-since":
+                    DateTime modDT;
+                    if (DateTime.TryParse(headerValue, out modDT))
+                        toRequest.IfModifiedSince = modDT;
+                    break;
+                case "referer":
+                    toRequest.Referer = headerValue;
+                    break;
+                case "user-agent":
+                    toRequest.UserAgent = headerValue;
+                    break;
+                default:
+                    // Some headers are restricted and would throw an exception:
+                    // http://msdn.microsoft.com/en-us/library/system.net.httpwebrequest.headers(v=vs.100).aspx
+                    // Also check for our custom list of headers that should not be sent (https://github.com/Esri/resource-proxy/issues/362)
+                    if (!System.Net.WebHeaderCollection.IsRestricted(headerKey) &&
+                        headerKeyLower != "accept-encoding" &&
+                        headerKeyLower != "proxy-connection" &&
+                        headerKeyLower != "connection" &&
+                        headerKeyLower != "keep-alive" &&
+                        headerKeyLower != "proxy-authenticate" &&
+                        headerKeyLower != "proxy-authorization" &&
+                        headerKeyLower != "transfer-encoding" &&
+                        headerKeyLower != "te" &&
+                        headerKeyLower != "trailer" &&
+                        headerKeyLower != "upgrade" &&
+                        toRequest.Headers[headerKey] == null)
+                        toRequest.Headers[headerKey] = headerValue;
+                    break;
+            }
+        }
+    }
+
+    private void setRangeHeader(System.Net.HttpWebRequest req, string range)
+    {
+        string[] specifierAndRange = range.Split('=');
+        if (specifierAndRange.Length == 2)
+        {
+            string specifier = specifierAndRange[0];
+            string[] fromAndTo = specifierAndRange[1].Split('-');
+            if (fromAndTo.Length == 2)
+            {
+                int from, to;
+                if (int.TryParse(fromAndTo[0], out from) && int.TryParse(fromAndTo[1], out to))
+                    req.AddRange(specifier, from, to);
+            }
+        }
+    }
+
     private bool fetchAndPassBackToClient(System.Net.WebResponse serverResponse, HttpResponse clientResponse, bool ignoreAuthenticationErrors) {
         if (serverResponse != null) {
             using (Stream byteStream = serverResponse.GetResponseStream()) {
@@ -427,14 +507,14 @@ public class proxy : IHttpHandler {
                             return true;
 
                         //Copy the header info and the content to the reponse to client
-                        copyHeaders(serverResponse, clientResponse);
+                        copyResponseHeaders(serverResponse, clientResponse);
                         clientResponse.Write(strResponse);
                     }
                 } else {
                     // Binary response (image, lyr file, other binary file)
 
                     //Copy the header info to the reponse to client
-                    copyHeaders(serverResponse, clientResponse);
+                    copyResponseHeaders(serverResponse, clientResponse);
                     // Tell client not to cache the image since it's dynamic
                     clientResponse.CacheControl = "no-cache";
                     byte[] buffer = new byte[32768];
@@ -470,16 +550,20 @@ public class proxy : IHttpHandler {
             }
         }
 
-        return doHTTPRequest(uri, bytes, method, PROXY_REFERER, contentType, credentials);
+        System.Net.HttpWebRequest req = createHTTPRequest(uri, method, contentType, credentials);
+        req.Referer = PROXY_REFERER;
+        writeRequestPostBody(req, bytes);
+        return req.GetResponse();
     }
 
-    private System.Net.WebResponse doHTTPRequest(string uri, byte[] bytes, string method, string referer, string contentType, System.Net.NetworkCredential credentials = null)
+    private System.Net.HttpWebRequest createHTTPRequest(string uri, string method, string contentType, System.Net.NetworkCredential credentials = null)
     { 
         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         System.Net.HttpWebRequest req = (System.Net.HttpWebRequest)System.Net.HttpWebRequest.Create(uri);
         req.ServicePoint.Expect100Continue = false;
-        req.Referer = referer;
         req.Method = method;
+        if (method == "POST")
+            req.ContentType = string.IsNullOrEmpty(contentType) ? "application/x-www-form-urlencoded" : contentType;
 
         // Use the default system proxy
         req.Proxy = SYSTEM_PROXY;
@@ -487,16 +571,7 @@ public class proxy : IHttpHandler {
         if (credentials != null)
             req.Credentials = credentials;
 
-        if (bytes != null && bytes.Length > 0 || method == "POST") {
-            req.Method = "POST";
-            req.ContentType = string.IsNullOrEmpty(contentType) ? "application/x-www-form-urlencoded" : contentType;
-            if (bytes != null && bytes.Length > 0)
-                req.ContentLength = bytes.Length;
-            using (Stream outputStream = req.GetRequestStream()) {
-                outputStream.Write(bytes, 0, bytes.Length);
-            }
-        }
-        return req.GetResponse();
+        return req;
     }
 
     private string webResponseToString(System.Net.WebResponse serverResponse) {
