@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased][unreleased]
+
+## [1.1.2] - 2017-08-21
+
+### Fixed
+
+- (DotNet) Appropriate request headers are now passed through [#433](https://github.com/Esri/resource-proxy/pull/433)
+
 ## [1.1.1] - 2017-08-15
 
 ### Added
@@ -62,7 +70,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 - Initial public release
 
-[Unreleased]: https://github.com/Esri/resource-proxy/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/Esri/resource-proxy/compare/v1.1.2...HEAD
+[1.1.2]: https://github.com/Esri/resource-proxy/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/Esri/resource-proxy/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/Esri/resource-proxy/compare/v1.0...v1.1.0
 [1.0]: https://github.com/Esri/resource-proxy/compare/v0.9...v1.0

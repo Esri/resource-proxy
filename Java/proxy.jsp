@@ -35,12 +35,12 @@ java.text.SimpleDateFormat" %>
 *
 * JSP proxy client
 *
-* Version 1.1.1
+* Version 1.1.2
 * See https://github.com/Esri/resource-proxy for more information.
 *
 ----------------------------------------------------------- -->
 
-<%! final String version = "1.1.1";   %>
+<%! final String version = "1.1.2";   %>
 
 <%!
     public static final class DataValidUtil {
@@ -166,11 +166,11 @@ java.text.SimpleDateFormat" %>
                     // TODO: make this configurable
                     if (headerFieldKey != null && headerFieldKey.toLowerCase().equals("content-type")){
                         if (value != null && value.toLowerCase().contains("application/vnd.ogc.wms_xml")){
-                            _log(Level.FINE, "Adjusting Content-Type for WMS OGC: " + value); 
+                            _log(Level.FINE, "Adjusting Content-Type for WMS OGC: " + value);
                             value = "text/xml";
                         }
                     }
-                    
+
                     // remove Transfer-Encoding/chunked to the client
                     // StackOverflow http://stackoverflow.com/questions/31452074/how-to-proxy-http-requests-in-spring-mvc
                     if (headerFieldKey != null && headerFieldKey.toLowerCase().equals("transfer-encoding")) {
@@ -178,7 +178,7 @@ java.text.SimpleDateFormat" %>
 		                    continue;
 	                    }
                     }
-                    
+
                     sb.append(value);
                     sb.append("");
                 }
