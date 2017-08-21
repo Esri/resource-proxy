@@ -3,7 +3,7 @@
 /*
  * DotNet proxy client.
  *
- * Version 1.1.1
+ * Version 1.1.2
  * See https://github.com/Esri/resource-proxy for more information.
  *
  */
@@ -21,7 +21,7 @@ using System.Net;
 
 public class proxy : IHttpHandler {
 
-    private static String version = "1.1.1";
+    private static String version = "1.1.2";
 
     class RateMeter {
         double _rate; //internal rate is stored in requests per second
@@ -557,7 +557,7 @@ public class proxy : IHttpHandler {
     }
 
     private System.Net.HttpWebRequest createHTTPRequest(string uri, string method, string contentType, System.Net.NetworkCredential credentials = null)
-    { 
+    {
         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         System.Net.HttpWebRequest req = (System.Net.HttpWebRequest)System.Net.HttpWebRequest.Create(uri);
         req.ServicePoint.Expect100Continue = false;
