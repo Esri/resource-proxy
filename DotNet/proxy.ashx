@@ -150,15 +150,15 @@ public class proxy : IHttpHandler {
         }
         //use actual request header instead of a placeholder, if present
         if (context.Request.Headers["referer"] != null)
-            PROXY_REFERER = RemoveQueryString(context.Request.Headers["referer"]);
+            PROXY_REFERER = context.Request.Headers["referer"];
 
         //referer
         //check against the list of referers if they have been specified in the proxy.config
         String[] allowedReferersArray = ProxyConfig.GetAllowedReferersArray();
         if (allowedReferersArray != null && allowedReferersArray.Length > 0 && context.Request.Headers["referer"] != null)
         {
-            PROXY_REFERER = RemoveQueryString(context.Request.Headers["referer"]);
-            string requestReferer = RemoveQueryString(context.Request.Headers["referer"]);
+            PROXY_REFERER = context.Request.Headers["referer"];
+            string requestReferer = context.Request.Headers["referer"];
             try
             {
                 String checkValidUri = new UriBuilder(requestReferer.StartsWith("//") ? requestReferer.Substring(requestReferer.IndexOf("//") + 2) : requestReferer).Host;
@@ -646,7 +646,7 @@ public class proxy : IHttpHandler {
                     }
                     if (tokenServiceUri != "") {
                         log(TraceLevel.Info," Service is secured by " + tokenServiceUri + ": getting new token...");
-                        string uri = tokenServiceUri + "?f=json&request=getToken&referer=" + PROXY_REFERER + "&expiration=60&username=" + su.Username + "&password=" + su.Password;
+                        string uri = tokenServiceUri + "?f=json&request=getToken&referer=" + RemoveQueryString(PROXY_REFERER) + "&expiration=60&username=" + su.Username + "&password=" + su.Password;
                         string tokenResponse = webResponseToString(doHTTPRequest(uri, "POST"));
                         token = extractToken(tokenResponse, "token");
                     }
