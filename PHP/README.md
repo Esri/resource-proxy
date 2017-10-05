@@ -279,7 +279,7 @@ Please refer to the IIS help documentation explaining
 When PHP is not installed or configured correctly this is the symptom.  On Windows there are several good 3rd party utilities that make installing and configuring PHP easy.
 The utilities worth looking into are:
 
-* [Microsoft's Web Platform Installer] (http://www.microsoft.com/web/downloads/platform.aspx)
+* [Microsoft's Web Platform Installer](http://www.microsoft.com/web/downloads/platform.aspx)
 * [Zend Server Project](http://www.zend.com/en/products/server/index)
 * [WAMP](http://www.wampserver.com/)
 
