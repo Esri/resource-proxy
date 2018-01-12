@@ -627,16 +627,23 @@ public class proxy : IHttpHandler {
 
                 if (infoUrl != "") {
                     log(TraceLevel.Info," Querying security endpoint...");
-                    infoUrl += "/rest/info?f=json";
-                    //lets send a request to try and determine the URL of a token generator
-                    string infoResponse = webResponseToString(doHTTPRequest(infoUrl, "GET"));
-                    String tokenServiceUri = getJsonValue(infoResponse, "tokenServicesUrl");
-                    if (string.IsNullOrEmpty(tokenServiceUri)) {
-                        string owningSystemUrl = getJsonValue(infoResponse, "owningSystemUrl");
-                        if (!string.IsNullOrEmpty(owningSystemUrl)) {
-                            tokenServiceUri = owningSystemUrl + "/sharing/generateToken";
-                        }
-                    }
+					
+					string tokenServiceUri = su.TokenServiceUri;
+					
+					if (string.IsNullOrEmpty(tokenServiceUri)){
+						log(TraceLevel.Info," Token URL not cached. Querying rest info page...");
+						infoUrl += "/rest/info?f=json";
+						//lets send a request to try and determine the URL of a token generator
+						string infoResponse = webResponseToString(doHTTPRequest(infoUrl, "GET"));
+						tokenServiceUri = getJsonValue(infoResponse, "tokenServicesUrl");
+						if (string.IsNullOrEmpty(tokenServiceUri)) {
+							string owningSystemUrl = getJsonValue(infoResponse, "owningSystemUrl");
+							if (!string.IsNullOrEmpty(owningSystemUrl)) {
+								tokenServiceUri = owningSystemUrl + "/sharing/generateToken";
+							}
+						}
+					}
+					
                     if (tokenServiceUri != "") {
                         log(TraceLevel.Info," Service is secured by " + tokenServiceUri + ": getting new token...");
                         string uri = tokenServiceUri + "?f=json&request=getToken&referer=" + PROXY_REFERER + "&expiration=60&username=" + su.Username + "&password=" + su.Password;
@@ -1153,7 +1160,8 @@ public class ServerUrl {
     string hostRedirect;
     bool matchAll;
     string oauth2Endpoint;
-    string domain;
+	string tokenServiceUri;
+	string domain;
     bool useAppPoolIdentity;
     string username;
     string password;
@@ -1193,6 +1201,11 @@ public class ServerUrl {
     public string OAuth2Endpoint {
         get { return oauth2Endpoint; }
         set { oauth2Endpoint = value; }
+    }
+    [XmlAttribute("tokenServiceUri")]
+    public string TokenServiceUri {
+        get { return tokenServiceUri; }
+        set { tokenServiceUri = value; }
     }
     [XmlAttribute("domain")]
     public string Domain
