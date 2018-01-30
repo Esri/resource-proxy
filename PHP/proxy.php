@@ -2848,4 +2848,3 @@ $proxyObject = new Proxy($proxyConfig, $proxyLog);
 
 $proxyObject->getResponse();
 
-?>
