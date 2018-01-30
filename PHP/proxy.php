@@ -2747,7 +2747,7 @@ class XmlParser
 
     public $file;
 
-    function XmlParser($f = "proxy.config")
+    function __construct($f = "proxy.config")
     {
         if(trim($f) != "") { $this->loadFile($f);}
     }
