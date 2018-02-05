@@ -142,9 +142,9 @@ function getMbstringMessage($mbstring)
 
 function versionPhpCheck()
 {
-    if (version_compare(PHP_VERSION, '5.4.2') >= 0) {
+    if (version_compare(PHP_VERSION, '5.6') >= 0) {
         return "Pass";
-    }elseif(version_compare(PHP_VERSION, '5.3.0', '>=') && version_compare(PHP_VERSION, '5.4.1', '<=')){
+    }elseif(version_compare(PHP_VERSION, '5.3.0', '>=') && version_compare(PHP_VERSION, '5.6', '<=')){
         return "Warning";
     }else{
         return "Fail";
@@ -171,7 +171,7 @@ $curl_version = curl_version();
 <table>
 
 <tr>
-<td><span>Check PHP version 5.4.2 or newer?</span></td>
+<td><span>Check PHP version 5.6 or newer?</span></td>
 <td><?php echo '<span class="'. strtolower($version) . '">' . $version . '</span> [v' . phpversion() . ']' ; ?></td>
 </tr>
 
