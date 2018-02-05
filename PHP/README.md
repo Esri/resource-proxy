@@ -204,7 +204,7 @@ On a Mac an alternative is to uncommented the line that says ```Include /private
 
 ### PHP version check has failed
 
-The minimum proxy requirement is PHP 5.4.2. We recommend you install the most recent stable PHP release.
+The minimum proxy requirement is PHP 5.6. We recommend you install the most recent stable PHP release.
 
 ### My directory is not writable
 
@@ -286,9 +286,7 @@ Use the help documentation included in these products to get your PHP server up 
 
 ### PHP version check has failed
 
-This is because the minimum proxy requirements are set to PHP version 5.4.2.  If this fails, the recommendation is to install the most recent stable PHP release.
-Other PHP versions may work, however PHP version 5.4.2 contains important security updates.
-
+The minimum proxy requirement is PHP 5.6. We recommend you install the most recent stable PHP release.
 
 ### My directory is not writable
 
