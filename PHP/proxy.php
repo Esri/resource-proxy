@@ -579,7 +579,7 @@ class Proxy {
         // headers_list() - Returns a list of response headers sent (or ready to send)
         foreach(headers_list() as $key => $value)
         {
-            $pos = strripos($value, ":");
+            $pos = stripos($value, ":");
 
             $header_type = substr($value,0,$pos);
 
@@ -611,6 +611,20 @@ class Proxy {
 
         header("Content-length: " . strlen($this->proxyBody)); //Issue 190 with truncated response, not sure how to gzip the data (or keep gzip via CURLOPT_ENCODING) without extension.
 
+        // Send back 4xx/5xx responses for 200 OK responses from ArcGIS Server that contain errors
+        if($this->proxyConfig["restfulstatusheaders"] === "true" && stristr($this->proxyUrlWithData, "f=json") !== false) {
+            // Hacky, but avods decoding potentially large JSON responses that aren't errors
+            if(stristr($this->proxyBody, '"error":{"code"') !== false) {
+                // Silently fail and continue as normal if JSON decoding goes awry for any reason
+                @$json = json_decode($this->proxyBody);
+                if(is_object($json) && isset($json->error) && isset($json->error->code)) {
+                    header("Status", true, $json->error->code);
+                } else {
+                    $this->proxyLog->log("Error decoding JSON response document for setting restfulStatusHeaders.");
+                }
+            }
+        }
+        
         echo $this->proxyBody;
 
         $this->proxyLog->log("Proxy complete");
@@ -2590,6 +2604,8 @@ class ProxyConfig {
         $allowedReferers = explode(",", $this->proxyConfig['allowedreferers']); //Change XML allowedreferers from string to array
 
         $this->proxyConfig['allowedreferers'] = $allowedReferers; //Add above array to the proxyconfig property
+        
+        $this->proxyConfig['restfulstatusheaders'] = $proxyconfig['restfulstatusheaders'];
 
         $xmlParser = null;
 
