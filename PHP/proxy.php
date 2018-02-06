@@ -1041,7 +1041,7 @@ class Proxy {
         exit();
     }
 
-    public function proxyGet($url) {
+    public function proxyGet($url = null) {
 
         $this->response = null;
 
