@@ -175,7 +175,6 @@ File filtering directives added to Apache's main ```httpd.conf``` can lead to fa
 
 ``` php-sqlite3 php-curl php-xmllinux ```
 
-
 ### When I ran the verification test my browser displays raw PHP code
 
 Raw PHP code in the browser indicates that the PHP server is not configured correctly.
@@ -184,10 +183,8 @@ On a Linux machine sometimes the ```httpd.conf``` file is located in ```etc/http
 A properly configured httpd.conf file, looks something like below. Note that the php_5module
 is uncommented and libphp5.so is present in the modules directory.  More help [here](http://php.net/manual/en/install.macosx.bundled.php).
 
-
 In addition Apache must be told to accept .php file extensions.  This can also be done by adding the below
 lines in your ```httpd.conf```.
-
 
 ```
 <IfModule php5_module>
@@ -234,12 +231,10 @@ You may want to try out these solutions:
 
 Note, on Linux the ```configure```, ```make```, ```make install``` may likely be the shortest path to success to resolve missing extensions.
 
-
 ### I see errors regarding dates and times
 
 Make sure you've set the ```date.timezone``` value in the ```php.ini``` file.  For valid PHP timezones, see this [documentation](http://php.net/manual/en/timezones.php). The ```proxy-verification.php``` page
 makes an attempt to output the location of the ```php.ini``` used by the PHP server.
-
 
 ### Why do I see fail messages after adding extensions?
 
@@ -262,8 +257,6 @@ implementing Cross-origin resource sharing ```CORS``` on the application server.
 
 There are several ways to obtain these credentials.  Credentials can be created by signing into [ArcGIS for Developers](https://developers.arcgis.com) and clicking ```Applications``` then ```Create an Application```.  Another option is to sign into [ArcGIS Online](https://arcgis.com) click ```My Content``` then click ```Add Item``` to go through the steps to add an application.  Once the application has been added click the item to ```View item details``` and click ```Register``` within the App Registration section.  Tip: OAuth2 workflows contain a variety of value added features for distributing apps, accessing billable services, and getting usage reports.
 
-
-
 ## Guide for Windows using IIS
 
 ### I see my configuration file on the Internet after running the verification test
@@ -271,7 +264,6 @@ There are several ways to obtain these credentials.  Credentials can be created 
 This is a problem because ```proxy.config``` may contain sensitive credentials.   The solution to this problem is update IIS so that ```.config``` and ```.sqlite``` file types will be filtered and not be shown to the end user.
 Please refer to the IIS help documentation explaining
 [how to set up request filtering on IIS](http://www.iis.net/configreference/system.webserver/security/requestfiltering/fileextensions).
-
 
 ### When I ran the verification test my browser displays raw PHP code
 
@@ -298,9 +290,11 @@ to open the ```properties``` dialog box and clicking the ```security``` tab.  Us
 
 If you've chosen to install PHP using either of these utilities, OpenSSL and PDO Sqlite are a part of the PHP install.  However, these extensions need to be activated.  You can do this by uncommenting these lines in the ```php.ini``` file.
 
-``` extension=php_openssl.dll ```
-``` extension=php_pdo.dll ```
-``` extension=php_curl.dll ```
+```ini
+extension=php_openssl.dll
+extension=php_pdo.dll
+extension=php_curl.dll
+```
 
 After modifying ```php.ini``` restart IIS and run the ```proxy-verification.php``` again.
 
@@ -314,7 +308,6 @@ implementing Cross-origin resource sharing ```CORS``` on the application server.
 ### Where do I get clientId and clientSecret credentials to leverage OAuth2?
 
 There are several ways to obtain these credentials.  Credentials can be created by signing into [ArcGIS for Developers](https://developers.arcgis.com) and clicking ```Applications``` then ```Create an Application```.  Another option is to sign into [ArcGIS Online](https://arcgis.com) click ```My Content``` then click ```Add Item``` to go through the steps to add an application.  Once the application has been added click the item to ```View item details``` and click ```Register``` within the App Registration section.  Tip: OAuth2 workflows contain a variety of value added features for distributing apps, accessing billable services, and getting usage reports.
-
 
 ## Issues
 
