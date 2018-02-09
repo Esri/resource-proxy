@@ -107,6 +107,13 @@ Found a bug or want to request a new feature? Check out previously logged [Issue
 
 Esri welcomes [contributions](CONTRIBUTING.md) from anyone and everyone. Please see our [guidelines for contributing](https://github.com/esri/contributing).
 
+## Release steps (for maintainers)
+
+0. run `npm install gh-release` inside the directory which houses the repository (this only needs to be done once)
+1. bump proxy version numbers and changelog
+2. commit your changes `git commit -m ':package 1.x.x'`
+3. run `gh-release` at the command line. this will create a tag using the current SHA and use whats in the changelog in the release notes
+
 ## License
 
 Copyright 2017 Esri
