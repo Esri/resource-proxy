@@ -1,4 +1,4 @@
-<%@ WebHandler Language="C#" Class="proxy" %>
+<%@ WebHandler Language="C#" Class="Proxy" %>
 
 /*
  * DotNet proxy client.
@@ -19,7 +19,7 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Net;
 
-public class proxy : IHttpHandler {
+public class Proxy : IHttpHandler {
 
     private static String version = "1.1.2";
 
@@ -30,7 +30,7 @@ public class proxy : IHttpHandler {
         DateTime _lastUpdate = DateTime.Now;
 
         public RateMeter(int rate_limit, int rate_limit_period) {
-            _rate = (double) rate_limit / rate_limit_period / 60;
+            _rate = (double)rate_limit / rate_limit_period / 60;
             _countCap = rate_limit;
         }
 
@@ -66,16 +66,14 @@ public class proxy : IHttpHandler {
     public void ProcessRequest(HttpContext context) {
 
 
-        if (logTraceListener == null)
-        {
+        if (logTraceListener == null) {
             logTraceListener = new LogTraceListener();
             Trace.Listeners.Add(logTraceListener);
         }
 
 
         HttpResponse response = context.Response;
-        if (context.Request.Url.Query.Length < 1)
-        {
+        if (context.Request.Url.Query.Length < 1) {
             string errorMsg = "This proxy does not support empty parameters.";
             log(TraceLevel.Error, errorMsg);
             sendErrorResponse(context.Response, null, errorMsg, System.Net.HttpStatusCode.BadRequest);
@@ -83,21 +81,18 @@ public class proxy : IHttpHandler {
         }
 
         string uri = context.Request.Url.Query.Substring(1);
+
         log(TraceLevel.Verbose, "URI requested: " + uri);
 
         //if uri is ping
-        if (uri.Equals("ping", StringComparison.InvariantCultureIgnoreCase))
-        {
+        if (uri.Equals("ping", StringComparison.InvariantCultureIgnoreCase)) {
             ProxyConfig proxyConfig = ProxyConfig.GetCurrentConfig();
 
             String checkConfig = (proxyConfig == null) ? "Not Readable" : "OK";
             String checkLog = "";
-            if (checkConfig != "OK")
-            {
+            if (checkConfig != "OK") {
                 checkLog = "Can not verify";
-            }
-            else
-            {
+            } else {
                 String filename = proxyConfig.logFile;
                 checkLog = (filename != null && filename != "") ? "OK" : "Not Exist/Readable";
 
@@ -148,24 +143,19 @@ public class proxy : IHttpHandler {
         //referer
         //check against the list of referers if they have been specified in the proxy.config
         String[] allowedReferersArray = ProxyConfig.GetAllowedReferersArray();
-        if (allowedReferersArray != null && allowedReferersArray.Length > 0 && context.Request.Headers["referer"] != null)
-        {
+        if (allowedReferersArray != null && allowedReferersArray.Length > 0 && context.Request.Headers["referer"] != null) {
             PROXY_REFERER = context.Request.Headers["referer"];
             string requestReferer = context.Request.Headers["referer"];
-            try
-            {
+            try {
                 String checkValidUri = new UriBuilder(requestReferer.StartsWith("//") ? requestReferer.Substring(requestReferer.IndexOf("//") + 2) : requestReferer).Host;
 
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 log(TraceLevel.Warning, "Proxy is being used from an invalid referer: " + context.Request.Headers["referer"]);
                 sendErrorResponse(context.Response, "Error verifying referer. ", "403 - Forbidden: Access is denied.", System.Net.HttpStatusCode.Forbidden);
                 return;
             }
 
-            if (!checkReferer(allowedReferersArray, requestReferer))
-            {
+            if (!checkReferer(allowedReferersArray, requestReferer)) {
                 log(TraceLevel.Warning, "Proxy is being used from an unknown referer: " + context.Request.Headers["referer"]);
                 sendErrorResponse(context.Response, "Unsupported referer. ", "403 - Forbidden: Access is denied.", System.Net.HttpStatusCode.Forbidden);
             }
@@ -174,8 +164,7 @@ public class proxy : IHttpHandler {
         }
 
         //Check to see if allowed referer list is specified and reject if referer is null
-        if (context.Request.Headers["referer"] == null && allowedReferersArray != null && !allowedReferersArray[0].Equals("*"))
-        {
+        if (context.Request.Headers["referer"] == null && allowedReferersArray != null && !allowedReferersArray[0].Equals("*")) {
             log(TraceLevel.Warning, "Proxy is being called by a null referer.  Access denied.");
             sendErrorResponse(response, "Current proxy configuration settings do not allow requests which do not include a referer header.", "403 - Forbidden: Access is denied.", System.Net.HttpStatusCode.Forbidden);
             return;
@@ -183,24 +172,20 @@ public class proxy : IHttpHandler {
 
         //Throttling: checking the rate limit coming from particular client IP
         if (serverUrl.RateLimit > -1) {
-            lock (_rateMapLock)
-            {
+            lock (_rateMapLock) {
                 ConcurrentDictionary<string, RateMeter> ratemap = (ConcurrentDictionary<string, RateMeter>)context.Application["rateMap"];
-                if (ratemap == null)
-                {
+                if (ratemap == null) {
                     ratemap = new ConcurrentDictionary<string, RateMeter>();
                     context.Application["rateMap"] = ratemap;
                     context.Application["rateMap_cleanup_counter"] = 0;
                 }
                 string key = "[" + serverUrl.Url + "]x[" + context.Request.UserHostAddress + "]";
                 RateMeter rate;
-                if (!ratemap.TryGetValue(key, out rate))
-                {
+                if (!ratemap.TryGetValue(key, out rate)) {
                     rate = new RateMeter(serverUrl.RateLimit, serverUrl.RateLimitPeriod);
                     ratemap.TryAdd(key, rate);
                 }
-                if (!rate.click())
-                {
+                if (!rate.click()) {
                     log(TraceLevel.Warning, " Pair " + key + " is throttled to " + serverUrl.RateLimit + " requests per " + serverUrl.RateLimitPeriod + " minute(s). Come back later.");
                     sendErrorResponse(context.Response, "This is a metered resource, number of requests have exceeded the rate limit interval.", "Unable to proxy request for requested resource", (System.Net.HttpStatusCode)429);
                     return;
@@ -209,8 +194,7 @@ public class proxy : IHttpHandler {
                 //making sure the rateMap gets periodically cleaned up so it does not grow uncontrollably
                 int cnt = (int)context.Application["rateMap_cleanup_counter"];
                 cnt++;
-                if (cnt >= CLEAN_RATEMAP_AFTER)
-                {
+                if (cnt >= CLEAN_RATEMAP_AFTER) {
                     cnt = 0;
                     cleanUpRatemap(ratemap);
                 }
@@ -228,40 +212,33 @@ public class proxy : IHttpHandler {
         string token = string.Empty;
         string tokenParamName = null;
 
-        if ((serverUrl.HostRedirect != null) && (serverUrl.HostRedirect != string.Empty))
-        {
+        if ((serverUrl.HostRedirect != null) && (serverUrl.HostRedirect != string.Empty)) {
             requestUri = serverUrl.HostRedirect + new Uri(requestUri).PathAndQuery;
         }
-        if (serverUrl.UseAppPoolIdentity)
-	    {
-		    credentials=CredentialCache.DefaultNetworkCredentials;
-	    }
-    	else if (serverUrl.Domain != null)
-        {
+        if (serverUrl.UseAppPoolIdentity) {
+            credentials = CredentialCache.DefaultNetworkCredentials;
+        } else if (serverUrl.Domain != null) {
             credentials = new System.Net.NetworkCredential(serverUrl.Username, serverUrl.Password, serverUrl.Domain);
         }
-        else
-        {
+        // Look to see if the user has enabled Oauth
+        if (String.IsNullOrEmpty(serverUrl.OAuth2Endpoint) || String.IsNullOrEmpty(serverUrl.TokenServiceUri)) {
             //if token comes with client request, it takes precedence over token or credentials stored in configuration
             hasClientToken = requestUri.Contains("?token=") || requestUri.Contains("&token=") || post.Contains("?token=") || post.Contains("&token=");
 
-            if (!hasClientToken)
-            {
+            if (!hasClientToken) {
                 // Get new token and append to the request.
                 // But first, look up in the application scope, maybe it's already there:
                 token = (String)context.Application["token_for_" + serverUrl.Url];
                 bool tokenIsInApplicationScope = !String.IsNullOrEmpty(token);
 
                 //if still no token, let's see if there is an access token or if are credentials stored in configuration which we can use to obtain new token
-                if (!tokenIsInApplicationScope)
-                {
+                if (!tokenIsInApplicationScope) {
                     token = serverUrl.AccessToken;
                     if (String.IsNullOrEmpty(token))
-                        token = getNewTokenIfCredentialsAreSpecified(serverUrl, requestUri);
+                        token = getNewTokenIfCredentialsAreSpecified(serverUrl, requestUri, credentials);
                 }
 
-                if (!String.IsNullOrEmpty(token) && !tokenIsInApplicationScope)
-                {
+                if (!String.IsNullOrEmpty(token) && !tokenIsInApplicationScope) {
                     //storing the token in Application scope, to do not waste time on requesting new one untill it expires or the app is restarted.
                     context.Application.Lock();
                     context.Application["token_for_" + serverUrl.Url] = token;
@@ -285,26 +262,21 @@ public class proxy : IHttpHandler {
             string errorMsg = webExc.Message + " " + uri;
             log(TraceLevel.Error, errorMsg);
 
-            if (webExc.Response != null)
-            {
+            if (webExc.Response != null) {
                 copyResponseHeaders(webExc.Response as System.Net.HttpWebResponse, context.Response);
 
-                using (Stream responseStream = webExc.Response.GetResponseStream())
-                {
+                using (Stream responseStream = webExc.Response.GetResponseStream()) {
                     byte[] bytes = new byte[32768];
                     int bytesRead = 0;
 
-                    while ((bytesRead = responseStream.Read(bytes, 0, bytes.Length)) > 0)
-                    {
+                    while ((bytesRead = responseStream.Read(bytes, 0, bytes.Length)) > 0) {
                         responseStream.Write(bytes, 0, bytesRead);
                     }
 
                     context.Response.StatusCode = (int)(webExc.Response as System.Net.HttpWebResponse).StatusCode;
                     context.Response.OutputStream.Write(bytes, 0, bytes.Length);
                 }
-            }
-            else
-            {
+            } else {
                 System.Net.HttpStatusCode statusCode = System.Net.HttpStatusCode.InternalServerError;
                 sendErrorResponse(context.Response, null, errorMsg, statusCode);
             }
@@ -327,8 +299,8 @@ public class proxy : IHttpHandler {
                 log(TraceLevel.Info, "Renewing token and trying again.");
                 //server returned error - potential cause: token has expired.
                 //we'll do second attempt to call the server with renewed token:
-                token = getNewTokenIfCredentialsAreSpecified(serverUrl, requestUri);
-                serverResponse = forwardToServer(context.Request, addTokenToUri(requestUri, token, tokenParamName), postBody);
+                token = getNewTokenIfCredentialsAreSpecified(serverUrl, requestUri, credentials);
+                serverResponse = forwardToServer(context.Request, addTokenToUri(requestUri, token, tokenParamName), postBody, credentials);
 
                 //storing the token in Application scope, to do not waste time on requesting new one untill it expires or the app is restarted.
                 context.Application.Lock();
@@ -355,8 +327,8 @@ public class proxy : IHttpHandler {
         get { return true; }
     }
 
-/**
-* Private
+    /**
+    * Private
 */
     private byte[] readRequestPostBody(HttpContext context) {
         if (context.Request.InputStream.Length > 0) {
@@ -367,20 +339,16 @@ public class proxy : IHttpHandler {
         return new byte[0];
     }
 
-    private void writeRequestPostBody(System.Net.HttpWebRequest req, byte[] bytes)
-    {
-        if (bytes != null && bytes.Length > 0)
-        {
+    private void writeRequestPostBody(System.Net.HttpWebRequest req, byte[] bytes) {
+        if (bytes != null && bytes.Length > 0) {
             req.ContentLength = bytes.Length;
-            using (Stream outputStream = req.GetRequestStream())
-            {
+            using (Stream outputStream = req.GetRequestStream()) {
                 outputStream.Write(bytes, 0, bytes.Length);
             }
         }
     }
 
-    private System.Net.WebResponse forwardToServer(HttpRequest req, string uri, byte[] postBody, System.Net.NetworkCredential credentials = null)
-    {
+    private System.Net.WebResponse forwardToServer(HttpRequest req, string uri, byte[] postBody, System.Net.NetworkCredential credentials = null) {
         string method = postBody.Length > 0 ? "POST" : req.HttpMethod;
         System.Net.HttpWebRequest forwardReq = createHTTPRequest(uri, method, req.ContentType, credentials);
         copyRequestHeaders(req, forwardReq);
@@ -393,12 +361,9 @@ public class proxy : IHttpHandler {
     /// </summary>
     /// <param name="fromResponse">The response that we are copying the headers from</param>
     /// <param name="toResponse">The response that we are copying the headers to</param>
-    private void copyResponseHeaders(System.Net.WebResponse fromResponse, HttpResponse toResponse)
-    {
-        foreach (var headerKey in fromResponse.Headers.AllKeys)
-        {
-            switch (headerKey.ToLower())
-            {
+    private void copyResponseHeaders(System.Net.WebResponse fromResponse, HttpResponse toResponse) {
+        foreach (var headerKey in fromResponse.Headers.AllKeys) {
+            switch (headerKey.ToLower()) {
                 case "content-type":
                 case "transfer-encoding":
                 case "accept-ranges":   // Prevent requests for partial content
@@ -417,21 +382,18 @@ public class proxy : IHttpHandler {
         // TODO: make this configurable
         if (fromResponse.ContentType.Contains("application/vnd.ogc.wms_xml")) {
             toResponse.ContentType = "text/xml";
-            log(TraceLevel.Verbose, "Adjusting Content-Type for WMS OGC: " + fromResponse.ContentType );
+            log(TraceLevel.Verbose, "Adjusting Content-Type for WMS OGC: " + fromResponse.ContentType);
         } else {
             toResponse.ContentType = fromResponse.ContentType;
         }
     }
 
-    private void copyRequestHeaders(HttpRequest fromRequest, System.Net.HttpWebRequest toRequest)
-    {
-        foreach (var headerKey in fromRequest.Headers.AllKeys)
-        {
+    private void copyRequestHeaders(HttpRequest fromRequest, System.Net.HttpWebRequest toRequest) {
+        foreach (var headerKey in fromRequest.Headers.AllKeys) {
             string headerValue = fromRequest.Headers[headerKey];
             string headerKeyLower = headerKey.ToLower();
 
-            switch (headerKeyLower)
-            {
+            switch (headerKeyLower) {
                 case "accept-encoding":
                 case "proxy-connection":
                     continue;
@@ -474,15 +436,12 @@ public class proxy : IHttpHandler {
         }
     }
 
-    private void setRangeHeader(System.Net.HttpWebRequest req, string range)
-    {
+    private void setRangeHeader(System.Net.HttpWebRequest req, string range) {
         string[] specifierAndRange = range.Split('=');
-        if (specifierAndRange.Length == 2)
-        {
+        if (specifierAndRange.Length == 2) {
             string specifier = specifierAndRange[0];
             string[] fromAndTo = specifierAndRange[1].Split('-');
-            if (fromAndTo.Length == 2)
-            {
+            if (fromAndTo.Length == 2) {
                 int from, to;
                 if (int.TryParse(fromAndTo[0], out from) && int.TryParse(fromAndTo[1], out to))
                     req.AddRange(specifier, from, to);
@@ -519,8 +478,7 @@ public class proxy : IHttpHandler {
                     clientResponse.CacheControl = "no-cache";
                     byte[] buffer = new byte[32768];
                     int read;
-                    while ((read = byteStream.Read(buffer, 0, buffer.Length)) > 0)
-                    {
+                    while ((read = byteStream.Read(buffer, 0, buffer.Length)) > 0) {
                         clientResponse.OutputStream.Write(buffer, 0, read);
                     }
                     clientResponse.OutputStream.Close();
@@ -531,18 +489,15 @@ public class proxy : IHttpHandler {
         return false;
     }
 
-    private System.Net.WebResponse doHTTPRequest(string uri, string method, System.Net.NetworkCredential credentials = null)
-    {
+    private System.Net.WebResponse doHTTPRequest(string uri, string method, System.Net.NetworkCredential credentials = null) {
         byte[] bytes = null;
         String contentType = null;
         log(TraceLevel.Info, "Sending " + method + " request: " + uri);
 
-        if (method.Equals("POST"))
-        {
+        if (method.Equals("POST")) {
             String[] uriArray = uri.Split(new char[] { '?' }, 2);
             uri = uriArray[0];
-            if (uriArray.Length > 1)
-            {
+            if (uriArray.Length > 1) {
                 contentType = "application/x-www-form-urlencoded";
                 String queryString = uriArray[1];
 
@@ -556,8 +511,7 @@ public class proxy : IHttpHandler {
         return req.GetResponse();
     }
 
-    private System.Net.HttpWebRequest createHTTPRequest(string uri, string method, string contentType, System.Net.NetworkCredential credentials = null)
-    {
+    private System.Net.HttpWebRequest createHTTPRequest(string uri, string method, string contentType, System.Net.NetworkCredential credentials = null) {
         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         System.Net.HttpWebRequest req = (System.Net.HttpWebRequest)System.Net.HttpWebRequest.Create(uri);
         req.ServicePoint.Expect100Continue = false;
@@ -583,7 +537,7 @@ public class proxy : IHttpHandler {
         }
     }
 
-    private string getNewTokenIfCredentialsAreSpecified(ServerUrl su, string reqUrl) {
+    private string getNewTokenIfCredentialsAreSpecified(ServerUrl su, string reqUrl, System.Net.NetworkCredential credentials = null) {
         string token = "";
         string infoUrl = "";
 
@@ -599,16 +553,16 @@ public class proxy : IHttpHandler {
                     su.OAuth2Endpoint += "/";
                 log(TraceLevel.Info, "Service is secured by " + su.OAuth2Endpoint + ": getting new token...");
                 string uri = su.OAuth2Endpoint + "token?client_id=" + su.ClientId + "&client_secret=" + su.ClientSecret + "&grant_type=client_credentials&f=json";
-                string tokenResponse = webResponseToString(doHTTPRequest(uri, "POST"));
+                string tokenResponse = webResponseToString(doHTTPRequest(uri, "POST", credentials));
                 token = extractToken(tokenResponse, "token");
                 if (!string.IsNullOrEmpty(token))
-                    token = exchangePortalTokenForServerToken(token, su);
+                    token = exchangePortalTokenForServerToken(token, su, credentials);
             } else {
                 //standalone ArcGIS Server/ArcGIS Online token-based authentication
 
                 //if a request is already being made to generate a token, just let it go
                 if (reqUrl.ToLower().Contains("/generatetoken")) {
-                    string tokenResponse = webResponseToString(doHTTPRequest(reqUrl, "POST"));
+                    string tokenResponse = webResponseToString(doHTTPRequest(reqUrl, "POST", credentials));
                     token = extractToken(tokenResponse, "token");
                     return token;
                 }
@@ -621,26 +575,32 @@ public class proxy : IHttpHandler {
                 else if (reqUrl.ToLower().Contains("/sharing/")) {
                     infoUrl = reqUrl.Substring(0, reqUrl.IndexOf("/sharing/", StringComparison.OrdinalIgnoreCase));
                     infoUrl = infoUrl + "/sharing";
-                }
-                else
+                } else
                     throw new ApplicationException("Unable to determine the correct URL to request a token to access private resources.");
 
                 if (infoUrl != "") {
-                    log(TraceLevel.Info," Querying security endpoint...");
-                    infoUrl += "/rest/info?f=json";
-                    //lets send a request to try and determine the URL of a token generator
-                    string infoResponse = webResponseToString(doHTTPRequest(infoUrl, "GET"));
-                    String tokenServiceUri = getJsonValue(infoResponse, "tokenServicesUrl");
+                    log(TraceLevel.Info, " Querying security endpoint...");
+
+                    string tokenServiceUri = su.TokenServiceUri;
+
                     if (string.IsNullOrEmpty(tokenServiceUri)) {
-                        string owningSystemUrl = getJsonValue(infoResponse, "owningSystemUrl");
-                        if (!string.IsNullOrEmpty(owningSystemUrl)) {
-                            tokenServiceUri = owningSystemUrl + "/sharing/generateToken";
+                        log(TraceLevel.Info, " Token URL not cached. Querying rest info page...");
+                        infoUrl += "/rest/info?f=json";
+                        //lets send a request to try and determine the URL of a token generator
+                        string infoResponse = webResponseToString(doHTTPRequest(infoUrl, "GET", credentials));
+                        tokenServiceUri = getJsonValue(infoResponse, "tokenServicesUrl");
+                        if (string.IsNullOrEmpty(tokenServiceUri)) {
+                            string owningSystemUrl = getJsonValue(infoResponse, "owningSystemUrl");
+                            if (!string.IsNullOrEmpty(owningSystemUrl)) {
+                                tokenServiceUri = owningSystemUrl + "/sharing/generateToken";
+                            }
                         }
                     }
+
                     if (tokenServiceUri != "") {
-                        log(TraceLevel.Info," Service is secured by " + tokenServiceUri + ": getting new token...");
+                        log(TraceLevel.Info, " Service is secured by " + tokenServiceUri + ": getting new token...");
                         string uri = tokenServiceUri + "?f=json&request=getToken&referer=" + PROXY_REFERER + "&expiration=60&username=" + su.Username + "&password=" + su.Password;
-                        string tokenResponse = webResponseToString(doHTTPRequest(uri, "POST"));
+                        string tokenResponse = webResponseToString(doHTTPRequest(uri, "POST", credentials));
                         token = extractToken(tokenResponse, "token");
                     }
                 }
@@ -651,27 +611,20 @@ public class proxy : IHttpHandler {
         return token;
     }
 
-    private bool checkWildcardSubdomain(String allowedReferer, String requestedReferer)
-    {
+    private bool checkWildcardSubdomain(String allowedReferer, String requestedReferer) {
         String[] allowedRefererParts = Regex.Split(allowedReferer, "(\\.)");
         String[] refererParts = Regex.Split(requestedReferer, "(\\.)");
 
-        if (allowedRefererParts.Length != refererParts.Length)
-        {
+        if (allowedRefererParts.Length != refererParts.Length) {
             return false;
         }
 
         int index = allowedRefererParts.Length - 1;
-        while (index >= 0)
-        {
-            if (allowedRefererParts[index].Equals(refererParts[index], StringComparison.OrdinalIgnoreCase))
-            {
+        while (index >= 0) {
+            if (allowedRefererParts[index].Equals(refererParts[index], StringComparison.OrdinalIgnoreCase)) {
                 index = index - 1;
-            }
-            else
-            {
-                if (allowedRefererParts[index].Equals("*"))
-                {
+            } else {
+                if (allowedRefererParts[index].Equals("*")) {
                     index = index - 1;
                     continue; //next
                 }
@@ -681,35 +634,30 @@ public class proxy : IHttpHandler {
         return true;
     }
 
-    private bool pathMatched(String allowedRefererPath, String refererPath)
-    {
+    private bool pathMatched(String allowedRefererPath, String refererPath) {
         //If equal, return true
-        if (refererPath.Equals(allowedRefererPath))
-        {
+        if (refererPath.Equals(allowedRefererPath)) {
             return true;
         }
 
         //If the allowedRefererPath contain a ending star and match the begining part of referer, it is proper start with.
-        if (allowedRefererPath.EndsWith("*"))
-        {
+        if (allowedRefererPath.EndsWith("*")) {
             String allowedRefererPathShort = allowedRefererPath.Substring(0, allowedRefererPath.Length - 1);
-            if (refererPath.ToLower().StartsWith(allowedRefererPathShort.ToLower()))
-            {
+            if (refererPath.ToLower().StartsWith(allowedRefererPathShort.ToLower())) {
                 return true;
             }
         }
         return false;
     }
 
-    private bool domainMatched(String allowedRefererDomain, String refererDomain)
-    {
-        if (allowedRefererDomain.Equals(refererDomain)){
+    private bool domainMatched(String allowedRefererDomain, String refererDomain) {
+        if (allowedRefererDomain.Equals(refererDomain)) {
             return true;
         }
 
         //try if the allowed referer contains wildcard for subdomain
-        if (allowedRefererDomain.Contains("*")){
-            if (checkWildcardSubdomain(allowedRefererDomain, refererDomain)){
+        if (allowedRefererDomain.Contains("*")) {
+            if (checkWildcardSubdomain(allowedRefererDomain, refererDomain)) {
                 return true;//return true if match wildcard subdomain
             }
         }
@@ -717,13 +665,11 @@ public class proxy : IHttpHandler {
         return false;
     }
 
-    private bool protocolMatch(String allowedRefererProtocol, String refererProtocol)
-    {
+    private bool protocolMatch(String allowedRefererProtocol, String refererProtocol) {
         return allowedRefererProtocol.Equals(refererProtocol);
     }
 
-    private String getDomainfromURL(String url, String protocol)
-    {
+    private String getDomainfromURL(String url, String protocol) {
         String domain = url.Substring(protocol.Length + 3);
 
         domain = domain.IndexOf('/') >= 0 ? domain.Substring(0, domain.IndexOf('/')) : domain;
@@ -731,14 +677,11 @@ public class proxy : IHttpHandler {
         return domain;
     }
 
-    private bool checkReferer(String[] allowedReferers, String referer)
-    {
-        if (allowedReferers != null && allowedReferers.Length > 0)
-        {
+    private bool checkReferer(String[] allowedReferers, String referer) {
+        if (allowedReferers != null && allowedReferers.Length > 0) {
             if (allowedReferers.Length == 1 && allowedReferers[0].Equals("*")) return true; //speed-up
 
-            foreach (String allowedReferer in allowedReferers)
-            {
+            foreach (String allowedReferer in allowedReferers) {
 
                 //Parse the protocol, domain and path of the referer
                 String refererProtocol = referer.StartsWith("https://") ? "https" : "http";
@@ -750,22 +693,16 @@ public class proxy : IHttpHandler {
 
                 //since the allowedReferer can be a malformed URL, we first construct a valid one to be compared with referer
                 //if allowedReferer starts with https:// or http://, then exact match is required
-                if (allowedReferer.StartsWith("https://") || allowedReferer.StartsWith("http://"))
-                {
+                if (allowedReferer.StartsWith("https://") || allowedReferer.StartsWith("http://")) {
                     allowedRefererCannonical = allowedReferer;
 
-                }
-                else
-                {
+                } else {
 
                     String protocol = refererProtocol;
                     //if allowedReferer starts with "//" or no protocol, we use the one from refererURL to prefix to allowedReferer.
-                    if (allowedReferer.StartsWith("//"))
-                    {
+                    if (allowedReferer.StartsWith("//")) {
                         allowedRefererCannonical = protocol + ":" + allowedReferer;
-                    }
-                    else
-                    {
+                    } else {
                         //if the allowedReferer looks like "example.esri.com"
                         allowedRefererCannonical = protocol + "://" + allowedReferer;
                     }
@@ -779,8 +716,7 @@ public class proxy : IHttpHandler {
                 //Check if both domain and path match
                 if (protocolMatch(allowedRefererProtocol, refererProtocol) &&
                         domainMatched(allowedRefererDomain, refererDomain) &&
-                        pathMatched(allowedRefererPath, refererPath))
-                {
+                        pathMatched(allowedRefererPath, refererPath)) {
                     return true;
                 }
             }
@@ -789,18 +725,18 @@ public class proxy : IHttpHandler {
         return true;//when allowedReferer is null, then allow everything
     }
 
-    private string exchangePortalTokenForServerToken(string portalToken, ServerUrl su) {
+    private string exchangePortalTokenForServerToken(string portalToken, ServerUrl su, System.Net.NetworkCredential credentials = null) {
         //ideally, we should POST the token request
-        log(TraceLevel.Info," Exchanging Portal token for Server-specific token for " + su.Url + "...");
+        log(TraceLevel.Info, " Exchanging Portal token for Server-specific token for " + su.Url + "...");
         string uri = su.OAuth2Endpoint.Substring(0, su.OAuth2Endpoint.IndexOf("/oauth2/", StringComparison.OrdinalIgnoreCase)) +
-             "/generateToken?token=" + portalToken + "&serverURL=" + su.Url + "&f=json";
-        string tokenResponse = webResponseToString(doHTTPRequest(uri, "GET"));
+                "/generateToken?grant_type=authorization_code" + "&client_id=" + su.ClientId + "&redirect_uri="
+                + PROXY_REFERER + "&code=" + portalToken + "&f=json";
+        string tokenResponse = webResponseToString(doHTTPRequest(uri, "GET", credentials));
         return extractToken(tokenResponse, "token");
     }
 
 
-    private static void sendPingResponse(HttpResponse response, String version, String config, String log)
-    {
+    private static void sendPingResponse(HttpResponse response, String version, String config, String log) {
         response.AddHeader("Content-Type", "application/json");
         response.AddHeader("Accept-Encoding", "gzip");
         String message = "{ " +
@@ -813,8 +749,7 @@ public class proxy : IHttpHandler {
         response.Flush();
     }
 
-    private static void sendErrorResponse(HttpResponse response, String errorDetails, String errorMessage, System.Net.HttpStatusCode errorCode)
-    {
+    private static void sendErrorResponse(HttpResponse response, String errorDetails, String errorMessage, System.Net.HttpStatusCode errorCode) {
         String message = string.Format("{{\"error\": {{\"code\": {0},\"message\":\"{1}\"", (int)errorCode, errorMessage);
         if (!string.IsNullOrEmpty(errorDetails))
             message += string.Format(",\"details\":[\"message\":\"{0}\"]", errorDetails);
@@ -830,17 +765,13 @@ public class proxy : IHttpHandler {
         response.Flush();
     }
 
-    private static string getClientIp(HttpRequest request)
-    {
+    private static string getClientIp(HttpRequest request) {
         if (request == null)
             return null;
         string remoteAddr = request.ServerVariables["HTTP_X_FORWARDED_FOR"];
-        if (string.IsNullOrWhiteSpace(remoteAddr))
-        {
+        if (string.IsNullOrWhiteSpace(remoteAddr)) {
             remoteAddr = request.ServerVariables["REMOTE_ADDR"];
-        }
-        else
-        {
+        } else {
             // the HTTP_X_FORWARDED_FOR may contain an array of IP, this can happen if you connect through a proxy.
             string[] ipRange = remoteAddr.Split(',');
             remoteAddr = ipRange[ipRange.Length - 1];
@@ -850,16 +781,16 @@ public class proxy : IHttpHandler {
 
     private string addTokenToUri(string uri, string token, string tokenParamName) {
         if (!String.IsNullOrEmpty(token))
-            uri += uri.Contains("?")? "&" + tokenParamName + "=" + token : "?" + tokenParamName + "=" + token;
+            uri += uri.Contains("?") ? "&" + tokenParamName + "=" + token : "?" + tokenParamName + "=" + token;
         return uri;
     }
 
     private string extractToken(string tokenResponse, string key) {
         string token = getJsonValue(tokenResponse, key);
         if (string.IsNullOrEmpty(token))
-            log(TraceLevel.Error," Token cannot be obtained: " + tokenResponse);
+            log(TraceLevel.Error, " Token cannot be obtained: " + tokenResponse);
         else
-            log(TraceLevel.Info," Token obtained: " + token);
+            log(TraceLevel.Info, " Token obtained: " + token);
         return token;
     }
 
@@ -896,15 +827,15 @@ public class proxy : IHttpHandler {
     }
 
     private void cleanUpRatemap(ConcurrentDictionary<string, RateMeter> ratemap) {
-        foreach (string key in ratemap.Keys){
+        foreach (string key in ratemap.Keys) {
             RateMeter rate = ratemap[key];
             if (rate.canBeCleaned())
                 ratemap.TryRemove(key, out rate);
         }
     }
 
-/**
-* Static
+    /**
+    * Static
 */
     private static ProxyConfig getConfig() {
         ProxyConfig config = ProxyConfig.GetCurrentConfig();
@@ -921,12 +852,9 @@ public class proxy : IHttpHandler {
         ProxyConfig config = ProxyConfig.GetCurrentConfig();
         TraceSwitch ts = null;
 
-        if (config.logLevel != null)
-        {
+        if (config.logLevel != null) {
             ts = new TraceSwitch("TraceLevelSwitch2", "TraceSwitch in the proxy.config file", config.logLevel);
-        }
-        else
-        {
+        } else {
             ts = new TraceSwitch("TraceLevelSwitch2", "TraceSwitch in the proxy.config file", "Error");
             config.logLevel = "Error";
         }
@@ -938,19 +866,15 @@ public class proxy : IHttpHandler {
 
 }
 
-class LogTraceListener : TraceListener
-{
+class LogTraceListener : TraceListener {
     private static object _lockobject = new object();
-    public override void Write(string message)
-    {
+    public override void Write(string message) {
         //Only log messages to disk if logFile has value in configuration, otherwise log nothing.
         ProxyConfig config = ProxyConfig.GetCurrentConfig();
 
-        if (config.LogFile != null)
-        {
+        if (config.LogFile != null) {
             string log = config.LogFile;
-            if (!log.Contains("\\") || log.Contains(".\\"))
-            {
+            if (!log.Contains("\\") || log.Contains(".\\")) {
                 if (log.Contains(".\\")) //If this type of relative pathing .\log.txt
                 {
                     log = log.Replace(".\\", "");
@@ -960,10 +884,8 @@ class LogTraceListener : TraceListener
                 log = path + log;
             }
 
-            lock (_lockobject)
-            {
-                using (StreamWriter sw = File.AppendText(log))
-                {
+            lock (_lockobject) {
+                using (StreamWriter sw = File.AppendText(log)) {
                     sw.Write(message);
                 }
             }
@@ -971,15 +893,12 @@ class LogTraceListener : TraceListener
     }
 
 
-    public override void WriteLine(string message)
-    {
+    public override void WriteLine(string message) {
         //Only log messages to disk if logFile has value in configuration, otherwise log nothing.
         ProxyConfig config = ProxyConfig.GetCurrentConfig();
-        if (config.LogFile != null)
-        {
+        if (config.LogFile != null) {
             string log = config.LogFile;
-            if (!log.Contains("\\") || log.Contains(".\\"))
-            {
+            if (!log.Contains("\\") || log.Contains(".\\")) {
                 if (log.Contains(".\\")) //If this type of relative pathing .\log.txt
                 {
                     log = log.Replace(".\\", "");
@@ -989,10 +908,8 @@ class LogTraceListener : TraceListener
                 log = path + log;
             }
 
-            lock (_lockobject)
-            {
-                using (StreamWriter sw = File.AppendText(log))
-                {
+            lock (_lockobject) {
+                using (StreamWriter sw = File.AppendText(log)) {
                     sw.WriteLine(message);
                 }
             }
@@ -1003,8 +920,7 @@ class LogTraceListener : TraceListener
 
 
 [XmlRoot("ProxyConfig")]
-public class ProxyConfig
-{
+public class ProxyConfig {
     private static object _lockobject = new object();
     public static ProxyConfig LoadProxyConfig(string fileName) {
         ProxyConfig config = null;
@@ -1014,8 +930,7 @@ public class ProxyConfig
                 using (System.IO.StreamReader file = new System.IO.StreamReader(fileName)) {
                     try {
                         config = (ProxyConfig)reader.Deserialize(file);
-                    }
-                    catch (Exception ex) {
+                    } catch (Exception ex) {
                         throw ex;
                     }
                 }
@@ -1039,8 +954,7 @@ public class ProxyConfig
 
     //referer
     //create an array with valid referers using the allowedReferers String that is defined in the proxy.config
-    public static String[] GetAllowedReferersArray()
-    {
+    public static String[] GetAllowedReferersArray() {
         if (allowedReferers == null)
             return null;
 
@@ -1049,8 +963,7 @@ public class ProxyConfig
 
     //referer
     //check if URL starts with prefix...
-    public static bool isUrlPrefixMatch(String prefix, String uri)
-    {
+    public static bool isUrlPrefixMatch(String prefix, String uri) {
 
         return uri.ToLower().StartsWith(prefix.ToLower()) ||
                     uri.ToLower().Replace("https://", "http://").StartsWith(prefix.ToLower()) ||
@@ -1068,59 +981,51 @@ public class ProxyConfig
     [XmlArrayItem("serverUrl")]
     public ServerUrl[] ServerUrls {
         get { return this.serverUrls; }
-        set
-        {
+        set {
             this.serverUrls = value;
         }
     }
     [XmlAttribute("mustMatch")]
     public bool MustMatch {
         get { return mustMatch; }
-        set
-        { mustMatch = value; }
+        set { mustMatch = value; }
     }
 
     //logFile
     [XmlAttribute("logFile")]
-    public String LogFile
-    {
+    public String LogFile {
         get { return logFile; }
-        set
-        { logFile = value; }
+        set { logFile = value; }
     }
 
     //logLevel
     [XmlAttribute("logLevel")]
-    public String LogLevel
-    {
+    public String LogLevel {
         get { return logLevel; }
-        set
-        { logLevel = value; }
+        set { logLevel = value; }
     }
 
 
     //referer
     [XmlAttribute("allowedReferers")]
-    public string AllowedReferers
-    {
+    public string AllowedReferers {
         get { return allowedReferers; }
-        set
-        {
+        set {
             allowedReferers = Regex.Replace(value, @"\s", "");
         }
     }
 
     public ServerUrl GetConfigServerUrl(string uri) {
         //split both request and proxy.config urls and compare them
-        string[] uriParts = uri.Split(new char[] {'/','?'}, StringSplitOptions.RemoveEmptyEntries);
-        string[] configUriParts = new string[] {};
+        string[] uriParts = uri.Split(new char[] { '/', '?' }, StringSplitOptions.RemoveEmptyEntries);
+        string[] configUriParts = new string[] { };
 
         foreach (ServerUrl su in serverUrls) {
             //if a relative path is specified in the proxy.config, append what's in the request itself
             if (!su.Url.StartsWith("http"))
                 su.Url = su.Url.Insert(0, uriParts[0]);
 
-            configUriParts = su.Url.Split(new char[] { '/','?' }, StringSplitOptions.RemoveEmptyEntries);
+            configUriParts = su.Url.Split(new char[] { '/', '?' }, StringSplitOptions.RemoveEmptyEntries);
 
             //if the request has less parts than the config, don't allow
             if (configUriParts.Length > uriParts.Length) continue;
@@ -1137,12 +1042,9 @@ public class ProxyConfig
             }
         }
 
-        if (!mustMatch)
-        {
+        if (!mustMatch) {
             return new ServerUrl(uri);
-        }
-        else
-        {
+        } else {
             throw new ArgumentException("Proxy has not been set up for this URL. Make sure there is a serverUrl in the configuration file that matches: " + uri);
         }
     }
@@ -1153,6 +1055,7 @@ public class ServerUrl {
     string hostRedirect;
     bool matchAll;
     string oauth2Endpoint;
+    string tokenServiceUri;
     string domain;
     bool useAppPoolIdentity;
     string username;
@@ -1164,12 +1067,10 @@ public class ServerUrl {
     string rateLimit;
     string rateLimitPeriod;
 
-    private ServerUrl()
-    {
+    private ServerUrl() {
     }
 
-    public ServerUrl(String url)
-    {
+    public ServerUrl(String url) {
         this.url = url;
     }
 
@@ -1179,8 +1080,7 @@ public class ServerUrl {
         set { url = value; }
     }
     [XmlAttribute("hostRedirect")]
-    public string HostRedirect
-    {
+    public string HostRedirect {
         get { return hostRedirect; }
         set { hostRedirect = value; }
     }
@@ -1194,15 +1094,18 @@ public class ServerUrl {
         get { return oauth2Endpoint; }
         set { oauth2Endpoint = value; }
     }
+    [XmlAttribute("tokenServiceUri")]
+    public string TokenServiceUri {
+        get { return tokenServiceUri; }
+        set { tokenServiceUri = value; }
+    }
     [XmlAttribute("domain")]
-    public string Domain
-    {
+    public string Domain {
         get { return domain; }
         set { domain = value; }
     }
     [XmlAttribute("useAppPoolIdentity")]
-    public bool UseAppPoolIdentity
-    {
+    public bool UseAppPoolIdentity {
         get { return useAppPoolIdentity; }
         set { useAppPoolIdentity = value; }
     }
@@ -1238,12 +1141,12 @@ public class ServerUrl {
     }
     [XmlAttribute("rateLimit")]
     public int RateLimit {
-        get { return string.IsNullOrEmpty(rateLimit)? -1 : int.Parse(rateLimit); }
+        get { return string.IsNullOrEmpty(rateLimit) ? -1 : int.Parse(rateLimit); }
         set { rateLimit = value.ToString(); }
     }
     [XmlAttribute("rateLimitPeriod")]
     public int RateLimitPeriod {
-        get { return string.IsNullOrEmpty(rateLimitPeriod)? 60 : int.Parse(rateLimitPeriod); }
+        get { return string.IsNullOrEmpty(rateLimitPeriod) ? 60 : int.Parse(rateLimitPeriod); }
         set { rateLimitPeriod = value.ToString(); }
     }
 }
