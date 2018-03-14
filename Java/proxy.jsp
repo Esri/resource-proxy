@@ -190,7 +190,10 @@ java.text.SimpleDateFormat" %>
             //copy the response content to the response to the client
             InputStream byteStream;
             if (con.getResponseCode() >= 400 && con.getErrorStream() != null){
-                if (ignoreAuthenticationErrors && (con.getResponseCode() == 498 || con.getResponseCode() == 499)) return true;
+                if (ignoreAuthenticationErrors && (con.getResponseCode() == 498 || con.getResponseCode() == 499)){
+                    clientResponse.reset();
+                    return true;
+                }
                 byteStream = con.getErrorStream();
             }else{
                 byteStream = con.getInputStream();
@@ -212,6 +215,7 @@ java.text.SimpleDateFormat" %>
             String strResponse = buffer.toString();
             if (!ignoreAuthenticationErrors && strResponse.contains("error") && (strResponse.contains("\"code\": 498") || strResponse.contains("\"code\": 499")
                     || strResponse.contains("\"code\":498") || strResponse.contains("\"code\":499"))) {
+                clientResponse.reset();
                 return true;
             }
 
