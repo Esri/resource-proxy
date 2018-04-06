@@ -111,7 +111,7 @@ Esri welcomes [contributions](CONTRIBUTING.md) from anyone and everyone. Please 
 
 0. run `npm install gh-release` inside the directory which houses the repository (this only needs to be done once)
 1. bump proxy version numbers and changelog
-2. commit your changes `git commit -m ':package 1.x.x'`
+2. commit your changes `git commit -m ':package: 1.x.x'`
 3. run `gh-release` at the command line. this will create a tag using the current SHA and use whats in the changelog in the release notes
 
 ## License
