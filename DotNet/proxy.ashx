@@ -886,7 +886,7 @@ public class proxy : IHttpHandler {
                     )
                 );
         }
-        return value;
+        return Regex.Unescape(value);
     }
 
     private int indexOf_HighFlag(string text, string key) {
