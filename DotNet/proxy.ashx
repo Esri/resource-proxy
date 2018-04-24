@@ -275,6 +275,14 @@ public class proxy : IHttpHandler {
                     tokenParamName = "token";
             }
         }
+		
+		// correct url form & issue, example http://a?b&format=json would forward as
+		// http://b&format=json but should be http://b?format=json
+		// generating an invalid request
+		if (!requestUri.Contains("?") && requestUri.Contains("&"))
+		{
+			requestUri = requestUri.ReplaceFirst("&", "?");
+		}
 
         //forwarding original request
         System.Net.WebResponse serverResponse = null;
@@ -1246,4 +1254,21 @@ public class ServerUrl {
         get { return string.IsNullOrEmpty(rateLimitPeriod)? 60 : int.Parse(rateLimitPeriod); }
         set { rateLimitPeriod = value.ToString(); }
     }
+}
+
+
+/// <summary>
+/// Sauce: https://stackoverflow.com/questions/8809354/replace-first-occurrence-of-pattern-in-a-string?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+/// </summary>
+public static class StringExtensionMethods
+{
+	public static string ReplaceFirst(this string text, string search, string replace)
+	{
+		int pos = text.IndexOf(search);
+		if (pos < 0)
+		{
+			return text;
+		}
+		return text.Substring(0, pos) + replace + text.Substring(pos + search.Length);
+	}
 }
