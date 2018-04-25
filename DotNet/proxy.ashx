@@ -367,24 +367,40 @@ public class proxy : IHttpHandler {
         return new byte[0];
     }
 
-    private void writeRequestPostBody(System.Net.HttpWebRequest req, byte[] bytes)
-    {
-        if (bytes != null && bytes.Length > 0)
-        {
-            req.ContentLength = bytes.Length;
-            using (Stream outputStream = req.GetRequestStream())
-            {
-                outputStream.Write(bytes, 0, bytes.Length);
-            }
-        }
-    }
+    private bool writeRequestPostBody(System.Net.HttpWebRequest req, byte[] bytes)
+	{
+		if (bytes != null && bytes.Length > 0)
+		{
+			req.ContentLength = bytes.Length;
+			using (Stream outputStream = req.GetRequestStream())
+			{
+				outputStream.Write(bytes, 0, bytes.Length);
+			}
+
+			//return true when work was done
+			return true;
+		}
+
+		//no work was done
+		return false;
+	}
 
     private System.Net.WebResponse forwardToServer(HttpRequest req, string uri, byte[] postBody, System.Net.NetworkCredential credentials = null)
     {
         string method = postBody.Length > 0 ? "POST" : req.HttpMethod;
         System.Net.HttpWebRequest forwardReq = createHTTPRequest(uri, method, req.ContentType, credentials);
         copyRequestHeaders(req, forwardReq);
-        writeRequestPostBody(forwardReq, postBody);
+		
+        if (!writeRequestPostBody(forwardReq, postBody))
+		{
+			// if the content length header was supplied but was not written by the writeRequestPostBody(..) function we write it anyways
+			// to maintain the transparency of the proxy and prevent any response code 411 errors
+			if (!string.IsNullOrEmpty(req.Headers.Get("Content-Length")))
+			{
+				forwardReq.ContentLength = 0;
+			}
+		}
+		
         return forwardReq.GetResponse();
     }
 
