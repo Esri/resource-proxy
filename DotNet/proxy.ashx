@@ -98,7 +98,7 @@ public class proxy : IHttpHandler {
             }
             else
             {
-                String filename = proxyConfig.logFile;
+                String filename = proxyConfig.LogFile;
                 checkLog = (filename != null && filename != "") ? "OK" : "Not Exist/Readable";
 
                 if (checkLog == "OK") {
@@ -157,7 +157,7 @@ public class proxy : IHttpHandler {
                 String checkValidUri = new UriBuilder(requestReferer.StartsWith("//") ? requestReferer.Substring(requestReferer.IndexOf("//") + 2) : requestReferer).Host;
 
             }
-            catch (Exception e)
+            catch
             {
                 log(TraceLevel.Warning, "Proxy is being used from an invalid referer: " + context.Request.Headers["referer"]);
                 sendErrorResponse(context.Response, "Error verifying referer. ", "403 - Forbidden: Access is denied.", System.Net.HttpStatusCode.Forbidden);
@@ -222,7 +222,7 @@ public class proxy : IHttpHandler {
         byte[] postBody = readRequestPostBody(context);
         string post = System.Text.Encoding.UTF8.GetString(postBody);
 
-        System.Net.NetworkCredential credentials = null;
+        NetworkCredential credentials = null;
         string requestUri = uri;
         bool hasClientToken = false;
         string token = string.Empty;
@@ -233,12 +233,12 @@ public class proxy : IHttpHandler {
             requestUri = serverUrl.HostRedirect + new Uri(requestUri).PathAndQuery;
         }
         if (serverUrl.UseAppPoolIdentity)
-	    {
-		    credentials=CredentialCache.DefaultNetworkCredentials;
-	    }
-    	else if (serverUrl.Domain != null)
         {
-            credentials = new System.Net.NetworkCredential(serverUrl.Username, serverUrl.Password, serverUrl.Domain);
+            credentials=CredentialCache.DefaultNetworkCredentials;
+        }
+        else if (serverUrl.Domain != null)
+        {
+            credentials = new NetworkCredential(serverUrl.Username, serverUrl.Password, serverUrl.Domain);
         }
         else
         {
@@ -355,8 +355,8 @@ public class proxy : IHttpHandler {
         get { return true; }
     }
 
-/**
-* Private
+    /**
+    * Private
 */
     private byte[] readRequestPostBody(HttpContext context) {
         if (context.Request.InputStream.Length > 0) {
@@ -559,7 +559,8 @@ public class proxy : IHttpHandler {
     private System.Net.HttpWebRequest createHTTPRequest(string uri, string method, string contentType, System.Net.NetworkCredential credentials = null)
     {
         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-        System.Net.HttpWebRequest req = (System.Net.HttpWebRequest)System.Net.HttpWebRequest.Create(uri);
+
+        HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(uri);
         req.ServicePoint.Expect100Continue = false;
         req.Method = method;
         if (method == "POST")
@@ -903,8 +904,8 @@ public class proxy : IHttpHandler {
         }
     }
 
-/**
-* Static
+    /**
+    * Static
 */
     private static ProxyConfig getConfig() {
         ProxyConfig config = ProxyConfig.GetCurrentConfig();
@@ -921,14 +922,14 @@ public class proxy : IHttpHandler {
         ProxyConfig config = ProxyConfig.GetCurrentConfig();
         TraceSwitch ts = null;
 
-        if (config.logLevel != null)
+        if (config.LogLevel != null)
         {
-            ts = new TraceSwitch("TraceLevelSwitch2", "TraceSwitch in the proxy.config file", config.logLevel);
+            ts = new TraceSwitch("TraceLevelSwitch2", "TraceSwitch in the proxy.config file", config.LogLevel);
         }
         else
         {
             ts = new TraceSwitch("TraceLevelSwitch2", "TraceSwitch in the proxy.config file", "Error");
-            config.logLevel = "Error";
+            config.LogLevel = "Error";
         }
 
         Trace.WriteLineIf(logLevel <= ts.Level, logMessage);
@@ -1002,21 +1003,22 @@ class LogTraceListener : TraceListener
 }
 
 
-[XmlRoot("ProxyConfig")]
+[XmlRoot("ProxyConfig", Namespace ="proxy.xsd")]
 public class ProxyConfig
 {
     private static object _lockobject = new object();
     public static ProxyConfig LoadProxyConfig(string fileName) {
         ProxyConfig config = null;
         lock (_lockobject) {
-            if (System.IO.File.Exists(fileName)) {
+            if (File.Exists(fileName)) {
                 XmlSerializer reader = new XmlSerializer(typeof(ProxyConfig));
-                using (System.IO.StreamReader file = new System.IO.StreamReader(fileName)) {
+                using (StreamReader file = new StreamReader(fileName)) {
                     try {
                         config = (ProxyConfig)reader.Deserialize(file);
                     }
-                    catch (Exception ex) {
-                        throw ex;
+                    catch
+                    {
+                        throw;
                     }
                 }
             }
@@ -1057,45 +1059,36 @@ public class ProxyConfig
                     uri.ToLower().Substring(uri.IndexOf("//")).StartsWith(prefix.ToLower());
     }
 
-    ServerUrl[] serverUrls;
-    public String logFile;
-    public String logLevel;
-    bool mustMatch;
+
     //referer
-    static String allowedReferers;
+    static string allowedReferers;
 
     [XmlArray("serverUrls")]
     [XmlArrayItem("serverUrl")]
     public ServerUrl[] ServerUrls {
-        get { return this.serverUrls; }
-        set
-        {
-            this.serverUrls = value;
-        }
+        get;
+        set;
     }
     [XmlAttribute("mustMatch")]
     public bool MustMatch {
-        get { return mustMatch; }
-        set
-        { mustMatch = value; }
+        get;
+        set;
     }
 
     //logFile
     [XmlAttribute("logFile")]
-    public String LogFile
+    public string LogFile
     {
-        get { return logFile; }
-        set
-        { logFile = value; }
+        get;
+        set;
     }
 
     //logLevel
     [XmlAttribute("logLevel")]
-    public String LogLevel
+    public string LogLevel
     {
-        get { return logLevel; }
-        set
-        { logLevel = value; }
+        get;
+        set;
     }
 
 
@@ -1115,7 +1108,7 @@ public class ProxyConfig
         string[] uriParts = uri.Split(new char[] {'/','?'}, StringSplitOptions.RemoveEmptyEntries);
         string[] configUriParts = new string[] {};
 
-        foreach (ServerUrl su in serverUrls) {
+        foreach (ServerUrl su in this.ServerUrls) {
             //if a relative path is specified in the proxy.config, append what's in the request itself
             if (!su.Url.StartsWith("http"))
                 su.Url = su.Url.Insert(0, uriParts[0]);
@@ -1135,9 +1128,12 @@ public class ProxyConfig
                 if (configUriParts.Length == uriParts.Length || su.MatchAll)
                     return su;
             }
+
+
+
         }
 
-        if (!mustMatch)
+        if (!this.MustMatch)
         {
             return new ServerUrl(uri);
         }

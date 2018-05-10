@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "name": "grunt-testing-for-resource-proxy",
+  "version": "0.3.0",
+  "dependencies": {
+    "grunt": "^0.4.5",
+    "request": "^2.51.0",
+    "time-grunt": "^1.0.0"
+  },
+  "description": "Basic sanity testing of the resource proxy",
+  "defaultProxyURL": "http://localhost/resource-proxy/DotNet/proxy.ashx"
+}
