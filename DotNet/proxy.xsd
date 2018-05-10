@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="proxy.xsd">
     <xs:element name="ProxyConfig">
         <xs:complexType>
             <xs:sequence>
@@ -29,7 +29,17 @@
             </xs:sequence>
             <xs:attribute name="mustMatch" type="xs:boolean" use="required" />
             <xs:attribute name="allowedReferers" type="xs:string" use="required" />
-            <xs:attribute name="logFile" type="xs:string" use="optional" />
+            <xs:attribute name="logFile" type="xs:string" use="optional" />  
+            <xs:attribute name="logLevel" use="optional">
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:enumeration value="Verbose" />
+                  <xs:enumeration value="Info" />
+                  <xs:enumeration value="Warning" />
+                  <xs:enumeration value="Error" />
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>  
         </xs:complexType>
     </xs:element>
 </xs:schema>
