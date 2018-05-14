@@ -1002,7 +1002,7 @@ class LogTraceListener : TraceListener
 }
 
 
-[XmlRoot("ProxyConfig")]
+[XmlRoot("ProxyConfig", Namespace ="proxy.xsd")]
 public class ProxyConfig
 {
     private static object _lockobject = new object();
