@@ -1092,7 +1092,7 @@ class Proxy {
         return;
     }
 
-    public function proxyPost($url, $params)
+    public function proxyPost($url = null, $params = null)
     {
         $this->response = null;
 
