@@ -300,7 +300,13 @@ public class proxy : IHttpHandler {
                     }
 
                     context.Response.StatusCode = (int)(webExc.Response as System.Net.HttpWebResponse).StatusCode;
-                    context.Response.OutputStream.Write(bytes, 0, bytes.Length);
+                    // ********************
+                    // Github issue # 488 - Code to ensure 304 responses do not contain a body
+                    // ********************
+                    if (context.Response.StatusCode != 304)
+                    {
+                        context.Response.OutputStream.Write(bytes, 0, bytes.Length);
+                    }
                 }
             }
             else
