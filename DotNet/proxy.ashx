@@ -3,7 +3,7 @@
 /*
  * DotNet proxy client.
  *
- * Version 1.1.2
+ * Version 1.1.3
  * See https://github.com/Esri/resource-proxy for more information.
  *
  */
@@ -21,7 +21,7 @@ using System.Net;
 
 public class proxy : IHttpHandler {
 
-    private static String version = "1.1.2";
+    private static String version = "1.1.3";
 
     class RateMeter {
         double _rate; //internal rate is stored in requests per second
@@ -60,18 +60,19 @@ public class proxy : IHttpHandler {
     private static string DEFAULT_OAUTH = "https://www.arcgis.com/sharing/oauth2/";
     private static int CLEAN_RATEMAP_AFTER = 10000; //clean the rateMap every xxxx requests
     private static System.Net.IWebProxy SYSTEM_PROXY = System.Net.HttpWebRequest.DefaultWebProxy; // Use the default system proxy
-    private static LogTraceListener logTraceListener = null;
+    private static TraceListener traceListener = null;
     private static Object _rateMapLock = new Object();
+    private static object _createTraceListenerLock = new object();
 
     public void ProcessRequest(HttpContext context) {
-
-
-        if (logTraceListener == null)
+        lock (_createTraceListenerLock)
         {
-            logTraceListener = new LogTraceListener();
-            Trace.Listeners.Add(logTraceListener);
+            if (traceListener == null)
+            {
+                traceListener = GetTraceListener();
+                Trace.Listeners.Add(traceListener);
+            }
         }
-
 
         HttpResponse response = context.Response;
         if (context.Request.Url.Query.Length < 1)
@@ -940,11 +941,45 @@ public class proxy : IHttpHandler {
         Trace.WriteLineIf(logLevel <= ts.Level, logMessage);
     }
 
-    private static object _lockobject = new object();
+    private TraceListener GetTraceListener() {
+        ProxyConfig config = ProxyConfig.GetCurrentConfig();
 
+        switch (config.LogMethod == null ? config.LogMethod : config.LogMethod.ToLower()) {
+            case "class":
+                string fullyQualifiedClassName = config.LogClassTypeName;
+                Type type = Type.GetType(fullyQualifiedClassName);
+                if (type != null) {
+                    return (TraceListener)Activator.CreateInstance(type);
+                }
+
+                foreach (System.Reflection.Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()) {
+                    type = assembly.GetType(fullyQualifiedClassName);
+                    if (type != null)
+                    {
+                        return (TraceListener)Activator.CreateInstance(type);
+                    }
+                }
+
+                throw new InvalidOperationException("LogClassTypeName class is not found in any loaded assembly.");
+
+            case null:
+            case "":
+                if (config.LogFile != null) {
+                    return new LogFileTraceListener();
+                }
+                break;
+
+            default:
+                throw new InvalidOperationException("Invalid LogMethod in proxy configuration.");
+        }
+
+        return null;
+    }
+
+    private static object _lockobject = new object();
 }
 
-class LogTraceListener : TraceListener
+class LogFileTraceListener : TraceListener
 {
     private static object _lockobject = new object();
     public override void Write(string message)
@@ -976,7 +1011,6 @@ class LogTraceListener : TraceListener
         }
     }
 
-
     public override void WriteLine(string message)
     {
         //Only log messages to disk if logFile has value in configuration, otherwise log nothing.
@@ -1004,9 +1038,7 @@ class LogTraceListener : TraceListener
             }
         }
     }
-
 }
-
 
 [XmlRoot("ProxyConfig", Namespace ="proxy.xsd")]
 public class ProxyConfig
@@ -1064,6 +1096,8 @@ public class ProxyConfig
     }
 
     ServerUrl[] serverUrls;
+    public string logMethod;
+    public string logClassTypeName;
     public String logFile;
     public String logLevel;
     bool mustMatch;
@@ -1079,11 +1113,30 @@ public class ProxyConfig
             this.serverUrls = value;
         }
     }
+
     [XmlAttribute("mustMatch")]
     public bool MustMatch {
         get { return mustMatch; }
         set
         { mustMatch = value; }
+    }
+
+    //logMethod
+    [XmlAttribute("logMethod")]
+    public string LogMethod
+    {
+        get { return logMethod; }
+        set
+        { logMethod = value; }
+    }
+
+    //logMethod
+    [XmlAttribute("logClassTypeName")]
+    public string LogClassTypeName
+    {
+        get { return logClassTypeName; }
+        set
+        { logClassTypeName = value; }
     }
 
     //logFile
