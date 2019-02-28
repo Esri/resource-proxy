@@ -76,11 +76,6 @@ new `<serverUrl>` entry for each service that will use the proxy. The proxy.conf
     * **rateLimitPeriod**: The time period (in minutes) within which the specified number of requests (rate_limit) sent with a particular referer will be tracked. The default value is 60 (one hour).
     * **hostRedirect**: The real URL to use instead of the "alias" one provided in the `url` property and that should be redirected. Example: `<serverUrl url="http://fakedomain" hostRedirect="http://172.16.85.2"/>`.
 
-The .NET version of the proxy supports these additional configuration parameters:
-
-* **logMethod="["class"|"file"|""]"** : When set to `class` the log will look at the `logClassTypeName` attribute for the name of a class to use for logging. When set to `file` or if omitted, then the logger will log to a file if such file name is specified with the `logFile` attribute.
-* **logClassTypeName="Fully.Qualified.ClassType.Name"** : Fully qualified name of class to be used as a log. If the class cannot be created, an `InvalidOperationException` will be thrown.
-
 Note: Refresh the proxy application after updates to the proxy.config have been made.
 
 Example of proxy using application credentials and limiting requests to 10/minute
@@ -98,57 +93,6 @@ Example of a tag for a resource which does not require authentication
 <serverUrl url="http://sampleserver6.arcgisonline.com/arcgis/rest/services"
     matchAll="true">
 </serverUrl>
-```
-
-.NET example using a class for logging
-```xml
-
-<ProxyConfig xmlns="proxy.xsd" allowedReferers="*" mustMatch="true"
-  logLevel="Verbose"
-  logMethod="class"
-  logClassTypeName="Company.Product.Web.Infrastructure.ProxyLogTraceListener">
-
-</ProxyConfig>
-```
-
-.NET class utilizing [SimpleInjector](https://simpleinjector.org/index.html) to provide the application logger ([Serilog](https://serilog.net/)).
-```c#
-using Serilog;
-using SimpleInjector.Integration.Web.Mvc;
-using System.Diagnostics;
-using System.Web.Mvc;
-
-namespace Company.Product.Web.Infrastructure
-{
-    /// <summary>
-    /// TraceListener for proxy.ashx. proxy.ashx will create this by name by using Activator.CreateInstance.
-    /// The name of the class is indicated in the proxy.config file.
-    /// </summary>
-    public class ProxyLogTraceListener : TraceListener
-    {
-        public override void Write(string message)
-        {
-            // Get a SimpleInjector lifetime scope. Since Proxy.asax requests are outside the .MVC context a scope
-            // will not be automatically prepared for the request by SimpleInjector. We need to create our own scope
-            // to resolve the log service.
-            SimpleInjector.Container container = ((SimpleInjectorDependencyResolver)DependencyResolver.Current).Container;
-            using (var scope = SimpleInjector.Lifestyles.AsyncScopedLifestyle.BeginScope(container))
-            {
-                ILogger logger = scope.GetInstance<ILogger>();
-                // The TraceListener interface doesn't contain enough information to determine the log level,
-                // So we will settle on using Information.
-                logger.Information(message);
-            }
-        }
-
-        public override void WriteLine(string message)
-        {
-            // Our underlying logger doesn't have any differentiation between write or writeline, so we'll just
-            // pass this along to Write(string)
-            Write(message);
-        }
-    }
-}
 ```
 
 ## Requirements
