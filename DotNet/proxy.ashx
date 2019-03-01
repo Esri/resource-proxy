@@ -326,7 +326,6 @@ public class proxy : IHttpHandler {
             //first attempt to send the request:
             bool tokenRequired = fetchAndPassBackToClient(serverResponse, response, false);
 
-
             //checking if previously used token has expired and needs to be renewed
             if (tokenRequired) {
                 log(TraceLevel.Info, "Renewing token and trying again.");
@@ -362,7 +361,7 @@ public class proxy : IHttpHandler {
 
     /**
     * Private
-*/
+    */
     private byte[] readRequestPostBody(HttpContext context) {
         if (context.Request.InputStream.Length > 0) {
             byte[] bytes = new byte[context.Request.InputStream.Length];
@@ -991,6 +990,9 @@ class LoggerAdapter
             if (getLogMethod(logger) == null) {
                 throw new InvalidOperationException(string.Format("Class \"{0}\" configured in proxy config for logClass must have a public {1}(string) method.", config.LogClass, _loggerLogMethodName));
             }
+        } else {
+            logger = new NullLogger();
+            _loggerLogMethodName = "Log";
         }
 
         return logger;
@@ -1037,8 +1039,13 @@ class LoggerAdapter
     }
 }
 
-class DefaultLogger
-{
+class NullLogger {
+    public void Log(string message) {
+        // Ignore
+    }
+}
+
+class DefaultLogger {
     private static object _lockobject = new object();
 
     public void Log(string message) {
