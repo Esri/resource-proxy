@@ -52,7 +52,7 @@ There are several good alternative solutions to use instead of your own resource
 
 All three proxies respect the XML configuration properties listed below.
 
-* Use the ProxyConfig tag to specify the following proxy level settings.
+* Use the ProxyConfig tag to specify the following proxy level settings. Look to the README.md under each platform directory for platform-specific log configuration.
     * **mustMatch="true"** : When `true` only the sites listed using serverUrl will be proxied. Set to `false` to proxy any site, which can be useful in testing. However, we recommend setting it to `true` for production sites.
     * **allowedReferers="http://server.com/app1,http://server.com/app2"** : A comma-separated list of referer URLs. Only requests coming from referers in the list will be proxied. See https://github.com/Esri/resource-proxy/issues/282 for detailed usage.
     * **logFile="proxylog.txt"** : When a logFile is specified, the proxy will log messages to this file. *N.B.: The folder containing the logFile must be writable by the web server.* If a path is not specified, the .Net proxy uses the folder where the proxy.config file is found. (The Java proxy uses java.util.logging.FileHandler to open the file; the PHP proxy uses fopen to open the file.)
@@ -60,7 +60,7 @@ All three proxies respect the XML configuration properties listed below.
         *  .Net levels are "Error", "Warning", "Info", and "Verbose" in order from fewest to most messages; the default is "Error".
         *  Java levels are "SEVERE", "WARNING", "INFO", "CONFIG", "FINE", "FINER", and "FINEST" in order from fewest to most messages; the default is "SEVERE".
         *  PHP levels are 0 (writes messages and errors to logs), 1 (shows proxy errors and messages in browser console), 2 (combination of levels 0 and 1), and 3 (no logging); the default is 0.
-new `<serverUrl>` entry for each service that will use the proxy. The proxy.config allows you to use the serverUrl tag to specify one or more ArcGIS Server services that the proxy will forward requests to. The serverUrl tag has the following attributes:
+* Add a new `<serverUrl>` entry for each service that will use the proxy. The proxy.config allows you to use the serverUrl tag to specify one or more ArcGIS Server services that the proxy will forward requests to. The serverUrl tag has the following attributes:
     * **url**: Location of the ArcGIS Server service (or other URL) to proxy. Specify either the specific URL or the root (in which case you should set matchAll="false").
     * **matchAll="true"**: When `true` all requests that begin with the specified URL are forwarded. Otherwise, the URL requested must match exactly.
     * **username**: Username to use when requesting a token - if needed for ArcGIS Server token based authentication.

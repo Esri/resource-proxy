@@ -39,18 +39,18 @@ http://[yourmachine]/DotNet/proxy.ashx?http://services.arcgisonline.com/ArcGIS/r
 
 ## .NET Proxy Additional Configuration Settings
 
-The .NET proxy supports specifying an alternative TraceListener implementation for logging. This enables other logging methods such as logging to a database or enterprise logging. You can specify the alternative TraceListener in the proxy config file.
+The .NET proxy supports specifying an alternative log implementation. This enables other methods of logging such as to a database or another file format.
 
-* **logMethod=["class"|"file"|""]** : When set to "class" the log will look at the `logClassTypeName` attribute for the name of a class to use for logging. When set to "file" or if omitted, then the logger will log to a file if such file name is specified with the `logFile` attribute.
-* **logClassTypeName="Fully.Qualified.ClassType.Name"** : Fully qualified name of class to be used as a log. If the class cannot be created, an `InvalidOperationException` will be thrown.
+* **logClass**="Fully.Qualified.Class.Name"** : Optional. If specified, then the proxy will initialize an instance of this class to be used for logging. This option cannot be specified if the `logFile` option is configured. The class must be defined in an assembly that is currently loaded and accessible to the proxy. The class may not be abstract or static, and must have a parameterless constructor. If logClass is not defined then the proxy will default to using the flat log file method.
+* **logClassMethod**="NameOfMethodToCall" : Optional. Default="Log". The proxy will call this method on `logClass` to log. The method must have only one string parameter and may not be generic. Any return value will be ignored.
 
 .NET example using a class for logging
 ```xml
 
 <ProxyConfig xmlns="proxy.xsd" allowedReferers="*" mustMatch="true"
   logLevel="Verbose"
-  logMethod="class"
-  logClassTypeName="Company.Product.Web.Infrastructure.ProxyLogTraceListener">
+  logClass="Company.Product.Web.Infrastructure.ProxyLog"
+  logClassMethod="Write">
 
 </ProxyConfig>
 ```
@@ -64,13 +64,9 @@ using System.Web.Mvc;
 
 namespace Company.Product.Web.Infrastructure
 {
-    /// <summary>
-    /// TraceListener for proxy.ashx. proxy.ashx will create this by name by using Activator.CreateInstance.
-    /// The name of the class is indicated in the proxy.config file.
-    /// </summary>
-    public class ProxyLogTraceListener : TraceListener
+    public class ProxyLog
     {
-        public override void Write(string message)
+        public void Write(string message)
         {
             // Get a SimpleInjector lifetime scope. Since Proxy.asax requests are outside the .MVC context a scope
             // will not be automatically prepared for the request by SimpleInjector. We need to create our own scope
@@ -83,13 +79,6 @@ namespace Company.Product.Web.Infrastructure
                 // So we will settle on using Information.
                 logger.Information(message);
             }
-        }
-
-        public override void WriteLine(string message)
-        {
-            // Our underlying logger doesn't have any differentiation between write or writeline, so we'll just
-            // pass this along to Write(string)
-            Write(message);
         }
     }
 }
