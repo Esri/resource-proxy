@@ -41,7 +41,7 @@ http://[yourmachine]/DotNet/proxy.ashx?http://services.arcgisonline.com/ArcGIS/r
 
 The .NET proxy supports specifying an alternative log implementation. This enables other methods of logging such as to a database or another file format.
 
-* **logClass**="Fully.Qualified.Class.Name"** : Optional. If specified, then the proxy will initialize an instance of this class to be used for logging. This option cannot be specified if the `logFile` option is configured. The class must be defined in an assembly that is currently loaded and accessible to the proxy. The class may not be abstract or static, and must have a parameterless constructor. If logClass is not defined then the proxy will default to using the flat log file method.
+* **logClass**="Fully.Qualified.Class.Name" : Optional. If specified, then the proxy will initialize an instance of this class to be used for logging. This option cannot be specified if the `logFile` option is configured. The class must be defined in an assembly that is currently loaded and accessible to the proxy. The class may not be abstract or static, and must have a parameterless constructor.
 * **logClassMethod**="NameOfMethodToCall" : Optional. Default="Log". The proxy will call this method on `logClass` to log. The method must have only one string parameter and may not be generic. Any return value will be ignored.
 
 .NET example using a class for logging
