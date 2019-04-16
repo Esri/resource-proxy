@@ -168,6 +168,7 @@ public class proxy : IHttpHandler {
             {
                 log(TraceLevel.Warning, "Proxy is being used from an unknown referer: " + context.Request.Headers["referer"]);
                 sendErrorResponse(context.Response, "Unsupported referer. ", "403 - Forbidden: Access is denied.", System.Net.HttpStatusCode.Forbidden);
+                return;
             }
 
 
