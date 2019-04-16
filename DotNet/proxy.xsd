@@ -21,6 +21,7 @@
                                     <xs:attribute name="rateLimit" type="xs:integer" use="optional" />
                                     <xs:attribute name="rateLimitPeriod" type="xs:integer" use="optional" />
                                     <xs:attribute name="hostRedirect" type="xs:string" use="optional" />
+                                    <xs:attribute name="rejectHtmlFormat" type="xs:boolean" use="optional" />
                                 </xs:complexType>
                             </xs:element>
                         </xs:sequence>
