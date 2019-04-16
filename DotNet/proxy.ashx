@@ -185,8 +185,16 @@ public class proxy : IHttpHandler {
         if (serverUrl.RejectHtmlFormat)
         {
             // f=html OR f param missing (since fallback is normally html when param is missing)
-            Uri reqUri = new Uri(uri);
-            string fParam = HttpUtility.ParseQueryString(reqUri.Query).Get("f");
+            string fParam = null;
+            if (context.Request.HttpMethod == "POST")
+            {
+                fParam = context.Request.Form["f"];
+            }
+            else if (context.Request.HttpMethod == "GET")
+            {
+                Uri reqUri = new Uri(uri);
+                fParam = HttpUtility.ParseQueryString(reqUri.Query).Get("f");
+            }
 
             if (fParam == null || fParam.ToLower() == "html")
             {
