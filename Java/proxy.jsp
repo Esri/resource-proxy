@@ -30,6 +30,10 @@ java.util.Iterator,
 java.util.Enumeration,
 java.util.HashMap,
 java.text.SimpleDateFormat" %>
+<%@ page import="javax.net.ssl.HttpsURLConnection" %>
+<%@ page import="javax.net.ssl.SSLContext" %>
+<%@ page import="java.security.NoSuchAlgorithmException" %>
+<%@ page import="java.security.KeyManagementException" %>
 
 <!-- ----------------------------------------------------------
 *
@@ -254,10 +258,53 @@ java.text.SimpleDateFormat" %>
                 bytes = queryString.getBytes("UTF-8");
             }
         }
+        if(uri.startsWith("https://")) {
+            return doHTTPSRequest(uri, bytes, method, headerInfo);
+        }
         return doHTTPRequest(uri, bytes, method, headerInfo);
     }
 
-    //complete interface of doHTTPRequest
+    //complete interface of doHTTPSRequest
+    private HttpURLConnection doHTTPSRequest(String uri, byte[] bytes, String method, Map mapHeaderInfo) throws IOException{
+        URL url = new URL(uri);
+        HttpsURLConnection con = (HttpsURLConnection)url.openConnection();
+
+        SSLContext sc;
+        try {
+            sc = SSLContext.getInstance("TLSv1.2");
+
+            sc.init(null, null, new java.security.SecureRandom());
+
+            con.setSSLSocketFactory(sc.getSocketFactory());
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+            e.printStackTrace();
+        }
+
+        con.setConnectTimeout(5000);
+        con.setReadTimeout(10000);
+        con.setRequestMethod(method);
+
+        //pass the header to the proxy's request
+        passHeadersInfo(mapHeaderInfo, con);
+
+        //if it is a POST request
+        if (bytes != null && bytes.length > 0 || method.equals("POST")) {
+
+            if (bytes == null){
+                bytes = new byte[0];
+            }
+
+            con.setRequestMethod("POST");
+            con.setDoOutput(true);
+
+
+            OutputStream os = con.getOutputStream();
+            os.write(bytes);
+        }
+
+        return con;
+    }
+
     private HttpURLConnection doHTTPRequest(String uri, byte[] bytes, String method, Map mapHeaderInfo) throws IOException{
         URL url = new URL(uri);
         HttpURLConnection con = (HttpURLConnection)url.openConnection();
