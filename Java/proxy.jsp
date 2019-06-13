@@ -276,7 +276,9 @@ java.text.SimpleDateFormat" %>
             sc.init(null, null, new java.security.SecureRandom());
 
             con.setSSLSocketFactory(sc.getSocketFactory());
-        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (KeyManagementException e) {
             e.printStackTrace();
         }
 
