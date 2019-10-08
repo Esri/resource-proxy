@@ -9,6 +9,8 @@ These proxy files support:
 * Enabling logging
 * Both resource and referer based rate limiting
 
+Ensure that you follow the [Terms & Conditions](https://developers.arcgis.com/terms/) of the Esri systems and software that you are working with. In general, it is not permitted to embed credentials in a resource proxy for the purpose of bypassing Named User authentication (i.e. the principle that each end-user must have their own unique login). This is true both when using a resource proxy with ArcGIS Online as well as for ArcGIS Server sites federated as part of an ArcGIS Enterprise deployment.
+
 ## Alternatives
 There are several good alternative solutions to use instead of your own resource-proxy:
 * [Enable CORS on your server](http://enable-cors.org/server.html) - in order to access cross domain resources.
