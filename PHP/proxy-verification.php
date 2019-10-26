@@ -1,4 +1,5 @@
 <html>
+I don't know what i do
 <head><title>Prerequisites Checker</title></head>
 <style>
 body{
