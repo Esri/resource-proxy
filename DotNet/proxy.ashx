@@ -3,7 +3,7 @@
 /*
  * DotNet proxy client.
  *
- * Version 1.1.2
+ * Version 1.1.3
  * See https://github.com/Esri/resource-proxy for more information.
  *
  */
@@ -21,7 +21,7 @@ using System.Net;
 
 public class proxy : IHttpHandler {
 
-    private static String version = "1.1.2";
+    private static String version = "1.1.3";
 
     class RateMeter {
         double _rate; //internal rate is stored in requests per second
@@ -60,19 +60,20 @@ public class proxy : IHttpHandler {
     private static string DEFAULT_OAUTH = "https://www.arcgis.com/sharing/oauth2/";
     private static int CLEAN_RATEMAP_AFTER = 10000; //clean the rateMap every xxxx requests
     private static System.Net.IWebProxy SYSTEM_PROXY = System.Net.HttpWebRequest.DefaultWebProxy; // Use the default system proxy
-    private static LogTraceListener logTraceListener = null;
-    private static Object _rateMapLock = new Object();
+    private static readonly object _rateMapLock = new object();
+    private static readonly object _lockobject = new object();
+    private static readonly Lazy<LoggerAdapter> _logger;
+
+    static proxy()
+    {
+        _logger = new Lazy<LoggerAdapter>(() => new LoggerAdapter(ProxyConfig.GetCurrentConfig()), false);
+    }
+
+    /*
+     * Public
+     */
 
     public void ProcessRequest(HttpContext context) {
-
-
-        if (logTraceListener == null)
-        {
-            logTraceListener = new LogTraceListener();
-            Trace.Listeners.Add(logTraceListener);
-        }
-
-
         HttpResponse response = context.Response;
         if (context.Request.Url.Query.Length < 1)
         {
@@ -169,8 +170,6 @@ public class proxy : IHttpHandler {
                 log(TraceLevel.Warning, "Proxy is being used from an unknown referer: " + context.Request.Headers["referer"]);
                 sendErrorResponse(context.Response, "Unsupported referer. ", "403 - Forbidden: Access is denied.", System.Net.HttpStatusCode.Forbidden);
             }
-
-
         }
 
         //Check to see if allowed referer list is specified and reject if referer is null
@@ -233,10 +232,10 @@ public class proxy : IHttpHandler {
             requestUri = serverUrl.HostRedirect + new Uri(requestUri).PathAndQuery;
         }
         if (serverUrl.UseAppPoolIdentity)
-	    {
-		    credentials=CredentialCache.DefaultNetworkCredentials;
-	    }
-    	else if (serverUrl.Domain != null)
+        {
+            credentials=CredentialCache.DefaultNetworkCredentials;
+        }
+        else if (serverUrl.Domain != null)
         {
             credentials = new System.Net.NetworkCredential(serverUrl.Username, serverUrl.Password, serverUrl.Domain);
         }
@@ -327,7 +326,6 @@ public class proxy : IHttpHandler {
             //first attempt to send the request:
             bool tokenRequired = fetchAndPassBackToClient(serverResponse, response, false);
 
-
             //checking if previously used token has expired and needs to be renewed
             if (tokenRequired) {
                 log(TraceLevel.Info, "Renewing token and trying again.");
@@ -361,9 +359,9 @@ public class proxy : IHttpHandler {
         get { return true; }
     }
 
-/**
-* Private
-*/
+    /**
+    * Private
+    */
     private byte[] readRequestPostBody(HttpContext context) {
         if (context.Request.InputStream.Length > 0) {
             byte[] bytes = new byte[context.Request.InputStream.Length];
@@ -650,8 +648,6 @@ public class proxy : IHttpHandler {
                         token = extractToken(tokenResponse, "token");
                     }
                 }
-
-
             }
         }
         return token;
@@ -902,16 +898,35 @@ public class proxy : IHttpHandler {
     }
 
     private void cleanUpRatemap(ConcurrentDictionary<string, RateMeter> ratemap) {
-        foreach (string key in ratemap.Keys){
+        foreach (string key in ratemap.Keys) {
             RateMeter rate = ratemap[key];
             if (rate.canBeCleaned())
                 ratemap.TryRemove(key, out rate);
         }
     }
 
-/**
-* Static
-*/
+    private void log(TraceLevel logLevel, string msg) {
+        string logMessage = string.Format("{0} {1}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), msg);
+
+        ProxyConfig config = ProxyConfig.GetCurrentConfig();
+        TraceSwitch ts = null;
+
+        if (config.logLevel != null) {
+            ts = new TraceSwitch("TraceLevelSwitch2", "TraceSwitch in the proxy.config file", config.logLevel);
+        } else {
+            ts = new TraceSwitch("TraceLevelSwitch2", "TraceSwitch in the proxy.config file", "Error");
+            config.logLevel = "Error";
+        }
+
+        if (logLevel <= ts.Level)
+        {
+            _logger.Value.Log(logMessage);
+        }
+    }
+
+    /**
+    * Static
+    */
     private static ProxyConfig getConfig() {
         ProxyConfig config = ProxyConfig.GetCurrentConfig();
         if (config != null)
@@ -919,102 +934,149 @@ public class proxy : IHttpHandler {
         else
             throw new ApplicationException("The proxy configuration file cannot be found, or is not readable.");
     }
-
-    //writing Log file
-    private static void log(TraceLevel logLevel, string msg) {
-        string logMessage = string.Format("{0} {1}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), msg);
-
-        ProxyConfig config = ProxyConfig.GetCurrentConfig();
-        TraceSwitch ts = null;
-
-        if (config.logLevel != null)
-        {
-            ts = new TraceSwitch("TraceLevelSwitch2", "TraceSwitch in the proxy.config file", config.logLevel);
-        }
-        else
-        {
-            ts = new TraceSwitch("TraceLevelSwitch2", "TraceSwitch in the proxy.config file", "Error");
-            config.logLevel = "Error";
-        }
-
-        Trace.WriteLineIf(logLevel <= ts.Level, logMessage);
-    }
-
-    private static object _lockobject = new object();
-
 }
 
-class LogTraceListener : TraceListener
+class LoggerAdapter
 {
-    private static object _lockobject = new object();
-    public override void Write(string message)
-    {
-        //Only log messages to disk if logFile has value in configuration, otherwise log nothing.
+    private readonly ProxyConfig _config;
+    private readonly object _logger;
+    private System.Reflection.MethodInfo _loggerLogMethod;
+    private string _loggerLogMethodName;
+
+    public LoggerAdapter(ProxyConfig config) {
+        _config = config;
+        _logger = createLogger();
+        _loggerLogMethod = getLogMethod(_logger);
+    }
+
+    public void Log(string message) {
+        invokeLogMethod(message);
+    }
+
+    private void invokeLogMethod(string message) {
+        _loggerLogMethod.Invoke(_logger, new object[] { message });
+    }
+
+    private object createLogger() {
         ProxyConfig config = ProxyConfig.GetCurrentConfig();
+        object logger = null;
+        string loggerFileName = config.LogFile;
+        string loggerClassName = config.LogClass;
 
-        if (config.LogFile != null)
-        {
-            string log = config.LogFile;
-            if (!log.Contains("\\") || log.Contains(".\\"))
-            {
-                if (log.Contains(".\\")) //If this type of relative pathing .\log.txt
-                {
-                    log = log.Replace(".\\", "");
-                }
-                string configDirectory = HttpContext.Current.Server.MapPath("proxy.config"); //Cannot use System.Web.Hosting.HostingEnvironment.ApplicationPhysicalPath b/ config may be in a child directory
-                string path = configDirectory.Replace("proxy.config", "");
-                log = path + log;
+        if (!string.IsNullOrWhiteSpace(loggerFileName) && !string.IsNullOrWhiteSpace(loggerClassName)) {
+            throw new InvalidOperationException("Proxy config cannot define both logFile and logClass.");
+        }
+
+        _loggerLogMethodName = null;
+
+        if (!string.IsNullOrWhiteSpace(loggerFileName)) {
+            logger = new DefaultLogger();
+        }
+
+        if (!string.IsNullOrWhiteSpace(loggerClassName)) {
+            logger = createInstance(config.LogClass);
+            if (logger == null) {
+                throw new InvalidOperationException(string.Format("Class \"{0}\" configured in proxy config for logClass is not found in any loaded assembly. The type is case sensitive and must be the full name of type including any namespaces: \"Company.Product.Namespace.ClassName\".", config.LogClass));
+            }
+        }
+
+        if (logger != null) {
+            _loggerLogMethodName = config.LogClassMethod;
+            if (string.IsNullOrWhiteSpace(_loggerLogMethodName)) {
+                _loggerLogMethodName = "Log";
             }
 
-            lock (_lockobject)
-            {
-                using (StreamWriter sw = File.AppendText(log))
-                {
-                    sw.Write(message);
-                }
+            // Confirm that logger has the log method
+            if (getLogMethod(logger) == null) {
+                throw new InvalidOperationException(string.Format("Class \"{0}\" configured in proxy config for logClass must have a public {1}(string) method.", config.LogClass, _loggerLogMethodName));
             }
+        } else {
+            logger = new NullLogger();
+            _loggerLogMethodName = "Log";
+        }
+
+        return logger;
+    }
+
+    private System.Reflection.MethodInfo getLogMethod(object logger) {
+        Type type = logger.GetType();
+        try {
+            System.Reflection.MethodInfo method = type.GetMethod(
+                    _loggerLogMethodName,
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public,
+                    Type.DefaultBinder,
+                    new Type[] { typeof(string) },
+                    null);
+            return method;
+
+        } catch (System.Reflection.AmbiguousMatchException ex) {
+            // Not actually sure if this could ever happen with the GetMethod overload we're using but trapping just to be safe... 
+            // Possibly with explicit interface implementation?
+            ProxyConfig config = ProxyConfig.GetCurrentConfig();
+            throw new System.Reflection.AmbiguousMatchException(
+                string.Format("Class \"{0}\" configured in proxy config for logClass has more than one public {1}(string) method. Is {1}(string) declared on multiple interfaces on the class?", config.LogClass, _loggerLogMethodName), ex);
         }
     }
 
-
-    public override void WriteLine(string message)
-    {
-        //Only log messages to disk if logFile has value in configuration, otherwise log nothing.
-        ProxyConfig config = ProxyConfig.GetCurrentConfig();
-        if (config.LogFile != null)
-        {
-            string log = config.LogFile;
-            if (!log.Contains("\\") || log.Contains(".\\"))
-            {
-                if (log.Contains(".\\")) //If this type of relative pathing .\log.txt
-                {
-                    log = log.Replace(".\\", "");
-                }
-                string configDirectory = HttpContext.Current.Server.MapPath("proxy.config"); //Cannot use System.Web.Hosting.HostingEnvironment.ApplicationPhysicalPath b/ config may be in a child directory
-                string path = configDirectory.Replace("proxy.config", "");
-                log = path + log;
+    private object createInstance(string fullyQualifiedClassName) {
+        try {
+            Type type = Type.GetType(fullyQualifiedClassName);
+            if (type != null) {
+                return Activator.CreateInstance(type);
             }
 
-            lock (_lockobject)
-            {
-                using (StreamWriter sw = File.AppendText(log))
-                {
-                    sw.WriteLine(message);
+            foreach (System.Reflection.Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()) {
+                type = assembly.GetType(fullyQualifiedClassName);
+                if (type != null) {
+                    return Activator.CreateInstance(type);
                 }
             }
+        } catch (MissingMethodException ex) {
+            throw new MissingMethodException("Class configured in the proxy config for logClass must have a parameterless constructor.", ex);
         }
-    }
 
+        return null;
+    }
 }
 
+class NullLogger {
+    public void Log(string message) {
+        // Ignore
+    }
+}
+
+class DefaultLogger {
+    private static object _lockobject = new object();
+
+    public void Log(string message) {
+        //Only log messages to disk if logFile has value in configuration, otherwise log nothing.
+        ProxyConfig config = ProxyConfig.GetCurrentConfig();
+
+        if (config.LogFile != null) {
+            string log = config.LogFile;
+            if (!log.Contains("\\") || log.Contains(".\\")) {
+                if (log.Contains(".\\")) { //If this type of relative pathing .\log.txt
+                    log = log.Replace(".\\", "");
+                }
+                string configDirectory = HttpContext.Current.Server.MapPath("proxy.config"); //Cannot use System.Web.Hosting.HostingEnvironment.ApplicationPhysicalPath b/ config may be in a child directory
+                string path = configDirectory.Replace("proxy.config", "");
+                log = path + log;
+            }
+
+            lock (_lockobject) {
+                using (StreamWriter sw = File.AppendText(log)) {
+                    sw.Write(message + "\n");
+                }
+            }
+        }
+    }
+}
 
 [XmlRoot("ProxyConfig", Namespace ="proxy.xsd")]
-public class ProxyConfig
-{
-    private static object _lockobject = new object();
+public class ProxyConfig {
     public static ProxyConfig LoadProxyConfig(string fileName) {
         ProxyConfig config = null;
-        lock (_lockobject) {
+        lock (_lock) {
             if (System.IO.File.Exists(fileName)) {
                 XmlSerializer reader = new XmlSerializer(typeof(ProxyConfig));
                 using (System.IO.StreamReader file = new System.IO.StreamReader(fileName)) {
@@ -1031,16 +1093,18 @@ public class ProxyConfig
     }
 
     public static ProxyConfig GetCurrentConfig() {
-        ProxyConfig config = HttpRuntime.Cache["proxyConfig"] as ProxyConfig;
-        if (config == null) {
-            string fileName = HttpContext.Current.Server.MapPath("proxy.config");
-            config = LoadProxyConfig(fileName);
-            if (config != null) {
-                CacheDependency dep = new CacheDependency(fileName);
-                HttpRuntime.Cache.Insert("proxyConfig", config, dep);
+        lock (_lock) {
+            ProxyConfig config = HttpRuntime.Cache["proxyConfig"] as ProxyConfig;
+            if (config == null) {
+                string fileName = HttpContext.Current.Server.MapPath("proxy.config");
+                config = LoadProxyConfig(fileName);
+                if (config != null) {
+                    CacheDependency dep = new CacheDependency(fileName);
+                    HttpRuntime.Cache.Insert("proxyConfig", config, dep);
+                }
             }
+            return config;
         }
-        return config;
     }
 
     //referer
@@ -1057,13 +1121,14 @@ public class ProxyConfig
     //check if URL starts with prefix...
     public static bool isUrlPrefixMatch(String prefix, String uri)
     {
-
         return uri.ToLower().StartsWith(prefix.ToLower()) ||
                     uri.ToLower().Replace("https://", "http://").StartsWith(prefix.ToLower()) ||
                     uri.ToLower().Substring(uri.IndexOf("//")).StartsWith(prefix.ToLower());
     }
 
     ServerUrl[] serverUrls;
+    public string logClass;
+    public string logClassMethod;
     public String logFile;
     public String logLevel;
     bool mustMatch;
@@ -1079,11 +1144,28 @@ public class ProxyConfig
             this.serverUrls = value;
         }
     }
+
     [XmlAttribute("mustMatch")]
     public bool MustMatch {
         get { return mustMatch; }
         set
         { mustMatch = value; }
+    }
+
+    [XmlAttribute("logClass")]
+    public string LogClass
+    {
+        get { return logClass; }
+        set
+        { logClass = value; }
+    }
+
+    [XmlAttribute("logClassMethod")]
+    public string LogClassMethod
+    {
+        get { return logClassMethod; }
+        set
+        { logClassMethod = value; }
     }
 
     //logFile
@@ -1133,7 +1215,6 @@ public class ProxyConfig
 
             int i = 0;
             for (i = 0; i < configUriParts.Length; i++) {
-
                 if (!configUriParts[i].ToLower().Equals(uriParts[i].ToLower())) break;
             }
             if (i == configUriParts.Length) {
@@ -1152,6 +1233,8 @@ public class ProxyConfig
             throw new ArgumentException("Proxy has not been set up for this URL. Make sure there is a serverUrl in the configuration file that matches: " + uri);
         }
     }
+
+    private static readonly object _lock = new object();
 }
 
 public class ServerUrl {
