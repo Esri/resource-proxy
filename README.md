@@ -12,7 +12,9 @@ These proxy files support:
 Ensure that you follow the [Terms & Conditions](https://developers.arcgis.com/terms/) of the Esri systems and software that you are working with. In general, it is not permitted to embed credentials in a resource proxy for the purpose of bypassing Named User authentication (i.e. the principle that each end-user must have their own unique login). This is true both when using a resource proxy with ArcGIS Online as well as for ArcGIS Server sites federated as part of an ArcGIS Enterprise deployment.
 
 ## Alternatives
+
 There are several good alternative solutions to use instead of your own resource-proxy:
+
 * [Enable CORS on your server](http://enable-cors.org/server.html) - in order to access cross domain resources.
 * Access secure services [using ArcGIS Online](https://doc.arcgis.com/en/arcgis-online/reference/arcgis-server-services.htm#ESRI_SECTION1_FEB0DF92DA064B6A970DFB59A18AA4C2) to store your username/password credentials. See also the [Working with Proxy Services](https://developers.arcgis.com/authentication/working-with-proxies/) topic.
 
@@ -42,12 +44,9 @@ There are several good alternative solutions to use instead of your own resource
 
 ## Product Resources
 
-* [ArcGIS API for JavaScript](https://developers.arcgis.com/javascript/jshelp/ags_proxy.html)
-
+* [ArcGIS API for JavaScript](https://developers.arcgis.com/javascript/latest/guide/proxies/)
 * [Web AppBuilder for ArcGIS (Developer Edition)](https://developers.arcgis.com/web-appbuilder/guide/use-proxy.htm)
-
 * [Esri Leaflet](https://developers.arcgis.com/authentication/working-with-proxies/#esri-leaflet)
-
 * [Setting up a Proxy blog](http://blogs.esri.com/esri/supportcenter/2015/04/07/setting-up-a-proxy)
 
 ## Proxy Configuration Settings
@@ -133,4 +132,3 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 A copy of the license is available in the repository's [LICENSE](./LICENSE) file.
-
