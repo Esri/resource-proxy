@@ -690,7 +690,7 @@ public class proxy : IHttpHandler {
     private bool pathMatched(String allowedRefererPath, String refererPath)
     {
         //If equal, return true
-        if (refererPath.Equals(allowedRefererPath))
+        if (String.Equals(refererPath, allowedRefererPath, StringComparison.OrdinalIgnoreCase))
         {
             return true;
         }
