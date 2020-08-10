@@ -16,7 +16,7 @@ Ensure that you follow the [Terms & Conditions](https://developers.arcgis.com/te
 There are several good alternative solutions to use instead of your own resource-proxy:
 
 * [Enable CORS on your server](http://enable-cors.org/server.html) - in order to access cross domain resources.
-* Access secure services [using ArcGIS Online](https://doc.arcgis.com/en/arcgis-online/reference/arcgis-server-services.htm#ESRI_SECTION1_FEB0DF92DA064B6A970DFB59A18AA4C2) to store your username/password credentials. See also the [Working with Proxy Services](https://developers.arcgis.com/authentication/working-with-proxies/) topic.
+* Access secure services [using ArcGIS Online](https://doc.arcgis.com/en/arcgis-online/reference/arcgis-server-services.htm#ESRI_SECTION1_FEB0DF92DA064B6A970DFB59A18AA4C2) to store your username/password credentials. See also the [Working with Proxy Services](https://developers.arcgis.com/documentation/core-concepts/security-and-authentication/working-with-proxies/) topic.
 
 ## Instructions
 
