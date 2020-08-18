@@ -233,10 +233,10 @@ public class proxy : IHttpHandler {
             requestUri = serverUrl.HostRedirect + new Uri(requestUri).PathAndQuery;
         }
         if (serverUrl.UseAppPoolIdentity)
-	    {
-		    credentials=CredentialCache.DefaultNetworkCredentials;
-	    }
-    	else if (serverUrl.Domain != null)
+        {
+            credentials=CredentialCache.DefaultNetworkCredentials;
+        }
+        else if (serverUrl.Domain != null)
         {
             credentials = new System.Net.NetworkCredential(serverUrl.Username, serverUrl.Password, serverUrl.Domain);
         }
@@ -361,8 +361,8 @@ public class proxy : IHttpHandler {
         get { return true; }
     }
 
-/**
-* Private
+    /**
+    * Private
 */
     private byte[] readRequestPostBody(HttpContext context) {
         if (context.Request.InputStream.Length > 0) {
@@ -637,6 +637,14 @@ public class proxy : IHttpHandler {
                     //lets send a request to try and determine the URL of a token generator
                     string infoResponse = webResponseToString(doHTTPRequest(infoUrl, "GET"));
                     String tokenServiceUri = getJsonValue(infoResponse, "tokenServicesUrl");
+
+                    //Allow users to retrieve the token service uri from config it case 
+                    //a different port or url is needed.
+                    if (!string.IsNullOrEmpty(su.TokenServiceUri))
+                    {
+                        tokenServiceUri = su.TokenServiceUri;
+                    }
+
                     if (string.IsNullOrEmpty(tokenServiceUri)) {
                         string owningSystemUrl = getJsonValue(infoResponse, "owningSystemUrl");
                         if (!string.IsNullOrEmpty(owningSystemUrl)) {
@@ -909,8 +917,8 @@ public class proxy : IHttpHandler {
         }
     }
 
-/**
-* Static
+    /**
+    * Static
 */
     private static ProxyConfig getConfig() {
         ProxyConfig config = ProxyConfig.GetCurrentConfig();
@@ -1169,6 +1177,7 @@ public class ServerUrl {
     string tokenParamName;
     string rateLimit;
     string rateLimitPeriod;
+    string tokenServiceUri;
 
     private ServerUrl()
     {
@@ -1252,4 +1261,12 @@ public class ServerUrl {
         get { return string.IsNullOrEmpty(rateLimitPeriod)? 60 : int.Parse(rateLimitPeriod); }
         set { rateLimitPeriod = value.ToString(); }
     }
+
+    [XmlAttribute("tokenServiceUri")]
+    public string TokenServiceUri
+    {
+        get { return tokenServiceUri; }
+        set { tokenServiceUri = value; }
+    }
+
 }
