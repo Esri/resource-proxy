@@ -638,7 +638,7 @@ public class proxy : IHttpHandler {
                     string infoResponse = webResponseToString(doHTTPRequest(infoUrl, "GET"));
                     String tokenServiceUri = getJsonValue(infoResponse, "tokenServicesUrl");
 
-                    //Allow users to retrieve the token service uri from config it case 
+                    //Allow users to retrieve the token service uri from config in case 
                     //a different port or url is needed.
                     if (!string.IsNullOrEmpty(su.TokenServiceUri))
                     {
