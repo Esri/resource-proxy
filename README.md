@@ -1,5 +1,8 @@
-Proxy files for DotNet, Java and PHP
-====================================
+## Deprecation Notice
+
+> <b>This repository is deprecated. See the [Best Practices](#best-practices) section for more information.</b>
+
+## Proxy files for DotNet, Java and PHP
 
 These proxy files support:
 * Accessing cross domain resources
@@ -11,12 +14,19 @@ These proxy files support:
 
 Ensure that you follow the [Terms & Conditions](https://developers.arcgis.com/terms/) of the Esri systems and software that you are working with. In general, it is not permitted to embed credentials in a resource proxy for the purpose of bypassing Named User authentication (i.e. the principle that each end-user must have their own unique login). This is true both when using a resource proxy with ArcGIS Online as well as for ArcGIS Server sites federated as part of an ArcGIS Enterprise deployment.
 
-## Alternatives
+## Best Practices
 
-There are several good alternative solutions to use instead of your own resource-proxy:
+There are several recommended solutions to use instead of your own resource-proxy:
 
-* [Enable CORS on your server](http://enable-cors.org/server.html) - in order to access cross domain resources.
-* Access secure services [using ArcGIS Online](https://doc.arcgis.com/en/arcgis-online/reference/arcgis-server-services.htm#ESRI_SECTION1_FEB0DF92DA064B6A970DFB59A18AA4C2) to store your username/password credentials. See also the [Working with Proxy Services](https://developers.arcgis.com/documentation/core-concepts/security-and-authentication/working-with-proxies/) topic.
+* Enable [CORS](http://enable-cors.org/server.html) on the non-CORS enabled web server.
+* Configure your security settings in [ArcGIS Online](https://doc.arcgis.com/en/arcgis-online/administer/configure-security.htm) or [Portal](https://enterprise.arcgis.com/en/portal/10.5/administer/windows/configure-security.htm). 
+* Access secure services [using ArcGIS Online](https://doc.arcgis.com/en/arcgis-online/reference/arcgis-server-services.htm#ESRI_SECTION1_FEB0DF92DA064B6A970DFB59A18AA4C2) to store your username/password credentials. 
+
+## Developer tools for working with CORS
+
+For testing and development when working with CORS-enabled services:
+
+* There are Chrome extensions available through the [Chrome web store](https://chrome.google.com/webstore/search/cors?_category=extensions).
 
 ## Instructions
 
@@ -104,9 +114,6 @@ Example of a tag for a resource which does not require authentication
 
 Found a bug or want to request a new feature? Check out previously logged [Issues](https://github.com/Esri/resource-proxy/issues) and/or our [FAQ](FAQ.md).  If you don't see what you're looking for, feel free to submit a [new issue](https://github.com/Esri/resource-proxy/issues/new).
 
-## Contributing
-
-Esri welcomes [contributions](CONTRIBUTING.md) from anyone and everyone. Please see our [guidelines for contributing](https://github.com/esri/contributing).
 
 ## Release steps (for maintainers)
 
@@ -117,7 +124,7 @@ Esri welcomes [contributions](CONTRIBUTING.md) from anyone and everyone. Please 
 
 ## License
 
-Copyright 2017 Esri
+Copyright 2020 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
