@@ -27,6 +27,7 @@ There are several recommended solutions to use instead of your own resource-prox
 For testing and development when working with CORS-enabled services:
 
 * There are Chrome extensions available through the [Chrome web store](https://chrome.google.com/webstore/search/cors?_category=extensions).
+* Some browsers may allow you to temporarily modify the enforcement of the `same-origin` policy. For example, in Chrome you can set the `--disable-web-security` command-line flag. More information is available in [Run Chromium with flags](https://www.chromium.org/developers/how-tos/run-chromium-with-flags).
 
 ## Instructions
 
