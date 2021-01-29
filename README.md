@@ -3,7 +3,7 @@
 There are several recommended solutions to use instead of your own resource-proxy:
 
 * Enable [CORS](http://enable-cors.org/server.html) on the non-CORS enabled web server.
-* Configure your security settings in [ArcGIS Online](https://doc.arcgis.com/en/arcgis-online/administer/configure-security.htm) or [Portal](https://enterprise.arcgis.com/en/portal/10.5/administer/windows/configure-security.htm). 
+* Configure your security settings in [ArcGIS Online](https://doc.arcgis.com/en/arcgis-online/administer/configure-security.htm) or [ArcGIS Enterprise](https://enterprise.arcgis.com/en/portal/latest/administer/windows/configure-security.htm). 
 * Access secure services [using ArcGIS Online](https://doc.arcgis.com/en/arcgis-online/reference/arcgis-server-services.htm#ESRI_SECTION1_FEB0DF92DA064B6A970DFB59A18AA4C2) to store your username/password credentials. 
 
 ### Developer tools for working with CORS
