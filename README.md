@@ -1,9 +1,13 @@
+## Deprecation Notice
+
+> <b>This repository is deprecated.</b>
+
 # Best practices
 
 There are several recommended solutions to use instead of your own resource-proxy:
 
 * Enable [CORS](http://enable-cors.org/server.html) on the non-CORS enabled web server.
-* Configure your security settings in [ArcGIS Online](https://doc.arcgis.com/en/arcgis-online/administer/configure-security.htm) or [Portal](https://enterprise.arcgis.com/en/portal/10.5/administer/windows/configure-security.htm). 
+* Configure your security settings in [ArcGIS Online](https://doc.arcgis.com/en/arcgis-online/administer/configure-security.htm) or [ArcGIS Enterprise](https://enterprise.arcgis.com/en/portal/latest/administer/windows/configure-security.htm). 
 * Access secure services [using ArcGIS Online](https://doc.arcgis.com/en/arcgis-online/reference/arcgis-server-services.htm#ESRI_SECTION1_FEB0DF92DA064B6A970DFB59A18AA4C2) to store your username/password credentials. 
 
 ### Developer tools for working with CORS
@@ -109,11 +113,7 @@ Example of a tag for a resource which does not require authentication
 
 ## Issues
 
-Found a bug or want to request a new feature? Check out previously logged [Issues](https://github.com/Esri/resource-proxy/issues) and/or our [FAQ](FAQ.md).  If you don't see what you're looking for, feel free to submit a [new issue](https://github.com/Esri/resource-proxy/issues/new).
-
-## Contributing
-
-Esri welcomes [contributions](CONTRIBUTING.md) from anyone and everyone. Please see our [guidelines for contributing](https://github.com/esri/contributing).
+Found a bug or have a question? Check out previously logged [Issues](https://github.com/Esri/resource-proxy/issues) and/or our [FAQ](FAQ.md). 
 
 ## Release steps (for maintainers)
 
