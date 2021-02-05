@@ -1,3 +1,7 @@
+## Deprecation Notice
+
+> <b>This repository is deprecated.</b>
+
 # Best practices
 
 There are several recommended solutions to use instead of your own resource-proxy:
@@ -109,11 +113,7 @@ Example of a tag for a resource which does not require authentication
 
 ## Issues
 
-Found a bug or want to request a new feature? Check out previously logged [Issues](https://github.com/Esri/resource-proxy/issues) and/or our [FAQ](FAQ.md).  If you don't see what you're looking for, feel free to submit a [new issue](https://github.com/Esri/resource-proxy/issues/new).
-
-## Contributing
-
-Esri welcomes [contributions](CONTRIBUTING.md) from anyone and everyone. Please see our [guidelines for contributing](https://github.com/esri/contributing).
+Found a bug or have a question? Check out previously logged [Issues](https://github.com/Esri/resource-proxy/issues) and/or our [FAQ](FAQ.md). 
 
 ## Release steps (for maintainers)
 
