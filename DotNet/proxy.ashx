@@ -181,6 +181,29 @@ public class proxy : IHttpHandler {
             return;
         }
 
+        //Check if HTML format is blocked
+        if (serverUrl.RejectHtmlFormat)
+        {
+            // f=html OR f param missing (since fallback is normally html when param is missing)
+            string fParam = null;
+            if (context.Request.HttpMethod == "POST")
+            {
+                fParam = context.Request.Form["f"];
+            }
+            else if (context.Request.HttpMethod == "GET")
+            {
+                Uri reqUri = new Uri(uri);
+                fParam = HttpUtility.ParseQueryString(reqUri.Query).Get("f");
+            }
+
+            if (fParam == null || fParam.ToLower() == "html")
+            {
+                log(TraceLevel.Warning, "Proxy does not allow HTML format.  Access denied.");
+                sendErrorResponse(response, "Current proxy configuration settings do not allow requests that return HTML. Ensure that the 'f' parameter is present and contains a value other than 'html'.", "403 - Forbidden: Access is denied.", System.Net.HttpStatusCode.Forbidden);
+                return;
+            }
+        }
+
         //Throttling: checking the rate limit coming from particular client IP
         if (serverUrl.RateLimit > -1) {
             lock (_rateMapLock)
@@ -1169,6 +1192,7 @@ public class ServerUrl {
     string tokenParamName;
     string rateLimit;
     string rateLimitPeriod;
+    bool rejectHtmlFormat;
 
     private ServerUrl()
     {
@@ -1251,5 +1275,10 @@ public class ServerUrl {
     public int RateLimitPeriod {
         get { return string.IsNullOrEmpty(rateLimitPeriod)? 60 : int.Parse(rateLimitPeriod); }
         set { rateLimitPeriod = value.ToString(); }
+    }
+    [XmlAttribute("rejectHtmlFormat")]
+    public bool RejectHtmlFormat {
+        get { return rejectHtmlFormat; }
+        set { rejectHtmlFormat = value; }
     }
 }
