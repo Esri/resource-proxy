@@ -85,6 +85,13 @@ public class proxy : IHttpHandler {
         string uri = context.Request.Url.Query.Substring(1);
         log(TraceLevel.Verbose, "URI requested: " + uri);
 
+        // Replace & in parameters with ? - support ArcGIS Runtime clients
+        if (uri.Contains("&"))
+        {
+            uri = uri.Insert(uri.IndexOf("&"), "?").Remove(uri.IndexOf("&") + 1, 1);
+            log(TraceLevel.Verbose, "URI modified: " + uri);
+        }
+                                    
         //if uri is ping
         if (uri.Equals("ping", StringComparison.InvariantCultureIgnoreCase))
         {
