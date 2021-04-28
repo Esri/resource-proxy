@@ -628,6 +628,10 @@ public class proxy : IHttpHandler {
                     infoUrl = reqUrl.Substring(0, reqUrl.IndexOf("/sharing/", StringComparison.OrdinalIgnoreCase));
                     infoUrl = infoUrl + "/sharing";
                 }
+		else if (reqUrl.ToLower().Contains("/services/")) {
+                    infoUrl = reqUrl.Substring(0, reqUrl.IndexOf("/services/", StringComparison.OrdinalIgnoreCase));
+                //    infoUrl = infoUrl + "/services";
+                }
                 else
                     throw new ApplicationException("Unable to determine the correct URL to request a token to access private resources.");
 
