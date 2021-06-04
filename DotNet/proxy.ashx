@@ -63,6 +63,13 @@ public class proxy : IHttpHandler {
     private static LogTraceListener logTraceListener = null;
     private static Object _rateMapLock = new Object();
 
+    private static string RemoveQueryString(string uri) {
+        if (uri == null)
+            return null;
+
+        return uri.Split('?')[0];
+    }
+
     public void ProcessRequest(HttpContext context) {
 
 
@@ -645,7 +652,7 @@ public class proxy : IHttpHandler {
                     }
                     if (tokenServiceUri != "") {
                         log(TraceLevel.Info," Service is secured by " + tokenServiceUri + ": getting new token...");
-                        string uri = tokenServiceUri + "?f=json&request=getToken&referer=" + PROXY_REFERER + "&expiration=60&username=" + su.Username + "&password=" + su.Password;
+                        string uri = tokenServiceUri + "?f=json&request=getToken&referer=" + RemoveQueryString(PROXY_REFERER) + "&expiration=60&username=" + su.Username + "&password=" + su.Password;
                         string tokenResponse = webResponseToString(doHTTPRequest(uri, "POST"));
                         token = extractToken(tokenResponse, "token");
                     }
