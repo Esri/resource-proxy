@@ -1,17 +1,13 @@
 # Best practices
 
-There are several recommended solutions to use instead of your own resource-proxy:
+We don't recommend using this resource proxy. It is not being maintained and there's been no active development for many years. There are many better solutions.
 
 * Enable [CORS](http://enable-cors.org/server.html) on the non-CORS enabled web server.
+* Use [API keys](https://web.archive.org/web/20210506231115/https://developers.arcgis.com/documentation/mapping-apis-and-services/security/api-keys/) to use services and access private content. 
 * Configure your security settings in [ArcGIS Online](https://doc.arcgis.com/en/arcgis-online/administer/configure-security.htm) or [ArcGIS Enterprise](https://enterprise.arcgis.com/en/portal/latest/administer/windows/configure-security.htm). 
 * Access secure services [using ArcGIS Online](https://doc.arcgis.com/en/arcgis-online/reference/arcgis-server-services.htm#ESRI_SECTION1_FEB0DF92DA064B6A970DFB59A18AA4C2) to store your username/password credentials. 
 
-### Developer tools for working with CORS
-
-For testing and development when working with CORS-enabled services:
-
-* There are Chrome extensions available through the [Chrome web store](https://chrome.google.com/webstore/search/cors?_category=extensions).
-* Some browsers may allow you to temporarily modify the enforcement of the `same-origin` policy. For example, in Chrome you can set the `--disable-web-security` command-line flag. More information is available in [Run Chromium with flags](https://www.chromium.org/developers/how-tos/run-chromium-with-flags).
+**Note:** this resource proxy may only be used with ArcGIS Enterprise.
 
 # Proxy files for DotNet, Java and PHP
 
@@ -44,17 +40,6 @@ Ensure that you follow the [Terms & Conditions](https://developers.arcgis.com/te
     * proxy.php
     * proxy.config
     * README.md
-
-## Troubleshooting
-
-* Watch the web requests being handled by the proxy to ensure that the proxy and the web resource locations are correct and properly configured in the application. Use something like [Fiddler](http://www.telerik.com/fiddler) or developer tools like [Network panel in Chrome Developer Tools](https://developer.chrome.com/devtools/docs/network#network-panel-overview).
-
-## Product Resources
-
-* [ArcGIS API for JavaScript](https://developers.arcgis.com/javascript/latest/guide/proxies/)
-* [Web AppBuilder for ArcGIS (Developer Edition)](https://developers.arcgis.com/web-appbuilder/guide/use-proxy.htm)
-* [Esri Leaflet](https://developers.arcgis.com/authentication/working-with-proxies/#esri-leaflet)
-* [Setting up a Proxy blog](http://blogs.esri.com/esri/supportcenter/2015/04/07/setting-up-a-proxy)
 
 ## Proxy Configuration Settings
 
@@ -109,18 +94,7 @@ Example of a tag for a resource which does not require authentication
 
 ## Issues
 
-Found a bug or want to request a new feature? Check out previously logged [Issues](https://github.com/Esri/resource-proxy/issues) and/or our [FAQ](FAQ.md).  If you don't see what you're looking for, feel free to submit a [new issue](https://github.com/Esri/resource-proxy/issues/new).
-
-## Contributing
-
-Esri welcomes [contributions](CONTRIBUTING.md) from anyone and everyone. Please see our [guidelines for contributing](https://github.com/esri/contributing).
-
-## Release steps (for maintainers)
-
-0. run `npm install gh-release` inside the directory which houses the repository (this only needs to be done once)
-1. bump proxy version numbers and changelog
-2. commit your changes `git commit -m ':package: 1.x.x'`
-3. run `gh-release` at the command line. this will create a tag using the current SHA and use whats in the changelog in the release notes
+Found a bug? Check out previously logged [Issues](https://github.com/Esri/resource-proxy/issues) and/or our [FAQ](FAQ.md).  If you don't see what you're looking for, feel free to submit a [new issue](https://github.com/Esri/resource-proxy/issues/new).
 
 ## License
 
