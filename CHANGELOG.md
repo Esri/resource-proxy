@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
 
+## Deprecation announcement 2021-08-02
+
 ## [1.1.2] - 2017-08-21
 
 ### Fixed

@@ -1,3 +1,7 @@
+# Deprecation Notice
+
+> <b>This repository is deprecated as of 2021-08-02.</b>
+
 # Best practices
 
 We don't recommend using this resource proxy. It is not being maintained and there's been no active development for many years. There are many better solutions.
@@ -94,7 +98,7 @@ Example of a tag for a resource which does not require authentication
 
 ## Issues
 
-Found a bug? Check out previously logged [Issues](https://github.com/Esri/resource-proxy/issues) and/or our [FAQ](FAQ.md).  If you don't see what you're looking for, feel free to submit a [new issue](https://github.com/Esri/resource-proxy/issues/new).
+Found a bug or have a question? Check out the [SUPPORT](https://github.com/Esri/resource-proxy/blob/master/SUPPORT.md) information page. 
 
 ## License
 
