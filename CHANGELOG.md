@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
 
-## Deprecation announcement 2023-02-09
+## Deprecation announcement 2023-02-23
 - Added deprecation notice to the README.
 
 ## [1.1.2] - 2017-08-21
