@@ -96,10 +96,6 @@ Example of a tag for a resource which does not require authentication
 
 * See the README.md file in the folder of the proxy you want to install for platform specific requirements.
 
-## Issues
-
-Found a bug or have a question? Check out the [SUPPORT](https://github.com/Esri/resource-proxy/blob/master/SUPPORT.md) information page. 
-
 ## License
 
 Copyright 2014-2021 Esri
