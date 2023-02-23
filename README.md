@@ -1,15 +1,19 @@
-# Best practices
+# Deprecation Notice
 
-We don't recommend using this resource proxy. It is not being maintained and there's been no active development for many years. There are many better solutions.
+| :warning: This repository is deprecated   |
+| :-----------------------------------------|
+| As of February 2023, this repository is deprecated and will soon be archived. |
+
+We recommend choosing from the following solutions:
 
 * Enable [CORS](http://enable-cors.org/server.html) on the non-CORS enabled web server.
-* Use [API keys](https://web.archive.org/web/20210506231115/https://developers.arcgis.com/documentation/mapping-apis-and-services/security/api-keys/) to use services and access private content. 
+* Use [API keys](https://developers.arcgis.com/documentation/mapping-apis-and-services/security/api-keys/) to use services and access private content. 
 * Configure your security settings in [ArcGIS Online](https://doc.arcgis.com/en/arcgis-online/administer/configure-security.htm) or [ArcGIS Enterprise](https://enterprise.arcgis.com/en/portal/latest/administer/windows/configure-security.htm). 
 * Access secure services [using ArcGIS Online](https://doc.arcgis.com/en/arcgis-online/reference/arcgis-server-services.htm#ESRI_SECTION1_FEB0DF92DA064B6A970DFB59A18AA4C2) to store your username/password credentials. 
 
-**Note:** this resource proxy may only be used with ArcGIS Enterprise.
-
 # Proxy files for DotNet, Java and PHP
+
+**Note:** this resource proxy may only be used with ArcGIS Enterprise.
 
 These proxy files support:
 * Accessing cross domain resources
@@ -91,10 +95,6 @@ Example of a tag for a resource which does not require authentication
 ## Requirements
 
 * See the README.md file in the folder of the proxy you want to install for platform specific requirements.
-
-## Issues
-
-Found a bug? Check out previously logged [Issues](https://github.com/Esri/resource-proxy/issues) and/or our [FAQ](FAQ.md).  If you don't see what you're looking for, feel free to submit a [new issue](https://github.com/Esri/resource-proxy/issues/new).
 
 ## License
 
