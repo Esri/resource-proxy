@@ -1,8 +1,6 @@
-# Archive notice
-
-| :warning: This repository is archived  |
-| :-----------------------------------------|
-| As of April 2023, this repository is archived. Do NOT use these proxies. They have not been maintained or supported for a long time. |
+| :warning: This repository has been archived  |
+| :--------------------------------------------|
+| Do NOT use these proxies. They have not been maintained or supported for a long time. |
 
 Use one of the following alternative solutions:
 
